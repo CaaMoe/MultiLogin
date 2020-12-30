@@ -1,6 +1,6 @@
 ###################################
-#       MultiLogin    --config
-#                   By Caa Moe.
+#       MultiLogin
+#              --config
 ###################################
 
 # 存放所有的Yggdrasil验证服务器，
@@ -51,3 +51,25 @@ officialConvUuid: DEFAULT
 # 判定规则：服务器将会记录并且缓存玩家的登入数据，并更新账户的name，当有新老玩家登入到游戏中，系统会判断玩家的name是否被其他缓存用户占用。
 #    如若被占用，系统将会拒绝他的登入请求，直到name可用为止。
 noRepeatedName: true
+
+##############
+#   Message
+##############
+
+msgNoAdopt: "§c验证未能通过，请重新尝试"
+msgNoChae: "§c您只能通过指定的验证方式登入游戏"
+msgRushName: "§c您的ID已被抢注，请重新设置您的ID"
+msgNoWhitelist: "§c您没有白名单"
+
+msgInvCmd: "§c无效的命令"
+msgAddWhitelist: "§a已将%s添加至白名单"
+msgAddWhitelistAlready: "§c请勿重复将%s添加至白名单"
+msgDelWhitelistInGame: "§c管理员已移除您的白名单权限"
+msgDelWhitelist: "§a已移除%s的白名单"
+msgDelWhitelistAlready: "§c%s并不在白名单中"
+msgOpenWhitelist: "§a已开启白名单"
+msgOpenWhitelistAlready: "§c请勿重复开启白名单"
+msgCloseWhitelist: "§a已关闭白名单"
+msgCloseWhitelistAlready: "§c请勿重复关闭白名单"
+msgWhitelistListNoth: "§c白名单内没有玩家"
+msgWhitelistListN: "§白名单内一共有%d名玩家：%s"
