@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="ProtocolLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../Java api/ProtocolLib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../Java api/patched_1.16.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../Java api/patched_1.16.1.jar!/" />
+    </SOURCES>
+  </library>
+</component>
