@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonWriter;
 import moe.caa.bukkit.multilogin.yggdrasil.MLGameProfile;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -232,6 +233,10 @@ public class PluginData {
     public static boolean removeWhitelist(String name){
         for(UserEntry entry : userMap){
             if (entry.getName().equalsIgnoreCase(name)) {
+                Player player = Bukkit.getPlayer(entry.getUuid());
+                if(player != null){
+                    player.kickPlayer("快爬");
+                }
                 if(!entry.whitelist){
                     return true;
                 }
@@ -281,6 +286,15 @@ public class PluginData {
             current.whitelist = true;
         }
         userMap.add(current);
+        return null;
+    }
+
+    public static UserEntry getUserEntry(String name){
+        for(UserEntry entry : userMap){
+            if(entry.name.equalsIgnoreCase(name)){
+                return entry;
+            }
+        }
         return null;
     }
 

@@ -59,8 +59,9 @@ noRepeatedName: true
 msgNoAdopt: "§c验证未能通过，请重新尝试"
 msgNoChae: "§c您只能通过指定的验证方式登入游戏"
 msgRushName: "§c您的ID已被抢注，请重新设置您的ID"
-msgNoWhitelist: "§c您没有白名单"
 
+msgNoWhitelist: "§c您没有白名单"
+msgNoPermission: "§c你没有权限"
 msgInvCmd: "§c无效的命令"
 msgAddWhitelist: "§a已将%s添加至白名单"
 msgAddWhitelistAlready: "§c请勿重复将%s添加至白名单"
@@ -73,3 +74,7 @@ msgCloseWhitelist: "§a已关闭白名单"
 msgCloseWhitelistAlready: "§c请勿重复关闭白名单"
 msgWhitelistListNoth: "§c白名单内没有玩家"
 msgWhitelistListN: "§白名单内一共有%d名玩家：%s"
+
+msgYDQuery: "§f玩家 §e%s §f使用的登入方式为 %s"
+msgReload: "§a已重新加载配置文件"
+msgNoPlayer: "§c你不是一名实体玩家"
