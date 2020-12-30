@@ -2,6 +2,7 @@ package moe.caa.bukkit.multilogin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import moe.caa.bukkit.multilogin.listener.BukkitListener;
 import moe.caa.bukkit.multilogin.listener.PacketListener;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +31,10 @@ public final class MultiLogin extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        getServer().getPluginManager().registerEvents(new BukkitListener(), this);
+        getCommand("whitelist").setExecutor(new WhitelistCommand());
+        getCommand("whitelist").setTabCompleter(new WhitelistCommand());
     }
 
 

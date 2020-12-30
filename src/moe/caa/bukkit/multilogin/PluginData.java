@@ -16,6 +16,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class PluginData {
     public static Map<String, YggdrasilServiceSection> Services = new HashMap<>();
@@ -28,7 +29,7 @@ public class PluginData {
     private static final Map<UUID, UUID> swapUuidMap = new HashMap<>();
     private static boolean whitelist;
     private static final Set<UserEntry> userMap = new HashSet<>();
-    private static final List<String> cacWhitelist = new LinkedList<>();
+    private static final Set<String> cacWhitelist = new HashSet<>();
 
     private static void genFile() throws IOException {
         MultiLogin login = MultiLogin.INSTANCE;
@@ -53,6 +54,10 @@ public class PluginData {
         ConfigurationSection services = configurationConfig.getConfigurationSection("services");
         if(services != null){
             for(String path : services.getKeys(false)){
+                if(path.equalsIgnoreCase("official")){
+                    log.warning("请勿将official值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器将失效");
+                    continue;
+                }
                 YggdrasilServiceSection section = YggdrasilServiceSection.fromYaml(path, services.getConfigurationSection(path));
                 if(section != null){
                     serviceSet.add(section);
@@ -63,7 +68,7 @@ public class PluginData {
         }
         if (isOfficialYgg()) {
             log.info("已设置启用正版验证");
-            YggdrasilServiceSection.OFFICIAL = new YggdrasilServiceSection("", getOfficialName(), "", getOfficialConvUuid(), false);
+            YggdrasilServiceSection.OFFICIAL = new YggdrasilServiceSection("official", getOfficialName(), "", getOfficialConvUuid(), false);
         } else {
             log.info("已设置不启用正版验证");
         }
@@ -87,50 +92,94 @@ public class PluginData {
         genFile();
         swapUuidMap.clear();
         Logger log = MultiLogin.INSTANCE.getLogger();
-        JsonObject json = (JsonObject) new JsonParser().parse(new FileReader(configSwapUuid));
-        for(Map.Entry<String, JsonElement> entry : json.entrySet()){
-            try {
-                UUID from = UUID.fromString(entry.getKey());
-                UUID to = UUID.fromString(entry.getValue().getAsString());
-                swapUuidMap.put(from, to);
-            } catch (Exception ignored) {
-                log.severe(String.format("损坏的数据 %s:%s  来自文件%s", entry.getKey(), entry.getValue().toString(), configSwapUuid.getName()));
+        try{
+            JsonObject json = (JsonObject) new JsonParser().parse(new FileReader(configSwapUuid));
+            if(json != null && json.entrySet() != null){
+                for(Map.Entry<String, JsonElement> entry : json.entrySet()){
+                    try {
+                        UUID from = UUID.fromString(entry.getKey());
+                        UUID to = UUID.fromString(entry.getValue().getAsString());
+                        swapUuidMap.put(from, to);
+                    } catch (Exception ignored) {
+                        log.severe(String.format("损坏的数据 %s:%s  来自文件%s", entry.getKey(), entry.getValue().toString(), configSwapUuid.getName()));
+                    }
+                }
             }
-        }
+        } catch (Exception ignore){}
+
         log.info(String.format("成功读取%d条uuid转化数据", swapUuidMap.size()));
 
-        // TODO 忽略格式检查
         userMap.clear();
-        JsonObject json1 = (JsonObject) new JsonParser().parse(new FileReader(configUser));
-        whitelist = json1.get("whitelist").getAsBoolean();
-        JsonArray array = json1.get("data").getAsJsonArray();
-        for(JsonElement je : array){
-            boolean flag = false;
-            try {
-                UserEntry entry = UserEntry.fromJson(je.getAsJsonArray());
-                if(entry != null){
-                    flag = true;
-                    userMap.add(entry);
+        cacWhitelist.clear();
+        JsonObject json1 = new JsonObject();
+        try{
+            json1 = (JsonObject) new JsonParser().parse(new FileReader(configUser));
+            JsonArray array = json1.get("data").getAsJsonArray();
+            for(JsonElement je : array){
+                boolean flag = false;
+                try {
+                    UserEntry entry = UserEntry.fromJson(je.getAsJsonObject());
+                    if(entry != null){
+                        flag = true;
+                        userMap.add(entry);
+                    }
+                }catch (Exception ignore){
                 }
-            }catch (Exception ignore){
+                if(!flag){
+                    log.severe(String.format("损坏的数据 %s 来自文件%s", je.toString(), configUser.getName()));
+                }
             }
-            if(!flag){
-                log.severe(String.format("损坏的数据 %s 来自文件%s", je.toString(), configUser.getName()));
+        } catch (Exception ignore){}
+        JsonElement wl = json1.get("whitelist");
+        whitelist = wl != null && !wl.isJsonNull() && wl.getAsBoolean();
+        try{
+            JsonArray array = json1.get("cacWhitelist").getAsJsonArray();
+            for(JsonElement je : array){
+                cacWhitelist.add(je.getAsString());
             }
-        }
+        } catch (Exception ignore){}
+
+        log.info(String.format("载入%d+%d条用户数据", userMap.size(), cacWhitelist.size()));
+
     }
 
     public static synchronized void saveData() throws IOException {
         genFile();
-        JsonObject json = new JsonObject();
-        for(Map.Entry<UUID, UUID> entry : swapUuidMap.entrySet()){
-            json.addProperty(entry.getKey().toString(), entry.getValue().toString());
+        Logger log = MultiLogin.INSTANCE.getLogger();
+        try {
+            JsonObject json = new JsonObject();
+            for(Map.Entry<UUID, UUID> entry : swapUuidMap.entrySet()){
+                json.addProperty(entry.getKey().toString(), entry.getValue().toString());
+            }
+            JsonWriter jw = new JsonWriter(new FileWriter(configSwapUuid));
+            jw.setIndent("  ");
+            MultiLogin.GSON.toJson(json, jw);
+            jw.flush();
+            jw.close();
+        } catch (Exception ignore){
+            log.severe(String.format("无法保存数据文件: %s", configSwapUuid.getName()));
         }
-        JsonWriter jw = new JsonWriter(new FileWriter(configSwapUuid));
-        jw.setIndent("  ");
-        MultiLogin.GSON.toJson(json, jw);
-        jw.flush();
-        jw.close();
+        try {
+            JsonObject json = new JsonObject();
+            json.addProperty("whitelist", whitelist);
+            JsonArray array = new JsonArray();
+            for(String name : cacWhitelist){
+                array.add(name);
+            }
+            json.add("cacWhitelist", array);
+            JsonArray userArray = new JsonArray();
+            for(UserEntry entry : userMap){
+                userArray.add(entry.getJson());
+            }
+            json.add("data", userArray);
+            JsonWriter jw = new JsonWriter(new FileWriter(configUser));
+            jw.setIndent("  ");
+            MultiLogin.GSON.toJson(json, jw);
+            jw.flush();
+            jw.close();
+        } catch (Exception ignore){
+        log.severe(String.format("无法保存数据文件: %s", configUser.getName()));
+        }
     }
 
     public static boolean isOfficialYgg() {
@@ -167,6 +216,38 @@ public class PluginData {
         PluginData.whitelist = whitelist;
     }
 
+    public static boolean addWhitelist(String name){
+        for(UserEntry entry : userMap){
+            if (entry.getName().equalsIgnoreCase(name)) {
+                if(entry.whitelist){
+                    return false;
+                }
+                entry.whitelist = true;
+                return true;
+            }
+        }
+        return cacWhitelist.add(name);
+    }
+
+    public static boolean removeWhitelist(String name){
+        for(UserEntry entry : userMap){
+            if (entry.getName().equalsIgnoreCase(name)) {
+                if(!entry.whitelist){
+                    return true;
+                }
+                entry.whitelist = false;
+                return false;
+            }
+        }
+        return cacWhitelist.remove(name);
+    }
+
+    public static List<String> listWhitelist(){
+        List<String> ret = userMap.stream().map(UserEntry::getName).collect(Collectors.toList());
+        ret.addAll(cacWhitelist);
+        return ret;
+    }
+
     public static TextComponent getUserVerificationMessage(MLGameProfile profile){
         String name = profile.getName();
         YggdrasilServiceSection yggServer = profile.getYggService();
@@ -192,8 +273,12 @@ public class PluginData {
         } else {
             current = new UserEntry(profile.getId(), name, yggServer.getPath(), false);
         }
-        if (isWhitelist() && !current.whitelist && !cacWhitelist.remove(name)){
-            return new TextComponent("你没有白名单，快爬");
+
+        if(isWhitelist()){
+            if(!current.whitelist & !cacWhitelist.remove(name)){
+                return new TextComponent("你没有白名单，快爬");
+            }
+            current.whitelist = true;
         }
         userMap.add(current);
         return null;
@@ -257,7 +342,8 @@ public class PluginData {
                         return new UserEntry(uuid, name, yggServer, whitelist);
                     }
                 }
-            } catch (Exception ignore){}
+            } catch (Exception ignore){
+            }
             return null;
         }
     }
