@@ -53,7 +53,7 @@ officialServices: false
 # 必填，不允许为无效的值。
 officialConvUuid: DEFAULT
 
-# 服务器内是否允许重名
+# 服务器内是否阻止重名
 # 判定规则：服务器将会记录并且缓存玩家的登入数据，并更新账户的name，当有玩家登入到游戏中，系统会首先判断玩家的name是否存在被其他缓存用户占用。
 #    如若被占用，系统将会拒绝他的登入请求，直到name可用为止。
 noRepeatedName: true
