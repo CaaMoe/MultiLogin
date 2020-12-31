@@ -1,5 +1,6 @@
 package moe.caa.bukkit.multilogin.yggdrasil;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfileRepository;
@@ -10,6 +11,7 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.exceptions.InvalidCredentialsException;
 import com.mojang.authlib.exceptions.UserMigratedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.Response;
 import moe.caa.bukkit.multilogin.MultiLogin;
 import moe.caa.bukkit.multilogin.PluginData;
@@ -18,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.HashMap;
@@ -27,9 +30,13 @@ import java.util.concurrent.Future;
 
 public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationService {
     private HttpAuthenticationService vanService;
+    private final Class YggdrasilAuthenticationServiceClass = YggdrasilAuthenticationService.class;
+    private final Field YggdrasilAuthenticationServiceGson = YggdrasilAuthenticationServiceClass.getDeclaredField("gson");
+    private Gson gson;
 
-    public MLMultiYggdrasilAuthenticationService() {
+    public MLMultiYggdrasilAuthenticationService() throws NoSuchFieldException {
         super(Proxy.NO_PROXY);
+        YggdrasilAuthenticationServiceGson.setAccessible(true);
     }
 
     @Override
@@ -39,8 +46,8 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
 
     protected <T extends Response> T makeRequest0(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
         try {
-            String jsonResult = input == null ? this.performGetRequest(url) : this.performPostRequest(url, MultiLogin.GSON.toJson(input), "application/json");
-            T result = MultiLogin.GSON.fromJson(jsonResult, classOfT);
+            String jsonResult = input == null ? this.performGetRequest(url) : this.performPostRequest(url, gson.toJson(input), "application/json");
+            T result = gson.fromJson(jsonResult, classOfT);
             if (result == null) {
                 return null;
             } else if (StringUtils.isNotBlank(result.getError())) {
@@ -110,7 +117,6 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
         if(ret instanceof MLHasJoinedMinecraftServerResponse){
             ((MLHasJoinedMinecraftServerResponse) ret).setYggService(tasks.get(taskDown));
         }
-        System.out.println("a");
         return ret;
     }
 
@@ -134,7 +140,9 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
         return vanService.createProfileRepository();
     }
 
-    public void setVanService(HttpAuthenticationService vanService) {
+    public void setVanService(HttpAuthenticationService vanService) throws IllegalAccessException {
         this.vanService = vanService;
+
+        gson = (Gson) YggdrasilAuthenticationServiceGson.get(vanService);
     }
 }
