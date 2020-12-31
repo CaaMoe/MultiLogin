@@ -58,12 +58,13 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
     @Override
     public void run() {
         save();
-        getServer().shutdown();
+
     }
 
     @Override
     public void onDisable() {
         save();
+        getServer().shutdown();
     }
 
     private void save(){
