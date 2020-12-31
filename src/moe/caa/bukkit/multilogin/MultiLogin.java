@@ -20,14 +20,6 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
             setEnabled(false);
             return;
         }
-        try {
-            NMSUtil.initService(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-            getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
-            setEnabled(false);
-            return;
-        }
 
         try {
             PluginData.reloadConfig();
@@ -39,6 +31,14 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
             return;
         }
 
+        try {
+            NMSUtil.initService(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+            getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
+            setEnabled(false);
+            return;
+        }
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
         WhitelistCommand command = new WhitelistCommand();
         getCommand("whitelist").setExecutor(command);
