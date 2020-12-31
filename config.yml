@@ -89,6 +89,3 @@ msgYDQueryNoRel: "§c没有查询到记录: %s"
 
 msgReload: "§a已重新加载配置文件"
 msgNoPlayer: "§c你不是一名实体玩家"
-
-msgValiFail: "§c无法验证您的用户名，请确保您使用的是正版登入或XX皮肤站登入"
-msgSerFail: "§c当前所有通道服务器全部宕机，"
