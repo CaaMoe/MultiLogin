@@ -326,7 +326,7 @@ public class PluginData {
             }
             current.whitelist = true;
         }
-        if(yggServer.isWhitelist() && !current.isWhitelist()){
+        if(yggServer.isWhitelist() && !current.isWhitelist() & !cacWhitelist.remove(name)){
             return configurationConfig.getString("msgNoWhitelist");
         }
         userMap.add(current);
