@@ -49,6 +49,10 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
         getCommand("whitelist").setExecutor(command);
         getCommand("whitelist").setTabCompleter(command);
 
+        MultiLoginCommand command1 = new MultiLoginCommand();
+        getCommand("multilogin").setTabCompleter(command1);
+        getCommand("multilogin").setExecutor(command1);
+
         getServer().getScheduler().runTaskTimerAsynchronously(this, this, 0, 1000 * 60);
 
         getLogger().info("插件已加载");
@@ -58,7 +62,6 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
     @Override
     public void run() {
         save();
-
     }
 
     @Override

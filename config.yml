@@ -83,8 +83,8 @@ msgCloseWhitelistAlready: "§c请勿重复关闭白名单"
 msgWhitelistListNoth: "§c白名单内没有玩家"
 msgWhitelistListN: "§f白名单内一共有%d名玩家：%s"
 
-msgYDQuery: "§f玩家 §e%s §f使用的登入方式为 %s"
-msgYDQueryNoRel: "§c没有查询到记录 %s"
+msgYDQuery: "§f玩家 §e%s §f使用的登入方式为 §e%s"
+msgYDQueryNoRel: "§c没有查询到记录: %s"
 
 msgReload: "§a已重新加载配置文件"
 msgNoPlayer: "§c你不是一名实体玩家"

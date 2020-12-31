@@ -111,7 +111,8 @@ public class WhitelistCommand implements TabExecutor {
             if(stringList.size() <= 0){
                 sender.sendMessage(PluginData.getConfigurationConfig().getString("msgWhitelistListNoth"));
             } else {
-                sender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgWhitelistListN"), String.join(", ", PluginData.listWhitelist())));
+                List<String> list = PluginData.listWhitelist();
+                sender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgWhitelistListN"), list.size(), String.join(", ", list)));
             }
         }
     }

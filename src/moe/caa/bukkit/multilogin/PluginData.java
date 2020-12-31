@@ -25,6 +25,7 @@ public class PluginData {
     public static final File configSwapUuid = new File(MultiLogin.INSTANCE.getDataFolder(), "swap_uuid.json");
     public static final File configUser = new File(MultiLogin.INSTANCE.getDataFolder(), "user.json");
     public static YamlConfiguration configurationConfig = null;
+    public static YamlConfiguration defaultConfigurationConfig = null;
 
     private static final Set<YggdrasilServiceSection> serviceSet = new HashSet<>();
     private static final Map<UUID, UUID> swapUuidMap = new HashMap<>();
@@ -48,6 +49,9 @@ public class PluginData {
 
     public static void reloadConfig() throws IOException {
         genFile();
+        try {
+            defaultConfigurationConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(MultiLogin.INSTANCE.getResource("config.yml")));
+        } catch (Exception ignore){}
         MultiLogin.INSTANCE.reloadConfig();
         serviceSet.clear();
         configurationConfig = (YamlConfiguration) MultiLogin.INSTANCE.getConfig();
@@ -74,6 +78,26 @@ public class PluginData {
             log.info("已设置不启用正版验证");
         }
         log.info(String.format("已成功载入%d个Yggdrasil验证服务器", serviceSet.size() + (isOfficialYgg() ? 1 : 0)));
+        testMsg(log, "msgNoAdopt");
+        testMsg(log, "msgNoChae");
+        testMsg(log, "msgRushName");
+        testMsg(log, "msgNoWhitelist");
+        testMsg(log, "msgNoPermission");
+        testMsg(log, "msgAddWhitelist", "null");
+        testMsg(log, "msgAddWhitelistAlready", "null");
+        testMsg(log, "msgDelWhitelistInGame");
+        testMsg(log, "msgDelWhitelist", "null");
+        testMsg(log, "msgDelWhitelistAlready", "null");
+        testMsg(log, "msgOpenWhitelist");
+        testMsg(log, "msgOpenWhitelistAlready");
+        testMsg(log, "msgCloseWhitelist");
+        testMsg(log, "msgCloseWhitelistAlready");
+        testMsg(log, "msgWhitelistListNoth");
+        testMsg(log, "msgWhitelistListN", 0, "null");
+        testMsg(log, "msgYDQuery", "null", "null");
+        testMsg(log, "msgYDQueryNoRel" ,"null");
+        testMsg(log, "msgReload");
+        testMsg(log, "msgNoPlayer");
     }
 
     public static UUID getSwapUUID(UUID uuid, YggdrasilServiceSection yggdrasilServiceSection, String name){
@@ -183,6 +207,15 @@ public class PluginData {
         }
     }
 
+    private static void testMsg(Logger log, String path, Object... args){
+        try {
+            String.format(configurationConfig.getString(path), args);
+        }catch (Exception ignore){
+            configurationConfig.set(path, defaultConfigurationConfig.getString(path));
+            log.warning(String.format("无效的节点 %s 已恢复默认值", path));
+        }
+    }
+
     public static boolean isOfficialYgg() {
         return configurationConfig.getBoolean("officialServices", true);
     }
@@ -252,7 +285,7 @@ public class PluginData {
     }
 
     public static List<String> listWhitelist(){
-        List<String> ret = userMap.stream().map(UserEntry::getName).collect(Collectors.toList());
+        List<String> ret = userMap.stream().filter(UserEntry::isWhitelist).map(UserEntry::getName).collect(Collectors.toList());
         ret.addAll(cacWhitelist);
         return ret;
     }
