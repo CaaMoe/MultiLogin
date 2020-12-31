@@ -8,7 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.IOException;
 
 public final class MultiLogin extends JavaPlugin implements Runnable{
-    protected static MultiLogin INSTANCE;
+    public static MultiLogin INSTANCE;
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     @Override
