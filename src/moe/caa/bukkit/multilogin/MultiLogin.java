@@ -3,8 +3,6 @@ package moe.caa.bukkit.multilogin;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import moe.caa.bukkit.multilogin.listener.BukkitListener;
-import moe.caa.bukkit.multilogin.listener.PacketListener;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
@@ -31,9 +29,6 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
             return;
         }
 
-        if(Bukkit.getPluginManager().getPlugin("ProtocolLib") != null){
-            PacketListener.register(this);
-        }
         try {
             PluginData.reloadConfig();
             PluginData.readData();

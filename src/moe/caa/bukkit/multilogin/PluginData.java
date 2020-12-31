@@ -59,8 +59,8 @@ public class PluginData {
         ConfigurationSection services = configurationConfig.getConfigurationSection("services");
         if(services != null){
             for(String path : services.getKeys(false)){
-                if(path.equalsIgnoreCase("official")){
-                    log.warning("请勿将official值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
+                if(path.equalsIgnoreCase("official") || path.equalsIgnoreCase("multi") ){
+                    log.warning("请勿将official或multi值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
                     continue;
                 }
                 YggdrasilServiceSection section = YggdrasilServiceSection.fromYaml(path, services.getConfigurationSection(path));
