@@ -13,13 +13,13 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
 
     @Override
     public void onEnable() {
+        MultiLogin.INSTANCE = this;
         if(!getServer().getOnlineMode()){
             getLogger().severe("插件只能运行在“online-mode=true”的环境下");
             getLogger().severe("请打开服务端的正版验证！");
             setEnabled(false);
             return;
         }
-        MultiLogin.INSTANCE = this;
         try {
             NMSUtil.initService(this);
         } catch (Exception e) {
