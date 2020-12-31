@@ -271,7 +271,7 @@ public class PluginData {
         for(UserEntry entry : userMap){
             if (entry.getName().equalsIgnoreCase(name)) {
                 Player player = Bukkit.getPlayer(entry.getUuid());
-                if(player != null){
+                if(player != null && isWhitelist()){
                     player.kickPlayer(configurationConfig.getString("msgDelWhitelistInGame"));
                 }
                 if(!entry.whitelist){

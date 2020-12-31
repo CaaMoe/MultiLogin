@@ -53,7 +53,7 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
         getCommand("multilogin").setTabCompleter(command1);
         getCommand("multilogin").setExecutor(command1);
 
-        getServer().getScheduler().runTaskTimerAsynchronously(this, this, 0, 1000 * 60);
+        getServer().getScheduler().runTaskTimerAsynchronously(this, this, 0, 20 * 60);
 
         getLogger().info("插件已加载");
     }

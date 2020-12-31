@@ -64,7 +64,7 @@ public class MLYggdrasilAuthenticationService extends YggdrasilAuthenticationSer
 
         Future<T> taskDown = null;
         long time = System.currentTimeMillis() + PluginData.getTimeOut();
-        dos:while(time > System.currentTimeMillis()){
+        dos:while(time > System.currentTimeMillis() && tasks.size() != 0){
             Iterator<Future<T>> itr = tasks.keySet().iterator();
             while (itr.hasNext()){
                 Future<T> task = itr.next();
@@ -82,6 +82,7 @@ public class MLYggdrasilAuthenticationService extends YggdrasilAuthenticationSer
                 }
             }
         }
+        cancelAll(tasks);
 
         if(ret == null){
             if(down)
@@ -92,6 +93,12 @@ public class MLYggdrasilAuthenticationService extends YggdrasilAuthenticationSer
             ((MLHasJoinedMinecraftServerResponse) ret).setYggService(tasks.get(taskDown));
         }
         return ret;
+    }
+
+    private <T>void cancelAll(Map<Future<T>, YggdrasilServiceSection> tasks){
+        for (Future<T> future : tasks.keySet()){
+            future.cancel(true);
+        }
     }
 
     @Override
