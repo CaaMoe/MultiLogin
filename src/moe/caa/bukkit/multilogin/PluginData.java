@@ -9,6 +9,7 @@ import moe.caa.bukkit.multilogin.yggdrasil.MLGameProfile;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -20,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PluginData {
-    public static Map<String, YggdrasilServiceSection> Services = new HashMap<>();
     public static final File configFile = new File(MultiLogin.INSTANCE.getDataFolder(), "config.yml");
     public static final File configSwapUuid = new File(MultiLogin.INSTANCE.getDataFolder(), "swap_uuid.json");
     public static final File configUser = new File(MultiLogin.INSTANCE.getDataFolder(), "user.json");
@@ -35,14 +35,14 @@ public class PluginData {
     private static void genFile() throws IOException {
         MultiLogin login = MultiLogin.INSTANCE;
         if(!login.getDataFolder().exists() && !login.getDataFolder().mkdirs()){
-            throw new IOException("无法创建配置文件夹: " + login.getDataFolder().getPath());
+            throw new IOException(String.format("无法创建配置文件夹: %s",  login.getDataFolder().getPath()));
         }
         MultiLogin.INSTANCE.saveDefaultConfig();
         if(!configSwapUuid.exists() && !configSwapUuid.createNewFile()){
-            throw new IOException("无法创建文件" + configSwapUuid.getPath());
+            throw new IOException(String.format("无法创建文件: %s", configSwapUuid.getPath()));
         }
         if(!configUser.exists() && !configUser.createNewFile()){
-            throw new IOException("无法创建文件" + configUser.getPath());
+            throw new IOException(String.format("无法创建文件: %s", configUser.getPath()));
         }
     }
 
@@ -56,14 +56,14 @@ public class PluginData {
         if(services != null){
             for(String path : services.getKeys(false)){
                 if(path.equalsIgnoreCase("official")){
-                    log.warning("请勿将official值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器将失效");
+                    log.warning("请勿将official值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
                     continue;
                 }
                 YggdrasilServiceSection section = YggdrasilServiceSection.fromYaml(path, services.getConfigurationSection(path));
                 if(section != null){
                     serviceSet.add(section);
                 } else {
-                    log.severe("无效的Yggdrasil验证服务器： " + path);
+                    log.severe(String.format("无效的Yggdrasil验证服务器： %s", path));
                 }
             }
         }
@@ -199,6 +199,10 @@ public class PluginData {
         return configurationConfig.getString("officialName", "Official");
     }
 
+    public static Set<YggdrasilServiceSection> getServiceSet() {
+        return serviceSet;
+    }
+
     private static YggdrasilServiceSection.ConvUuid getOfficialConvUuid(){
         try {
             YggdrasilServiceSection.ConvUuid ret;
@@ -235,13 +239,13 @@ public class PluginData {
             if (entry.getName().equalsIgnoreCase(name)) {
                 Player player = Bukkit.getPlayer(entry.getUuid());
                 if(player != null){
-                    player.kickPlayer("快爬");
+                    player.kickPlayer(configurationConfig.getString("msgDelWhitelistInGame"));
                 }
                 if(!entry.whitelist){
-                    return true;
+                    return false;
                 }
                 entry.whitelist = false;
-                return false;
+                return true;
             }
         }
         return cacWhitelist.remove(name);
@@ -253,24 +257,24 @@ public class PluginData {
         return ret;
     }
 
-    public static TextComponent getUserVerificationMessage(MLGameProfile profile){
+    public static String getUserVerificationMessage(MLGameProfile profile){
         String name = profile.getName();
         YggdrasilServiceSection yggServer = profile.getYggService();
         if(yggServer == null){
-            return new TextComponent("验证未通过，请重试！");
+            return configurationConfig.getString("msgNoAdopt");
         }
         UserEntry current = null;
 
         for(UserEntry entry : userMap){
             if(entry.getUuid().equals(profile.getId())){
                 if(!entry.getYggServer().equals(yggServer.getPath())){
-                    return new TextComponent("你只能通过指定的验证方式加入游戏！");
+                    return configurationConfig.getString("msgNoChae");
                 }
                 current = entry;
                 continue;
             }
             if(isNoRepeatedName() && entry.getName().equalsIgnoreCase(name)){
-                return new TextComponent("您的ID被抢注");
+                return configurationConfig.getString("msgRushName");
             }
         }
         if(current != null){
@@ -281,7 +285,7 @@ public class PluginData {
 
         if(isWhitelist()){
             if(!current.whitelist & !cacWhitelist.remove(name)){
-                return new TextComponent("你没有白名单，快爬");
+                return configurationConfig.getString("msgNoWhitelist");
             }
             current.whitelist = true;
         }
@@ -296,6 +300,10 @@ public class PluginData {
             }
         }
         return null;
+    }
+
+    public static Configuration getConfigurationConfig() {
+        return configurationConfig;
     }
 
     static class UserEntry {

@@ -7,7 +7,6 @@ public class MLHasJoinedMinecraftServerResponse extends HasJoinedMinecraftServer
     private transient YggdrasilServiceSection yggService;
 
     public MLHasJoinedMinecraftServerResponse(){
-
     }
 
     public YggdrasilServiceSection getYggService() {

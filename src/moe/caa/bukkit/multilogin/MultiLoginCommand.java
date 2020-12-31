@@ -6,56 +6,76 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MultiLoginCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        if(commandSender.isOp() || commandSender.hasPermission("multilogin.multilogin")){
-            if(strings.length > 0){
-                if(strings[0].equalsIgnoreCase("query")){
-                    if(strings.length <= 2){
-                        executeQuery(commandSender, strings);
-                        return true;
-                    }
-                } else if(strings[0].equalsIgnoreCase("reload")){
-                    if(strings.length == 1){
-                        executeReload(commandSender);
-                        return true;
-                    }
+        if(strings.length > 0){
+            if(strings[0].equalsIgnoreCase("query")){
+                if(strings.length <= 2){
+                    executeQuery(commandSender, strings);
+                    return true;
+                }
+            } else if(strings[0].equalsIgnoreCase("reload")){
+                if(strings.length == 1){
+                    executeReload(commandSender);
+                    return true;
                 }
             }
-        } else {
-            commandSender.sendMessage("无权限");
         }
+        commandSender.sendMessage(PluginData.getConfigurationConfig().getString("msgInvCmd"));
         return true;
     }
 
     private void executeQuery(CommandSender commandSender, String[] strings) {
-        String s = strings.length == 2 ? strings[1] : ((commandSender instanceof Player) ? commandSender.getName() : null);
-        if(s != null){
-            PluginData.UserEntry entry = PluginData.getUserEntry(s);
-            if(entry != null){
-                // TODO
+        if (testPermission(commandSender, "multilogin.multilogin.query")) {
+            String s = strings.length == 2 ? strings[1] : ((commandSender instanceof Player) ? commandSender.getName() : null);
+            if(s != null){
+                PluginData.UserEntry entry = PluginData.getUserEntry(s);
+                if(entry != null){
+                    commandSender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgYDQuery"), s, entry.getYggServer()));
+                } else {
+                    commandSender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgYDQueryNoRel"), s));
+                }
             } else {
-
+                commandSender.sendMessage(PluginData.getConfigurationConfig().getString("msgNoPlayer"));
             }
-        } else {
-            commandSender.sendMessage("控制台不能执行当前命令");
         }
+
     }
 
     private void executeReload(CommandSender commandSender)  {
-        try {
-            PluginData.reloadConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (testPermission(commandSender, "multilogin.multilogin.reload")) {
+            try {
+                PluginData.reloadConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            commandSender.sendMessage(PluginData.getConfigurationConfig().getString("msgReload"));
         }
-        commandSender.sendMessage("已经重新加载");
+
     }
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+        if(commandSender.isOp() || commandSender.hasPermission("multilogin.multilogin.tab")){
+            if(strings.length == 1){
+                return Stream.of("query", "reload").filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    private boolean testPermission(CommandSender sender, String permission){
+        if(sender.isOp() || sender.hasPermission(permission)){
+            return true;
+        }
+        sender.sendMessage(PluginData.getConfigurationConfig().getString("msgNoPermission"));
+        return false;
     }
 }

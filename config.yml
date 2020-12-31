@@ -8,15 +8,17 @@
 services:
 
   # 插件标记名称，一旦设置请谨慎修改。
-  # official值为保留关键词，请勿应用于此标记名称上！
+  # official值为保留关键词，请勿应用于此标记名称上，否则应用无效！
   # 该标记作为识别用户的验证服务器，为系统标记.胡乱更改很有可能会导致系统无法验证身份。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
   littleSkin:
 
     # 验证服务器的别称，可以随意修改。
+    # 必填，不允许为空字符串。
     name: "LS皮肤站"
 
     # 验证服务器地址。
+    # 必填，不允许为空字符串。
     url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
     # 转换UUID
@@ -26,10 +28,12 @@ services:
     #   OFFLINE   -自动生成离线UUID（盗版UUID）
     # 所有生成的结果均会缓存至swap_uuid.json中。
     # 该值的优先级低于swap_uuid.json文件内的值。
-    # 请谨慎设置该节点，避免增加日后维护的心智负担。
+    # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
+    # 必填，不允许为无效的值。
     convUuid: DEFAULT
 
 # 正版验证服务器的别称，可以随意修改。
+# 必填，不允许为空字符串
 officialName: "正版"
 
 
@@ -44,24 +48,28 @@ officialServices: true
 #   OFFLINE   -自动生成离线UUID（盗版UUID）
 # 所有生成的结果均会缓存至swap_uuid.json中。
 # 该值的优先级低于swap_uuid.json文件内的值。
-# 请谨慎设置该节点，避免增加日后维护的心智负担。
+# 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
+# 必填，不允许为无效的值。
 officialConvUuid: DEFAULT
 
 # 服务器内是否允许重名
-# 判定规则：服务器将会记录并且缓存玩家的登入数据，并更新账户的name，当有新老玩家登入到游戏中，系统会判断玩家的name是否被其他缓存用户占用。
+# 判定规则：服务器将会记录并且缓存玩家的登入数据，并更新账户的name，当有玩家登入到游戏中，系统会首先判断玩家的name是否存在被其他缓存用户占用。
 #    如若被占用，系统将会拒绝他的登入请求，直到name可用为止。
 noRepeatedName: true
+
+# 设置验证服务器超时时间
+servicesTimeOut: 7000
 
 ##############
 #   Message
 ##############
 
-msgNoAdopt: "§c验证未能通过，请重新尝试"
+msgNoAdopt: "§c验证未能通过，请重试"
 msgNoChae: "§c您只能通过指定的验证方式登入游戏"
 msgRushName: "§c您的ID已被抢注，请重新设置您的ID"
 
-msgNoWhitelist: "§c您没有白名单"
-msgNoPermission: "§c你没有权限"
+msgNoWhitelist: "§c您没有登入到此服务器的白名单权限"
+msgNoPermission: "§c你没有权限使用这条指令"
 msgInvCmd: "§c无效的命令"
 msgAddWhitelist: "§a已将%s添加至白名单"
 msgAddWhitelistAlready: "§c请勿重复将%s添加至白名单"
@@ -73,8 +81,10 @@ msgOpenWhitelistAlready: "§c请勿重复开启白名单"
 msgCloseWhitelist: "§a已关闭白名单"
 msgCloseWhitelistAlready: "§c请勿重复关闭白名单"
 msgWhitelistListNoth: "§c白名单内没有玩家"
-msgWhitelistListN: "§白名单内一共有%d名玩家：%s"
+msgWhitelistListN: "§f白名单内一共有%d名玩家：%s"
 
 msgYDQuery: "§f玩家 §e%s §f使用的登入方式为 %s"
+msgYDQueryNoRel: "§c没有查询到记录 %s"
+
 msgReload: "§a已重新加载配置文件"
 msgNoPlayer: "§c你不是一名实体玩家"

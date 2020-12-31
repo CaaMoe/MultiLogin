@@ -42,9 +42,10 @@ public class MLYggdrasilAuthenticationService extends YggdrasilAuthenticationSer
 
     @Override
     public <T extends Response> T makeRequest(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
+        if(classOfT != MLHasJoinedMinecraftServerResponse.class) return makeRequest0(url, input, classOfT);
         T ret = null;
         boolean down = false;
-        Map<Future<T>, YggdrasilServiceSection> tasks = new HashMap();
+        Map<Future<T>, YggdrasilServiceSection> tasks = new HashMap<>();
         String arg = null;
         for(String s : url.toString().split("/")){
             if(s.startsWith("hasJoined?")){
@@ -56,7 +57,7 @@ public class MLYggdrasilAuthenticationService extends YggdrasilAuthenticationSer
             tasks.put(task, YggdrasilServiceSection.OFFICIAL);
         }
         String finalArg = arg;
-        for(YggdrasilServiceSection section : PluginData.Services.values()){
+        for(YggdrasilServiceSection section : PluginData.getServiceSet()){
             Future<T> task = Bukkit.getScheduler().callSyncMethod(ML, () -> this.makeRequest0(section.buildUrl(finalArg), input, classOfT));
             tasks.put(task, section);
         }
