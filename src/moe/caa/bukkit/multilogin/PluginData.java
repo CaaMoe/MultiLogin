@@ -73,7 +73,7 @@ public class PluginData {
         }
         if (isOfficialYgg()) {
             log.info("已设置启用正版验证");
-            YggdrasilServiceSection.OFFICIAL = new YggdrasilServiceSection("official", getOfficialName(), "", getOfficialConvUuid(), false);
+            YggdrasilServiceSection.OFFICIAL = new YggdrasilServiceSection("official", getOfficialName(), "", getOfficialConvUuid(),isOfficialYggWhitelist(), false);
         } else {
             log.info("已设置不启用正版验证");
         }
@@ -220,6 +220,10 @@ public class PluginData {
         return configurationConfig.getBoolean("officialServices", true);
     }
 
+    public static boolean isOfficialYggWhitelist() {
+        return configurationConfig.getBoolean("officialServices", true);
+    }
+
     public static long getTimeOut(){
         return configurationConfig.getLong("servicesTimeOut", 7000);
     }
@@ -322,6 +326,9 @@ public class PluginData {
             }
             current.whitelist = true;
         }
+        if(yggServer.isWhitelist() && !current.isWhitelist()){
+            return configurationConfig.getString("msgNoWhitelist");
+        }
         userMap.add(current);
         return null;
     }
@@ -361,6 +368,15 @@ public class PluginData {
         }
 
         public String getYggServer() {
+            return yggServer;
+        }
+
+        public String getYggServerDisplayName() {
+            for(YggdrasilServiceSection section : serviceSet){
+                if(section.getPath().equals(yggServer)){
+                    return section.getName();
+                }
+            }
             return yggServer;
         }
 

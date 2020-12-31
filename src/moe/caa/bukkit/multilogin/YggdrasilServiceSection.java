@@ -14,12 +14,14 @@ public class YggdrasilServiceSection {
     private final String name;
     private final String url;
     private final YggdrasilServiceSection.ConvUuid convUuid;
+    private final boolean whitelist;
 
-    public YggdrasilServiceSection(String path, String name, String url, YggdrasilServiceSection.ConvUuid convUuid, boolean logger) {
+    public YggdrasilServiceSection(String path, String name, String url, YggdrasilServiceSection.ConvUuid convUuid,boolean whitelist, boolean logger) {
         this.name = name;
         this.url = url;
         this.convUuid = convUuid;
         this.path = path;
+        this.whitelist = whitelist;
         if(logger){
             Logger log = MultiLogin.INSTANCE.getLogger();
             log.info(String.format("添加Yggdrasil验证服务器: %s, URL: %s", name, url));
@@ -33,12 +35,14 @@ public class YggdrasilServiceSection {
             String url = section.getString("url");
             String convUuid = section.getString("convUuid");
             YggdrasilServiceSection.ConvUuid convUuidEnum = null;
+            boolean whitelist = true;
             try {
                 convUuidEnum = YggdrasilServiceSection.ConvUuid.valueOf(convUuid);
+                whitelist = section.getBoolean("whitelist");
             } catch (Exception ignore){
             }
             if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(url) && convUuidEnum != null){
-                return new YggdrasilServiceSection(path, name, url, convUuidEnum, true);
+                return new YggdrasilServiceSection(path, name, url, convUuidEnum,whitelist, true);
             }
 
         }
@@ -59,6 +63,10 @@ public class YggdrasilServiceSection {
 
     public ConvUuid getConvUuid() {
         return convUuid;
+    }
+
+    public boolean isWhitelist() {
+        return whitelist;
     }
 
     public boolean checkUrl(){

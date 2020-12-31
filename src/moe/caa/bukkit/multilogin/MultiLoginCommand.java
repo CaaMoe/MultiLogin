@@ -37,7 +37,7 @@ public class MultiLoginCommand implements TabExecutor {
             if(s != null){
                 PluginData.UserEntry entry = PluginData.getUserEntry(s);
                 if(entry != null){
-                    commandSender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgYDQuery"), s, entry.getYggServer()));
+                    commandSender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgYDQuery"), s, entry.getYggServerDisplayName()));
                 } else {
                     commandSender.sendMessage(String.format(PluginData.getConfigurationConfig().getString("msgYDQueryNoRel"), s));
                 }

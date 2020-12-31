@@ -44,7 +44,6 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
 
         URL url;
         url = HttpAuthenticationService.concatenateURL(checkUrl, HttpAuthenticationService.buildQuery(arguments));
-        System.out.println(url);
 
         try {
             MLHasJoinedMinecraftServerResponse response = ((MLMultiYggdrasilAuthenticationService) this.getAuthenticationService()).makeRequest(url, null, MLHasJoinedMinecraftServerResponse.class);
