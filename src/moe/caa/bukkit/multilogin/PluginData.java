@@ -221,7 +221,7 @@ public class PluginData {
     }
 
     public static boolean isOfficialYggWhitelist() {
-        return configurationConfig.getBoolean("officialServices", true);
+        return configurationConfig.getBoolean("officialServicesWhitelist", true);
     }
 
     public static long getTimeOut(){
@@ -303,7 +303,7 @@ public class PluginData {
         UserEntry current = null;
 
         for(UserEntry entry : userMap){
-            if(entry.getUuid().equals(profile.getId())){
+            if(entry.getUuid().equals(profile.getOnlineUuid())){
                 if(!entry.getYggServer().equals(yggServer.getPath())){
                     return configurationConfig.getString("msgNoChae");
                 }
@@ -317,7 +317,7 @@ public class PluginData {
         if(current != null){
             current.setName(name);
         } else {
-            current = new UserEntry(profile.getId(), name, yggServer.getPath(), false);
+            current = new UserEntry(profile.getOnlineUuid(), name, yggServer.getPath(), false);
         }
 
         if(isWhitelist()){

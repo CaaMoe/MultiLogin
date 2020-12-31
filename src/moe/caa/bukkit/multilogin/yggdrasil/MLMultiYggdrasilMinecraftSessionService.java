@@ -7,10 +7,8 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.yggdrasil.YggdrasilMinecraftSessionService;
 import moe.caa.bukkit.multilogin.PluginData;
 
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
@@ -19,13 +17,10 @@ import java.util.UUID;
 
 public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
     private MinecraftSessionService vanService;
-    private final Class YggdrasilMinecraftSessionServiceClass = YggdrasilMinecraftSessionService.class;
-    private final Field field = YggdrasilMinecraftSessionServiceClass.getDeclaredField("checkUrl");
-    private URL checkUrl;
+    private final URL CHECK_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
 
     protected MLMultiYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) throws NoSuchFieldException {
         super(authenticationService);
-        field.setAccessible(true);
     }
 
     @Override
@@ -43,14 +38,13 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
         }
 
         URL url;
-        url = HttpAuthenticationService.concatenateURL(checkUrl, HttpAuthenticationService.buildQuery(arguments));
+        url = HttpAuthenticationService.concatenateURL(CHECK_URL, HttpAuthenticationService.buildQuery(arguments));
 
         try {
             MLHasJoinedMinecraftServerResponse response = ((MLMultiYggdrasilAuthenticationService) this.getAuthenticationService()).makeRequest(url, null, MLHasJoinedMinecraftServerResponse.class);
-            System.out.println(response);
             if (response != null && response.getId() != null) {
                 UUID swap = PluginData.getSwapUUID(response.getId(), response.getYggService(), gameProfile.getName());
-                GameProfile result = new MLGameProfile(swap, gameProfile.getName(), response.getYggService());
+                GameProfile result = new MLGameProfile(response.getId(), swap, gameProfile.getName(), response.getYggService());
                 if (response.getProperties() != null) {
                     result.getProperties().putAll(response.getProperties());
                 }
@@ -78,6 +72,5 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
 
     public void setVanService(MinecraftSessionService vanService) throws IllegalAccessException {
         this.vanService = vanService;
-        this.checkUrl = (URL) field.get(vanService);
     }
 }
