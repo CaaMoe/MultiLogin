@@ -342,6 +342,22 @@ public class PluginData {
         return null;
     }
 
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
+
+    public static boolean isBlank(String str) {
+        int strLen;
+        if (str != null && (strLen = str.length()) != 0) {
+            for (int i = 0; i < strLen; ++i) {
+                if (!Character.isWhitespace(str.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static Configuration getConfigurationConfig() {
         return configurationConfig;
     }
@@ -409,7 +425,7 @@ public class PluginData {
                     String name = root.get("name").getAsString();
                     String yggServer = root.get("yggServer").getAsString();
                     boolean whitelist = root.get("whitelist").getAsBoolean();
-                    if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(yggServer)){
+                    if(!PluginData.isEmpty(name) && !PluginData.isEmpty(yggServer)){
                         return new UserEntry(uuid, name, yggServer, whitelist);
                     }
                 }

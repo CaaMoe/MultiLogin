@@ -17,7 +17,6 @@ import moe.caa.bukkit.multilogin.MultiLogin;
 import moe.caa.bukkit.multilogin.PluginData;
 import moe.caa.bukkit.multilogin.YggdrasilServiceSection;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -50,7 +49,7 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
             T result = gson.fromJson(jsonResult, classOfT);
             if (result == null) {
                 return null;
-            } else if (StringUtils.isNotBlank(result.getError())) {
+            } else if (!PluginData.isBlank(result.getError())) {
                 if ("UserMigratedException".equals(result.getCause())) {
                     throw new UserMigratedException(result.getErrorMessage());
                 } else if ("ForbiddenOperationException".equals(result.getError())) {

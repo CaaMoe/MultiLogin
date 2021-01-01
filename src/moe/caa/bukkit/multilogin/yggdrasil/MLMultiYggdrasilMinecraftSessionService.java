@@ -28,7 +28,10 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
         vanService.joinServer(gameProfile, s, s1);
     }
 
-    @Override
+    public GameProfile hasJoinedServer(GameProfile gameProfile, String s) throws AuthenticationUnavailableException {
+        return hasJoinedServer(gameProfile, s, null);
+    }
+
     public GameProfile hasJoinedServer(GameProfile gameProfile, String s, InetAddress inetAddress) throws AuthenticationUnavailableException {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", gameProfile.getName());
@@ -70,7 +73,7 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
         return vanService.fillProfileProperties(gameProfile, b);
     }
 
-    public void setVanService(MinecraftSessionService vanService) throws IllegalAccessException {
+    public void setVanService(MinecraftSessionService vanService) {
         this.vanService = vanService;
     }
 }

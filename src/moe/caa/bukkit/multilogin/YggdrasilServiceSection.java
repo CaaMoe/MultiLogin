@@ -41,7 +41,7 @@ public class YggdrasilServiceSection {
                 whitelist = section.getBoolean("whitelist");
             } catch (Exception ignore){
             }
-            if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(url) && convUuidEnum != null){
+            if(!PluginData.isEmpty(name) && !PluginData.isEmpty(url) && convUuidEnum != null){
                 return new YggdrasilServiceSection(path, name, url, convUuidEnum,whitelist, true);
             }
 
