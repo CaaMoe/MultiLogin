@@ -74,6 +74,10 @@ public final class MultiLogin extends JavaPlugin implements Runnable{
         }
     }
 
+    private void update(){
+
+    }
+
     public static void main(String[] args) {
 
     }
