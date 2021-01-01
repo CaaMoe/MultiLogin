@@ -94,10 +94,10 @@ public final class MultiLogin extends JavaPlugin{
         if(preV == null && CURRENT_PRE_VERSION){
             return true;
         }
-        if(preV != null && CURRENT_PRE_VERSION && !preV.equalsIgnoreCase(getCurrentV())){
+        if(preV != null && CURRENT_PRE_VERSION && !preV.endsWith(getCurrentV())){
             return true;
         }
-        if(relV != null && !CURRENT_PRE_VERSION && !relV.equalsIgnoreCase(getCurrentV())){
+        if(relV != null && !CURRENT_PRE_VERSION && !relV.endsWith(getCurrentV())){
             return true;
         }
         return false;

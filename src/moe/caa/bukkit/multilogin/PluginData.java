@@ -98,6 +98,7 @@ public class PluginData {
         testMsg(log, "msgYDQueryNoRel" ,"null");
         testMsg(log, "msgReload");
         testMsg(log, "msgNoPlayer");
+        testMsg(log, "msgRushNameOnl");
     }
 
     public static UUID getSwapUUID(UUID uuid, YggdrasilServiceSection yggdrasilServiceSection, String name){
@@ -224,6 +225,10 @@ public class PluginData {
         return configurationConfig.getBoolean("officialServicesWhitelist", true);
     }
 
+    public static String getSafeIdService(){
+        return configurationConfig.getString("safeId", "");
+    }
+
     public static long getTimeOut(){
         return configurationConfig.getLong("servicesTimeOut", 7000);
     }
@@ -310,7 +315,7 @@ public class PluginData {
                 current = entry;
                 continue;
             }
-            if(isNoRepeatedName() && entry.getName().equalsIgnoreCase(name)){
+            if(isNoRepeatedName() && entry.getName().equalsIgnoreCase(name) && !getSafeIdService().equalsIgnoreCase(yggServer.getPath())){
                 return configurationConfig.getString("msgRushName");
             }
         }

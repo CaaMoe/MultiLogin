@@ -69,6 +69,13 @@ officialConvUuid: DEFAULT
 #    如若被占用，系统将会拒绝他的登入请求，直到name可用为止。
 noRepeatedName: true
 
+# 绝对的ID使用权
+# 当阻止重名生效时，通过此节点下定义的验证服务器验证的玩家都将享有绝对的ID使用权。
+# 即使用此节点所定义的验证服务器验证的用户，将会跳过重名检查，并且强制下线抢注者。
+# 抢注者若仍想登入游戏时必须更换游戏ID或等待当前ID有效。
+# 请不要轻易修改此节点，可能会导致一些莫名其妙的错误。
+safeId: ""
+
 # 设置验证服务器超时时间
 servicesTimeOut: 7000
 
@@ -79,6 +86,7 @@ servicesTimeOut: 7000
 msgNoAdopt: "§c验证未能通过，请重试"
 msgNoChae: "§c您只能通过指定的验证方式登入游戏"
 msgRushName: "§c您的ID已被抢注，请重新设置您的ID"
+msgRushNameOnl: "§c请重新设置您的ID！"
 
 msgNoWhitelist: "§c您没有登入到此服务器的白名单权限"
 msgNoPermission: "§c你没有权限使用这条指令"
