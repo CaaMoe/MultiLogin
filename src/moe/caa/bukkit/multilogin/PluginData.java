@@ -277,8 +277,9 @@ public class PluginData {
     }
 
     public static boolean removeWhitelist(String name){
+        UUID uuid = getUUID(name);
         for(UserEntry entry : userMap){
-            if (entry.getName().equalsIgnoreCase(name)) {
+            if (entry.getName().equalsIgnoreCase(name) || (uuid != null && uuid.equals(entry.uuid))) {
                 Player player = Bukkit.getPlayer(entry.getUuid());
                 if(player != null && isWhitelist()){
                     player.kickPlayer(configurationConfig.getString("msgDelWhitelistInGame"));
@@ -301,7 +302,7 @@ public class PluginData {
 
     public static String getUserVerificationMessage(MLGameProfile profile){
         String name = profile.getName();
-        UUID uuid = profile.getId();
+        UUID uuid = profile.getOnlineUuid();
         YggdrasilServiceSection yggServer = profile.getYggService();
         if(yggServer == null){
             return configurationConfig.getString("msgNoAdopt");
@@ -327,12 +328,13 @@ public class PluginData {
         }
 
         if(isWhitelist()){
-            if(!current.whitelist & (!cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
+            if(!current.whitelist & !(cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
                 return configurationConfig.getString("msgNoWhitelist");
             }
             current.whitelist = true;
         }
-        if(yggServer.isWhitelist() && !current.isWhitelist() & (!cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
+
+        if(!current.whitelist & yggServer.isWhitelist() & !(cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
             return configurationConfig.getString("msgNoWhitelist");
         }
         userMap.add(current);
@@ -362,6 +364,14 @@ public class PluginData {
             }
         }
         return true;
+    }
+
+    public static UUID getUUID(String s){
+        try {
+            return UUID.fromString(s);
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     public static Configuration getConfigurationConfig() {

@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public final class MultiLogin extends JavaPlugin{
     public static MultiLogin INSTANCE;
