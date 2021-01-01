@@ -90,6 +90,9 @@ public final class MultiLogin extends JavaPlugin{
     }
 
     public boolean isUpdate(){
+        if(preV == null && relV == null){
+            return false;
+        }
         if(preV == null && CURRENT_PRE_VERSION){
             return true;
         }
