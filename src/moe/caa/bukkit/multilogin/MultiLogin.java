@@ -135,6 +135,9 @@ public final class MultiLogin extends JavaPlugin{
             this.preV = preV;
             this.relV = relV;
         } catch (Exception ignore){}
+    }
+
+    public static void main(String[] args) {
 
     }
 }
