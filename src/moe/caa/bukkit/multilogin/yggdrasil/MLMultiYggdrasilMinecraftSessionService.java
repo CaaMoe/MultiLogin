@@ -7,13 +7,19 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import moe.caa.bukkit.multilogin.MultiLogin;
 import moe.caa.bukkit.multilogin.PluginData;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
     private MinecraftSessionService vanService;
@@ -50,6 +56,24 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
                 GameProfile result = new MLGameProfile(response.getId(), swap, gameProfile.getName(), response.getYggService());
                 if (response.getProperties() != null) {
                     result.getProperties().putAll(response.getProperties());
+                }
+
+                // 在验证通过此处踢掉恶意抢注ID者
+                FutureTask<Object> task = new FutureTask<>(() -> {
+                    if (PluginData.isNoRepeatedName() && response.getYggService().getPath().equalsIgnoreCase(PluginData.getSafeIdService())) {
+                        String name = gameProfile.getName();
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (player.getName().equalsIgnoreCase(name)) {
+                                player.kickPlayer(PluginData.getConfigurationConfig().getString("msgRushNameOnl"));
+                            }
+                        }
+                    }
+                    return null;
+                });
+                Bukkit.getScheduler().runTask(MultiLogin.INSTANCE, task);
+                try {
+                    task.get();
+                } catch (Exception ignored) {
                 }
 
                 return result;

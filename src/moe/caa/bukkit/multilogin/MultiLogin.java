@@ -1,15 +1,13 @@
 package moe.caa.bukkit.multilogin;
 
 import com.google.gson.*;
-import io.netty.handler.codec.base64.Base64Decoder;
 import moe.caa.bukkit.multilogin.listener.BukkitListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import sun.misc.BASE64Decoder;
 
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Base64;
 import java.util.Map;
 import java.util.Set;
 

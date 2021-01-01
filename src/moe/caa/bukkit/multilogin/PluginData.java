@@ -301,6 +301,7 @@ public class PluginData {
 
     public static String getUserVerificationMessage(MLGameProfile profile){
         String name = profile.getName();
+        UUID uuid = profile.getId();
         YggdrasilServiceSection yggServer = profile.getYggService();
         if(yggServer == null){
             return configurationConfig.getString("msgNoAdopt");
@@ -326,12 +327,12 @@ public class PluginData {
         }
 
         if(isWhitelist()){
-            if(!current.whitelist & !cacWhitelist.remove(name)){
+            if(!current.whitelist & (!cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
                 return configurationConfig.getString("msgNoWhitelist");
             }
             current.whitelist = true;
         }
-        if(yggServer.isWhitelist() && !current.isWhitelist() & !cacWhitelist.remove(name)){
+        if(yggServer.isWhitelist() && !current.isWhitelist() & (!cacWhitelist.remove(name) | cacWhitelist.remove(uuid.toString()))){
             return configurationConfig.getString("msgNoWhitelist");
         }
         userMap.add(current);

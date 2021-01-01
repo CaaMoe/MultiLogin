@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationService {
     private HttpAuthenticationService vanService;
@@ -77,12 +78,14 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
             }
         }
         if(PluginData.isOfficialYgg()){
-            Future<T> task = Bukkit.getScheduler().callSyncMethod(MultiLogin.INSTANCE, () -> this.makeRequest0(url, input, classOfT));
+            FutureTask<T> task = new FutureTask<T>(()-> this.makeRequest0(url, input, classOfT));
+            Bukkit.getScheduler().runTaskAsynchronously(MultiLogin.INSTANCE, task);
             tasks.put(task, YggdrasilServiceSection.OFFICIAL);
         }
         String finalArg = arg;
         for(YggdrasilServiceSection section : PluginData.getServiceSet()){
-            Future<T> task = Bukkit.getScheduler().callSyncMethod(MultiLogin.INSTANCE, () -> this.makeRequest0(section.buildUrl(finalArg), input, classOfT));
+            FutureTask<T> task = new FutureTask<T>(()-> this.makeRequest0(section.buildUrl(finalArg), input, classOfT));
+            Bukkit.getScheduler().runTaskAsynchronously(MultiLogin.INSTANCE, task);
             tasks.put(task, section);
         }
 
