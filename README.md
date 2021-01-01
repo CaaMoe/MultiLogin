@@ -25,6 +25,7 @@
             /Multilogin query [target]                        // 查询target（可以是离线玩家）是通过何种方式登入的游戏
             /Multilogin reload                                   // 重新加载配置文件
 ### 权限
+            multilogin.update                                       // 接收新版本通知
             multilogin.whitelist.tab                               // 自动补全Whitelist命令参数所需要的权限
             multilogin.whitelist.add                              // 使用命令Whitelist add命令所需的权限
             multilogin.whitelist.remove                         // 使用命令Whitelist remove命令所需的权限
