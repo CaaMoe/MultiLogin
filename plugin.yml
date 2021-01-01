@@ -1,6 +1,6 @@
 name: MultiLogin
 main: moe.caa.bukkit.multilogin.MultiLogin
-version: v1.0-BETA.4
+version: 1.0-BETA.4
 commands:
   whitelist:
   multilogin:
