@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MultiLoginBukkit.iml" filepath="$PROJECT_DIR$/MultiLoginBukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MultiLogin.iml" filepath="$PROJECT_DIR$/MultiLogin.iml" />
     </modules>
   </component>
 </project>

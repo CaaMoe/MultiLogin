@@ -1,4 +1,4 @@
-# MultiLoginBukkit
+# MultiLogin
 这是一款高版本可用的外置登入插件，理论上支持Paper 1.8+版本。\
 已测试通过的Paper版本号为paper-1.8.8-443、paper-1.9.4-773、paper-1.10.2-916、paper-1.11.2-1104、paper-1.12.2-1618、Paper-1.13.2-655、Paper-1.14.4-243、Paper-1.15.2-391、Paper-1.16.4-354\
 该插件通过使用反射修改NMS内容从而达到实现多Yggdrasil共存的效果。
