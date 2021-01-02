@@ -1,7 +1,7 @@
-package moe.caa.bukkit.multilogin;
+package moe.caa.multilogin.bukkit;
 
 import com.google.gson.*;
-import moe.caa.bukkit.multilogin.listener.BukkitListener;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import org.bukkit.plugin.java.JavaPlugin;
 import sun.misc.BASE64Decoder;
 
@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public final class MultiLogin extends JavaPlugin{
     public static MultiLogin INSTANCE;

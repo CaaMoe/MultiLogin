@@ -1,7 +1,7 @@
-package moe.caa.bukkit.multilogin.yggdrasil;
+package moe.caa.multilogin.bukkit.yggdrasil;
 
 import com.mojang.authlib.GameProfile;
-import moe.caa.bukkit.multilogin.YggdrasilServiceSection;
+import moe.caa.multilogin.bukkit.YggdrasilServiceSection;
 
 import java.util.UUID;
 

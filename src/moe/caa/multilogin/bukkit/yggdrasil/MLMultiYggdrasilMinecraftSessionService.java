@@ -1,4 +1,4 @@
-package moe.caa.bukkit.multilogin.yggdrasil;
+package moe.caa.multilogin.bukkit.yggdrasil;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.HttpAuthenticationService;
@@ -7,8 +7,8 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import moe.caa.bukkit.multilogin.MultiLogin;
-import moe.caa.bukkit.multilogin.PluginData;
+import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.bukkit.MultiLogin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -17,8 +17,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
 public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {

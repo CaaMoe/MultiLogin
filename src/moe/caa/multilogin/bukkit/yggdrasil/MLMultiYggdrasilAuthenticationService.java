@@ -1,4 +1,4 @@
-package moe.caa.bukkit.multilogin.yggdrasil;
+package moe.caa.multilogin.bukkit.yggdrasil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -13,9 +13,9 @@ import com.mojang.authlib.exceptions.UserMigratedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.Response;
-import moe.caa.bukkit.multilogin.MultiLogin;
-import moe.caa.bukkit.multilogin.PluginData;
-import moe.caa.bukkit.multilogin.YggdrasilServiceSection;
+import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.bukkit.MultiLogin;
+import moe.caa.multilogin.bukkit.YggdrasilServiceSection;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

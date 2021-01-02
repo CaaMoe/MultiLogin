@@ -1,11 +1,11 @@
-package moe.caa.bukkit.multilogin;
+package moe.caa.multilogin.bukkit;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import moe.caa.bukkit.multilogin.yggdrasil.MLGameProfile;
-import moe.caa.bukkit.multilogin.yggdrasil.MLMultiYggdrasilAuthenticationService;
-import moe.caa.bukkit.multilogin.yggdrasil.MLMultiYggdrasilMinecraftSessionService;
+import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
+import moe.caa.multilogin.bukkit.yggdrasil.MLMultiYggdrasilAuthenticationService;
+import moe.caa.multilogin.bukkit.yggdrasil.MLMultiYggdrasilMinecraftSessionService;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

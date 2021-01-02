@@ -1,7 +1,6 @@
 <component name="libraryTable">
-  <library name="ProtocolLib">
+  <library name="patched_1.16.1">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../../Java api/ProtocolLib.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../Java api/patched_1.16.1.jar!/" />
     </CLASSES>
     <JAVADOC />

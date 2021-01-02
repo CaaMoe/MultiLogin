@@ -1,7 +1,7 @@
-package moe.caa.bukkit.multilogin.yggdrasil;
+package moe.caa.multilogin.bukkit.yggdrasil;
 
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
-import moe.caa.bukkit.multilogin.YggdrasilServiceSection;
+import moe.caa.multilogin.bukkit.YggdrasilServiceSection;
 
 public class MLHasJoinedMinecraftServerResponse extends HasJoinedMinecraftServerResponse {
     private transient YggdrasilServiceSection yggService;

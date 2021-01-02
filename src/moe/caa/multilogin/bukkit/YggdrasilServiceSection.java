@@ -1,6 +1,5 @@
-package moe.caa.bukkit.multilogin;
+package moe.caa.multilogin.bukkit;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.net.MalformedURLException;

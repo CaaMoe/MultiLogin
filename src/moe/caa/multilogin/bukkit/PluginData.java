@@ -1,13 +1,11 @@
-package moe.caa.bukkit.multilogin;
+package moe.caa.multilogin.bukkit;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
-import moe.caa.bukkit.multilogin.yggdrasil.MLGameProfile;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang.StringUtils;
+import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;

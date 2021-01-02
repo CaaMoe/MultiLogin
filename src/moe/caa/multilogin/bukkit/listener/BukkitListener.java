@@ -1,9 +1,9 @@
-package moe.caa.bukkit.multilogin.listener;
+package moe.caa.multilogin.bukkit.listener;
 
-import moe.caa.bukkit.multilogin.MultiLogin;
-import moe.caa.bukkit.multilogin.NMSUtil;
-import moe.caa.bukkit.multilogin.PluginData;
-import moe.caa.bukkit.multilogin.yggdrasil.MLGameProfile;
+import moe.caa.multilogin.bukkit.NMSUtil;
+import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.bukkit.MultiLogin;
+import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,15 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class BukkitListener implements Listener {
 
     @SuppressWarnings("all")
     @EventHandler(ignoreCancelled = true)
     private void onLogin(PlayerLoginEvent event){
         try {
-            String text = PluginData.getUserVerificationMessage((MLGameProfile)NMSUtil.getGameProfile(event.getPlayer()));
+            String text = PluginData.getUserVerificationMessage((MLGameProfile) NMSUtil.getGameProfile(event.getPlayer()));
             if(text != null){
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage(text);
