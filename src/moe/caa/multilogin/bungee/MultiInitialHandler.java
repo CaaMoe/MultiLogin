@@ -8,6 +8,7 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -98,36 +99,42 @@ public class MultiInitialHandler extends InitialHandler{
 
             if (PluginData.isOfficialYgg()) {
                 String authURL = String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg);
-                Callback<String> call = (s, e) ->{
-                    if(e == null){
-                        LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
-                        if(resultObj != null && resultObj.getId() != null){
-                            ygg.set(tasks.get(this));
-                            result.set(resultObj);
+                Callback<String> call = new Callback<String>() {
+                    @Override
+                    public void done(String s, Throwable throwable) {
+                        if(throwable == null){
+                            LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
+                            if(resultObj != null && resultObj.getId() != null){
+                                ygg.set(tasks.get(this));
+                                result.set(resultObj);
+                            }
+                        } else {
+                            down.set(true);
                         }
-                    } else {
-                        down.set(true);
+                        tasks.remove(this);
                     }
-                    tasks.remove(this);
                 };
                 tasks.put(call, YggdrasilServiceSection.OFFICIAL);
                 HttpClient.get(authURL, ch.getHandle().eventLoop(), call);
             }
             for(YggdrasilServiceSection section : PluginData.getServiceSet()){
                 String url = section.buildUrlStr(arg);
-                Callback<String> call = (s, e) ->{
-                    if(e == null){
-                        LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
-                        if(resultObj != null && resultObj.getId() != null){
-                            ygg.set(tasks.get(this));
-                            result.set(resultObj);
+                Callback<String> call = new Callback<String>() {
+                    @Override
+                    public void done(String s, Throwable throwable) {
+                        if(throwable == null){
+                            LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
+                            if(resultObj != null && resultObj.getId() != null){
+                                ygg.set(tasks.get(this));
+                                result.set(resultObj);
+                            }
+                        } else {
+                            down.set(true);
                         }
-                    } else {
-                        down.set(true);
+                        tasks.remove(this);
                     }
-                    tasks.remove(this);
                 };
-                tasks.put(call, YggdrasilServiceSection.OFFICIAL);
+                tasks.put(call, section);
                 HttpClient.get(url, ch.getHandle().eventLoop(), call);
             }
 
@@ -136,7 +143,7 @@ public class MultiInitialHandler extends InitialHandler{
                 while(time > System.currentTimeMillis() && tasks.size() != 0){
                     if(result.get() != null){
                         try {
-                            UUID onlineId = UUID.fromString(result.get().getId());
+                            UUID onlineId = Util.getUUID(result.get().getId());
                             String text = PluginData.getUserVerificationMessage(onlineId, result.get().getName(), ygg.get());
                             if(text == null){
                                 if (PluginData.isNoRepeatedName() && ygg.get().getPath().equalsIgnoreCase(PluginData.getSafeIdService())) {
@@ -154,18 +161,20 @@ public class MultiInitialHandler extends InitialHandler{
                                 FINISH.invoke(vanHandle);
                                 return;
                             } else {
-                                disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                                vanHandle.disconnect(new TextComponent(text));
+                                return;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                            vanHandle.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                            return;
                         }
                     }
                 }
                 if(down.get()){
-                    disconnect(BUNGEE.getTranslation("mojang_fail"));
+                    vanHandle.disconnect(BUNGEE.getTranslation("mojang_fail"));
                 } else {
-                    disconnect(BUNGEE.getTranslation("offline_mode_player"));
+                    vanHandle.disconnect(BUNGEE.getTranslation("offline_mode_player"));
                 }
             });
         }

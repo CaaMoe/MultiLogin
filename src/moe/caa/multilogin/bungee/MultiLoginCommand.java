@@ -3,14 +3,10 @@ package moe.caa.multilogin.bungee;
 import moe.caa.multilogin.core.PluginData;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import org.bukkit.entity.Player;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class MultiLoginCommand extends Command {
 
@@ -52,7 +48,7 @@ public class MultiLoginCommand extends Command {
 
     private void executeQuery(CommandSender commandSender, String[] strings) {
         if (testPermission(commandSender, "multilogin.multilogin.query")) {
-            String s = strings.length == 2 ? strings[1] : ((commandSender instanceof Player) ? commandSender.getName() : null);
+            String s = strings.length == 2 ? strings[1] : ((commandSender instanceof ProxiedPlayer) ? commandSender.getName() : null);
             if(s != null){
                 PluginData.UserEntry entry = PluginData.getUserEntry(s);
                 if(entry != null){

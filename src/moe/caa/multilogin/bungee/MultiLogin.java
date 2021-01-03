@@ -31,6 +31,8 @@ public class MultiLogin extends Plugin implements IPlugin {
         configFile = new File(this.getPluginDataFolder(), "config.yml");
         MultiCore.setPlugin(this);
         BungeeCord.getInstance().getPluginManager().registerListener(this, new BungeeListener());
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new WhitelistCommand());
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand());
     }
 
     @Override
