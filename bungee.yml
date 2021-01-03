@@ -1,3 +1,4 @@
 name: MultiLogin
-version: 0
+version: 1.0-BETA.7
 main: moe.caa.multilogin.bungee.MultiLogin
+author: CaaMoe
