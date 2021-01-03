@@ -4,14 +4,12 @@ import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.PluginData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.UUID;
@@ -32,16 +30,6 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
         }
 
         try {
-            PluginData.reloadConfig();
-            PluginData.readData();
-        } catch (IOException e) {
-            e.printStackTrace();
-            getLogger().severe("无法读取配置或数据文件，请检查！");
-            setEnabled(false);
-            return;
-        }
-
-        try {
             NMSUtil.initService(this);
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,29 +45,14 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
         MultiLoginCommand command1 = new MultiLoginCommand();
         getCommand("multilogin").setTabCompleter(command1);
         getCommand("multilogin").setExecutor(command1);
-
-
-        runTaskAsyncTimer(this::save, 0, 20 * 60);
-
         getLogger().info("插件已加载");
     }
 
-
     @Override
     public void onDisable() {
-        save();
+        MultiCore.save();
         getServer().shutdown();
     }
-
-    private void save(){
-        try {
-            PluginData.saveData();
-        } catch (IOException e) {
-            getLogger().severe("无法保存数据文件");
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     public File getPluginDataFolder() {
@@ -137,5 +110,10 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
     @Override
     public String getVersion() {
         return getDescription().getVersion();
+    }
+
+    @Override
+    public void setPluginEnabled(boolean b) {
+        setEnabled(b);
     }
 }

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public interface IPlugin {
 
     void reloadPluginConfig();
 
-    IConfiguration yamlLoadConfiguration(InputStreamReader reader);
+    IConfiguration yamlLoadConfiguration(InputStreamReader reader) throws IOException;
 
     InputStream getPluginResource(String path);
 
@@ -28,4 +29,6 @@ public interface IPlugin {
     void runTaskAsyncTimer(Runnable run, long delay, long per);
 
     String getVersion();
+
+    void setPluginEnabled(boolean b);
 }

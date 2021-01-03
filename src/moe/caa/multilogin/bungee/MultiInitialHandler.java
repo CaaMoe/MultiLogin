@@ -43,8 +43,6 @@ public class MultiInitialHandler extends InitialHandler{
 
     private final Method FINISH = RefUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
 
-
-
     private final InitialHandler vanHandle;
 
     public MultiInitialHandler(BungeeCord bungee, ListenerInfo listener, InitialHandler vanHandle) throws ClassNotFoundException, NoSuchFieldException {

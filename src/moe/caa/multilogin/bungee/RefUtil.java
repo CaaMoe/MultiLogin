@@ -1,9 +1,17 @@
 package moe.caa.multilogin.bungee;
 
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.event.PreLoginEvent;
+import net.md_5.bungee.connection.InitialHandler;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class RefUtil {
+    private static final Class<PreLoginEvent> preLoginEventClass = PreLoginEvent.class;
+
     public static Field getField(Class clazz, Class target){
         for(Field field : clazz.getDeclaredFields()){
             if(field.getType() == target){
@@ -23,7 +31,7 @@ public class RefUtil {
     public static Method getMethod(Class clazz, String name, Class... args){
         for(Method method : clazz.getDeclaredMethods()){
             if(method.getName().equalsIgnoreCase(name)){
-                if(method.getParameterTypes() == args){
+                if(Arrays.equals(method.getParameterTypes(), args)){
                     return method;
                 }
             }
@@ -31,7 +39,7 @@ public class RefUtil {
         throw new IllegalArgumentException(name);
     }
 
-    public static Object getEnumIns(Class clazz,String name) throws IllegalAccessException {
+    public static Object getEnumIns(Class clazz,String name) {
         for (Object constant : clazz.getEnumConstants()) {
             if(constant.toString().equalsIgnoreCase(name)){
                 return constant;
@@ -40,7 +48,9 @@ public class RefUtil {
         throw new IllegalArgumentException(name);
     }
 
-    public static void initService() {
-
+    public static void modify(PreLoginEvent event) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+        Field modTar = getField(preLoginEventClass, PendingConnection.class);
+        PendingConnection vanHandle = (PendingConnection) modTar.get(event);
+        modTar.set(event, new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), (InitialHandler) vanHandle));
     }
 }

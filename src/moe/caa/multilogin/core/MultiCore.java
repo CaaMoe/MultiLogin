@@ -3,6 +3,7 @@ package moe.caa.multilogin.core;
 import com.google.gson.*;
 import sun.misc.BASE64Decoder;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -23,18 +24,9 @@ public class MultiCore {
         return plugin.getPluginConfig();
     }
 
-    public static void saveDefaultConfig(){
-        plugin.savePluginDefaultConfig();
-    }
-
-    public static void reloadConfig(){
-        plugin.reloadPluginConfig();
-    }
-
-    public static IConfiguration yamlLoadConfiguration(InputStreamReader reader){
+    public static IConfiguration yamlLoadConfiguration(InputStreamReader reader) throws IOException {
         return plugin.yamlLoadConfiguration(reader);
     }
-
 
     public static InputStream getResource(String path){
         return plugin.getPluginResource(path);
@@ -52,6 +44,24 @@ public class MultiCore {
         MultiCore.plugin = plugin;
         plugin.runTaskAsyncTimer(MultiCore::update, 0, 20 * 60 * 60 * 12);
         plugin.runTaskAsyncLater(MultiCore::setUpUpdate, 0);
+        plugin.runTaskAsyncTimer(MultiCore::save, 0, 20 * 60);
+        try {
+            PluginData.reloadConfig();
+            PluginData.readData();
+        } catch (IOException e) {
+            e.printStackTrace();
+            plugin.getMLPluginLogger().severe("无法读取配置或数据文件，请检查！");
+            plugin.setPluginEnabled(false);
+        }
+    }
+
+    public static void save(){
+        try {
+            PluginData.saveData();
+        } catch (IOException e) {
+            plugin.getMLPluginLogger().severe("无法保存数据文件");
+            e.printStackTrace();
+        }
     }
 
     public static boolean isUpdate(){

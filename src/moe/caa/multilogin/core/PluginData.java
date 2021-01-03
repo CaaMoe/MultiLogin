@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PluginData {
-    public static final File configFile = new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml");
     public static final File configSwapUuid = new File(MultiCore.getPlugin().getPluginDataFolder(), "swap_uuid.json");
     public static final File configUser = new File(MultiCore.getPlugin().getPluginDataFolder(), "user.json");
     public static IConfiguration configurationConfig = null;

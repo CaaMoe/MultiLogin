@@ -10,6 +10,10 @@ public class BungeeConfiguration implements IConfiguration {
         this.vanConfiguration = vanConfiguration;
     }
 
+    public BungeeConfiguration() {
+        vanConfiguration = new Configuration();
+    }
+
     @Override
     public IConfiguration getConfigurationSection(String path) {
         return new BungeeConfiguration(vanConfiguration.getSection(path));
