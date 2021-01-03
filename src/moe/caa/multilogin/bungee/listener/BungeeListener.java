@@ -13,6 +13,7 @@ public class BungeeListener implements Listener {
     public void onPreLogin(PreLoginEvent event){
         try {
             RefUtil.modify(event);
+            event.getConnection().setOnlineMode(true);
         } catch (Exception e) {
             e.printStackTrace();
             event.setCancelled(true);
