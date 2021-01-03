@@ -4,6 +4,7 @@ import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.PluginData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -38,6 +39,7 @@ public class MultiLogin extends Plugin implements IPlugin {
     @Override
     public void onDisable() {
         TIMER.cancel();
+        MultiCore.save();
     }
 
     @Override
