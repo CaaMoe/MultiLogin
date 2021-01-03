@@ -1,7 +1,6 @@
 package moe.caa.multilogin.bungee;
 
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.connection.InitialHandler;
 
@@ -49,8 +48,9 @@ public class RefUtil {
     }
 
     public static void modify(PreLoginEvent event) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
-        Field modTar = getField(preLoginEventClass, PendingConnection.class);
-        PendingConnection vanHandle = (PendingConnection) modTar.get(event);
-        modTar.set(event, new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), (InitialHandler) vanHandle));
+        Field modTar = preLoginEventClass.getDeclaredField("connection");
+        modTar.setAccessible(true);
+        InitialHandler vanHandle = (InitialHandler) modTar.get(event);
+        modTar.set(event, new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), vanHandle));
     }
 }

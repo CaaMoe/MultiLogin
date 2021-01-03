@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bungee;
 
+import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 
 public class MultiLogin extends Plugin implements IPlugin {
     public static MultiLogin INSTANCE;
-    public static final File configFile = new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml");
+    public static File configFile ;
     private final Timer TIMER = new Timer("MultiLogin", true);
     private IConfiguration configuration;
 
@@ -27,7 +28,9 @@ public class MultiLogin extends Plugin implements IPlugin {
     @Override
     public void onEnable() {
         MultiLogin.INSTANCE = this;
+        configFile = new File(this.getPluginDataFolder(), "config.yml");
         MultiCore.setPlugin(this);
+        BungeeCord.getInstance().getPluginManager().registerListener(this, new BungeeListener());
     }
 
     @Override

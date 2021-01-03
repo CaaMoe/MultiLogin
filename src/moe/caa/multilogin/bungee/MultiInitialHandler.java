@@ -1,6 +1,10 @@
 package moe.caa.multilogin.bungee;
 
 import com.google.common.base.Preconditions;
+import io.netty.channel.EventLoop;
+import moe.caa.multilogin.bukkit.MultiLogin;
+import moe.caa.multilogin.core.PluginData;
+import moe.caa.multilogin.core.YggdrasilServiceSection;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.Util;
@@ -8,6 +12,7 @@ import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.http.HttpClient;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
@@ -15,6 +20,7 @@ import net.md_5.bungee.netty.cipher.CipherEncoder;
 import net.md_5.bungee.protocol.packet.EncryptionRequest;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.LoginRequest;
+import org.bukkit.Bukkit;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -24,6 +30,9 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 
@@ -50,11 +59,13 @@ public class MultiInitialHandler extends InitialHandler{
         this.vanHandle = vanHandle;
         this.BUNGEE = bungee;
         this.listener = listener;
+        setOnlineMode(true);
     }
 
 
     @Override
     public void handle(EncryptionResponse encryptResponse) throws Exception {
+        System.out.println("abc");
         EncryptionRequest request = (EncryptionRequest) REQUEST.get(vanHandle);
         ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.get(vanHandle);
         Preconditions.checkState(THIS_STATE.get(vanHandle) == RefUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
@@ -76,23 +87,16 @@ public class MultiInitialHandler extends InitialHandler{
             }
             String encodedHash = URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
             String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && this.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(this.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
-            String arg = String.format(AUTH_ARG, encName, encodedHash, preventProxy);
-
-            FutureTask<String> task = new FutureTask<String>(()->{
-                return null;
-            });
-
-            BUNGEE.getScheduler().runAsync(null, task);
-
+            String authURL = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
             Callback<String> handler = new Callback<String>() {
                 public void done(String result, Throwable error) {
                     if (error == null) {
-                        LoginResult obj = BungeeCord.getInstance().gson.fromJson(result, LoginResult.class);
+                        LoginResult obj = (LoginResult)BungeeCord.getInstance().gson.fromJson(result, LoginResult.class);
                         if (obj != null && obj.getId() != null) {
                             try {
                                 LOGIN_REQUEST.set(vanHandle, obj);
-                                NAME.set(vanHandle, obj.getName());
                                 UNIQUE_ID.set(vanHandle, Util.getUUID(obj.getId()));
+                                NAME.set(vanHandle, obj.getName());
                                 FINISH.invoke(vanHandle);
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -100,20 +104,22 @@ public class MultiInitialHandler extends InitialHandler{
                             return;
                         }
 
-                        disconnect(BUNGEE.getTranslation("offline_mode_player"));
+
+                        disconnect(BUNGEE.getTranslation("offline_mode_player", new Object[0]));
                     } else {
-                        disconnect(BUNGEE.getTranslation("mojang_fail"));
+                        disconnect(BUNGEE.getTranslation("mojang_fail", new Object[0]));
                         BUNGEE.getLogger().log(Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error);
                     }
 
                 }
             };
-
-
-
-
-
-            //  HttpClient.get(authURL, ch.getHandle().eventLoop(), handler);
+            System.out.println("aaa");
+            System.out.println(authURL);
+            System.out.println(handler);
+            EventLoop loop = null;
+            System.out.println(loop = ch.getHandle().eventLoop());
+            HttpClient.get(authURL, loop, handler);
+            System.out.println("bbb");
         }
     }
 }
