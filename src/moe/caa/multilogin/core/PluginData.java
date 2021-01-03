@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bukkit;
+package moe.caa.multilogin.core;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -6,11 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,11 +14,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PluginData {
-    public static final File configFile = new File(MultiLogin.INSTANCE.getDataFolder(), "config.yml");
-    public static final File configSwapUuid = new File(MultiLogin.INSTANCE.getDataFolder(), "swap_uuid.json");
-    public static final File configUser = new File(MultiLogin.INSTANCE.getDataFolder(), "user.json");
-    public static YamlConfiguration configurationConfig = null;
-    public static YamlConfiguration defaultConfigurationConfig = null;
+    public static final File configFile = new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml");
+    public static final File configSwapUuid = new File(MultiCore.getPlugin().getPluginDataFolder(), "swap_uuid.json");
+    public static final File configUser = new File(MultiCore.getPlugin().getPluginDataFolder(), "user.json");
+    public static IConfiguration configurationConfig = null;
+    public static IConfiguration defaultConfigurationConfig = null;
 
     private static final Set<YggdrasilServiceSection> serviceSet = new HashSet<>();
     private static final Map<UUID, UUID> swapUuidMap = new HashMap<>();
@@ -32,11 +27,10 @@ public class PluginData {
     private static final Set<String> cacWhitelist = new HashSet<>();
 
     private static void genFile() throws IOException {
-        MultiLogin login = MultiLogin.INSTANCE;
-        if(!login.getDataFolder().exists() && !login.getDataFolder().mkdirs()){
-            throw new IOException(String.format("无法创建配置文件夹: %s",  login.getDataFolder().getPath()));
+        if(!MultiCore.getPlugin().getPluginDataFolder().exists() && !MultiCore.getPlugin().getPluginDataFolder().mkdirs()){
+            throw new IOException(String.format("无法创建配置文件夹: %s",  MultiCore.getPlugin().getPluginDataFolder().getPath()));
         }
-        MultiLogin.INSTANCE.saveDefaultConfig();
+        MultiCore.getPlugin().savePluginDefaultConfig();
         if(!configSwapUuid.exists() && !configSwapUuid.createNewFile()){
             throw new IOException(String.format("无法创建文件: %s", configSwapUuid.getPath()));
         }
@@ -48,13 +42,13 @@ public class PluginData {
     public static void reloadConfig() throws IOException {
         genFile();
         try {
-            defaultConfigurationConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(MultiLogin.INSTANCE.getResource("config.yml")));
+            defaultConfigurationConfig = MultiCore.yamlLoadConfiguration(new InputStreamReader(MultiCore.getResource("config.yml")));
         } catch (Exception ignore){}
-        MultiLogin.INSTANCE.reloadConfig();
+        MultiCore.getPlugin().reloadPluginConfig();
         serviceSet.clear();
-        configurationConfig = (YamlConfiguration) MultiLogin.INSTANCE.getConfig();
-        Logger log = MultiLogin.INSTANCE.getLogger();
-        ConfigurationSection services = configurationConfig.getConfigurationSection("services");
+        configurationConfig = MultiCore.getConfig();
+        Logger log = MultiCore.getPlugin().getMLPluginLogger();
+        IConfiguration services = configurationConfig.getConfigurationSection("services");
         if(services != null){
             for(String path : services.getKeys(false)){
                 if(path.equalsIgnoreCase("official") || path.equalsIgnoreCase("multi") ){
@@ -115,7 +109,7 @@ public class PluginData {
     public static synchronized void readData() throws IOException {
         genFile();
         swapUuidMap.clear();
-        Logger log = MultiLogin.INSTANCE.getLogger();
+        Logger log = MultiCore.getPlugin().getMLPluginLogger();
         try{
             JsonObject json = (JsonObject) new JsonParser().parse(new FileReader(configSwapUuid));
             if(json != null && json.entrySet() != null){
@@ -169,7 +163,7 @@ public class PluginData {
 
     public static synchronized void saveData() throws IOException {
         genFile();
-        Logger log = MultiLogin.INSTANCE.getLogger();
+        Logger log = MultiCore.getPlugin().getMLPluginLogger();
         try {
             JsonObject json = new JsonObject();
             for(Map.Entry<UUID, UUID> entry : swapUuidMap.entrySet()){
@@ -177,7 +171,7 @@ public class PluginData {
             }
             JsonWriter jw = new JsonWriter(new FileWriter(configSwapUuid));
             jw.setIndent("  ");
-            MultiLogin.GSON.toJson(json, jw);
+            MultiCore.GSON.toJson(json, jw);
             jw.flush();
             jw.close();
         } catch (Exception ignore){
@@ -198,7 +192,7 @@ public class PluginData {
             json.add("data", userArray);
             JsonWriter jw = new JsonWriter(new FileWriter(configUser));
             jw.setIndent("  ");
-            MultiLogin.GSON.toJson(json, jw);
+            MultiCore.GSON.toJson(json, jw);
             jw.flush();
             jw.close();
         } catch (Exception ignore){
@@ -249,7 +243,7 @@ public class PluginData {
             ret = YggdrasilServiceSection.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
             return ret;
         }catch (Exception ignore){}
-        MultiLogin.INSTANCE.getLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
+        MultiCore.getPlugin().getMLPluginLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
         return YggdrasilServiceSection.ConvUuid.DEFAULT;
     }
 
@@ -278,10 +272,7 @@ public class PluginData {
         UUID uuid = getUUID(name);
         for(UserEntry entry : userMap){
             if (entry.getName().equalsIgnoreCase(name) || (uuid != null && uuid.equals(entry.uuid))) {
-                Player player = Bukkit.getPlayer(entry.getUuid());
-                if(player != null){
-                    player.kickPlayer(configurationConfig.getString("msgDelWhitelistInGame"));
-                }
+                MultiCore.kickPlayer(entry.getUuid(), configurationConfig.getString("msgDelWhitelistInGame"));
                 if(!entry.whitelist){
                     return false;
                 }
@@ -372,11 +363,11 @@ public class PluginData {
         return null;
     }
 
-    public static Configuration getConfigurationConfig() {
+    public static IConfiguration getConfigurationConfig() {
         return configurationConfig;
     }
 
-    static class UserEntry {
+    public static class UserEntry {
         private final UUID uuid;
         private String name;
         private final String yggServer;

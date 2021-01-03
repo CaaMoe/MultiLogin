@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit;
 
+import moe.caa.multilogin.core.PluginData;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

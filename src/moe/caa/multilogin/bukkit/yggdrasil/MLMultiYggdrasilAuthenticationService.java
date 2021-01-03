@@ -13,9 +13,9 @@ import com.mojang.authlib.exceptions.UserMigratedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.Response;
-import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.bukkit.MultiLogin;
-import moe.caa.multilogin.bukkit.YggdrasilServiceSection;
+import moe.caa.multilogin.core.YggdrasilServiceSection;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;

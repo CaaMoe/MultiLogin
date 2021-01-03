@@ -1,6 +1,4 @@
-package moe.caa.multilogin.bukkit;
-
-import org.bukkit.configuration.ConfigurationSection;
+package moe.caa.multilogin.core;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,13 +20,13 @@ public class YggdrasilServiceSection {
         this.path = path;
         this.whitelist = whitelist;
         if(logger){
-            Logger log = MultiLogin.INSTANCE.getLogger();
+            Logger log = MultiCore.getPlugin().getMLPluginLogger();
             log.info(String.format("添加Yggdrasil验证服务器: %s, URL: %s", name, url));
         }
 
     }
 
-    public static YggdrasilServiceSection fromYaml(String path, ConfigurationSection section){
+    public static YggdrasilServiceSection fromYaml(String path, IConfiguration section){
         if (section != null){
             String name = section.getString("name");
             String url = section.getString("url");
@@ -43,7 +41,6 @@ public class YggdrasilServiceSection {
             if(!PluginData.isEmpty(name) && !PluginData.isEmpty(url) && convUuidEnum != null){
                 return new YggdrasilServiceSection(path, name, url, convUuidEnum,whitelist, true);
             }
-
         }
         return null;
     }
@@ -81,7 +78,7 @@ public class YggdrasilServiceSection {
         return new URL(url + "/sessionserver/session/minecraft/" + arg);
     }
 
-    enum ConvUuid{
+    public enum ConvUuid{
         DEFAULT,
         OFFLINE;
     }

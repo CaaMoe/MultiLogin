@@ -7,7 +7,7 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.bukkit.MultiLogin;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

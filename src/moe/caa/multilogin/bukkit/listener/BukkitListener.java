@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bukkit.listener;
 
 import moe.caa.multilogin.bukkit.NMSUtil;
-import moe.caa.multilogin.bukkit.PluginData;
+import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.bukkit.MultiLogin;
 import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
 import org.bukkit.Bukkit;

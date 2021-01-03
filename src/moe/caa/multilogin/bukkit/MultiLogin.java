@@ -2,16 +2,27 @@ package moe.caa.multilogin.bukkit;
 
 import com.google.gson.*;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
+import moe.caa.multilogin.core.IConfiguration;
+import moe.caa.multilogin.core.IPlugin;
+import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.PluginData;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import sun.misc.BASE64Decoder;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Logger;
 
-public final class MultiLogin extends JavaPlugin{
+public final class MultiLogin extends JavaPlugin implements IPlugin {
     public static MultiLogin INSTANCE;
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final BASE64Decoder decoder = new BASE64Decoder();
@@ -22,6 +33,7 @@ public final class MultiLogin extends JavaPlugin{
     @Override
     public void onEnable() {
         MultiLogin.INSTANCE = this;
+        MultiCore.setPlugin(this);
         if(!getServer().getOnlineMode()){
             getLogger().severe("插件只能运行在“online-mode=true”的环境下");
             getLogger().severe("请打开服务端的正版验证！");
@@ -62,6 +74,7 @@ public final class MultiLogin extends JavaPlugin{
 
         getLogger().info("插件已加载");
     }
+
 
     public void setUpUpdate(){
         update();
@@ -140,5 +153,48 @@ public final class MultiLogin extends JavaPlugin{
 
     public static void main(String[] args) {
 
+    }
+
+    @Override
+    public File getPluginDataFolder() {
+        return getDataFolder();
+    }
+
+    @Override
+    public IConfiguration getPluginConfig() {
+        return new BukkitConfiguration(getConfig());
+    }
+
+    @Override
+    public void savePluginDefaultConfig() {
+        saveDefaultConfig();
+    }
+
+    @Override
+    public void reloadPluginConfig() {
+        reloadConfig();
+    }
+
+    @Override
+    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) {
+        return new BukkitConfiguration(YamlConfiguration.loadConfiguration(reader));
+    }
+
+    @Override
+    public InputStream getPluginResource(String path) {
+        return getResource(path);
+    }
+
+    @Override
+    public void kickPlayer(UUID uuid, String msg) {
+        Player p = Bukkit.getPlayer(uuid);
+        if(p != null){
+            p.kickPlayer(msg);
+        }
+    }
+
+    @Override
+    public Logger getMLPluginLogger() {
+        return getLogger();
     }
 }
