@@ -22,4 +22,10 @@ public interface IPlugin {
     void kickPlayer(UUID uuid, String msg);
 
     Logger getMLPluginLogger();
+
+    void runTaskAsyncLater(Runnable run, long delay);
+
+    void runTaskAsyncTimer(Runnable run, long delay, long per);
+
+    String getVersion();
 }

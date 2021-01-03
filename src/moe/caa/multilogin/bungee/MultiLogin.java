@@ -56,4 +56,19 @@ public class MultiLogin extends Plugin implements IPlugin {
     public Logger getMLPluginLogger() {
         return null;
     }
+
+    @Override
+    public void runTaskAsyncLater(Runnable run, long delay) {
+
+    }
+
+    @Override
+    public void runTaskAsyncTimer(Runnable run, long delay, long per) {
+
+    }
+
+    @Override
+    public String getVersion() {
+        return null;
+    }
 }

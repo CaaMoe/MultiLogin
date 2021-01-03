@@ -1,6 +1,7 @@
 package moe.caa.multilogin.bukkit.listener;
 
 import moe.caa.multilogin.bukkit.NMSUtil;
+import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.bukkit.MultiLogin;
 import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
@@ -33,7 +34,7 @@ public class BukkitListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     private void onJoin(PlayerJoinEvent event){
-        if(MultiLogin.INSTANCE.isUpdate() && (event.getPlayer().hasPermission("multilogin.update") || event.getPlayer().isOp())){
+        if(MultiCore.isUpdate() && (event.getPlayer().hasPermission("multilogin.update") || event.getPlayer().isOp())){
             event.getPlayer().sendMessage("§c插件 §eMultiLogin §c有新的版本发布，请及时下载更新！");
         }
 
