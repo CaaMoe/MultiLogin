@@ -2,14 +2,15 @@ package moe.caa.multilogin.bungee;
 
 import com.google.common.base.Preconditions;
 import io.netty.channel.EventLoop;
-import moe.caa.multilogin.bukkit.MultiLogin;
 import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.core.YggdrasilServiceSection;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.Callback;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.http.HttpClient;
@@ -17,10 +18,11 @@ import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
+import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.EncryptionRequest;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
-import net.md_5.bungee.protocol.packet.LoginRequest;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -28,12 +30,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.UUID;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 public class MultiInitialHandler extends InitialHandler{
@@ -43,7 +49,7 @@ public class MultiInitialHandler extends InitialHandler{
     private final Field THIS_STATE = RefUtil.getField(INITIAL_HANDLE_CLASS, INITIAL_HANDLE_CLASS_STATE_CLASS);
     private final Field REQUEST = RefUtil.getField(INITIAL_HANDLE_CLASS, EncryptionRequest.class);
     private final Field CHANNEL_WRAPPER = RefUtil.getField(INITIAL_HANDLE_CLASS, ChannelWrapper.class);
-    private final Field LOGIN_REQUEST = RefUtil.getField(INITIAL_HANDLE_CLASS, LoginRequest.class);
+    private final Field LOGIN_PROFILE = RefUtil.getField(INITIAL_HANDLE_CLASS, LoginResult.class);
     private final Field NAME = RefUtil.getField(INITIAL_HANDLE_CLASS, "name");
     private final Field UNIQUE_ID = RefUtil.getField(INITIAL_HANDLE_CLASS, "uniqueId");
     private final BungeeCord BUNGEE;
@@ -59,13 +65,10 @@ public class MultiInitialHandler extends InitialHandler{
         this.vanHandle = vanHandle;
         this.BUNGEE = bungee;
         this.listener = listener;
-        setOnlineMode(true);
     }
-
 
     @Override
     public void handle(EncryptionResponse encryptResponse) throws Exception {
-        System.out.println("abc");
         EncryptionRequest request = (EncryptionRequest) REQUEST.get(vanHandle);
         ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.get(vanHandle);
         Preconditions.checkState(THIS_STATE.get(vanHandle) == RefUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
@@ -77,49 +80,94 @@ public class MultiInitialHandler extends InitialHandler{
             ch.addBefore("frame-decoder", "decrypt", new CipherDecoder(decrypt));
             BungeeCipher encrypt = EncryptionUtil.getCipher(true, sharedKey);
             ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
-            String encName = URLEncoder.encode(this.getName(), "UTF-8");
+            String encName = URLEncoder.encode(vanHandle.getName(), "UTF-8");
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
             byte[][] var7 = new byte[][]{request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
-            int var8 = var7.length;
 
             for (byte[] bit : var7) {
                 sha.update(bit);
             }
             String encodedHash = URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
-            String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && this.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(this.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
-            String authURL = String.format("https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
-            Callback<String> handler = new Callback<String>() {
-                public void done(String result, Throwable error) {
-                    if (error == null) {
-                        LoginResult obj = (LoginResult)BungeeCord.getInstance().gson.fromJson(result, LoginResult.class);
-                        if (obj != null && obj.getId() != null) {
-                            try {
-                                LOGIN_REQUEST.set(vanHandle, obj);
-                                UNIQUE_ID.set(vanHandle, Util.getUUID(obj.getId()));
-                                NAME.set(vanHandle, obj.getName());
-                                FINISH.invoke(vanHandle);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            return;
+            String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && vanHandle.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(vanHandle.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
+            String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
+
+            Map<Callback<String>, YggdrasilServiceSection> tasks = new Hashtable<>();
+            AtomicReference<LoginResult> result = new AtomicReference<>();
+            AtomicReference<YggdrasilServiceSection> ygg = new AtomicReference<>();
+            AtomicBoolean down = new AtomicBoolean(false);
+
+            if (PluginData.isOfficialYgg()) {
+                String authURL = String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg);
+                Callback<String> call = (s, e) ->{
+                    if(e == null){
+                        LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
+                        if(resultObj != null && resultObj.getId() != null){
+                            ygg.set(tasks.get(this));
+                            result.set(resultObj);
                         }
-
-
-                        disconnect(BUNGEE.getTranslation("offline_mode_player", new Object[0]));
                     } else {
-                        disconnect(BUNGEE.getTranslation("mojang_fail", new Object[0]));
-                        BUNGEE.getLogger().log(Level.SEVERE, "Error authenticating " + getName() + " with minecraft.net", error);
+                        down.set(true);
                     }
+                    tasks.remove(this);
+                };
+                tasks.put(call, YggdrasilServiceSection.OFFICIAL);
+                HttpClient.get(authURL, ch.getHandle().eventLoop(), call);
+            }
+            for(YggdrasilServiceSection section : PluginData.getServiceSet()){
+                String url = section.buildUrlStr(arg);
+                Callback<String> call = (s, e) ->{
+                    if(e == null){
+                        LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
+                        if(resultObj != null && resultObj.getId() != null){
+                            ygg.set(tasks.get(this));
+                            result.set(resultObj);
+                        }
+                    } else {
+                        down.set(true);
+                    }
+                    tasks.remove(this);
+                };
+                tasks.put(call, YggdrasilServiceSection.OFFICIAL);
+                HttpClient.get(url, ch.getHandle().eventLoop(), call);
+            }
 
+            BUNGEE.getScheduler().runAsync(MultiLogin.INSTANCE, ()->{
+                long time = System.currentTimeMillis() + PluginData.getTimeOut();
+                while(time > System.currentTimeMillis() && tasks.size() != 0){
+                    if(result.get() != null){
+                        try {
+                            UUID onlineId = UUID.fromString(result.get().getId());
+                            String text = PluginData.getUserVerificationMessage(onlineId, result.get().getName(), ygg.get());
+                            if(text == null){
+                                if (PluginData.isNoRepeatedName() && ygg.get().getPath().equalsIgnoreCase(PluginData.getSafeIdService())) {
+                                    String name = result.get().getName();
+                                    for (ProxiedPlayer player : BUNGEE.getPlayers()) {
+                                        if (player.getName().equalsIgnoreCase(name)) {
+                                            player.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgRushNameOnl")));
+                                        }
+                                    }
+                                }
+                                UUID swapUuid = PluginData.getSwapUUID(onlineId, ygg.get(), result.get().getName());
+                                LOGIN_PROFILE.set(vanHandle, result.get());
+                                UNIQUE_ID.set(vanHandle, swapUuid);
+                                NAME.set(vanHandle, result.get().getName());
+                                FINISH.invoke(vanHandle);
+                                return;
+                            } else {
+                                disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                        }
+                    }
                 }
-            };
-            System.out.println("aaa");
-            System.out.println(authURL);
-            System.out.println(handler);
-            EventLoop loop = null;
-            System.out.println(loop = ch.getHandle().eventLoop());
-            HttpClient.get(authURL, loop, handler);
-            System.out.println("bbb");
+                if(down.get()){
+                    disconnect(BUNGEE.getTranslation("mojang_fail"));
+                } else {
+                    disconnect(BUNGEE.getTranslation("offline_mode_player"));
+                }
+            });
         }
     }
 }

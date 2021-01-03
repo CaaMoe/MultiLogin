@@ -78,6 +78,10 @@ public class YggdrasilServiceSection {
         return new URL(url + "/sessionserver/session/minecraft/" + arg);
     }
 
+    public String buildUrlStr(String arg) throws MalformedURLException {
+        return url + "/sessionserver/session/minecraft/" + arg;
+    }
+
     public enum ConvUuid{
         DEFAULT,
         OFFLINE;

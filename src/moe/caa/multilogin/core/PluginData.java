@@ -292,13 +292,17 @@ public class PluginData {
         String name = profile.getName();
         UUID uuid = profile.getOnlineUuid();
         YggdrasilServiceSection yggServer = profile.getYggService();
+        return getUserVerificationMessage(uuid, name, yggServer);
+    }
+
+    public static String getUserVerificationMessage(UUID uuid, String name, YggdrasilServiceSection yggServer){
         if(yggServer == null){
             return configurationConfig.getString("msgNoAdopt");
         }
         UserEntry current = null;
 
         for(UserEntry entry : userMap){
-            if(entry.getUuid().equals(profile.getOnlineUuid())){
+            if(entry.getUuid().equals(uuid)){
                 if(!entry.getYggServer().equals(yggServer.getPath())){
                     return configurationConfig.getString("msgNoChae");
                 }
@@ -312,7 +316,7 @@ public class PluginData {
         if(current != null){
             current.setName(name);
         } else {
-            current = new UserEntry(profile.getOnlineUuid(), name, yggServer.getPath(), false);
+            current = new UserEntry(uuid, name, yggServer.getPath(), false);
         }
 
         if(isWhitelist()){
@@ -328,6 +332,7 @@ public class PluginData {
         userMap.add(current);
         return null;
     }
+
 
     public static UserEntry getUserEntry(String name){
         for(UserEntry entry : userMap){

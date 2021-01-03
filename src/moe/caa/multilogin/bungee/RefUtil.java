@@ -3,6 +3,8 @@ package moe.caa.multilogin.bungee;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.netty.ChannelWrapper;
+import net.md_5.bungee.netty.HandlerBoss;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,6 +12,7 @@ import java.util.Arrays;
 
 public class RefUtil {
     private static final Class<PreLoginEvent> preLoginEventClass = PreLoginEvent.class;
+    private static final Class<InitialHandler> initialHandlerClass = InitialHandler.class;
 
     public static Field getField(Class clazz, Class target){
         for(Field field : clazz.getDeclaredFields()){
@@ -31,6 +34,7 @@ public class RefUtil {
         for(Method method : clazz.getDeclaredMethods()){
             if(method.getName().equalsIgnoreCase(name)){
                 if(Arrays.equals(method.getParameterTypes(), args)){
+                    method.setAccessible(true);
                     return method;
                 }
             }
@@ -47,10 +51,16 @@ public class RefUtil {
         throw new IllegalArgumentException(name);
     }
 
-    public static void modify(PreLoginEvent event) throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+    public static void modify(PreLoginEvent event) throws Exception {
         Field modTar = preLoginEventClass.getDeclaredField("connection");
+        Field chField = getField(initialHandlerClass, ChannelWrapper.class);
         modTar.setAccessible(true);
         InitialHandler vanHandle = (InitialHandler) modTar.get(event);
-        modTar.set(event, new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), vanHandle));
+        ChannelWrapper ch = (ChannelWrapper) chField.get(vanHandle);
+        MultiInitialHandler mh = new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), vanHandle);
+        mh.connected(ch);
+        ch.getHandle().pipeline().get(HandlerBoss.class).setHandler(mh);
+
+
     }
 }
