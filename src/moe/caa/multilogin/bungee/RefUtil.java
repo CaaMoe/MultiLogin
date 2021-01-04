@@ -110,7 +110,6 @@ public class RefUtil {
                                 if (listener.isProxyProtocol()) {
                                     ch.pipeline().addFirst(new HAProxyMessageDecoder());
                                 }
-
                             }
                         });
                         BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
