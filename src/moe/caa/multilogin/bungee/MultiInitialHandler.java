@@ -47,9 +47,12 @@ public class MultiInitialHandler extends InitialHandler{
     private final Method FINISH = RefUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
     private final BungeeCord BUNGEE;
 
-    public MultiInitialHandler(BungeeCord bungee, ListenerInfo listener) throws ClassNotFoundException, NoSuchFieldException {
+    public MultiInitialHandler(BungeeCord bungee, ListenerInfo listener) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         super(bungee, listener);
         BUNGEE = bungee;
+        Field ONLINE_MODE = INITIAL_HANDLE_CLASS.getDeclaredField("onlineMode");
+        ONLINE_MODE.setAccessible(true);
+        ONLINE_MODE.set(this, true);
     }
 
     @Override

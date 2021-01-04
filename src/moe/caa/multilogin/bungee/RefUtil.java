@@ -99,7 +99,7 @@ public class RefUtil {
                                 }
                                 try {
                                     ch.pipeline().get(HandlerBoss.class).setHandler(new MultiInitialHandler(BungeeCord.getInstance(), listener));
-                                } catch (ClassNotFoundException | NoSuchFieldException e) {
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                                 if (listener.isProxyProtocol()) {

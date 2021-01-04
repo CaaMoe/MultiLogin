@@ -15,6 +15,7 @@ public class BungeeListener implements Listener {
 
     @EventHandler
     public void onPreLogin(PreLoginEvent event){
+        event.getConnection().setOnlineMode(true);
         if (event.getConnection().getClass() != MultiInitialHandler.class) {
             event.setCancelled(true);
             event.setCancelReason(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
