@@ -14,23 +14,16 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.Response;
 import moe.caa.multilogin.core.PluginData;
-import moe.caa.multilogin.bukkit.MultiLogin;
-import moe.caa.multilogin.core.YggdrasilServiceSection;
-import org.bukkit.Bukkit;
+import moe.caa.multilogin.core.YggdrasilService;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
 
 public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationService {
     private HttpAuthenticationService vanService;
-    private final Class YggdrasilAuthenticationServiceClass = YggdrasilAuthenticationService.class;
+    private final Class<YggdrasilAuthenticationService> YggdrasilAuthenticationServiceClass = YggdrasilAuthenticationService.class;
     private final Field YggdrasilAuthenticationServiceGson = YggdrasilAuthenticationServiceClass.getDeclaredField("gson");
     private Gson gson;
 
@@ -68,64 +61,21 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
 
     public <T extends Response> T makeRequest(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
         if(classOfT != MLHasJoinedMinecraftServerResponse.class) return makeRequest0(url, input, classOfT);
-        T ret = null;
-        boolean down = false;
-        Map<Future<T>, YggdrasilServiceSection> tasks = new HashMap<>();
+
         String arg = null;
         for(String s : url.toString().split("/")){
             if(s.startsWith("hasJoined?")){
                 arg = s;
             }
         }
-        if(PluginData.isOfficialYgg()){
-            FutureTask<T> task = new FutureTask<T>(()-> this.makeRequest0(url, input, classOfT));
-            Bukkit.getScheduler().runTaskAsynchronously(MultiLogin.INSTANCE, task);
-            tasks.put(task, YggdrasilServiceSection.OFFICIAL);
-        }
-        String finalArg = arg;
-        for(YggdrasilServiceSection section : PluginData.getServiceSet()){
-            FutureTask<T> task = new FutureTask<T>(()-> this.makeRequest0(section.buildUrl(finalArg), input, classOfT));
-            Bukkit.getScheduler().runTaskAsynchronously(MultiLogin.INSTANCE, task);
-            tasks.put(task, section);
-        }
-
-        Future<T> taskDown = null;
-        long time = System.currentTimeMillis() + PluginData.getTimeOut();
-        dos:while(time > System.currentTimeMillis() && tasks.size() != 0){
-            Iterator<Future<T>> itr = tasks.keySet().iterator();
-            while (itr.hasNext()){
-                Future<T> task = itr.next();
-                if(task.isDone()){
-                    try {
-                        ret = task.get();
-                    } catch (Exception ignored) {
-                        down = true;
-                    }
-                    if(ret != null){
-                        taskDown = task;
-                        break dos;
-                    }
-                    itr.remove();
-                }
+        YggdrasilService.AuthResult<T> authResult = YggdrasilService.yggAuth(arg, gson, classOfT);
+        if(authResult.getErr() != null){
+            if(authResult.getErr() == YggdrasilService.AuthErrorEnum.SERVER_DOWN){
+                throw new AuthenticationException();
             }
-        }
-        cancelAll(tasks);
-
-        if(ret == null){
-            if(down)
-                throw new AuthenticationUnavailableException();
             return null;
         }
-        if(ret instanceof MLHasJoinedMinecraftServerResponse){
-            ((MLHasJoinedMinecraftServerResponse) ret).setYggService(tasks.get(taskDown));
-        }
-        return ret;
-    }
-
-    private <T>void cancelAll(Map<Future<T>, YggdrasilServiceSection> tasks){
-        for (Future<T> future : tasks.keySet()){
-            future.cancel(true);
-        }
+        return authResult.getResult();
     }
 
     @Override
@@ -144,7 +94,6 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
 
     public void setVanService(HttpAuthenticationService vanService) throws IllegalAccessException {
         this.vanService = vanService;
-
         gson = (Gson) YggdrasilAuthenticationServiceGson.get(vanService);
     }
 }

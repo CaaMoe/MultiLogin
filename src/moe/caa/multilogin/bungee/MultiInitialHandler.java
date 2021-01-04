@@ -1,14 +1,12 @@
 package moe.caa.multilogin.bungee;
 
 import com.google.common.base.Preconditions;
-import io.netty.channel.EventLoop;
 import moe.caa.multilogin.core.PluginData;
-import moe.caa.multilogin.core.YggdrasilServiceSection;
+import moe.caa.multilogin.core.YggdrasilService;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.Callback;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,11 +17,8 @@ import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
 import net.md_5.bungee.netty.cipher.CipherEncoder;
-import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.packet.EncryptionRequest;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -31,17 +26,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 
 public class MultiInitialHandler extends InitialHandler{
     private static final String AUTH_ARG = "hasJoined?username=%s&serverId=%s%s";
@@ -92,9 +83,9 @@ public class MultiInitialHandler extends InitialHandler{
             String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && vanHandle.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(vanHandle.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
             String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
 
-            Map<Callback<String>, YggdrasilServiceSection> tasks = new Hashtable<>();
+            Map<Callback<String>, YggdrasilService> tasks = new Hashtable<>();
             AtomicReference<LoginResult> result = new AtomicReference<>();
-            AtomicReference<YggdrasilServiceSection> ygg = new AtomicReference<>();
+            AtomicReference<YggdrasilService> ygg = new AtomicReference<>();
             AtomicBoolean down = new AtomicBoolean(false);
 
             if (PluginData.isOfficialYgg()) {
@@ -114,10 +105,10 @@ public class MultiInitialHandler extends InitialHandler{
                         tasks.remove(this);
                     }
                 };
-                tasks.put(call, YggdrasilServiceSection.OFFICIAL);
+                tasks.put(call, YggdrasilService.OFFICIAL);
                 HttpClient.get(authURL, ch.getHandle().eventLoop(), call);
             }
-            for(YggdrasilServiceSection section : PluginData.getServiceSet()){
+            for(YggdrasilService section : PluginData.getServiceSet()){
                 String url = section.buildUrlStr(arg);
                 Callback<String> call = new Callback<String>() {
                     @Override

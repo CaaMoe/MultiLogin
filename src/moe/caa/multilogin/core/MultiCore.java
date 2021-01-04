@@ -127,58 +127,7 @@ public class MultiCore {
         } catch (Exception ignore){}
     }
 
-    public static<T> AuthResult<T> yggAuth(String arg, Gson gson, Class<T> clazz) throws ExecutionException, InterruptedException {
-        T getResult = null;
-        boolean down = false;
-        Map<Future<T>, YggdrasilServiceSection> tasks = new HashMap<>();
-        if(PluginData.isOfficialYgg()){
-            FutureTask<T> task = new FutureTask<T>(()->{
-                String result = httpGet(String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg));
-                return gson.fromJson(result, clazz);
-            });
-            plugin.runTaskAsyncLater(task, 0);
-            tasks.put(task, YggdrasilServiceSection.OFFICIAL);
-        }
 
-        for(YggdrasilServiceSection section : PluginData.getServiceSet()){
-            FutureTask<T> task = new FutureTask<>(() -> {
-                String result = httpGet(section.buildUrlStr(arg));
-                return gson.fromJson(result, clazz);
-            });
-            plugin.runTaskAsyncLater(task, 0);
-            tasks.put(task, YggdrasilServiceSection.OFFICIAL);
-        }
-
-        Future<T> taskDown = null;
-        long time = System.currentTimeMillis() + PluginData.getTimeOut();
-        dos:while(time > System.currentTimeMillis() && tasks.size() != 0){
-            Iterator<Future<T>> itr = tasks.keySet().iterator();
-            while (itr.hasNext()){
-                Future<T> task = itr.next();
-                if(task.isDone()){
-                    try {
-                        getResult = task.get();
-                    } catch (Exception ignored) {
-                        down = true;
-                    }
-                    if(getResult != null){
-                        taskDown = task;
-                        break dos;
-                    }
-                    itr.remove();
-                }
-            }
-        }
-        for (Future<T> future : tasks.keySet()){
-            future.cancel(true);
-        }
-        if(getResult == null){
-            if(down)
-                return new AuthResult<>("SERVICE DOWN", null, null);
-            return new AuthResult<>("VALIDATION FAILED", null, null);
-        }
-        return new AuthResult<T>(null, taskDown.get(), tasks.get(taskDown));
-    }
 
     public static String httpGet(String url) throws IOException {
         return httpGet(new URL(url));
@@ -198,27 +147,5 @@ public class MultiCore {
         return result.toString(StandardCharsets.UTF_8.name());
     }
 
-    public static class AuthResult<T> {
-        private final String err;
-        private final T result;
-        private final YggdrasilServiceSection yggdrasilService;
 
-        AuthResult(String err, T result, YggdrasilServiceSection yggdrasilService) {
-            this.err = err;
-            this.result = result;
-            this.yggdrasilService = yggdrasilService;
-        }
-
-        public String getErr() {
-            return err;
-        }
-
-        public T getResult() {
-            return result;
-        }
-
-        public YggdrasilServiceSection getYggdrasilService() {
-            return yggdrasilService;
-        }
-    }
 }

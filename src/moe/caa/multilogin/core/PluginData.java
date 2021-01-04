@@ -19,7 +19,7 @@ public class PluginData {
     public static IConfiguration configurationConfig = null;
     public static IConfiguration defaultConfigurationConfig = null;
 
-    private static final Set<YggdrasilServiceSection> serviceSet = new HashSet<>();
+    private static final Set<YggdrasilService> serviceSet = new HashSet<>();
     private static final Map<UUID, UUID> swapUuidMap = new HashMap<>();
     private static boolean whitelist;
     private static final Set<UserEntry> userMap = new HashSet<>();
@@ -54,7 +54,7 @@ public class PluginData {
                     log.warning("请勿将official或multi值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
                     continue;
                 }
-                YggdrasilServiceSection section = YggdrasilServiceSection.fromYaml(path, services.getConfigurationSection(path));
+                YggdrasilService section = YggdrasilService.fromYaml(path, services.getConfigurationSection(path));
                 if(section != null){
                     serviceSet.add(section);
                 } else {
@@ -64,7 +64,7 @@ public class PluginData {
         }
         if (isOfficialYgg()) {
             log.info("已设置启用正版验证");
-            YggdrasilServiceSection.OFFICIAL = new YggdrasilServiceSection("official", getOfficialName(), "", getOfficialConvUuid(),isOfficialYggWhitelist(), false);
+            YggdrasilService.OFFICIAL = new YggdrasilService("official", getOfficialName(), "", getOfficialConvUuid(),isOfficialYggWhitelist(), false);
         } else {
             log.info("已设置不启用正版验证");
         }
@@ -92,10 +92,10 @@ public class PluginData {
         testMsg(log, "msgRushNameOnl");
     }
 
-    public static UUID getSwapUUID(UUID uuid, YggdrasilServiceSection yggdrasilServiceSection, String name){
+    public static UUID getSwapUUID(UUID uuid, YggdrasilService yggdrasilService, String name){
         UUID ret = swapUuidMap.get(uuid);
         if(ret == null){
-            if (yggdrasilServiceSection.getConvUuid() == YggdrasilServiceSection.ConvUuid.DEFAULT) {
+            if (yggdrasilService.getConvUuid() == PluginData.ConvUuid.DEFAULT) {
                 ret = uuid;
             } else {
                 ret = UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
@@ -232,18 +232,18 @@ public class PluginData {
         return configurationConfig.getString("officialName", "Official");
     }
 
-    public static Set<YggdrasilServiceSection> getServiceSet() {
+    public static Set<YggdrasilService> getServiceSet() {
         return serviceSet;
     }
 
-    private static YggdrasilServiceSection.ConvUuid getOfficialConvUuid(){
+    private static PluginData.ConvUuid getOfficialConvUuid(){
         try {
-            YggdrasilServiceSection.ConvUuid ret;
-            ret = YggdrasilServiceSection.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
+            PluginData.ConvUuid ret;
+            ret = PluginData.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
             return ret;
         }catch (Exception ignore){}
         MultiCore.getPlugin().getMLPluginLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
-        return YggdrasilServiceSection.ConvUuid.DEFAULT;
+        return PluginData.ConvUuid.DEFAULT;
     }
 
     public static boolean isWhitelist() {
@@ -291,11 +291,11 @@ public class PluginData {
     public static String getUserVerificationMessage(MLGameProfile profile){
         String name = profile.getName();
         UUID uuid = profile.getOnlineUuid();
-        YggdrasilServiceSection yggServer = profile.getYggService();
+        YggdrasilService yggServer = profile.getYggService();
         return getUserVerificationMessage(uuid, name, yggServer);
     }
 
-    public static String getUserVerificationMessage(UUID uuid, String name, YggdrasilServiceSection yggServer){
+    public static String getUserVerificationMessage(UUID uuid, String name, YggdrasilService yggServer){
         if(yggServer == null){
             return configurationConfig.getString("msgNoAdopt");
         }
@@ -397,7 +397,7 @@ public class PluginData {
         }
 
         public String getYggServerDisplayName() {
-            for(YggdrasilServiceSection section : serviceSet){
+            for(YggdrasilService section : serviceSet){
                 if(section.getPath().equals(yggServer)){
                     return section.getName();
                 }
@@ -442,5 +442,10 @@ public class PluginData {
             }
             return null;
         }
+    }
+
+    public enum ConvUuid{
+        DEFAULT,
+        OFFLINE;
     }
 }
