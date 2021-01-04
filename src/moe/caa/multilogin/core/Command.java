@@ -1,51 +1,41 @@
-package moe.caa.multilogin.bungee;
+package moe.caa.multilogin.core;
 
-import moe.caa.multilogin.core.PluginData;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import java.io.IOException;
 import java.util.List;
 
-public class WhitelistCommand extends Command {
-    public WhitelistCommand() {
-        super("whitelist");
+public class Command {
+
+    public static void executeReload(ISender commandSender)  {
+        if (testPermission(commandSender, "multilogin.multilogin.reload")) {
+            try {
+                PluginData.reloadConfig();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            commandSender.sendMessage(new TextComponent(PluginData.getConfigurationConfig().getString("msgReload")));
+        }
     }
 
-    @Override
-    public void execute(CommandSender commandSender, String[] strings) {
-        if(strings.length > 0){
-            if(strings[0].equalsIgnoreCase("add")){
-                if(strings.length == 2){
-                    executeAdd(commandSender, strings);
-                    return;
+    public static void executeQuery(ISender commandSender, String[] strings) {
+        if (testPermission(commandSender, "multilogin.multilogin.query")) {
+            String s = strings.length == 2 ? strings[1] : ((commandSender instanceof ProxiedPlayer) ? commandSender.getSenderName() : null);
+            if(s != null){
+                PluginData.UserEntry entry = PluginData.getUserEntry(s);
+                if(entry != null){
+                    commandSender.sendMessage(new TextComponent(String.format(PluginData.getConfigurationConfig().getString("msgYDQuery"), s, entry.getYggServerDisplayName())));
+                } else {
+                    commandSender.sendMessage(new TextComponent(String.format(PluginData.getConfigurationConfig().getString("msgYDQueryNoRel"), s)));
                 }
-            } else if(strings[0].equalsIgnoreCase("remove")){
-                if(strings.length == 2){
-                    executeRemove(commandSender, strings);
-                    return;
-                }
-            } else if(strings[0].equalsIgnoreCase("on")){
-                if(strings.length == 1){
-                    executeOn(commandSender);
-                    return;
-                }
-            } else if(strings[0].equalsIgnoreCase("off")){
-                if(strings.length == 1){
-                    executeOff(commandSender);
-                    return;
-                }
-            } else if(strings[0].equalsIgnoreCase("list")){
-                if(strings.length == 1){
-                    executeList(commandSender);
-                    return;
-                }
+            } else {
+                commandSender.sendMessage(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoPlayer")));
             }
         }
-        commandSender.sendMessage(new TextComponent(PluginData.getConfigurationConfig().getString("msgInvCmd")));
     }
 
-    private void executeAdd(CommandSender sender, String[] args) {
+    public static void executeAdd(ISender sender, String[] args) {
         if(testPermission(sender, "multilogin.whitelist.add")){
             if(PluginData.addWhitelist(args[1])){
                 sender.sendMessage(new TextComponent(String.format(PluginData.getConfigurationConfig().getString("msgAddWhitelist"), args[1])));
@@ -55,7 +45,7 @@ public class WhitelistCommand extends Command {
         }
     }
 
-    private void executeRemove(CommandSender sender, String[] args) {
+    public static void executeRemove(ISender sender, String[] args) {
         if(testPermission(sender, "multilogin.whitelist.remove")){
             if(PluginData.removeWhitelist(args[1])){
                 sender.sendMessage(new TextComponent(String.format(PluginData.getConfigurationConfig().getString("msgDelWhitelist"), args[1])));
@@ -66,7 +56,7 @@ public class WhitelistCommand extends Command {
 
     }
 
-    private void executeOn(CommandSender sender) {
+    public static void executeOn(ISender sender) {
         if(testPermission(sender, "multilogin.whitelist.on")){
             if(!PluginData.isWhitelist()){
                 PluginData.setWhitelist(true);
@@ -77,7 +67,7 @@ public class WhitelistCommand extends Command {
         }
     }
 
-    private void executeOff(CommandSender sender) {
+    public static void executeOff(ISender sender) {
         if(testPermission(sender, "multilogin.whitelist.off")){
             if(PluginData.isWhitelist()){
                 PluginData.setWhitelist(false);
@@ -89,7 +79,7 @@ public class WhitelistCommand extends Command {
 
     }
 
-    private void executeList(CommandSender sender) {
+    public static void executeList(ISender sender) {
         if(testPermission(sender, "multilogin.whitelist.list")){
             List<String> stringList = PluginData.listWhitelist();
             if(stringList.size() <= 0){
@@ -101,7 +91,7 @@ public class WhitelistCommand extends Command {
         }
     }
 
-    private boolean testPermission(CommandSender sender, String permission){
+    public static boolean testPermission(ISender sender, String permission){
         if(sender.hasPermission(permission)){
             return true;
         }

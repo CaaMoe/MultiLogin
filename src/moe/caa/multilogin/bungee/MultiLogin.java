@@ -7,8 +7,10 @@ import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.PluginData;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -33,8 +35,19 @@ public class MultiLogin extends Plugin implements IPlugin {
         configFile = new File(this.getPluginDataFolder(), "config.yml");
         MultiCore.setPlugin(this);
         BungeeCord.getInstance().getPluginManager().registerListener(this, new BungeeListener());
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new WhitelistCommand());
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand());
+
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("whitelist") {
+            @Override
+            public void execute(CommandSender commandSender, String[] strings) {
+                MultiCore.submitCommand("whitelist", new BungeeSender(commandSender), strings);
+            }
+        });
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("multilogin") {
+            @Override
+            public void execute(CommandSender commandSender, String[] strings) {
+                MultiCore.submitCommand("multilogin", new BungeeSender(commandSender), strings);
+            }
+        });
     }
 
     @Override

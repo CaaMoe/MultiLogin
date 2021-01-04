@@ -38,14 +38,19 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
             setEnabled(false);
             return;
         }
-        getServer().getPluginManager().registerEvents(new BukkitListener(), this);
-        WhitelistCommand command = new WhitelistCommand();
-        getCommand("whitelist").setExecutor(command);
-        getCommand("whitelist").setTabCompleter(command);
 
-        MultiLoginCommand command1 = new MultiLoginCommand();
-        getCommand("multilogin").setTabCompleter(command1);
-        getCommand("multilogin").setExecutor(command1);
+        getServer().getPluginManager().registerEvents(new BukkitListener(), this);
+
+        getCommand("whitelist").setExecutor((sender, cmd, l, strings)->{
+            MultiCore.submitCommand("whitelist", new BukkitSender(sender), strings);
+            return true;
+        });
+        getCommand("multilogin").setExecutor((sender, cmd, l, strings)->{
+            MultiCore.submitCommand("multilogin", new BukkitSender(sender), strings);
+            return true;
+        });
+        getCommand("whitelist").setTabCompleter((sender, cmd, l, strings)-> MultiCore.suggestCommand("whitelist", new BukkitSender(sender), strings));
+        getCommand("multilogin").setTabCompleter((sender, cmd, l, strings)-> MultiCore.suggestCommand("multilogin", new BukkitSender(sender), strings));
         getLogger().info("插件已加载");
     }
 

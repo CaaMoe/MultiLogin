@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core;
 
 import com.google.gson.*;
+import net.md_5.bungee.api.chat.TextComponent;
 import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
@@ -11,9 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class MultiCore {
     private static IPlugin plugin;
@@ -67,6 +67,76 @@ public class MultiCore {
         }
     }
 
+    public static void submitCommand(String cmd, ISender sender, String[] strings){
+        if(cmd.equalsIgnoreCase("whitelist")){
+            if(strings.length > 0){
+                if(strings[0].equalsIgnoreCase("add")){
+                    if(strings.length == 2){
+                        Command.executeAdd(sender, strings);
+                        return;
+                    }
+                } else if(strings[0].equalsIgnoreCase("remove")){
+                    if(strings.length == 2){
+                        Command.executeRemove(sender, strings);
+                        return;
+                    }
+                } else if(strings[0].equalsIgnoreCase("on")){
+                    if(strings.length == 1){
+                        Command.executeOn(sender);
+                        return;
+                    }
+                } else if(strings[0].equalsIgnoreCase("off")){
+                    if(strings.length == 1){
+                        Command.executeOff(sender);
+                        return;
+                    }
+                } else if(strings[0].equalsIgnoreCase("list")){
+                    if(strings.length == 1){
+                        Command.executeList(sender);
+                        return;
+                    }
+                }
+            }
+        } else if(cmd.equalsIgnoreCase("multilogin")){
+            if(strings.length > 0){
+                if(strings[0].equalsIgnoreCase("query")){
+                    if(strings.length <= 2){
+                        Command.executeQuery(sender, strings);
+                        return;
+                    }
+                } else if(strings[0].equalsIgnoreCase("reload")){
+                    if(strings.length == 1){
+                        Command.executeReload(sender);
+                        return;
+                    }
+                }
+            }
+        }
+        sender.sendMessage(new TextComponent(PluginData.getConfigurationConfig().getString("msgInvCmd")));
+    }
+
+    public static List<String> suggestCommand(String cmd, ISender sender, String[] strings){
+        if(cmd.equalsIgnoreCase("whitelist")){
+            if(sender.isOp() || sender.hasPermission("multilogin.whitelist.tab")){
+                if(strings.length == 1){
+                    return Stream.of("add", "remove", "on", "off", "list").filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+                }
+                if(strings.length == 2){
+                    if(strings[0].equalsIgnoreCase("remove")){
+                        return PluginData.listWhitelist().stream().filter(s1 -> s1.startsWith(strings[1])).collect(Collectors.toList());
+                    }
+                }
+            }
+        } else if(cmd.equalsIgnoreCase("multilogin")){
+            if(sender.isOp() || sender.hasPermission("multilogin.multilogin.tab")){
+                if(strings.length == 1){
+                    return Stream.of("query", "reload").filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+                }
+            }
+        }
+        return Collections.emptyList();
+    }
+
     public static boolean isUpdate(){
         if(preV == null && relV == null){
             return false;
@@ -96,7 +166,7 @@ public class MultiCore {
     }
 
 
-    public static void setUpUpdate(){
+    private static void setUpUpdate(){
         update();
         if (isUpdate()) {
             plugin.getMLPluginLogger().info("插件有新的版本发布");
@@ -127,8 +197,6 @@ public class MultiCore {
         } catch (Exception ignore){}
     }
 
-
-
     public static String httpGet(String url) throws IOException {
         return httpGet(new URL(url));
     }
@@ -146,6 +214,4 @@ public class MultiCore {
         }
         return result.toString(StandardCharsets.UTF_8.name());
     }
-
-
 }
