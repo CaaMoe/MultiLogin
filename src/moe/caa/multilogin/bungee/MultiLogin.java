@@ -52,9 +52,13 @@ public class MultiLogin extends Plugin implements IPlugin {
 
         try {
             RefUtil.initService();
-        } catch (IllegalAccessException | NoSuchFieldException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
+            setPluginEnabled(false);
+            return;
         }
+        getLogger().info("插件已加载");
     }
 
     @Override

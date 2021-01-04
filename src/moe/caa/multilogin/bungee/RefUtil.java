@@ -9,9 +9,6 @@ import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.event.ClientConnectEvent;
-import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.connection.InitialHandler;
-import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.HandlerBoss;
 import net.md_5.bungee.netty.PipelineUtils;
 import net.md_5.bungee.protocol.*;
@@ -23,8 +20,6 @@ import java.net.SocketAddress;
 import java.util.Arrays;
 
 public class RefUtil {
-    private static final Class<PreLoginEvent> preLoginEventClass = PreLoginEvent.class;
-    private static final Class<InitialHandler> initialHandlerClass = InitialHandler.class;
 
     public static Field getField(Class clazz, Class target){
         for(Field field : clazz.getDeclaredFields()){
@@ -64,7 +59,7 @@ public class RefUtil {
     }
 
 
-    protected static void initService() throws IllegalAccessException, NoSuchFieldException {
+    public static void initService() throws IllegalAccessException, NoSuchFieldException {
         Class<PipelineUtils> pipelineUtilsClass = PipelineUtils.class;
         Field field = getField(pipelineUtilsClass, ChannelInitializer.class);
         Field field1 = getField(pipelineUtilsClass, KickStringWriter.class);
@@ -117,16 +112,5 @@ public class RefUtil {
                 }
             }
         });
-    }
-
-    public static void modify(PreLoginEvent event) throws Exception {
-//        Field modTar = preLoginEventClass.getDeclaredField("connection");
-//        Field chField = getField(initialHandlerClass, ChannelWrapper.class);
-//        modTar.setAccessible(true);
-//        InitialHandler vanHandle = (InitialHandler) modTar.get(event);
-//        ChannelWrapper ch = (ChannelWrapper) chField.get(vanHandle);
-//        MultiInitialHandler mh = new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), vanHandle);
-//        mh.connected(ch);
-//        ch.getHandle().pipeline().get(HandlerBoss.class).setHandler(mh);
     }
 }
