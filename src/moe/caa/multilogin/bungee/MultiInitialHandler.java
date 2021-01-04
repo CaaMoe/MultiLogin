@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MultiInitialHandler extends InitialHandler{
-    private static final String AUTH_ARG = "hasJoined?username=%s&serverId=%s%s";
     private final Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
     private final Class INITIAL_HANDLE_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
     private final Field THIS_STATE = RefUtil.getField(INITIAL_HANDLE_CLASS, INITIAL_HANDLE_CLASS_STATE_CLASS);
