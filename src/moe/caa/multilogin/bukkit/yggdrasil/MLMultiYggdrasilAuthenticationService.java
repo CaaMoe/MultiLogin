@@ -1,22 +1,16 @@
 package moe.caa.multilogin.bukkit.yggdrasil;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.HttpAuthenticationService;
 import com.mojang.authlib.UserAuthentication;
 import com.mojang.authlib.exceptions.AuthenticationException;
-import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
-import com.mojang.authlib.exceptions.InvalidCredentialsException;
-import com.mojang.authlib.exceptions.UserMigratedException;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.Response;
-import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.core.YggdrasilService;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.Proxy;
 import java.net.URL;

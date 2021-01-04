@@ -139,6 +139,6 @@ public class MultiLogin extends Plugin implements IPlugin {
 
     @Override
     public Gson getAuthGson() {
-        return null;
+        return BungeeCord.getInstance().gson;
     }
 }

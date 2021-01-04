@@ -47,7 +47,6 @@ public class MultiInitialHandler extends InitialHandler{
     private final BungeeCord BUNGEE;
     private final ListenerInfo listener;
 
-
     private final Method FINISH = RefUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
 
     private final InitialHandler vanHandle;
@@ -83,89 +82,41 @@ public class MultiInitialHandler extends InitialHandler{
             String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && vanHandle.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(vanHandle.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
             String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
 
-            Map<Callback<String>, YggdrasilService> tasks = new Hashtable<>();
-            AtomicReference<LoginResult> result = new AtomicReference<>();
-            AtomicReference<YggdrasilService> ygg = new AtomicReference<>();
-            AtomicBoolean down = new AtomicBoolean(false);
-
-            if (PluginData.isOfficialYgg()) {
-                String authURL = String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg);
-                Callback<String> call = new Callback<String>() {
-                    @Override
-                    public void done(String s, Throwable throwable) {
-                        if(throwable == null){
-                            LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
-                            if(resultObj != null && resultObj.getId() != null){
-                                ygg.set(tasks.get(this));
-                                result.set(resultObj);
-                            }
-                        } else {
-                            down.set(true);
-                        }
-                        tasks.remove(this);
-                    }
-                };
-                tasks.put(call, YggdrasilService.OFFICIAL);
-                HttpClient.get(authURL, ch.getHandle().eventLoop(), call);
-            }
-            for(YggdrasilService section : PluginData.getServiceSet()){
-                String url = section.buildUrlStr(arg);
-                Callback<String> call = new Callback<String>() {
-                    @Override
-                    public void done(String s, Throwable throwable) {
-                        if(throwable == null){
-                            LoginResult resultObj = BungeeCord.getInstance().gson.fromJson(s, LoginResult.class);
-                            if(resultObj != null && resultObj.getId() != null){
-                                ygg.set(tasks.get(this));
-                                result.set(resultObj);
-                            }
-                        } else {
-                            down.set(true);
-                        }
-                        tasks.remove(this);
-                    }
-                };
-                tasks.put(call, section);
-                HttpClient.get(url, ch.getHandle().eventLoop(), call);
-            }
-
             BUNGEE.getScheduler().runAsync(MultiLogin.INSTANCE, ()->{
-                long time = System.currentTimeMillis() + PluginData.getTimeOut();
-                while(time > System.currentTimeMillis() && tasks.size() != 0){
-                    if(result.get() != null){
-                        try {
-                            UUID onlineId = Util.getUUID(result.get().getId());
-                            String text = PluginData.getUserVerificationMessage(onlineId, result.get().getName(), ygg.get());
-                            if(text == null){
-                                if (PluginData.isNoRepeatedName() && ygg.get().getPath().equalsIgnoreCase(PluginData.getSafeIdService())) {
-                                    String name = result.get().getName();
-                                    for (ProxiedPlayer player : BUNGEE.getPlayers()) {
-                                        if (player.getName().equalsIgnoreCase(name)) {
-                                            player.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgRushNameOnl")));
-                                        }
-                                    }
-                                }
-                                UUID swapUuid = PluginData.getSwapUUID(onlineId, ygg.get(), result.get().getName());
-                                LOGIN_PROFILE.set(vanHandle, result.get());
-                                UNIQUE_ID.set(vanHandle, swapUuid);
-                                NAME.set(vanHandle, result.get().getName());
-                                FINISH.invoke(vanHandle);
-                                return;
-                            } else {
-                                vanHandle.disconnect(new TextComponent(text));
-                                return;
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            vanHandle.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
-                            return;
-                        }
+                YggdrasilService.AuthResult<LoginResult> result = YggdrasilService.yggAuth(arg, BUNGEE.gson, LoginResult.class);
+                if(result.getErr() != null){
+                    if(result.getErr() == YggdrasilService.AuthErrorEnum.SERVER_DOWN){
+                        vanHandle.disconnect(BUNGEE.getTranslation("mojang_fail"));
+                    } else {
+                        vanHandle.disconnect(BUNGEE.getTranslation("offline_mode_player"));
                     }
+                    return;
                 }
-                if(down.get()){
-                    vanHandle.disconnect(BUNGEE.getTranslation("mojang_fail"));
-                } else {
-                    vanHandle.disconnect(BUNGEE.getTranslation("offline_mode_player"));
+                LoginResult loginResult = result.getResult();
+
+                try {
+                    UUID onlineId = Util.getUUID(loginResult.getId());
+                    String text = PluginData.getUserVerificationMessage(onlineId, loginResult.getName(), result.getYggdrasilService());
+                    if(text == null){
+                        if (PluginData.isNoRepeatedName() && result.getYggdrasilService().getPath().equalsIgnoreCase(PluginData.getSafeIdService())) {
+                            String name = loginResult.getName();
+                            for (ProxiedPlayer player : BUNGEE.getPlayers()) {
+                                if (player.getName().equalsIgnoreCase(name)) {
+                                    player.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgRushNameOnl")));
+                                }
+                            }
+                        }
+                        UUID swapUuid = PluginData.getSwapUUID(onlineId, result.getYggdrasilService(), loginResult.getName());
+                        LOGIN_PROFILE.set(vanHandle, loginResult);
+                        UNIQUE_ID.set(vanHandle, swapUuid);
+                        NAME.set(vanHandle, loginResult);
+                        FINISH.invoke(vanHandle);
+                    } else {
+                        vanHandle.disconnect(new TextComponent(text));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    vanHandle.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
                 }
             });
         }
