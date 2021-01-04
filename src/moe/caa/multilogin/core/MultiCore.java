@@ -136,6 +136,7 @@ public class MultiCore {
                 String result = httpGet(String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg));
                 return gson.fromJson(result, clazz);
             });
+            plugin.runTaskAsyncLater(task, 0);
             tasks.put(task, YggdrasilServiceSection.OFFICIAL);
         }
 
@@ -144,6 +145,7 @@ public class MultiCore {
                 String result = httpGet(section.buildUrlStr(arg));
                 return gson.fromJson(result, clazz);
             });
+            plugin.runTaskAsyncLater(task, 0);
             tasks.put(task, YggdrasilServiceSection.OFFICIAL);
         }
 
@@ -173,7 +175,7 @@ public class MultiCore {
         if(getResult == null){
             if(down)
                 return new AuthResult<>("SERVICE DOWN", null, null);
-            return null;
+            return new AuthResult<>("VALIDATION FAILED", null, null);
         }
         return new AuthResult<T>(null, taskDown.get(), tasks.get(taskDown));
     }
