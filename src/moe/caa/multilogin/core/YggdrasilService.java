@@ -108,7 +108,7 @@ public class YggdrasilService {
                 return gson.fromJson(result, clazz);
             });
             MultiCore.getPlugin().runTaskAsyncLater(task, 0);
-            tasks.put(task, YggdrasilService.OFFICIAL);
+            tasks.put(task, section);
         }
 
         Future<T> taskDown = null;
