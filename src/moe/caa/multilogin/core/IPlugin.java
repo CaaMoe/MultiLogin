@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,4 +33,6 @@ public interface IPlugin {
     String getVersion();
 
     void setPluginEnabled(boolean b);
+
+    Gson getAuthGson();
 }

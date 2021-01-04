@@ -3,13 +3,17 @@ package moe.caa.multilogin.core;
 import com.google.gson.*;
 import sun.misc.BASE64Decoder;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public class MultiCore {
     private static IPlugin plugin;
@@ -18,7 +22,6 @@ public class MultiCore {
     private static String relV = null;
     private static final BASE64Decoder decoder = new BASE64Decoder();
     private static final boolean CURRENT_PRE_VERSION = true;
-
 
     public static IConfiguration getConfig(){
         return plugin.getPluginConfig();
@@ -106,10 +109,9 @@ public class MultiCore {
     private static void update() {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/version.json?ref=master");
-            JsonObject jo = (JsonObject) new JsonParser().parse(new InputStreamReader(url.openConnection().getInputStream()));
+            JsonObject jo = (JsonObject) new JsonParser().parse(httpGet(url));
             String v = new String(decoder.decodeBuffer(jo.get("content").getAsString()));
             JsonObject content = (JsonObject) new JsonParser().parse(v);
-
             Set<Map.Entry<String, JsonElement>> set = content.entrySet();
             String preV = null;
             String relV = null;
@@ -123,5 +125,98 @@ public class MultiCore {
             MultiCore.preV = preV;
             MultiCore.relV = relV;
         } catch (Exception ignore){}
+    }
+
+    public static<T> AuthResult<T> yggAuth(String arg, Gson gson, Class<T> clazz) throws ExecutionException, InterruptedException {
+        T getResult = null;
+        boolean down = false;
+        Map<Future<T>, YggdrasilServiceSection> tasks = new HashMap<>();
+        if(PluginData.isOfficialYgg()){
+            FutureTask<T> task = new FutureTask<T>(()->{
+                String result = httpGet(String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg));
+                return gson.fromJson(result, clazz);
+            });
+            tasks.put(task, YggdrasilServiceSection.OFFICIAL);
+        }
+
+        for(YggdrasilServiceSection section : PluginData.getServiceSet()){
+            FutureTask<T> task = new FutureTask<>(() -> {
+                String result = httpGet(section.buildUrlStr(arg));
+                return gson.fromJson(result, clazz);
+            });
+            tasks.put(task, YggdrasilServiceSection.OFFICIAL);
+        }
+
+        Future<T> taskDown = null;
+        long time = System.currentTimeMillis() + PluginData.getTimeOut();
+        dos:while(time > System.currentTimeMillis() && tasks.size() != 0){
+            Iterator<Future<T>> itr = tasks.keySet().iterator();
+            while (itr.hasNext()){
+                Future<T> task = itr.next();
+                if(task.isDone()){
+                    try {
+                        getResult = task.get();
+                    } catch (Exception ignored) {
+                        down = true;
+                    }
+                    if(getResult != null){
+                        taskDown = task;
+                        break dos;
+                    }
+                    itr.remove();
+                }
+            }
+        }
+        for (Future<T> future : tasks.keySet()){
+            future.cancel(true);
+        }
+        if(getResult == null){
+            if(down)
+                return new AuthResult<>("SERVICE DOWN", null, null);
+            return null;
+        }
+        return new AuthResult<T>(null, taskDown.get(), tasks.get(taskDown));
+    }
+
+    public static String httpGet(String url) throws IOException {
+        return httpGet(new URL(url));
+    }
+
+    public static String httpGet(URL url) throws IOException {
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        InputStream input = connection.getInputStream();
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = input.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString(StandardCharsets.UTF_8.name());
+    }
+
+    public static class AuthResult<T> {
+        private final String err;
+        private final T result;
+        private final YggdrasilServiceSection yggdrasilService;
+
+        AuthResult(String err, T result, YggdrasilServiceSection yggdrasilService) {
+            this.err = err;
+            this.result = result;
+            this.yggdrasilService = yggdrasilService;
+        }
+
+        public String getErr() {
+            return err;
+        }
+
+        public T getResult() {
+            return result;
+        }
+
+        public YggdrasilServiceSection getYggdrasilService() {
+            return yggdrasilService;
+        }
     }
 }
