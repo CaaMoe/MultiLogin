@@ -65,6 +65,7 @@ public class MultiLogin extends Plugin implements IPlugin {
     public void onDisable() {
         TIMER.cancel();
         MultiCore.save();
+        BungeeCord.getInstance().stop();
     }
 
     @Override
