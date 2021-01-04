@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core;
 
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Command {
 
     public static void executeQuery(ISender commandSender, String[] strings) {
         if (testPermission(commandSender, "multilogin.multilogin.query")) {
-            String s = strings.length == 2 ? strings[1] : ((commandSender instanceof ProxiedPlayer) ? commandSender.getSenderName() : null);
+            String s = strings.length == 2 ? strings[1] : ((commandSender.isPlayer()) ? commandSender.getSenderName() : null);
             if(s != null){
                 PluginData.UserEntry entry = PluginData.getUserEntry(s);
                 if(entry != null){

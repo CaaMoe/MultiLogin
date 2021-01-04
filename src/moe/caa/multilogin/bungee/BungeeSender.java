@@ -3,6 +3,7 @@ package moe.caa.multilogin.bungee;
 import moe.caa.multilogin.core.ISender;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeSender implements ISender {
     private final CommandSender vanSender;
@@ -29,5 +30,10 @@ public class BungeeSender implements ISender {
     @Override
     public boolean isOp() {
         return false;
+    }
+
+    @Override
+    public boolean isPlayer() {
+        return vanSender instanceof ProxiedPlayer;
     }
 }

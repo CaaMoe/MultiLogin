@@ -10,4 +10,6 @@ public interface ISender {
     void sendMessage(BaseComponent text);
 
     boolean isOp();
+
+    boolean isPlayer();
 }

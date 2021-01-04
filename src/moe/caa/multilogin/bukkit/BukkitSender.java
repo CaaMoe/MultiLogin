@@ -3,6 +3,7 @@ package moe.caa.multilogin.bukkit;
 import moe.caa.multilogin.core.ISender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class BukkitSender implements ISender {
     private final CommandSender vanSender;
@@ -29,5 +30,10 @@ public class BukkitSender implements ISender {
     @Override
     public boolean isOp() {
         return vanSender.isOp();
+    }
+
+    @Override
+    public boolean isPlayer() {
+        return vanSender instanceof Player;
     }
 }
