@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit;
 
+import com.google.gson.Gson;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
@@ -115,5 +116,10 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
     @Override
     public void setPluginEnabled(boolean b) {
         setEnabled(b);
+    }
+
+    @Override
+    public Gson getAuthGson() {
+        return NMSUtil.getAuthGson();
     }
 }

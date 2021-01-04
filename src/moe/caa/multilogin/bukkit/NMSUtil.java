@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit;
 
+import com.google.gson.Gson;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -17,6 +18,7 @@ public class NMSUtil {
     public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
     private static Method CRAFT_PLAYER_GET_HANDLE = null;
     private static Method ENTITY_HUMAN_GET_PROFILE = null;
+    private static Gson authGson;
 
     private NMSUtil(){
     }
@@ -43,6 +45,11 @@ public class NMSUtil {
 
         field.set(obj, multiYggdrasilMinecraftSessionService);
 
+        authGson = multiYggdrasilAuthenticationService.getGson();
+    }
+
+    protected static Gson getAuthGson(){
+        return authGson;
     }
 
     private static Field getField(Class clazz, Class target){

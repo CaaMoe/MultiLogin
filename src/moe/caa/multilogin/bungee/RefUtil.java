@@ -60,7 +60,5 @@ public class RefUtil {
         MultiInitialHandler mh = new MultiInitialHandler(BungeeCord.getInstance(),vanHandle.getListener(), vanHandle);
         mh.connected(ch);
         ch.getHandle().pipeline().get(HandlerBoss.class).setHandler(mh);
-
-
     }
 }

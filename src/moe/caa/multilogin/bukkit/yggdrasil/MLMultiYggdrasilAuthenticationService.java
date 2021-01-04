@@ -37,31 +37,8 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
         return vanService.createUserAuthentication(agent);
     }
 
-    protected <T extends Response> T makeRequest0(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
-        try {
-            String jsonResult = input == null ? this.performGetRequest(url) : this.performPostRequest(url, gson.toJson(input), "application/json");
-            T result = gson.fromJson(jsonResult, classOfT);
-            if (result == null) {
-                return null;
-            } else if (!PluginData.isBlank(result.getError())) {
-                if ("UserMigratedException".equals(result.getCause())) {
-                    throw new UserMigratedException(result.getErrorMessage());
-                } else if ("ForbiddenOperationException".equals(result.getError())) {
-                    throw new InvalidCredentialsException(result.getErrorMessage());
-                } else {
-                    throw new AuthenticationException(result.getErrorMessage());
-                }
-            } else {
-                return result;
-            }
-        } catch (IllegalStateException | JsonParseException | IOException var6) {
-            throw new AuthenticationUnavailableException("Cannot contact authentication server", var6);
-        }
-    }
-
-    public <T extends Response> T makeRequest(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
+    public <T extends Response> T makeRequest0(URL url, Object input, Class<T> classOfT) throws AuthenticationException {
         if(classOfT != MLHasJoinedMinecraftServerResponse.class) return makeRequest0(url, input, classOfT);
-
         String arg = null;
         for(String s : url.toString().split("/")){
             if(s.startsWith("hasJoined?")){
@@ -75,7 +52,11 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
             }
             return null;
         }
-        return authResult.getResult();
+        T ret = authResult.getResult();
+        if(ret instanceof MLHasJoinedMinecraftServerResponse){
+            ((MLHasJoinedMinecraftServerResponse) ret).setYggService(authResult.getYggdrasilService());
+        }
+        return ret;
     }
 
     @Override
@@ -95,5 +76,9 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
     public void setVanService(HttpAuthenticationService vanService) throws IllegalAccessException {
         this.vanService = vanService;
         gson = (Gson) YggdrasilAuthenticationServiceGson.get(vanService);
+    }
+
+    public Gson getGson() {
+        return gson;
     }
 }

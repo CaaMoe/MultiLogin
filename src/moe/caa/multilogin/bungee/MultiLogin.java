@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bungee;
 
+import com.google.gson.Gson;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
@@ -134,5 +135,10 @@ public class MultiLogin extends Plugin implements IPlugin {
     public void setPluginEnabled(boolean b) {
         MultiCore.save();
         BungeeCord.getInstance().stop("MultiLogin ERROR");
+    }
+
+    @Override
+    public Gson getAuthGson() {
+        return null;
     }
 }

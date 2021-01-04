@@ -48,7 +48,7 @@ public class MLMultiYggdrasilMinecraftSessionService extends HttpMinecraftSessio
         url = HttpAuthenticationService.concatenateURL(CHECK_URL, HttpAuthenticationService.buildQuery(arguments));
 
         try {
-            MLHasJoinedMinecraftServerResponse response = ((MLMultiYggdrasilAuthenticationService) this.getAuthenticationService()).makeRequest(url, null, MLHasJoinedMinecraftServerResponse.class);
+            MLHasJoinedMinecraftServerResponse response = ((MLMultiYggdrasilAuthenticationService) this.getAuthenticationService()).makeRequest0(url, null, MLHasJoinedMinecraftServerResponse.class);
             if (response != null && response.getId() != null) {
                 UUID swap = PluginData.getSwapUUID(response.getId(), response.getYggService(), gameProfile.getName());
                 GameProfile result = new MLGameProfile(response.getId(), swap, gameProfile.getName(), response.getYggService());
