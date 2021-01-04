@@ -16,6 +16,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.*;
+import java.sql.Ref;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -48,6 +49,12 @@ public class MultiLogin extends Plugin implements IPlugin {
                 MultiCore.submitCommand("multilogin", new BungeeSender(commandSender), strings);
             }
         });
+
+        try {
+            RefUtil.initService();
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

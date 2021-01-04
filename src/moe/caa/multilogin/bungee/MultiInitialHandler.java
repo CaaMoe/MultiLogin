@@ -43,25 +43,20 @@ public class MultiInitialHandler extends InitialHandler{
     private final Field LOGIN_PROFILE = RefUtil.getField(INITIAL_HANDLE_CLASS, LoginResult.class);
     private final Field NAME = RefUtil.getField(INITIAL_HANDLE_CLASS, "name");
     private final Field UNIQUE_ID = RefUtil.getField(INITIAL_HANDLE_CLASS, "uniqueId");
-    private final BungeeCord BUNGEE;
-    private final ListenerInfo listener;
 
     private final Method FINISH = RefUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
+    private final BungeeCord BUNGEE;
 
-    private final InitialHandler vanHandle;
-
-    public MultiInitialHandler(BungeeCord bungee, ListenerInfo listener, InitialHandler vanHandle) throws ClassNotFoundException, NoSuchFieldException {
+    public MultiInitialHandler(BungeeCord bungee, ListenerInfo listener) throws ClassNotFoundException, NoSuchFieldException {
         super(bungee, listener);
-        this.vanHandle = vanHandle;
-        this.BUNGEE = bungee;
-        this.listener = listener;
+        BUNGEE = bungee;
     }
 
     @Override
     public void handle(EncryptionResponse encryptResponse) throws Exception {
-        EncryptionRequest request = (EncryptionRequest) REQUEST.get(vanHandle);
-        ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.get(vanHandle);
-        Preconditions.checkState(THIS_STATE.get(vanHandle) == RefUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
+        EncryptionRequest request = (EncryptionRequest) REQUEST.get(this);
+        ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.get(this);
+        Preconditions.checkState(THIS_STATE.get(this) == RefUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
         SecretKey sharedKey = EncryptionUtil.getSecret(encryptResponse, request);
         if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
             ch.close();
@@ -70,7 +65,7 @@ public class MultiInitialHandler extends InitialHandler{
             ch.addBefore("frame-decoder", "decrypt", new CipherDecoder(decrypt));
             BungeeCipher encrypt = EncryptionUtil.getCipher(true, sharedKey);
             ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
-            String encName = URLEncoder.encode(vanHandle.getName(), "UTF-8");
+            String encName = URLEncoder.encode(this.getName(), "UTF-8");
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
             byte[][] var7 = new byte[][]{request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
 
@@ -78,16 +73,16 @@ public class MultiInitialHandler extends InitialHandler{
                 sha.update(bit);
             }
             String encodedHash = URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
-            String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && vanHandle.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(vanHandle.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
+            String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && this.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(this.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
             String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
 
             BUNGEE.getScheduler().runAsync(MultiLogin.INSTANCE, ()->{
                 YggdrasilService.AuthResult<LoginResult> result = YggdrasilService.yggAuth(arg, BUNGEE.gson, LoginResult.class);
                 if(result.getErr() != null){
                     if(result.getErr() == YggdrasilService.AuthErrorEnum.SERVER_DOWN){
-                        vanHandle.disconnect(BUNGEE.getTranslation("mojang_fail"));
+                        this.disconnect(BUNGEE.getTranslation("mojang_fail"));
                     } else {
-                        vanHandle.disconnect(BUNGEE.getTranslation("offline_mode_player"));
+                        this.disconnect(BUNGEE.getTranslation("offline_mode_player"));
                     }
                     return;
                 }
@@ -106,18 +101,23 @@ public class MultiInitialHandler extends InitialHandler{
                             }
                         }
                         UUID swapUuid = PluginData.getSwapUUID(onlineId, result.getYggdrasilService(), loginResult.getName());
-                        LOGIN_PROFILE.set(vanHandle, loginResult);
-                        UNIQUE_ID.set(vanHandle, swapUuid);
-                        NAME.set(vanHandle, loginResult);
-                        FINISH.invoke(vanHandle);
+                        LOGIN_PROFILE.set(this, loginResult);
+                        UNIQUE_ID.set(this, swapUuid);
+                        NAME.set(this, loginResult.getName());
+                        FINISH.invoke(this);
                     } else {
-                        vanHandle.disconnect(new TextComponent(text));
+                        this.disconnect(new TextComponent(text));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    vanHandle.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
+                    this.disconnect(new TextComponent(PluginData.getConfigurationConfig().getString("msgNoAdopt")));
                 }
             });
         }
+    }
+
+    @Override
+    public void setOnlineMode(boolean onlineMode) {
+        super.setOnlineMode(true);
     }
 }
