@@ -68,7 +68,17 @@ public class PluginData {
         } else {
             log.info("已设置不启用正版验证");
         }
-        log.info(String.format("已成功载入%d个Yggdrasil验证服务器", serviceSet.size() + (isOfficialYgg() ? 1 : 0)));
+
+        if (isNeteaseYgg()) {
+            log.info("已设置启用网易正版验证");
+            YggdrasilService.NETEASE_OFFICIAL = new YggdrasilService("neteaseOfficial", getNeteaseName(), "", getNeteaseConvUuid(),isNeteaseYggWhitelist(), false);
+        } else {
+            log.info("已设置不启用网易正版验证");
+        }
+        int off = 0;
+        off = isNeteaseYgg() ? off + 1 : off;
+        off = isOfficialYgg() ? off + 1 : off;
+        log.info(String.format("已成功载入%d个Yggdrasil验证服务器", serviceSet.size() + off));
         testMsg(log, "msgNoAdopt");
         testMsg(log, "msgNoChae");
         testMsg(log, "msgRushName");
@@ -216,6 +226,14 @@ public class PluginData {
         return configurationConfig.getBoolean("officialServicesWhitelist", true);
     }
 
+    public static boolean isNeteaseYgg() {
+        return configurationConfig.getBoolean("neteaseServices", false);
+    }
+
+    public static boolean isNeteaseYggWhitelist() {
+        return configurationConfig.getBoolean("neteaseServicesWhitelist", true);
+    }
+
     public static String getSafeIdService(){
         return configurationConfig.getString("safeId", "");
     }
@@ -232,11 +250,25 @@ public class PluginData {
         return configurationConfig.getString("officialName", "Official");
     }
 
+    private static String getNeteaseName(){
+        return configurationConfig.getString("neteaseName", "Netease-Official");
+    }
+
     public static Set<YggdrasilService> getServiceSet() {
         return serviceSet;
     }
 
     private static PluginData.ConvUuid getOfficialConvUuid(){
+        try {
+            PluginData.ConvUuid ret;
+            ret = PluginData.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
+            return ret;
+        }catch (Exception ignore){}
+        MultiCore.getPlugin().getMLPluginLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
+        return PluginData.ConvUuid.DEFAULT;
+    }
+
+    private static PluginData.ConvUuid getNeteaseConvUuid(){
         try {
             PluginData.ConvUuid ret;
             ret = PluginData.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));

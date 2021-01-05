@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 public class YggdrasilService {
     public static YggdrasilService OFFICIAL;
+    public static YggdrasilService NETEASE_OFFICIAL;
 
     private final String path;
     private final String name;

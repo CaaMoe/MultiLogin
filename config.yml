@@ -43,7 +43,6 @@ services:
 # 必填，不允许为空字符串
 officialName: "正版"
 
-
 # 使用正版Yggdrasil验证服务器
 # 关闭将拒绝所有使用正版验证登入的玩家登入游戏
 officialServices: true
@@ -63,6 +62,31 @@ officialServicesWhitelist: true
 # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
 # 必填，不允许为无效的值。
 officialConvUuid: DEFAULT
+
+# 网易验证服务器的别称，可以随意修改。
+# 必填，不允许为空字符串
+neteaseName: "网易正版"
+
+# 该节点仅对Bungee端有效！
+# 使用网易Yggdrasil验证服务器
+# 关闭将拒绝所有使用网易验证登入的玩家登入游戏
+neteaseServices: false
+
+# 是否单独为网易正版玩家开启白名单系统。
+# 当某名玩家使用网易正版验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
+# 当全局白名单生效时，此节点无效。
+neteaseServicesWhitelist: true
+
+# 网易正版转换UUID
+# 当某名玩家首次在网易正版验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
+# 目前只支持以下值:
+#   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
+#   OFFLINE   -自动生成离线UUID（盗版UUID）
+# 所有生成的结果均会缓存至swap_uuid.json中。
+# 该值的优先级低于swap_uuid.json文件内的值。
+# 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
+# 必填，不允许为无效的值。
+neteaseConvUuid: DEFAULT
 
 # 服务器内是否阻止重名
 # 判定规则：服务器将会记录并且缓存玩家的登入数据，并更新账户的name，当有玩家登入到游戏中，系统会首先判断玩家的name是否存在被其他缓存用户占用。
