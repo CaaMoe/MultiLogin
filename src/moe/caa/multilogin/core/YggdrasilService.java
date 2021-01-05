@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -90,7 +91,7 @@ public class YggdrasilService {
         return url + "/sessionserver/session/minecraft/" + arg;
     }
 
-    public static<T> AuthResult<T> yggAuth(String arg, Gson gson, Class<T> clazz)  {
+    public static<T> AuthResult<T> yggAuth(String arg, Gson gson, Class<T> clazz, boolean netease, Object... oth)  {
         T getResult = null;
         boolean down = false;
         Map<Future<T>, YggdrasilService> tasks = new HashMap<>();
@@ -101,6 +102,18 @@ public class YggdrasilService {
             });
             MultiCore.getPlugin().runTaskAsyncLater(task, 0);
             tasks.put(task, YggdrasilService.OFFICIAL);
+        }
+
+        if(PluginData.isNeteaseYgg()){
+            FutureTask<T> task = new FutureTask<T>(()->{
+                JsonObject postJson = new JsonObject();
+                postJson.addProperty("username", oth[0].toString());
+                postJson.addProperty("serverId", oth[1].toString());
+                String result = MultiCore.httpPost("http://x19authserver.nie.netease.com/check", postJson.toString());
+                return gson.fromJson(result, clazz);
+            });
+            MultiCore.getPlugin().runTaskAsyncLater(task, 0);
+            tasks.put(task, YggdrasilService.NETEASE_OFFICIAL);
         }
 
         for(YggdrasilService section : PluginData.getServiceSet()){

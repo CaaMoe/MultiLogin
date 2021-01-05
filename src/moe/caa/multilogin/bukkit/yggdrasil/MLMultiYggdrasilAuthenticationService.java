@@ -39,7 +39,7 @@ public class MLMultiYggdrasilAuthenticationService extends HttpAuthenticationSer
                 arg = s;
             }
         }
-        YggdrasilService.AuthResult<T> authResult = YggdrasilService.yggAuth(arg, gson, classOfT);
+        YggdrasilService.AuthResult<T> authResult = YggdrasilService.yggAuth(arg, gson, classOfT, false);
         if(authResult.getErr() != null){
             if(authResult.getErr() == YggdrasilService.AuthErrorEnum.SERVER_DOWN){
                 throw new AuthenticationException();

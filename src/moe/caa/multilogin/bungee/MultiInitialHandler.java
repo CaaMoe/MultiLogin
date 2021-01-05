@@ -6,13 +6,11 @@ import moe.caa.multilogin.core.YggdrasilService;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.Util;
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
-import net.md_5.bungee.http.HttpClient;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.cipher.CipherDecoder;
@@ -28,11 +26,7 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MultiInitialHandler extends InitialHandler{
     private final Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
@@ -77,10 +71,11 @@ public class MultiInitialHandler extends InitialHandler{
             }
             String encodedHash = URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
             String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && this.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(this.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
+            String name0 = getName();
+            String serverID = new BigInteger( sha.digest() ).toString( 16 );
             String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
-
             BUNGEE.getScheduler().runAsync(MultiLogin.INSTANCE, ()->{
-                YggdrasilService.AuthResult<LoginResult> result = YggdrasilService.yggAuth(arg, BUNGEE.gson, LoginResult.class);
+                YggdrasilService.AuthResult<LoginResult> result = YggdrasilService.yggAuth(arg, BUNGEE.gson, LoginResult.class, PluginData.isNeteaseYgg(), name0, serverID);
                 if(result.getErr() != null){
                     if(result.getErr() == YggdrasilService.AuthErrorEnum.SERVER_DOWN){
                         this.disconnect(BUNGEE.getTranslation("mojang_fail"));

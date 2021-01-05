@@ -4,10 +4,8 @@ import com.google.gson.*;
 import net.md_5.bungee.api.chat.TextComponent;
 import sun.misc.BASE64Decoder;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -213,5 +211,28 @@ public class MultiCore {
             result.write(buffer, 0, length);
         }
         return result.toString(StandardCharsets.UTF_8.name());
+    }
+
+    public static String httpPost(String url, String arg) throws IOException {
+        return httpPost(new URL(url), arg);
+    }
+
+    public static String httpPost(URL url, String arg) throws IOException {
+        StringBuilder result = new StringBuilder();
+        URLConnection connection = url.openConnection();
+        connection.setDoOutput(true);
+        connection.setDoInput(true);
+
+        PrintWriter pw = new PrintWriter(connection.getOutputStream());
+        pw.write(arg);
+        pw.flush();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            result.append(line);
+        }
+        return result.toString();
     }
 }
