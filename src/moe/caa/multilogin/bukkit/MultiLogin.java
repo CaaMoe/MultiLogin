@@ -32,7 +32,7 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
 
         try {
             NMSUtil.initService(this);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
             setEnabled(false);

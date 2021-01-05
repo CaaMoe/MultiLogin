@@ -53,7 +53,7 @@ public class MultiLogin extends Plugin implements IPlugin {
 
         try {
             RefUtil.initService();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
             setPluginEnabled(false);
@@ -160,8 +160,11 @@ public class MultiLogin extends Plugin implements IPlugin {
 
     @Override
     public void setPluginEnabled(boolean b) {
-        MultiCore.save();
-        BungeeCord.getInstance().stop("MultiLogin ERROR");
+        if (!b) {
+            MultiCore.save();
+            BungeeCord.getInstance().stop("MultiLogin ERROR");
+        }
+
     }
 
     @Override
