@@ -51,6 +51,7 @@ public final class MultiLogin extends JavaPlugin implements IPlugin {
         });
         getCommand("whitelist").setTabCompleter((sender, cmd, l, strings)-> MultiCore.suggestCommand("whitelist", new BukkitSender(sender), strings));
         getCommand("multilogin").setTabCompleter((sender, cmd, l, strings)-> MultiCore.suggestCommand("multilogin", new BukkitSender(sender), strings));
+        new Metrics(this, 9889);
         getLogger().info("插件已加载");
     }
 

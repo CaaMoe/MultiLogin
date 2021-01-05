@@ -58,6 +58,7 @@ public class MultiLogin extends Plugin implements IPlugin {
             setPluginEnabled(false);
             return;
         }
+        Metrics metrics = new Metrics(this, 9888);
         getLogger().info("插件已加载");
     }
 
