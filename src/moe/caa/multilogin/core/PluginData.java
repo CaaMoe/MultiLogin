@@ -50,8 +50,8 @@ public class PluginData {
         IConfiguration services = configurationConfig.getConfigurationSection("services");
         if(services != null){
             for(String path : services.getKeys(false)){
-                if(path.equalsIgnoreCase("official") || path.equalsIgnoreCase("multi") ){
-                    log.warning("请勿将official或multi值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
+                if(path.equalsIgnoreCase("official") || path.equalsIgnoreCase("multi") || path.equalsIgnoreCase("Netease-Official")){
+                    log.warning("请勿将official、Netease-Official、multi值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
                     continue;
                 }
                 YggdrasilService section = YggdrasilService.fromYaml(path, services.getConfigurationSection(path));
@@ -271,10 +271,10 @@ public class PluginData {
     private static PluginData.ConvUuid getNeteaseConvUuid(){
         try {
             PluginData.ConvUuid ret;
-            ret = PluginData.ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
+            ret = PluginData.ConvUuid.valueOf(configurationConfig.getString("neteaseConvUuid"));
             return ret;
         }catch (Exception ignore){}
-        MultiCore.getPlugin().getMLPluginLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
+        MultiCore.getPlugin().getMLPluginLogger().severe("无法读取配置文件节点 neteaseConvUuid ，已应用为默认值 DEFAULT.");
         return PluginData.ConvUuid.DEFAULT;
     }
 
