@@ -1,6 +1,5 @@
 package moe.caa.multilogin.bungee;
 
-import io.github.waterfallmc.waterfall.event.ConnectionInitEvent;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -77,37 +76,29 @@ public class RefUtil {
                     if (BungeeCord.getInstance().getPluginManager().callEvent(new ClientConnectEvent(remoteAddress, listener)).isCancelled()) {
                         ch.close();
                     } else {
-                        ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> {
-                            if (result.isCancelled()) {
-                                ch.close();
-                            } else {
-                                try {
-                                    PipelineUtils.BASE.initChannel(ch);
-                                } catch (Exception var5) {
-                                    var5.printStackTrace();
-                                    ch.close();
-                                    return;
-                                }
-
-                                ch.pipeline().addBefore("frame-decoder", "legacy-decoder", new LegacyDecoder());
-                                ch.pipeline().addAfter("frame-decoder", "packet-decoder", new MinecraftDecoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
-                                ch.pipeline().addAfter("frame-prepender", "packet-encoder", new MinecraftEncoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
-                                try {
-                                    ch.pipeline().addBefore("frame-prepender", "legacy-kick", (ChannelHandler) field1.get(null));
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                }
-                                try {
-                                    ch.pipeline().get(HandlerBoss.class).setHandler(new MultiInitialHandler(BungeeCord.getInstance(), listener));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                                if (listener.isProxyProtocol()) {
-                                    ch.pipeline().addFirst(new HAProxyMessageDecoder());
-                                }
-                            }
-                        });
-                        BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
+                        try {
+                            PipelineUtils.BASE.initChannel(ch);
+                        } catch (Exception var5) {
+                            var5.printStackTrace();
+                            ch.close();
+                            return;
+                        }
+                        ch.pipeline().addBefore("frame-decoder", "legacy-decoder", new LegacyDecoder());
+                        ch.pipeline().addAfter("frame-decoder", "packet-decoder", new MinecraftDecoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
+                        ch.pipeline().addAfter("frame-prepender", "packet-encoder", new MinecraftEncoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
+                        try {
+                            ch.pipeline().addBefore("frame-prepender", "legacy-kick", (ChannelHandler) field1.get(null));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            ch.pipeline().get(HandlerBoss.class).setHandler(new MultiInitialHandler(BungeeCord.getInstance(), listener));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (listener.isProxyProtocol()) {
+                            ch.pipeline().addFirst(new HAProxyMessageDecoder());
+                        }
                     }
                 }
             }

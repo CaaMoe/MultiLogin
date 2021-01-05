@@ -1,10 +1,9 @@
 package moe.caa.multilogin.bukkit.listener;
 
 import moe.caa.multilogin.bukkit.NMSUtil;
+import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.PluginData;
-import moe.caa.multilogin.bukkit.MultiLogin;
-import moe.caa.multilogin.bukkit.yggdrasil.MLGameProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +13,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 
 public class BukkitListener implements Listener {
 
-    @SuppressWarnings("all")
     @EventHandler(ignoreCancelled = true)
     private void onLogin(PlayerLoginEvent event){
         try {

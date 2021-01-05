@@ -5,7 +5,6 @@ import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.PluginData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -15,8 +14,10 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.*;
-import java.sql.Ref;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -58,6 +59,7 @@ public class MultiLogin extends Plugin implements IPlugin {
             setPluginEnabled(false);
             return;
         }
+        new Metrics(this, 9888);
         getLogger().info("插件已加载");
     }
 
