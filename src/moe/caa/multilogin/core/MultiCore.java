@@ -2,7 +2,6 @@ package moe.caa.multilogin.core;
 
 import com.google.gson.*;
 import net.md_5.bungee.api.chat.TextComponent;
-import sun.misc.BASE64Decoder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,7 +19,7 @@ public class MultiCore {
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static String preV = null;
     private static String relV = null;
-    private static final BASE64Decoder decoder = new BASE64Decoder();
+    private static final Base64.Decoder decoder = Base64.getDecoder();
     private static final boolean CURRENT_PRE_VERSION = true;
 
     public static IConfiguration getConfig(){
@@ -180,7 +179,7 @@ public class MultiCore {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/version.json?ref=master");
             JsonObject jo = (JsonObject) new JsonParser().parse(httpGet(url));
-            String v = new String(decoder.decodeBuffer(jo.get("content").getAsString()));
+            String v = new String(decoder.decode(jo.get("content").getAsString()), StandardCharsets.UTF_8);
             JsonObject content = (JsonObject) new JsonParser().parse(v);
             Set<Map.Entry<String, JsonElement>> set = content.entrySet();
             String preV = null;
