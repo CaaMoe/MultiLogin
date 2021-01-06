@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -179,7 +180,9 @@ public class MultiCore {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/version.json?ref=master");
             JsonObject jo = (JsonObject) new JsonParser().parse(httpGet(url));
-            String v = new String(decoder.decode(jo.get("content").getAsString()), StandardCharsets.UTF_8);
+            String pat = jo.get("content").getAsString();
+            pat = pat.substring(0, pat.length() - 1);
+            String v = new String(decoder.decode(pat), StandardCharsets.UTF_8);
             JsonObject content = (JsonObject) new JsonParser().parse(v);
             Set<Map.Entry<String, JsonElement>> set = content.entrySet();
             String preV = null;
