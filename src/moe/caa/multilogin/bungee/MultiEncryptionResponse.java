@@ -2,7 +2,6 @@ package moe.caa.multilogin.bungee;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.PluginData;
 import moe.caa.multilogin.core.YggdrasilService;
 import net.md_5.bungee.BungeeCord;
@@ -118,12 +117,10 @@ public class MultiEncryptionResponse extends EncryptionResponse {
                                 }
                             }
                             UUID swapUuid = PluginData.getSwapUUID(onlineId, result.getYggdrasilService(), loginResult.getName());
-                            LOGIN_PROFILE.set(this, loginResult);
-                            UNIQUE_ID.set(this, swapUuid);
-                            NAME.set(this, loginResult.getName());
-                            FINISH.invoke(this);
-                            MultiLogin.SAFE_CACHE.add(swapUuid);
-                            MultiCore.getPlugin().runTaskAsyncLater(()->MultiLogin.SAFE_CACHE.remove(swapUuid), 20);
+                            LOGIN_PROFILE.set(handler, new MultiSignLoginResult(loginResult));
+                            UNIQUE_ID.set(handler, swapUuid);
+                            NAME.set(handler, loginResult.getName());
+                            FINISH.invoke(handler);
                         } else {
                             ((InitialHandler) handler).disconnect(new TextComponent(text));
                         }

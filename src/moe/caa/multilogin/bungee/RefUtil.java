@@ -53,6 +53,7 @@ public class RefUtil {
 
 
     public static void initService() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+        // 感谢 KS 提供的反射思路和代码
         MultiEncryptionResponse.init();
 
         Class<MultiEncryptionResponse> packetClass = MultiEncryptionResponse.class;
@@ -68,12 +69,14 @@ public class RefUtil {
         Object to_server = field_TO_SERVER.get(Protocol.LOGIN);
         TIntObjectMap<?> protocols = (TIntObjectMap<?>) field_protocols.get(to_server);
         for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
-            Object data = protocols.get(protocol);
-            TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
-            packetMap.remove(EncryptionResponse.class);
-            packetMap.put(packetClass, packetID);
-            Supplier<? extends DefinedPacket>[] constructors = (Supplier<? extends DefinedPacket>[]) field_packetConstructors.get(data);
-            constructors[packetID] = MultiEncryptionResponse::new;
+            if(protocol >= 47){
+                Object data = protocols.get(protocol);
+                TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
+                packetMap.remove(EncryptionResponse.class);
+                packetMap.put(packetClass, packetID);
+                Supplier<? extends DefinedPacket>[] constructors = (Supplier<? extends DefinedPacket>[]) field_packetConstructors.get(data);
+                constructors[packetID] = MultiEncryptionResponse::new;
+            }
         }
     }
 }

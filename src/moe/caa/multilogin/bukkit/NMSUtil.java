@@ -24,15 +24,15 @@ public class NMSUtil {
     }
 
     protected static void initService(MultiLogin plugin) throws ClassNotFoundException, NoSuchFieldException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Class CRAFT_PLAYER_CLASS = Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + ".entity.CraftPlayer");
-        Class ENTITY_PLAYER_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".EntityHuman");
+        Class<?> CRAFT_PLAYER_CLASS = Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + ".entity.CraftPlayer");
+        Class<?> ENTITY_PLAYER_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".EntityHuman");
         CRAFT_PLAYER_GET_HANDLE = CRAFT_PLAYER_CLASS.getDeclaredMethod("getHandle");
         ENTITY_HUMAN_GET_PROFILE = ENTITY_PLAYER_CLASS.getDeclaredMethod("getProfile");
-        final Class CRAFT_SERVER_CLASS = Class.forName("org.bukkit.craftbukkit."  + NMS_VERSION + ".CraftServer");
+        final Class<?> CRAFT_SERVER_CLASS = Class.forName("org.bukkit.craftbukkit."  + NMS_VERSION + ".CraftServer");
         final Method CRAFT_SERVER_GET_HANDLE = CRAFT_SERVER_CLASS.getDeclaredMethod("getHandle");
-        final Class DEDICATED_PLAYER_LIST_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".DedicatedPlayerList");
+        final Class<?> DEDICATED_PLAYER_LIST_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".DedicatedPlayerList");
         final Method DEDICATED_PLAYER_LIST_GET_HANDLE = DEDICATED_PLAYER_LIST_CLASS.getDeclaredMethod("getServer");
-        final Class MINECRAFT_SERVER_CLASS = Class.forName("net.minecraft.server."  + NMS_VERSION + ".MinecraftServer");
+        final Class<?> MINECRAFT_SERVER_CLASS = Class.forName("net.minecraft.server."  + NMS_VERSION + ".MinecraftServer");
         Field field = getField(MINECRAFT_SERVER_CLASS, MinecraftSessionService.class);
         field.setAccessible(true);
         Object obj = DEDICATED_PLAYER_LIST_GET_HANDLE.invoke(CRAFT_SERVER_GET_HANDLE.invoke(Bukkit.getServer()));
@@ -52,7 +52,7 @@ public class NMSUtil {
         return authGson;
     }
 
-    private static Field getField(Class clazz, Class target){
+    private static Field getField(Class<?> clazz, Class<?> target){
         for(Field field : clazz.getDeclaredFields()){
             if(field.getType() == target){
                 return field;
