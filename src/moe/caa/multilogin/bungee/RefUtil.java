@@ -1,22 +1,16 @@
 package moe.caa.multilogin.bungee;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelInitializer;
-import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.config.ListenerInfo;
-import net.md_5.bungee.api.event.ClientConnectEvent;
-import net.md_5.bungee.netty.HandlerBoss;
-import net.md_5.bungee.netty.PipelineUtils;
-import net.md_5.bungee.protocol.*;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.TObjectIntMap;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.net.SocketAddress;
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public class RefUtil {
 
@@ -58,50 +52,28 @@ public class RefUtil {
     }
 
 
-    public static void initService() throws IllegalAccessException, NoSuchFieldException {
-        Class<PipelineUtils> pipelineUtilsClass = PipelineUtils.class;
-        Field field = getField(pipelineUtilsClass, ChannelInitializer.class);
-        Field field1 = getField(pipelineUtilsClass, KickStringWriter.class);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+    public static void initService() throws IllegalAccessException, NoSuchFieldException, ClassNotFoundException {
+        MultiEncryptionResponse.init();
 
-        field.set(null, new ChannelInitializer<Channel>() {
-            protected void initChannel(Channel ch) {
-                SocketAddress remoteAddress = ch.remoteAddress() == null ? ch.parent().localAddress() : ch.remoteAddress();
-                if (BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle(remoteAddress)) {
-                    ch.close();
-                } else {
-                    ListenerInfo listener = ch.attr(PipelineUtils.LISTENER).get();
-                    if (BungeeCord.getInstance().getPluginManager().callEvent(new ClientConnectEvent(remoteAddress, listener)).isCancelled()) {
-                        ch.close();
-                    } else {
-                        try {
-                            PipelineUtils.BASE.initChannel(ch);
-                        } catch (Exception var5) {
-                            var5.printStackTrace();
-                            ch.close();
-                            return;
-                        }
-                        ch.pipeline().addBefore("frame-decoder", "legacy-decoder", new LegacyDecoder());
-                        ch.pipeline().addAfter("frame-decoder", "packet-decoder", new MinecraftDecoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
-                        ch.pipeline().addAfter("frame-prepender", "packet-encoder", new MinecraftEncoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
-                        try {
-                            ch.pipeline().addBefore("frame-prepender", "legacy-kick", (ChannelHandler) field1.get(null));
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        }
-                        try {
-                            ch.pipeline().get(HandlerBoss.class).setHandler(new MultiInitialHandler(BungeeCord.getInstance(), listener));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (listener.isProxyProtocol()) {
-                            ch.pipeline().addFirst(new HAProxyMessageDecoder());
-                        }
-                    }
-                }
-            }
-        });
+        Class<MultiEncryptionResponse> packetClass = MultiEncryptionResponse.class;
+        int packetID = 0x01;
+
+        Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
+        Class<?> protocol_protocolDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
+
+        Field field_protocols = getField(protocol_directionDataClass, "protocols");
+        Field field_TO_SERVER = getField(Protocol.class, "TO_SERVER");
+        Field field_packetMap = getField(protocol_protocolDataClass, "packetMap");
+        Field field_packetConstructors = getField(protocol_protocolDataClass, "packetConstructors");
+        Object to_server = field_TO_SERVER.get(Protocol.LOGIN);
+        TIntObjectMap<?> protocols = (TIntObjectMap<?>) field_protocols.get(to_server);
+        for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
+            Object data = protocols.get(protocol);
+            TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
+            packetMap.remove(EncryptionResponse.class);
+            packetMap.put(packetClass, packetID);
+            Supplier<? extends DefinedPacket>[] constructors = (Supplier<? extends DefinedPacket>[]) field_packetConstructors.get(data);
+            constructors[packetID] = MultiEncryptionResponse::new;
+        }
     }
 }

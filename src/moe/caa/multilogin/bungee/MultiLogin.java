@@ -18,15 +18,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MultiLogin extends Plugin implements IPlugin {
     public static MultiLogin INSTANCE;
     public static File configFile ;
+    public static final Set<UUID> SAFE_CACHE = Collections.synchronizedSet(new HashSet<>());
     private final Timer TIMER = new Timer("MultiLogin", true);
     private IConfiguration configuration;
 
