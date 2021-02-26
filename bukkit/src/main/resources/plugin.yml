@@ -1,0 +1,8 @@
+name: MultiLogin
+main: moe.caa.multilogin.bukkit.impl.MultiLoginBukkit
+version: @version@
+author: CaaMoe
+softdepend: [PlaceholderAPI]
+commands:
+  whitelist:
+  multilogin:

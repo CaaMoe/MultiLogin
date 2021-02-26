@@ -1,0 +1,127 @@
+###################################
+#       MultiLogin
+#              --config
+###################################
+
+# 存放所有的Yggdrasil验证服务器，
+# 正版Yggdrasil在officialServices节点中单独设置。
+services:
+
+  # 插件标记名称，一旦设置请谨慎修改。
+  # official值为保留关键词，请勿应用于此标记名称上，否则应用无效！
+  # 该标记作为识别用户的验证服务器，为系统标记.胡乱更改很有可能会导致系统无法验证身份。
+  # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
+  littleSkin:
+
+    # 启用该验证服务器
+    # 关闭将拒绝所有使用该验证登入的玩家登入游戏
+    enable: false
+
+    # 验证服务器的别称，可随意修改。
+    # 必填，不允许为空字符串。
+    name: "LS皮肤站"
+
+    # 验证服务器地址。
+    # 必填，不允许为空字符串，URL末尾不需要'/'。
+    url: "https://mcskin.littleservice.cn/api/yggdrasil"
+
+    # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
+    # 目前只支持以下值:
+    #   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
+    #   OFFLINE   -自动生成离线UUID（盗版UUID）
+    # 所有生成的结果均会保存到数据库相应值中。
+    # 该值的优先级低于数据库所保存的值。
+    # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
+    # 必填，不允许为无效的值。
+    # 为避免触发Paper端的某些机制，强烈建议此值为 DEFAULT
+    convUuid: DEFAULT
+
+    # 是否为当前验证服务器单独设置白名单。
+    # 当某名玩家使用此节点所设置的验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
+    # 当全局白名单生效时，此节点无效。
+    whitelist: true
+
+
+# 正版验证服务器的别称，可随意修改。
+# 必填，不允许为空字符串
+officialName: "正版"
+
+
+# 启用正版验证
+# 关闭将拒绝所有使用正版验证登入的玩家登入游戏
+officialEnable: true
+
+# 是否单独为正版玩家开启白名单系统。
+# 当某名玩家使用正版验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
+# 当全局白名单生效时，此节点无效。
+officialServicesWhitelist: true
+
+# 正版转换UUID
+# 当某名玩家首次在正版验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
+# 目前只支持以下值:
+#   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
+#   OFFLINE   -自动生成离线UUID（盗版UUID）
+# 所有生成的结果均会缓存至swap_uuid.json中。
+# 该值的优先级低于swap_uuid.json文件内的值。
+# 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
+# 必填，不允许为无效的值。
+officialConvUuid: DEFAULT
+
+# 通过此节点下定义的验证服务器验证的玩家都将跳过账户重名检查，
+# 并且强制下线在线的同名账户。
+# 请不要轻易修改此节点，可能会导致一些莫名其妙的错误。
+safeId: ""
+
+# 设置验证服务器超时时间
+servicesTimeOut: 7000
+
+# 插件数据的存放方式
+sql:
+
+  # 数据库类型: SQLITE(默认), MYSQL
+  backend: 'SQLITE'
+
+  # 数据库地址
+  mysqlIp: '127.0.0.1'
+
+  # 数据库端口
+  mysqlPort: '3306'
+
+  # 数据库用户名
+  mySqlUsername: 'root'
+
+  # 数据库密码
+  mySqlPassword: '12345'
+
+  # 数据库名称
+  mySqlDatabase: 'multilogin'
+
+##############
+#   Message
+##############
+
+msgNoAdopt: "§c验证未能通过，请重试"
+msgNoChae: "§c您只能通过指定的验证方式登入游戏"
+msgRushName: "§c您的ID已被抢注，请重新设置您的ID"
+msgRushNameOnl: "§c请重新设置您的ID！"
+
+msgNoWhitelist: "§c您没有登入到此服务器的白名单权限"
+msgNoPermission: "§c你没有权限使用这条指令"
+msgInvCmd: "§c无效的命令"
+msgAddWhitelist: "§a已将%s添加至白名单"
+msgAddWhitelistAlready: "§c请勿重复将%s添加至白名单"
+msgDelWhitelistInGame: "§c管理员已移除您的白名单权限"
+msgDelWhitelist: "§a已移除%s的白名单"
+msgDelWhitelistAlready: "§c%s并不在白名单中"
+msgOpenWhitelist: "§a已开启白名单"
+msgOpenWhitelistAlready: "§c请勿重复开启白名单"
+msgCloseWhitelist: "§a已关闭白名单"
+msgCloseWhitelistAlready: "§c请勿重复关闭白名单"
+msgWhitelistListNoth: "§c白名单内没有玩家"
+msgWhitelistListN: "§f白名单内一共有%d名玩家：%s"
+
+msgYDQuery: "§f玩家 §e%s §f使用的登入方式为 §e%s"
+msgYDQueryNoRel: "§c没有查询到记录: %s"
+
+msgReload: "§a已重新加载配置文件"
+msgNoPlayer: "§c你不是一名实体玩家"
