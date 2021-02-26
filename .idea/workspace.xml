@@ -5,22 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/build/libs/core.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/build/resources/main/config.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/build/tmp/compileJava/source-classes-mapping.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/build/tmp/jar/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/bukkit/MultiLogin.bukkit.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/bukkit/MultiLogin.bukkit.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/bungee/MultiLogin.bungee.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/bungee/MultiLogin.bungee.test.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +67,33 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.general" />
   </component>
-  <component name="RunManager" selected="Gradle.MultiLogin [clean]">
+  <component name="RunManager" selected="Application.MultiLoginBukkit">
+    <configuration name="MultiCore" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="moe.caa.multilogin.core.MultiCore" />
+      <module name="MultiLogin.core.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="moe.caa.multilogin.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MultiLoginBukkit" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="moe.caa.multilogin.bukkit.impl.MultiLoginBukkit" />
+      <module name="MultiLogin.bukkit.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="moe.caa.multilogin.bukkit.impl.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MultiLogin [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -125,6 +138,8 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MultiLoginBukkit" />
+        <item itemvalue="Application.MultiCore" />
         <item itemvalue="Gradle.MultiLogin [clean]" />
         <item itemvalue="Gradle.MultiLogin [build]" />
       </list>
@@ -139,9 +154,26 @@
       <option name="presentableId" value="Default" />
       <updated>1614329012709</updated>
     </task>
+    <task id="LOCAL-00001" summary="重构">
+      <created>1614329257136</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1614329257136</updated>
+    </task>
+    <task id="LOCAL-00002" summary="重构">
+      <created>1614329310633</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1614329310633</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="重构" />
+    <option name="LAST_COMMIT_MESSAGE" value="重构" />
   </component>
 </project>

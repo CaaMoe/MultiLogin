@@ -10,6 +10,7 @@ import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -70,15 +71,7 @@ public class MultiCore {
             String pat = jo.get("content").getAsString();
             pat = pat.substring(0, pat.length() - 1);
             String v = new String(decoder.decode(pat), StandardCharsets.UTF_8);
-            JsonObject content = (JsonObject) new JsonParser().parse(v);
-            Set<Map.Entry<String, JsonElement>> set = content.entrySet();
-            String relV = null;
-            for (Map.Entry<String, JsonElement> entry : set) {
-                if(entry.getKey().equalsIgnoreCase("release")){
-                    relV = entry.getValue().getAsString();
-                }
-            }
-            MultiCore.relV = relV;
+            MultiCore.relV = v.split("\\s+")[2];
         } catch (Exception ignore){}
     }
 
