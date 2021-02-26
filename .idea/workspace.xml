@@ -6,8 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +65,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="settings.editor.selected.configurable" value="preferences.general" />
   </component>
-  <component name="RunManager" selected="Application.MultiLoginBukkit">
+  <component name="RunManager" selected="Gradle.MultiLogin [clean]">
     <configuration name="MultiCore" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="moe.caa.multilogin.core.MultiCore" />
       <module name="MultiLogin.core.main" />
@@ -138,9 +136,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.MultiLogin [clean]" />
         <item itemvalue="Application.MultiLoginBukkit" />
         <item itemvalue="Application.MultiCore" />
-        <item itemvalue="Gradle.MultiLogin [clean]" />
         <item itemvalue="Gradle.MultiLogin [build]" />
       </list>
     </recent_temporary>
@@ -168,12 +166,20 @@
       <option name="project" value="LOCAL" />
       <updated>1614329310633</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="应用更新">
+      <created>1614329852764</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1614329852764</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="重构" />
-    <option name="LAST_COMMIT_MESSAGE" value="重构" />
+    <MESSAGE value="应用更新" />
+    <option name="LAST_COMMIT_MESSAGE" value="应用更新" />
   </component>
 </project>

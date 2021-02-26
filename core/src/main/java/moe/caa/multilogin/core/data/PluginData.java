@@ -34,7 +34,13 @@ public class PluginData {
         reloadConfig();
 
         String[] args = getSqlUrl(configurationConfig.getConfigurationSection("sql"));
-        SQLHandler.init(args);
+
+        try {
+            SQLHandler.init(args);
+        } catch (Exception e) {
+            MultiCore.getPlugin().getPluginLogger().info("连接到数据库时出现异常");
+            throw e;
+        }
         MultiCore.getPlugin().getPluginLogger().info(String.format("链接到数据库： %s", args.length == 1 ? "SQLite" : "MySQL"));
     }
 
