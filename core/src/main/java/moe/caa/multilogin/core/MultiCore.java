@@ -6,6 +6,9 @@ import moe.caa.multilogin.core.data.PluginData;
 import moe.caa.multilogin.core.data.SQLHandler;
 import moe.caa.multilogin.core.data.UserEntry;
 import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.FutureTask;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static moe.caa.multilogin.core.data.PluginData.configurationConfig;
 
@@ -176,11 +181,65 @@ public class MultiCore {
         return httpGet(new URL(url));
     }
 
-    public static boolean submitCommand(String whitelist, ISender bukkitSender, String[] strings) {
-        return false;
+    public static boolean submitCommand(String cmd, ISender sender, String[] strings) {
+        try {
+            if (cmd.equalsIgnoreCase("whitelist")) {
+                if (strings.length > 0)
+                    if (strings[0].equalsIgnoreCase("add")) {
+                        if (strings.length == 2) {
+                            CommandHandler.executeAdd(sender, strings);
+                            return true;
+                        }
+                    } else if (strings[0].equalsIgnoreCase("remove")) {
+                        if (strings.length == 2) {
+                            CommandHandler.executeRemove(sender, strings);
+                            return true;
+                        }
+                    } else if (strings[0].equalsIgnoreCase("on")) {
+                        if (strings.length == 1) {
+                            CommandHandler.executeOn(sender);
+                            return true;
+                        }
+                    } else if (strings[0].equalsIgnoreCase("off")) {
+                        if (strings.length == 1) {
+                            CommandHandler.executeOff(sender);
+                            return true;
+                        }
+                    }
+            } else if (cmd.equalsIgnoreCase("multilogin") &&
+                    strings.length > 0) {
+                if (strings[0].equalsIgnoreCase("query")) {
+                    if (strings.length <= 2) {
+                        CommandHandler.executeQuery(sender, strings);
+                        return true;
+                    }
+                } else if (strings[0].equalsIgnoreCase("reload") &&
+                        strings.length == 1) {
+                    CommandHandler .executeReload(sender);
+                    return true;
+                }
+            }
+            sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd")));
+        } catch (Exception e){
+            e.printStackTrace();
+            plugin.getPluginLogger().severe("执行命令时出现异常");
+            sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+        }
+        return true;
     }
 
-    public static List<String> suggestCommand(String whitelist, ISender bukkitSender, String[] strings) {
-        return null;
+    public static List<String> suggestCommand(String cmd, ISender sender, String[] strings) {
+        if (cmd.equalsIgnoreCase("whitelist")) {
+            if (sender.isOp() || sender.hasPermission("multilogin.whitelist.tab")) {
+                if (strings.length == 1){
+                    return Stream.of(new String[] { "add", "remove", "on", "off", "list" }).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+                }
+            }
+        } else if (cmd.equalsIgnoreCase("multilogin") && (
+                sender.isOp() || sender.hasPermission("multilogin.multilogin.tab")) &&
+                strings.length == 1) {
+            return Stream.of(new String[] { "query", "reload" }).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 }

@@ -188,8 +188,9 @@ public class PluginData {
         return whitelist;
     }
 
-    public static void setWhitelist(boolean whitelist) {
+    public synchronized static void setWhitelist(boolean whitelist) {
         PluginData.whitelist = whitelist;
+        saveWhitelist();
     }
 
     public static boolean isEmpty(String str) {
@@ -212,7 +213,7 @@ public class PluginData {
         saveWhitelist();
     }
 
-    public static void saveWhitelist() {
+    public synchronized static void saveWhitelist() {
         try {
             genFile();
             JsonObject root = new JsonObject();

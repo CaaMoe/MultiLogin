@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/CommandHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,13 +36,7 @@
               <path>
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="MultiLogin" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="MultiLogin" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build" type="c8890929:TasksNode$1" />
+                <item name="Run Configurations" type="7b0102dc:RunConfigurationsNode" />
               </path>
             </expand>
             <select />
@@ -47,6 +44,13 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -137,9 +141,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.MultiLogin [clean]" />
+        <item itemvalue="Gradle.MultiLogin [build]" />
         <item itemvalue="Application.MultiLoginBukkit" />
         <item itemvalue="Application.MultiCore" />
-        <item itemvalue="Gradle.MultiLogin [build]" />
       </list>
     </recent_temporary>
   </component>
@@ -173,7 +177,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614329852764</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="应用更新">
+      <created>1614331267871</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1614331267871</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
