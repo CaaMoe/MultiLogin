@@ -10,7 +10,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
-import moe.caa.multilogin.bukkit.BukkitListener;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.ReflectUtil;
 import moe.caa.multilogin.core.auth.AuthErrorEnum;

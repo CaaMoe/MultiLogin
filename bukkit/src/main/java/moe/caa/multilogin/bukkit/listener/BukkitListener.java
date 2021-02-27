@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bukkit;
+package moe.caa.multilogin.bukkit.listener;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

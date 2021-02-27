@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Objects;
 
+/**
+ * 表示数据库中存放的玩家对象
+ */
 public class UserEntry {
 
     private final String online_uuid;
@@ -23,43 +26,83 @@ public class UserEntry {
         this.serviceEntry = PluginData.getYggdrasilServerEntry(yggdrasil_service);
     }
 
+    /**
+     * 获得在线UUID
+     * @return 在线UUID
+     */
     public String getOnline_uuid() {
         return online_uuid;
     }
 
+    /**
+     * 获得当前name
+     * @return 当前name
+     */
     public String getCurrent_name() {
         return current_name;
     }
 
+    /**
+     * 设置当前name
+     * @param current_name 新的name
+     */
     public void setCurrent_name(String current_name) {
         this.current_name = current_name;
     }
 
+    /**
+     * 获得重定向的UUID字符串
+     * @return 重定向的UUID字符串
+     */
     public String getRedirect_uuid() {
         return redirect_uuid;
     }
 
+    /**
+     * 设置重定向的UUID字符串
+     * @param redirect_uuid 新的UUID字符串
+     */
     public void setRedirect_uuid(String redirect_uuid) {
         this.redirect_uuid = redirect_uuid;
     }
 
+    /**
+     * 获得验证的Yggdrasil服务器的path
+     * @return Yggdrasil服务器的path
+     */
     public String getYggdrasil_service() {
         return yggdrasil_service;
     }
 
+    /**
+     * 设置验证的Yggdrasil服务器的path
+     * @param yggdrasil_service Yggdrasil的path
+     */
     public void setYggdrasil_service(String yggdrasil_service) {
         this.yggdrasil_service = yggdrasil_service;
         this.serviceEntry = PluginData.getYggdrasilServerEntry(yggdrasil_service);
     }
 
+    /**
+     * 获得该数据是否有白名单
+     * @return 是否有白名单
+     */
     public int getWhitelist() {
         return whitelist;
     }
 
+    /**
+     * 设置该数据是否有白名单
+     * @param whitelist 该数据是否有白名单
+     */
     public void setWhitelist(int whitelist) {
         this.whitelist = whitelist;
     }
 
+    /**
+     * 获得该数据的Yggdrasil服务器对象
+     * @return Yggdrasil服务器对象
+     */
     public YggdrasilServiceEntry getServiceEntry() {
         return serviceEntry;
     }
@@ -88,6 +131,11 @@ public class UserEntry {
         return Objects.hash(online_uuid);
     }
 
+    /**
+     * 通过一个数据库检索结果生成一个数据对象
+     * @param resultSet 数据库检索结果
+     * @return 数据对象
+     */
     protected static UserEntry fromSQLResultSet(ResultSet resultSet) throws SQLException {
         return new UserEntry(
                 resultSet.getString(1),

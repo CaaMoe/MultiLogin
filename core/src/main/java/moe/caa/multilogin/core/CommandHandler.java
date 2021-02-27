@@ -9,7 +9,14 @@ import net.md_5.bungee.api.chat.TextComponent;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 命令处理器
+ */
 public class CommandHandler {
+
+    /**
+     * 处理命令“multilogin reload”
+     */
     public static void executeReload(ISender commandSender) {
         if (testPermission(commandSender, "multilogin.multilogin.reload")) {
             try {
@@ -21,6 +28,9 @@ public class CommandHandler {
         }
     }
 
+    /**
+     * 处理命令“multilogin query [target]”
+     */
     public static void executeQuery(ISender commandSender, String[] strings) {
         if (testPermission(commandSender, "multilogin.multilogin.query")) {
             String s = (strings.length == 2) ? strings[1] : (commandSender.isPlayer() ? commandSender.getSenderName() : null);
@@ -55,6 +65,9 @@ public class CommandHandler {
         }
     }
 
+    /**
+     * 处理命令“whitelist add target”
+     */
     public static void executeAdd(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.add"))
             if (PluginData.addCacheWhitelist(args[1])) {
@@ -64,6 +77,10 @@ public class CommandHandler {
             }
     }
 
+    /**
+     * 处理命令“whitelist remove target”
+     * todo whitelist remove target命令仍未完成
+     */
     public static void executeRemove(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.remove"))
             if (PluginData.removeCacheWhitelist(args[1])) {
@@ -73,6 +90,9 @@ public class CommandHandler {
             }
     }
 
+    /**
+     * 处理命令“whitelist on”
+     */
     public static void executeOn(ISender sender) {
         if (testPermission(sender, "multilogin.whitelist.on"))
             if (!PluginData.isWhitelist()) {
@@ -83,6 +103,9 @@ public class CommandHandler {
             }
     }
 
+    /**
+     * 处理命令“whitelist off”
+     */
     public static void executeOff(ISender sender) {
         if (testPermission(sender, "multilogin.whitelist.off"))
             if (PluginData.isWhitelist()) {
@@ -93,6 +116,12 @@ public class CommandHandler {
             }
     }
 
+    /**
+     * 测试sender是否有permission权限
+     * @param sender 指令发送者
+     * @param permission 权限
+     * @return 是否拥有该权限，若没有该权限将会自动回复
+     */
     public static boolean testPermission(ISender sender, String permission) {
         if (sender.hasPermission(permission)){
             return true;

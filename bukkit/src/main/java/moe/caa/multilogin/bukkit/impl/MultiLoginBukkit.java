@@ -1,10 +1,8 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import moe.caa.multilogin.bukkit.BukkitListener;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.bukkit.Metrics;
 import moe.caa.multilogin.bukkit.yggdrasil.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.core.IConfiguration;
@@ -22,9 +20,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

@@ -7,9 +7,11 @@ plugins {
 repositories {
     mavenCentral()
     jcenter()
+    maven { url "https://repo.dmulloy2.net/repository/public/" }
 }
 
 dependencies {
+    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.6.0";
     compile project(':core')
     implementation files("D:/Java api/patched_1.16.4.jar")
 }

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 数据库管理类
+ */
 public class SQLHandler {
     private static Connection conn;
 
@@ -16,7 +19,11 @@ public class SQLHandler {
     private static final String YGGDRASIL_SERVICE = "yggdrasil_service";
     private static final String WHITELIST = "whitelist";
 
-    public static void init(String[] url) throws Exception {
+    /**
+     * 通过参数链接到数据库
+     * @param url 指定格式的参数
+     */
+    protected static void init(String[] url) throws Exception {
         if(url.length == 1){
             conn = DriverManager.getConnection(url[0]);
         } else {
@@ -34,6 +41,11 @@ public class SQLHandler {
         }
     }
 
+    /**
+     * 通过主键online_uuid检索UserEntry数据
+     * @param uuid online_uuid
+     * @return 检索到的UserEntry数据
+     */
     public static UserEntry getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?" ,
                 USER_DATA_TABLE_NAME, ONLINE_UUID
@@ -51,6 +63,11 @@ public class SQLHandler {
         }
     }
 
+    /**
+     * 通过主键current_name检索UserEntry数据
+     * @param name online_uuid
+     * @return 检索到的UserEntry数据
+     */
     public static List<UserEntry> getUserEntryByCurrentName(String name) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?" ,
                 USER_DATA_TABLE_NAME, CURRENT_NAME
@@ -70,6 +87,10 @@ public class SQLHandler {
         }
     }
 
+    /**
+     * 将一个新的UserEntry写入到数据库中
+     * @param entry 新的UserEntry
+     */
     public static void writeNewUserEntry(UserEntry entry) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)" ,
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
@@ -79,6 +100,10 @@ public class SQLHandler {
         }
     }
 
+    /**
+     * 更新一个老的UserEntry
+     * @param entry 需要更新的UserEntry
+     */
     public static void updateUserEntry(UserEntry entry) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? " ,
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
@@ -88,6 +113,9 @@ public class SQLHandler {
         }
     }
 
+    /**
+     * 数据库关闭链接
+     */
     protected static void close() throws SQLException {
         conn.close();
     }

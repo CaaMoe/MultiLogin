@@ -9,7 +9,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.logging.Logger;
 
+/**
+ * 表示Yggdrasil服务器对象
+ */
 public class YggdrasilServiceEntry {
+
+    /**
+     * 正版验证服务器对象
+     */
     public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "", null, false, false){
         @Override
         public String buildUrlStr(String arg) {
@@ -42,6 +49,10 @@ public class YggdrasilServiceEntry {
         }
     }
 
+    /**
+     * 检查该Yggdrasil的验证链接是否符合一般规定
+     * @return 该URL是否符合规定
+     */
     private String checkUrl(){
         try {
             URL url = new URL(this.url);
@@ -52,6 +63,11 @@ public class YggdrasilServiceEntry {
         return null;
     }
 
+    /**
+     * 构建该GET请求链接
+     * @param arg GET的请求参数，为“hasJoined?username=%s&serverId=%s%s”
+     * @return 请求链接
+     */
     public String buildUrlStr(String arg) {
         return String.format("%s/sessionserver/session/minecraft/%s", url, arg);
     }
@@ -92,6 +108,12 @@ public class YggdrasilServiceEntry {
         return enable;
     }
 
+    /**
+     * 通过path和configuration section生成一个Yggdrasil服务器对象
+     * @param path Yggdrasil的path
+     * @param section configuration
+     * @return Yggdrasil对象，可能为空
+     */
     public static YggdrasilServiceEntry fromYaml(String path, IConfiguration section){
         if(section != null){
             String name = section.getString("name");

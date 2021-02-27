@@ -25,6 +25,9 @@ import java.util.stream.Stream;
 
 import static moe.caa.multilogin.core.data.PluginData.configurationConfig;
 
+/**
+ * 插件核心类
+ */
 public class MultiCore {
     private static IPlugin plugin = null;
     private static String relV = null;
@@ -32,6 +35,11 @@ public class MultiCore {
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    /**
+     * 启动服务
+     * @param plugin 插件对象
+     * @return 是否加载成功
+     */
     public static boolean initService(IPlugin plugin){
         MultiCore.plugin = plugin;
         plugin.runTaskAsyncTimer(MultiCore::update, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
@@ -45,14 +53,25 @@ public class MultiCore {
         return false;
     }
 
+    /**
+     * 关闭插件
+     */
     public static void disable(){
         PluginData.close();
     }
 
+    /**
+     * 获得插件对象
+     * @return 当前插件对象
+     */
     public static IPlugin getPlugin() {
         return plugin;
     }
 
+    /**
+     * 判断插件是否有更新
+     * @return 是否有更新
+     */
     public static boolean isUpdate(){
         try {
             return !plugin.getVersion().endsWith(relV);
@@ -60,6 +79,9 @@ public class MultiCore {
         return false;
     }
 
+    /**
+     * 发送更新消息
+     */
     private static void setUpUpdate(){
         update();
         if (isUpdate()) {
@@ -69,6 +91,9 @@ public class MultiCore {
         }
     }
 
+    /**
+     * 周期性的更新检查
+     */
     private static void update() {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
@@ -80,14 +105,24 @@ public class MultiCore {
         } catch (Exception ignore){}
     }
 
+    /**
+     * 获得某名玩家的其他验证结果
+     * @param onlineUuid 在线UUID
+     * @param currentName 当前名字
+     * @param yggdrasilService 验证服务器对象
+     * @return 验证结果
+     */
     public static VerificationResult getUserVerificationMessage(UUID onlineUuid, String currentName, YggdrasilServiceEntry yggdrasilService){
         try {
             boolean updUserEntry;
+
+            // 验证服务器为空
             if(yggdrasilService == null){
                 return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
             }
             UserEntry userData = SQLHandler.getUserEntryByOnlineUuid(onlineUuid);
 
+            // 验证服务器不符
             if(updUserEntry = userData != null){
                 if(!PluginData.isEmpty(userData.getYggdrasil_service())){
                     if(!userData.getYggdrasil_service().equals(yggdrasilService.getPath())){
@@ -96,6 +131,7 @@ public class MultiCore {
                 }
             }
 
+            //重名检查
             if(!PluginData.getSafeIdService().equalsIgnoreCase(yggdrasilService.getPath())){
                 List<UserEntry> repeatedNameUserEntries = SQLHandler.getUserEntryByCurrentName(currentName);
                 for (UserEntry repeatedNameUserEntry : repeatedNameUserEntries) {
@@ -108,6 +144,7 @@ public class MultiCore {
             userData = !updUserEntry ? new UserEntry(onlineUuid.toString(), currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName).toString(), yggdrasilService.getPath(), 0) : userData;
             userData.setCurrent_name(currentName);
 
+            // 白名单检查
             if(userData.getWhitelist() == 0){
                 if(!(PluginData.removeCacheWhitelist(currentName) | PluginData.removeCacheWhitelist(onlineUuid.toString()))){
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
@@ -121,6 +158,7 @@ public class MultiCore {
                 SQLHandler.writeNewUserEntry(userData);
             }
 
+            // 重名踢出
             FutureTask<String> task = new FutureTask<>(() -> {
                 for (Map.Entry<UUID, String> entry : MultiCore.getPlugin().getOnlineList().entrySet()) {
                     if (entry.getValue().equalsIgnoreCase(currentName) && !entry.getKey().equals(onlineUuid)) {
@@ -129,10 +167,12 @@ public class MultiCore {
                 }
                 return null;
             });
+
+            // 等待主线程任务
             plugin.runTask(task, 0);
             task.get();
 
-            plugin.getPluginLogger().info(String.format("uuid: %s, 来自玩家: %s, 验证服务器: %s", userData.getRedirect_uuid(), currentName, yggdrasilService.getName()));
+            plugin.getPluginLogger().info(String.format("uuid: %s, 来自玩家: %s, 验证服务器: %s(%s)", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));
             return new VerificationResult(userData.getRedirect_uuid());
         } catch (Exception e){
             e.printStackTrace();
@@ -141,6 +181,11 @@ public class MultiCore {
         }
     }
 
+    /**
+     * 通过玩家名字排序Yggdrasil验证服务器
+     * @param name name
+     * @return 验证服务器排序的结果
+     */
     public static List<List<YggdrasilServiceEntry>> getVeriOrder(String name) throws SQLException {
         List<List<YggdrasilServiceEntry>> ret = new ArrayList<>();
         List<YggdrasilServiceEntry> one = new ArrayList<>();
@@ -163,6 +208,11 @@ public class MultiCore {
         return ret;
     }
 
+    /**
+     * 向指定的url发送GET请求
+     * @param url 指定的url
+     * @return 请求结果
+     */
     public static String httpGet(URL url) throws IOException {
         URLConnection connection = url.openConnection();
         connection.setConnectTimeout(15000);
@@ -177,10 +227,22 @@ public class MultiCore {
         return result.toString(StandardCharsets.UTF_8.name());
     }
 
+    /**
+     * 向指定的url发送GET请求
+     * @param url 指定的url
+     * @return 请求结果
+     */
     public static String httpGet(String url) throws IOException {
         return httpGet(new URL(url));
     }
 
+    /**
+     * 执行一个插件命令
+     * @param cmd 根命令
+     * @param sender 命令执行者
+     * @param strings 命令参数
+     * @return 命令执行结果
+     */
     public static boolean submitCommand(String cmd, ISender sender, String[] strings) {
         try {
             if (cmd.equalsIgnoreCase("whitelist")) {
@@ -228,6 +290,13 @@ public class MultiCore {
         return true;
     }
 
+    /**
+     * 请求一个命令建议
+     * @param cmd 根命令
+     * @param sender 命令发送者
+     * @param strings 参数
+     * @return 建议列表
+     */
     public static List<String> suggestCommand(String cmd, ISender sender, String[] strings) {
         if (cmd.equalsIgnoreCase("whitelist")) {
             if (sender.isOp() || sender.hasPermission("multilogin.whitelist.tab")) {
