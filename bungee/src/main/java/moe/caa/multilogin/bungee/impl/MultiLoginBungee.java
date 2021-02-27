@@ -31,13 +31,18 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * 蹦极端的插件主类
+ */
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static File configFile ;
     private final Timer TIMER = new Timer("MultiLogin", true);
     private BungeeConfiguration configuration;
     public static MultiLoginBungee INSTANCE;
 
-
+    /**
+     * 修改服务
+     */
     private void initCoreService() throws Exception {
         MultiLoginEncryptionResponse.init();
 
@@ -59,6 +64,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
                 packetMap.remove(EncryptionResponse.class);
                 packetMap.put(packetClass, packetID);
+                // TODO: 2021/2/27 有有问题的 
                 Constructor<? extends DefinedPacket>[] constructors = (Constructor<? extends DefinedPacket>[]) field_packetConstructors.get(data);
                 constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
             }

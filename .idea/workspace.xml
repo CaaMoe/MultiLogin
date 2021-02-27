@@ -4,29 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="更新介绍">
-      <change afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/listener/ProtocolListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bukkit/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/BukkitListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/listener/BukkitListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/impl/MultiLoginBukkit.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/yggdrasil/MultiLoginYggdrasilMinecraftSessionService.java" beforeDir="false" afterPath="$PROJECT_DIR$/bukkit/src/main/java/moe/caa/multilogin/bukkit/yggdrasil/MultiLoginYggdrasilMinecraftSessionService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/CommandHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/CommandHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/IConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/IConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/IPlugin.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/IPlugin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/ISender.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/ISender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/ReflectUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/ReflectUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/AuthErrorEnum.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/AuthErrorEnum.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/AuthResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/AuthResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/HttpAuth.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/HttpAuth.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/VerificationResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/auth/VerificationResult.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/ConvUuid.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/ConvUuid.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/SQLHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/SQLHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/UserEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/UserEntry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/YggdrasilServiceEntry.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/YggdrasilServiceEntry.java" afterDir="false" />
+    <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/bungee/src/main/java/moe/caa/multilogin/bungee/impl/MultiLoginBungee.java" beforeDir="false" afterPath="$PROJECT_DIR$/bungee/src/main/java/moe/caa/multilogin/bungee/impl/MultiLoginBungee.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,7 +232,14 @@
       <option name="project" value="LOCAL" />
       <updated>1614400512520</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="添加注释">
+      <created>1614412408689</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1614412408689</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -262,6 +248,7 @@
     <MESSAGE value="应用更新" />
     <MESSAGE value="重构命令&#10;移除命令“MultiLogin:whitelist list”" />
     <MESSAGE value="更新介绍" />
-    <option name="LAST_COMMIT_MESSAGE" value="更新介绍" />
+    <MESSAGE value="添加注释" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加注释" />
   </component>
 </project>
