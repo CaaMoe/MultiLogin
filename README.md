@@ -8,6 +8,7 @@
 
 ## 功能
 截止目前，该插件有下列几项功能：
+* 支持Bungee
 * 多Yggdrasil共存
 * 可设置游戏内UUID
 * 兼容多Yggdrasil环境下的白名单

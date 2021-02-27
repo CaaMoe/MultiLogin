@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="61111517-bcc9-40fd-879e-00c6ca5fcce3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/CommandHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/MultiCore.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/moe/caa/multilogin/core/data/PluginData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -184,13 +181,29 @@
       <option name="project" value="LOCAL" />
       <updated>1614331267871</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="重构命令&#10;移除命令“MultiLogin:whitelist list”">
+      <created>1614399656587</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1614399656587</updated>
+    </task>
+    <task id="LOCAL-00006" summary="更新介绍">
+      <created>1614399794886</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1614399794886</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="重构" />
     <MESSAGE value="应用更新" />
-    <option name="LAST_COMMIT_MESSAGE" value="应用更新" />
+    <MESSAGE value="重构命令&#10;移除命令“MultiLogin:whitelist list”" />
+    <MESSAGE value="更新介绍" />
+    <option name="LAST_COMMIT_MESSAGE" value="更新介绍" />
   </component>
 </project>
