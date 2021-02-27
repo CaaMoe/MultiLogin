@@ -94,6 +94,7 @@ public class PluginData {
             YggdrasilServiceEntry.OFFICIAL_YGG.setName(getOfficialName());
             YggdrasilServiceEntry.OFFICIAL_YGG.setConvUuid(getOfficialConvUuid());
             YggdrasilServiceEntry.OFFICIAL_YGG.setWhitelist(isOfficialYggWhitelist());
+            YggdrasilServiceEntry.OFFICIAL_YGG.setEnable(true);
             serviceSet.add(YggdrasilServiceEntry.OFFICIAL_YGG);
             log.info("已启用正版验证");
         }

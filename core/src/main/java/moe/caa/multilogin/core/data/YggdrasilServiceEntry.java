@@ -108,6 +108,10 @@ public class YggdrasilServiceEntry {
         return enable;
     }
 
+    protected void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
     /**
      * 通过path和configuration section生成一个Yggdrasil服务器对象
      * @param path Yggdrasil的path
