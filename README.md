@@ -1,5 +1,5 @@
 # MultiLogin
-目前项目正在重构，暂不推荐使用
+**目前项目正在重构，暂不推荐使用**
 
 
 这是一款高版本可用的外置登入插件，理论上支持Paper 1.8+版本和近代Bungee版本。
@@ -26,7 +26,6 @@
             /Whitelist remove <target>                          // 移除target的白名单
             /Whitelist on                                       // 开启全局白名单
             /Whitelist off                                      // 关闭全局白名单
-            /Whitelist list                                     // 查看白名单总人数
             /Multilogin query [target]                          // 查询target（可以是离线玩家）是通过何种方式登入的游戏
             /Multilogin reload                                  // 重新加载配置文件
 ### 权限        
@@ -36,7 +35,6 @@
             multilogin.whitelist.remove                         // 使用命令Whitelist remove命令所需的权限
             multilogin.whitelist.on                             // 使用命令Whitelist on命令所需的权限
             multilogin.whitelist.off                            // 使用命令Whitelist off命令所需的权限
-            multilogin.whitelist.list                           // 使用命令Whitelist list命令所需的权限
                     
             multilogin.multilogin.tab                           // 自动补全Multilogin命令参数所需要的权限(Bukkit Only)
             multilogin.multilogin.query                         // 使用命令Multilogin query命令所需的权限
