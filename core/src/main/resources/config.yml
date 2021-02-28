@@ -78,23 +78,23 @@ servicesTimeOut: 7000
 # 插件数据的存放方式
 sql:
 
-  # 数据库类型: SQLITE(默认), MYSQL
-  backend: 'SQLITE'
+  # 数据库类型: H2(默认), MYSQL
+  backend: 'H2'
 
   # 数据库地址
-  mysqlIp: '127.0.0.1'
+  Ip: '127.0.0.1'
 
   # 数据库端口
-  mysqlPort: '3306'
+  Port: '3306'
 
   # 数据库用户名
-  mySqlUsername: 'root'
+  Username: 'root'
 
   # 数据库密码
-  mySqlPassword: '12345'
+  Password: '12345'
 
   # 数据库名称
-  mySqlDatabase: 'multilogin'
+  Database: 'multilogin'
 
 ##############
 #   Message

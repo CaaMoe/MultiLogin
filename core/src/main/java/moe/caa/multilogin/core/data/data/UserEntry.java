@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.data;
+package moe.caa.multilogin.core.data.data;
 
 import java.util.Objects;
 import java.util.UUID;

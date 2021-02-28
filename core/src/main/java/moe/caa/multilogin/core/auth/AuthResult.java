@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.auth;
 
-import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
+import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
 /**
  * 对Yggdrasil的验证结果

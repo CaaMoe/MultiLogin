@@ -5,10 +5,10 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.auth.VerificationResult;
-import moe.caa.multilogin.core.data.PluginData;
-import moe.caa.multilogin.core.data.SQLHandler;
-import moe.caa.multilogin.core.data.UserEntry;
-import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
+import moe.caa.multilogin.core.data.data.PluginData;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static moe.caa.multilogin.core.data.PluginData.configurationConfig;
+import static moe.caa.multilogin.core.data.data.PluginData.configurationConfig;
 
 /**
  * 插件核心类

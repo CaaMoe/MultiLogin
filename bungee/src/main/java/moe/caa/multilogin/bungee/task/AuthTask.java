@@ -7,7 +7,7 @@ import moe.caa.multilogin.core.auth.AuthErrorEnum;
 import moe.caa.multilogin.core.auth.AuthResult;
 import moe.caa.multilogin.core.auth.HttpAuth;
 import moe.caa.multilogin.core.auth.VerificationResult;
-import moe.caa.multilogin.core.data.PluginData;
+import moe.caa.multilogin.core.data.data.PluginData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.chat.TextComponent;

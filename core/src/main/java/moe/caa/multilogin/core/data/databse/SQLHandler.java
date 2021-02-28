@@ -1,5 +1,7 @@
-package moe.caa.multilogin.core.data;
+package moe.caa.multilogin.core.data.databse;
 
+import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.util.UUIDSerializer;
 
 import java.sql.*;
@@ -17,21 +19,16 @@ public class SQLHandler {
     private static final String REDIRECT_UUID = "redirect_name";
     private static final String YGGDRASIL_SERVICE = "yggdrasil_service";
     private static final String WHITELIST = "whitelist";
-    private static Connection conn;
+    private static AbstractConnectionPool pool;
 
     /**
      * 通过参数链接到数据库
      *
-     * @param url 指定格式的参数
+     * @param connectionPool 连接池
      */
-    protected static void init(String[] url) throws Exception {
-        if (url.length == 1) {
-            conn = DriverManager.getConnection(url[0]);
-        } else {
-            conn = DriverManager.getConnection(url[0], url[1], url[2]);
-        }
-
-        try (Statement s = conn.createStatement()) {
+    public static void init(AbstractConnectionPool connectionPool) throws Exception {
+        pool = connectionPool;
+        try (Connection conn = getConnection(); Statement s = conn.createStatement()) {
             s.executeUpdate("" +
                     "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
                     ONLINE_UUID + "  binary(16) PRIMARY KEY NOT NULL," +
@@ -42,6 +39,10 @@ public class SQLHandler {
         }
     }
 
+    private static Connection getConnection() throws SQLException {
+        return pool.getConnection();
+    }
+
     /**
      * 通过主键online_uuid检索UserEntry数据
      *
@@ -49,10 +50,10 @@ public class SQLHandler {
      * @return 检索到的UserEntry数据
      */
     public static UserEntry getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, ONLINE_UUID
         ))) {
-            ps.setString(1, uuid.toString());
+            ps.setBytes(1, UUIDSerializer.uuidToByte(uuid));
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 try {
@@ -72,7 +73,7 @@ public class SQLHandler {
      * @return 检索到的UserEntry数据
      */
     public static List<UserEntry> getUserEntryByCurrentName(String name) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
                 USER_DATA_TABLE_NAME, CURRENT_NAME
         ))) {
             ps.setString(1, name);
@@ -111,7 +112,7 @@ public class SQLHandler {
      * @param entry 新的UserEntry
      */
     public static void writeNewUserEntry(UserEntry entry) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
         ))) {
             ps.setBytes(1, UUIDSerializer.uuidToByte(entry.getOnline_uuid()));
@@ -129,7 +130,7 @@ public class SQLHandler {
      * @param entry 需要更新的UserEntry
      */
     public static void updateUserEntry(UserEntry entry) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
         ))) {
             ps.setString(1, entry.getCurrent_name());
@@ -142,9 +143,9 @@ public class SQLHandler {
     }
 
     /**
-     * 数据库关闭链接
+     * 关闭连接池
      */
-    protected static void close() throws SQLException {
-        conn.close();
+    public static void close() throws SQLException {
+        pool.close();
     }
 }

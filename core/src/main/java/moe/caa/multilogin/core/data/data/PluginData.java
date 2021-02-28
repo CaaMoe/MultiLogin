@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.data;
+package moe.caa.multilogin.core.data.data;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -7,6 +7,11 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.data.ConvUuid;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
+import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
+import moe.caa.multilogin.core.data.databse.pool.MysqlConnectionPool;
 
 import java.io.*;
 import java.sql.SQLException;
@@ -37,7 +42,7 @@ public class PluginData {
         }
         reloadConfig();
 
-        String[] args = getSqlUrl(configurationConfig.getConfigurationSection("sql"));
+        AbstractConnectionPool args = getSqlPool(configurationConfig.getConfigurationSection("sql"));
 
         try {
             SQLHandler.init(args);
@@ -45,7 +50,7 @@ public class PluginData {
             MultiCore.getPlugin().getPluginLogger().info("连接到数据库时出现异常");
             throw e;
         }
-        MultiCore.getPlugin().getPluginLogger().info(String.format("链接到数据库： %s", args.length == 1 ? "SQLite" : "MySQL"));
+        MultiCore.getPlugin().getPluginLogger().info("成功链接到数据库");
     }
 
     /**
@@ -327,22 +332,25 @@ public class PluginData {
      * @param configuration SQL配置
      * @return 链接参数
      */
-    private static String[] getSqlUrl(IConfiguration configuration) throws Exception {
-        if (configuration != null) {
-            if ("SQLITE".equalsIgnoreCase(configuration.getString("backend"))) {
-                Class.forName("org.sqlite.JDBC");
-                return new String[]{String.format("jdbc:sqlite:%s%s", MultiCore.getPlugin().getPluginDataFolder().getAbsolutePath(), "/multilogin.db")};
-            }
-            if ("MYSQL".equalsIgnoreCase(configuration.getString("backend"))) {
-                Class.forName("com.mysql.jdbc.Driver");
-                return new String[]{String.format("jdbc:mysql://%s:%s/%s?autoReconnect=true",
-                        configuration.getString("mysqlIp"),
-                        configuration.getString("mysqlPort"),
-                        configuration.getString("mySqlDatabase")
-                ), configuration.getString("mySqlUsername"), configuration.getString("mySqlPassword")};
-            }
-            //TODO 添加H2DB 删除SQLITE 添加连接池
+    private static AbstractConnectionPool getSqlPool(IConfiguration configuration) throws Exception {
+        if (configuration == null) return null;
+        String url;
+        String userName = configuration.getString("Username");
+        String password = configuration.getString("Password");
+        String backend = configuration.getString("backend", "H2");
+        if ("MYSQL".equalsIgnoreCase(backend)) {
+//            ip port 数据库名
+            url = "jdbc:mysql://%s:%s/%s?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
+            url = String.format(url, configuration.getString("Ip"), configuration.getString("Port"), configuration.getString("Database"));
+            return new MysqlConnectionPool(url, userName, password);
+        } else if ("H2".equalsIgnoreCase(backend)) {
+//            位置 库名
+            url = "jdbc:h2:%s%s";
+            url = String.format(url, MultiCore.getPlugin().getPluginDataFolder().getAbsolutePath(), "/multilogin.db");
+            return new H2ConnectionPool(url, userName, password);
+        } else {
+//            不支持
+            return null;
         }
-        return null;
     }
 }

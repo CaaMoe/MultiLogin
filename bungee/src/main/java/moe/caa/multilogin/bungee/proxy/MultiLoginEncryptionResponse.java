@@ -5,7 +5,7 @@ import moe.caa.multilogin.bungee.impl.MultiLoginBungee;
 import moe.caa.multilogin.bungee.task.AuthTask;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.ReflectUtil;
-import moe.caa.multilogin.core.data.PluginData;
+import moe.caa.multilogin.core.data.data.PluginData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.api.chat.TextComponent;

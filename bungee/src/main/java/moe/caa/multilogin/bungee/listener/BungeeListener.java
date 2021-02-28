@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bungee.listener;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
-import moe.caa.multilogin.core.data.PluginData;
+import moe.caa.multilogin.core.data.data.PluginData;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.plugin.Listener;

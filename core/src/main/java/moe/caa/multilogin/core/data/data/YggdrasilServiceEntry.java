@@ -1,9 +1,10 @@
-package moe.caa.multilogin.core.data;
+package moe.caa.multilogin.core.data.data;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.data.ConvUuid;
 
 import java.io.InputStreamReader;
 import java.net.URL;
