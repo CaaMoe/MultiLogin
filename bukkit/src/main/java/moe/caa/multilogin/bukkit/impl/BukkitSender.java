@@ -24,7 +24,7 @@ public class BukkitSender implements ISender {
 
     @Override
     public void sendMessage(BaseComponent text) {
-        vanHandle.sendMessage(text);
+        vanHandle.spigot().sendMessage(text);
     }
 
     @Override

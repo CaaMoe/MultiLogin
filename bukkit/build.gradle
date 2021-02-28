@@ -6,6 +6,8 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
+    maven { url "https://libraries.minecraft.net/" }
     jcenter()
     maven { url "https://repo.dmulloy2.net/repository/public/" }
 }
@@ -13,7 +15,9 @@ repositories {
 dependencies {
     implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.6.0";
     compile project(':core')
-    implementation files("D:/Java api/patched_1.16.4.jar")
+    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
+    implementation 'com.mojang:authlib:1.5.21'
+//    implementation files("D:/Java api/patched_1.16.4.jar")
 }
 
 processResources {
@@ -22,7 +26,7 @@ processResources {
     }
 }
 
-jar{
+jar {
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
