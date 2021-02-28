@@ -55,35 +55,32 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
         try {
             String arg = null;
-            for(String s : url.toString().split("/")){
-                if(s.startsWith("hasJoined?")){
+            for (String s : url.toString().split("/")) {
+                if (s.startsWith("hasJoined?")) {
                     arg = s;
                 }
             }
 
             AuthResult<HasJoinedMinecraftServerResponse> authResult = HttpAuth.yggAuth(user.getName(), arg, gson, HasJoinedMinecraftServerResponse.class);
             HasJoinedMinecraftServerResponse response = authResult.getResult();
-            if(authResult.getErr() == AuthErrorEnum.SERVER_DOWN){
+            if (authResult.getErr() == AuthErrorEnum.SERVER_DOWN) {
                 throw new AuthenticationUnavailableException();
             }
 
-            if (response != null && response.getId() != null) {
-
-                VerificationResult verificationResult = MultiCore.getUserVerificationMessage(response.getId(), user.getName(), authResult.getYggdrasilService());
-                if(verificationResult.getFAIL_MSG() != null){
-                    BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.getFAIL_MSG());
-                    return new GameProfile(response.getId(), user.getName());
-                }
-
-                GameProfile result = new GameProfile(verificationResult.getREDIRECT_UUID(), user.getName());
-                if (response.getProperties() != null) {
-                    result.getProperties().putAll(response.getProperties());
-                }
-
-                return result;
-            } else {
-                return null;
+            if (response == null || response.getId() == null) return null;
+            VerificationResult verificationResult = MultiCore.getUserVerificationMessage(response.getId(), user.getName(), authResult.getYggdrasilService());
+            if (verificationResult.getFAIL_MSG() != null) {
+                BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.getFAIL_MSG());
+                return new GameProfile(response.getId(), user.getName());
             }
+
+            GameProfile result = new GameProfile(verificationResult.getREDIRECT_UUID(), user.getName());
+            if (response.getProperties() != null) {
+                result.getProperties().putAll(response.getProperties());
+            }
+
+            return result;
+
         } catch (Exception e) {
             e.printStackTrace();
             MultiCore.getPlugin().getPluginLogger().severe("处理用户数据时出现异常");
