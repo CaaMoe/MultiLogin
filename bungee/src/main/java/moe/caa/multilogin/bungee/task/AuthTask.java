@@ -2,7 +2,7 @@ package moe.caa.multilogin.bungee.task;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.ReflectUtil;
+import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.auth.AuthErrorEnum;
 import moe.caa.multilogin.core.auth.AuthResult;
 import moe.caa.multilogin.core.auth.HttpAuth;

@@ -9,7 +9,7 @@ import moe.caa.multilogin.bungee.task.AuthTask;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.ReflectUtil;
+import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;

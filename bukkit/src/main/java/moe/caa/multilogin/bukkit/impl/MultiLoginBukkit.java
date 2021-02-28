@@ -8,7 +8,7 @@ import moe.caa.multilogin.bukkit.yggdrasil.MultiLoginYggdrasilMinecraftSessionSe
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.ReflectUtil;
+import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.data.data.PluginData;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;

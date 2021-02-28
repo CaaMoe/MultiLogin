@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import moe.caa.multilogin.bungee.impl.MultiLoginBungee;
 import moe.caa.multilogin.bungee.task.AuthTask;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.ReflectUtil;
+import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.data.data.PluginData;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
