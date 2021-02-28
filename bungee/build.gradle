@@ -6,13 +6,14 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     jcenter()
 }
 
 dependencies {
     compile project(':core')
-    compile 'org.xerial:sqlite-jdbc:3.34.0'
-    implementation files("D:/Java api/waterfall-1.16-389.jar")
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
+    compileOnly fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 processResources {
