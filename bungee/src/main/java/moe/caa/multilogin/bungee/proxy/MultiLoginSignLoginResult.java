@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bungee;
+package moe.caa.multilogin.bungee.proxy;
 
 import net.md_5.bungee.connection.LoginResult;
 
