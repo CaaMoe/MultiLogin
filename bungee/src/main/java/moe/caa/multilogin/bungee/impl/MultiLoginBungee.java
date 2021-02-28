@@ -2,9 +2,10 @@ package moe.caa.multilogin.bungee.impl;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.Metrics;
+import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
+import moe.caa.multilogin.bungee.task.AuthTask;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
@@ -45,6 +46,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
      */
     private void initCoreService() throws Exception {
         MultiLoginEncryptionResponse.init();
+        AuthTask.init();
 
         Class<MultiLoginEncryptionResponse> packetClass = MultiLoginEncryptionResponse.class;
         int packetID = 0x01;
