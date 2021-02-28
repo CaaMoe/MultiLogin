@@ -30,7 +30,6 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     private final Field yggdrasilAuthenticationServiceGson = ReflectUtil.getField(YggdrasilAuthenticationService.class, Gson.class);
     private Gson gson;
 
-
     public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) {
         super(authenticationService);
     }
@@ -40,7 +39,10 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
         vanService.joinServer(gameProfile, s, s1);
     }
 
-    @Override
+    public GameProfile hasJoinedServer(GameProfile user, String serverId) {
+        return hasJoinedServer(user, serverId, null);
+    }
+
     public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", user.getName());
