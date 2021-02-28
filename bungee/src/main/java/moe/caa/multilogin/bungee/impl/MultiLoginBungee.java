@@ -41,9 +41,9 @@ import java.util.logging.Logger;
  */
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static File configFile;
+    public static MultiLoginBungee INSTANCE;
     private final ScheduledExecutorService TIMER = Executors.newScheduledThreadPool(10);
     private BungeeConfiguration configuration;
-    public static MultiLoginBungee INSTANCE;
 
     /**
      * 修改服务
@@ -144,22 +144,15 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void savePluginDefaultConfig() {
-        if (!configFile.exists()) {
-            try {
-                InputStream input = getPluginResource("config.yml");
-                FileOutputStream fOut = new FileOutputStream(configFile);
-                byte[] buf = new byte[1024];
-                int len;
-
-                while ((len = input.read(buf)) > 0) {
-                    fOut.write(buf, 0, len);
-                }
-                fOut.flush();
-                fOut.close();
-                input.close();
-            } catch (Exception e) {
-                getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
+        if (configFile.exists()) return;
+        try (InputStream input = getPluginResource("config.yml"); FileOutputStream fOut = new FileOutputStream(configFile)) {
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = input.read(buf)) > 0) {
+                fOut.write(buf, 0, len);
             }
+        } catch (Exception e) {
+            getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
         }
     }
 

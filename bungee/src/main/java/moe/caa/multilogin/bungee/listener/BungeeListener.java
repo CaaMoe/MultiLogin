@@ -10,7 +10,7 @@ import net.md_5.bungee.event.EventHandler;
 
 public class BungeeListener implements Listener {
     @EventHandler
-    public void onLogin(LoginEvent event){
+    public void onLogin(LoginEvent event) {
         if (!event.getConnection().isOnlineMode() || !(((InitialHandler) event.getConnection()).getLoginProfile() instanceof MultiLoginSignLoginResult)) {
             event.setCancelled(true);
             event.setCancelReason(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));

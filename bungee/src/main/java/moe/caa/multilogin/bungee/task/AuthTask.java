@@ -23,6 +23,12 @@ public class AuthTask implements Runnable {
     private static Field NAME;
     private static Field UNIQUE_ID;
     private static Method FINISH;
+    InitialHandler handler;
+    String arg;
+    public AuthTask(InitialHandler handler, String arg) {
+        this.handler = handler;
+        this.arg = arg;
+    }
 
     public static void init() throws NoSuchFieldException {
         Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
@@ -30,14 +36,6 @@ public class AuthTask implements Runnable {
         NAME = ReflectUtil.getField(INITIAL_HANDLE_CLASS, "name");
         UNIQUE_ID = ReflectUtil.getField(INITIAL_HANDLE_CLASS, "uniqueId");
         FINISH = ReflectUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
-    }
-
-    InitialHandler handler;
-    String arg;
-
-    public AuthTask(InitialHandler handler, String arg) {
-        this.handler = handler;
-        this.arg = arg;
     }
 
     @Override
@@ -55,14 +53,14 @@ public class AuthTask implements Runnable {
             LoginResult loginResult = result.getResult();
             UUID onlineId = Util.getUUID(loginResult.getId());
             VerificationResult verificationResult = MultiCore.getUserVerificationMessage(onlineId, handler.getName(), result.getYggdrasilService());
-            if (verificationResult.getFAIL_MSG() == null) {
-                LOGIN_PROFILE.set(handler, new MultiLoginSignLoginResult(loginResult));
-                UNIQUE_ID.set(handler, verificationResult.getREDIRECT_UUID());
-                NAME.set(handler, loginResult.getName());
-                FINISH.invoke(handler);
-            } else {
+            if (verificationResult.getFAIL_MSG() != null) {
                 handler.disconnect(new TextComponent(verificationResult.getFAIL_MSG()));
+                return;
             }
+            LOGIN_PROFILE.set(handler, new MultiLoginSignLoginResult(loginResult));
+            UNIQUE_ID.set(handler, verificationResult.getREDIRECT_UUID());
+            NAME.set(handler, loginResult.getName());
+            FINISH.invoke(handler);
         } catch (Exception e) {
             e.printStackTrace();
             handler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
