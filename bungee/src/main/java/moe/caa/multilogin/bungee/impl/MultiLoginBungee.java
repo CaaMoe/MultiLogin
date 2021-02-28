@@ -26,7 +26,11 @@ import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.logging.Level;
@@ -37,7 +41,7 @@ import java.util.logging.Logger;
  */
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static File configFile;
-    private final Timer TIMER = new Timer("MultiLogin", true);
+    private final ScheduledExecutorService TIMER = Executors.newScheduledThreadPool(10);
     private BungeeConfiguration configuration;
     public static MultiLoginBungee INSTANCE;
 
@@ -121,7 +125,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void onDisable() {
         try {
-            TIMER.cancel();
+            TIMER.shutdown();
         } catch (Exception ignored) {
         }
         MultiCore.disable();
@@ -198,22 +202,12 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void runTaskAsyncLater(Runnable run, long delay) {
-        TIMER.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                run.run();
-            }
-        }, delay * 50);
+        TIMER.schedule(run, delay * 50, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void runTaskAsyncTimer(Runnable run, long delay, long per) {
-        TIMER.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                run.run();
-            }
-        }, delay * 50, per * 50);
+        TIMER.scheduleAtFixedRate(run, delay * 50, per * 50, TimeUnit.MILLISECONDS);
     }
 
     @Override
