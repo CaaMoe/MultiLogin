@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.48'
+    compileOnly group: 'mysql', name: 'mysql-connector-java', version: '5.1.48'
     compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.2'
     compile group: 'com.h2database', name: 'h2', version: '1.4.200'
     compileOnly 'net.md-5:bungeecord-chat:1.16-R0.3'
