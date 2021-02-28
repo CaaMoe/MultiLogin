@@ -1,0 +1,15 @@
+
+# Gradle build output
+build/
+
+# idea local settings
+.idea
+
+# Gradle local lock file
+.gradle
+
+# Log files. Included JVM Crash reports
+*.log
+
+*.class
+
