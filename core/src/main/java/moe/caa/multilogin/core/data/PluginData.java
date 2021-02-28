@@ -77,15 +77,12 @@ public class PluginData {
                     continue;
                 }
                 YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
-                if (section != null) {
-                    if (section.isEnable()) {
-                        if (section.isEnable()) {
-                            serviceSet.add(section);
-                        }
-                    }
-                } else {
+                if (section == null) {
                     log.severe(String.format("无效的Yggdrasil验证服务器： %s", path));
+                    continue;
                 }
+                if (!section.isEnable()) continue;
+                serviceSet.add(section);
             }
         }
         if (isOfficialYgg()) {

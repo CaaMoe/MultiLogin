@@ -18,10 +18,9 @@ public class ReflectUtil {
      */
     public static Field getField(Class<?> clazz, Class<?> target) {
         for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() == target) {
-                field.setAccessible(true);
-                return field;
-            }
+            if (field.getType() != target) continue;
+            field.setAccessible(true);
+            return field;
         }
         throw new IllegalArgumentException(clazz + ": " + target);
     }
@@ -49,12 +48,10 @@ public class ReflectUtil {
      */
     public static Method getMethod(Class<?> clazz, String name, Class<?>... args) {
         for (Method method : clazz.getDeclaredMethods()) {
-            if (method.getName().equalsIgnoreCase(name)) {
-                if (Arrays.equals(method.getParameterTypes(), args)) {
-                    method.setAccessible(true);
-                    return method;
-                }
-            }
+            if (!method.getName().equalsIgnoreCase(name)) continue;
+            if (!Arrays.equals(method.getParameterTypes(), args)) continue;
+            method.setAccessible(true);
+            return method;
         }
         throw new IllegalArgumentException(name);
     }
@@ -68,9 +65,8 @@ public class ReflectUtil {
      */
     public static Object getEnumIns(Class<?> clazz, String name) {
         for (Object constant : clazz.getEnumConstants()) {
-            if (constant.toString().equalsIgnoreCase(name)) {
-                return constant;
-            }
+            if (!constant.toString().equalsIgnoreCase(name)) continue;
+            return constant;
         }
         throw new IllegalArgumentException(name);
     }

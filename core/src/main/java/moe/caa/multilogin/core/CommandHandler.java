@@ -34,35 +34,36 @@ public class CommandHandler {
     public static void executeQuery(ISender commandSender, String[] strings) {
         if (testPermission(commandSender, "multilogin.multilogin.query")) {
             String s = (strings.length == 2) ? strings[1] : (commandSender.isPlayer() ? commandSender.getSenderName() : null);
-            if (s != null) {
-                MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                    try {
-                        List<UserEntry> userList = SQLHandler.getUserEntryByCurrentName(s);
-                        try {
-                            UUID uuid = UUID.fromString(s);
-                            UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
-                            if (byUuid != null) {
-                                userList.add(byUuid);
-                            }
-                        } catch (IllegalArgumentException ignore) {
-                        }
+            if (s == null) {
 
-                        if (userList.size() > 0) {
-                            for (UserEntry entry : userList) {
-                                commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQuery"), s, entry.getServiceEntry().getName())));
-                            }
-                        } else {
-                            commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQueryNoRel"), s)));
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-                        commandSender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
-                    }
-                }, 0);
-            } else {
                 commandSender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPlayer")));
+                return;
             }
+            MultiCore.getPlugin().runTaskAsyncLater(() -> {
+                try {
+                    List<UserEntry> userList = SQLHandler.getUserEntryByCurrentName(s);
+                    try {
+                        UUID uuid = UUID.fromString(s);
+                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
+                        if (byUuid != null) {
+                            userList.add(byUuid);
+                        }
+                    } catch (IllegalArgumentException ignore) {
+                    }
+
+                    if (userList.size() > 0) {
+                        for (UserEntry entry : userList) {
+                            commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQuery"), s, entry.getServiceEntry().getName())));
+                        }
+                    } else {
+                        commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQueryNoRel"), s)));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
+                    commandSender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                }
+            }, 0);
         }
     }
 

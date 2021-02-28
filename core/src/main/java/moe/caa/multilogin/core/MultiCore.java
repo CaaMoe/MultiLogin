@@ -43,6 +43,7 @@ public class MultiCore {
      */
     public static boolean initService(IPlugin plugin) {
         MultiCore.plugin = plugin;
+//        自动更新
         plugin.runTaskAsyncTimer(MultiCore::update, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
         plugin.runTaskAsyncLater(MultiCore::setUpUpdate, 0);
         try {
