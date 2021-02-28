@@ -81,7 +81,6 @@ public class CommandHandler {
 
     /**
      * 处理命令“whitelist remove target”
-     * todo whitelist remove target命令仍未完成
      */
     public static void executeRemove(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.remove")){
