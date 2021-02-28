@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.data.data.PluginData;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -189,29 +189,25 @@ public class MultiCore {
     }
 
     /**
-     * 通过玩家名字排序Yggdrasil验证服务器
+     * 通过玩家名字分批次访问Yggdrasil验证服务器
      *
      * @param name name
      * @return 验证服务器排序的结果
      */
     public static List<List<YggdrasilServiceEntry>> getVeriOrder(String name) throws SQLException {
         List<List<YggdrasilServiceEntry>> ret = new ArrayList<>();
-        List<YggdrasilServiceEntry> one = new ArrayList<>();
+//        第一批 缓存结果
+        List<YggdrasilServiceEntry> one = SQLHandler.getYggdrasilServiceEntryByCurrentName(name);
+//        第二批 非缓存
         List<YggdrasilServiceEntry> two = new ArrayList<>();
-        Set<YggdrasilServiceEntry> cac = new HashSet<>();
-        List<UserEntry> repeatedNameUserEntries = SQLHandler.getUserEntryByCurrentName(name);
-        for (UserEntry userEntry : repeatedNameUserEntries) {
-            if (cac.add(userEntry.getServiceEntry())) {
-                one.add(userEntry.getServiceEntry());
-            }
-        }
+        Set<YggdrasilServiceEntry> cac = new HashSet<>(one);
         for (YggdrasilServiceEntry serviceEntry : PluginData.getServiceSet()) {
-            if (cac.add(serviceEntry)) {
-                two.add(serviceEntry);
-            }
+            if (!one.isEmpty())
+                if (cac.contains(serviceEntry)) continue;
+            two.add(serviceEntry);
         }
-
-        ret.add(one);
+        if (!one.isEmpty())
+            ret.add(one);
         ret.add(two);
         return ret;
     }

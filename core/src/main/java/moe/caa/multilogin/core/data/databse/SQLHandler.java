@@ -1,11 +1,14 @@
 package moe.caa.multilogin.core.data.databse;
 
+import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.util.UUIDSerializer;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -85,6 +88,30 @@ public class SQLHandler {
                     ret.add(add);
                 } catch (Exception e) {
                     throw new RuntimeException(String.format("以用户名检索游戏数据时失败，数据疑似遭到损坏: %s", name), e);
+                }
+            }
+            return ret;
+        }
+    }
+
+    /**
+     * 通过主键current_name检索YggdrasilServiceEntry数据
+     *
+     * @param name 名字
+     * @return 检索到的YggdrasilServiceEntry数据
+     */
+    public static List<YggdrasilServiceEntry> getYggdrasilServiceEntryByCurrentName(String name) throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
+                YGGDRASIL_SERVICE, USER_DATA_TABLE_NAME, CURRENT_NAME
+        ))) {
+            ps.setString(1, name);
+            ResultSet resultSet = ps.executeQuery();
+            List<YggdrasilServiceEntry> ret = new LinkedList<>();
+            while (resultSet.next()) {
+                try {
+                    ret.add(PluginData.getYggdrasilServerEntry(resultSet.getString(1)));
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("以用户名检索YggdrasilServiceEntry时失败，数据疑似遭到损坏: %s", name), e);
                 }
             }
             return ret;
