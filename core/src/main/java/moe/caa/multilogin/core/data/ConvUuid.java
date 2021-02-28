@@ -20,11 +20,12 @@ public enum ConvUuid {
 
     /**
      * 获得UUID
+     *
      * @param onlineUuid 玩家在Yggdrasil的在线UUID
-     * @param name 玩家的name
+     * @param name       玩家的name
      * @return 生成结果
      */
-    public UUID getResultUuid(UUID onlineUuid, String name){
+    public UUID getResultUuid(UUID onlineUuid, String name) {
         if (this == DEFAULT) {
             return onlineUuid;
         }

@@ -4,6 +4,7 @@ import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
 
 /**
  * 对Yggdrasil的验证结果
+ *
  * @param <T> 所需的数据类型
  */
 public class AuthResult<T> {
@@ -25,6 +26,7 @@ public class AuthResult<T> {
 
     /**
      * 得到验证失败枚举
+     *
      * @return 验证失败的枚举，当此值为NULL即为验证成功
      */
     public AuthErrorEnum getErr() {
@@ -33,6 +35,7 @@ public class AuthResult<T> {
 
     /**
      * 返回验证结果
+     *
      * @return 验证结果，当getErr不为空，此值为空
      */
     public T getResult() {
@@ -41,6 +44,7 @@ public class AuthResult<T> {
 
     /**
      * 返回此次验证所关联的Yggdrasil服务器对象
+     *
      * @return Yggdrasil服务器对象
      */
     public YggdrasilServiceEntry getYggdrasilService() {

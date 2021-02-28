@@ -27,7 +27,23 @@ public class UserEntry {
     }
 
     /**
+     * 通过一个数据库检索结果生成一个数据对象
+     *
+     * @param resultSet 数据库检索结果
+     * @return 数据对象
+     */
+    protected static UserEntry fromSQLResultSet(ResultSet resultSet) throws SQLException {
+        return new UserEntry(
+                resultSet.getString(1),
+                resultSet.getString(2),
+                resultSet.getString(3),
+                resultSet.getString(4),
+                resultSet.getInt(5));
+    }
+
+    /**
      * 获得在线UUID
+     *
      * @return 在线UUID
      */
     public String getOnline_uuid() {
@@ -36,6 +52,7 @@ public class UserEntry {
 
     /**
      * 获得当前name
+     *
      * @return 当前name
      */
     public String getCurrent_name() {
@@ -44,6 +61,7 @@ public class UserEntry {
 
     /**
      * 设置当前name
+     *
      * @param current_name 新的name
      */
     public void setCurrent_name(String current_name) {
@@ -52,6 +70,7 @@ public class UserEntry {
 
     /**
      * 获得重定向的UUID字符串
+     *
      * @return 重定向的UUID字符串
      */
     public String getRedirect_uuid() {
@@ -60,6 +79,7 @@ public class UserEntry {
 
     /**
      * 设置重定向的UUID字符串
+     *
      * @param redirect_uuid 新的UUID字符串
      */
     public void setRedirect_uuid(String redirect_uuid) {
@@ -68,6 +88,7 @@ public class UserEntry {
 
     /**
      * 获得验证的Yggdrasil服务器的path
+     *
      * @return Yggdrasil服务器的path
      */
     public String getYggdrasil_service() {
@@ -76,6 +97,7 @@ public class UserEntry {
 
     /**
      * 设置验证的Yggdrasil服务器的path
+     *
      * @param yggdrasil_service Yggdrasil的path
      */
     public void setYggdrasil_service(String yggdrasil_service) {
@@ -85,6 +107,7 @@ public class UserEntry {
 
     /**
      * 获得该数据是否有白名单
+     *
      * @return 是否有白名单
      */
     public int getWhitelist() {
@@ -93,6 +116,7 @@ public class UserEntry {
 
     /**
      * 设置该数据是否有白名单
+     *
      * @param whitelist 该数据是否有白名单
      */
     public void setWhitelist(int whitelist) {
@@ -101,6 +125,7 @@ public class UserEntry {
 
     /**
      * 获得该数据的Yggdrasil服务器对象
+     *
      * @return Yggdrasil服务器对象
      */
     public YggdrasilServiceEntry getServiceEntry() {
@@ -129,20 +154,6 @@ public class UserEntry {
     @Override
     public int hashCode() {
         return Objects.hash(online_uuid);
-    }
-
-    /**
-     * 通过一个数据库检索结果生成一个数据对象
-     * @param resultSet 数据库检索结果
-     * @return 数据对象
-     */
-    protected static UserEntry fromSQLResultSet(ResultSet resultSet) throws SQLException {
-        return new UserEntry(
-                resultSet.getString(1),
-                resultSet.getString(2),
-                resultSet.getString(3),
-                resultSet.getString(4),
-                resultSet.getInt(5));
     }
 
     protected void writeNewUserEntryPreparedStatement(PreparedStatement ps) throws SQLException {

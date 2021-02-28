@@ -22,6 +22,7 @@ public class VerificationResult {
 
     /**
      * 返回验证失败的理由，
+     *
      * @return 验证失败理由
      */
     public String getFAIL_MSG() {
@@ -30,6 +31,7 @@ public class VerificationResult {
 
     /**
      * 获得重定向的UUID
+     *
      * @return 重定向的UUID，当getFAIL_MSG不为空时，此值为空
      */
     public UUID getREDIRECT_UUID() {

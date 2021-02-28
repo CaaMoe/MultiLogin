@@ -1,19 +1,20 @@
 package moe.caa.multilogin.core;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.data.PluginData;
 import moe.caa.multilogin.core.data.SQLHandler;
 import moe.caa.multilogin.core.data.UserEntry;
 import moe.caa.multilogin.core.data.YggdrasilServiceEntry;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -29,25 +30,25 @@ import static moe.caa.multilogin.core.data.PluginData.configurationConfig;
  * 插件核心类
  */
 public class MultiCore {
+    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Base64.Decoder decoder = Base64.getDecoder();
     private static IPlugin plugin = null;
     private static String relV = null;
-    private static final Base64.Decoder decoder = Base64.getDecoder();
-
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     /**
      * 启动服务
+     *
      * @param plugin 插件对象
      * @return 是否加载成功
      */
-    public static boolean initService(IPlugin plugin){
+    public static boolean initService(IPlugin plugin) {
         MultiCore.plugin = plugin;
         plugin.runTaskAsyncTimer(MultiCore::update, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
         plugin.runTaskAsyncLater(MultiCore::setUpUpdate, 0);
         try {
             PluginData.initService();
             return true;
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -56,12 +57,13 @@ public class MultiCore {
     /**
      * 关闭插件
      */
-    public static void disable(){
+    public static void disable() {
         PluginData.close();
     }
 
     /**
      * 获得插件对象
+     *
      * @return 当前插件对象
      */
     public static IPlugin getPlugin() {
@@ -70,19 +72,21 @@ public class MultiCore {
 
     /**
      * 判断插件是否有更新
+     *
      * @return 是否有更新
      */
-    public static boolean isUpdate(){
+    public static boolean isUpdate() {
         try {
             return !plugin.getVersion().endsWith(relV);
-        } catch (Exception ignore){}
+        } catch (Exception ignore) {
+        }
         return false;
     }
 
     /**
      * 发送更新消息
      */
-    private static void setUpUpdate(){
+    private static void setUpUpdate() {
         update();
         if (isUpdate()) {
             plugin.getPluginLogger().info("=======================================================");
@@ -102,40 +106,42 @@ public class MultiCore {
             pat = pat.substring(0, pat.length() - 1);
             String v = new String(decoder.decode(pat), StandardCharsets.UTF_8);
             MultiCore.relV = v.split("\\s+")[2];
-        } catch (Exception ignore){}
+        } catch (Exception ignore) {
+        }
     }
 
     /**
      * 获得某名玩家的其他验证结果
-     * @param onlineUuid 在线UUID
-     * @param currentName 当前名字
+     *
+     * @param onlineUuid       在线UUID
+     * @param currentName      当前名字
      * @param yggdrasilService 验证服务器对象
      * @return 验证结果
      */
-    public static VerificationResult getUserVerificationMessage(UUID onlineUuid, String currentName, YggdrasilServiceEntry yggdrasilService){
+    public static VerificationResult getUserVerificationMessage(UUID onlineUuid, String currentName, YggdrasilServiceEntry yggdrasilService) {
         try {
             boolean updUserEntry;
 
             // 验证服务器为空
-            if(yggdrasilService == null){
+            if (yggdrasilService == null) {
                 return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
             }
             UserEntry userData = SQLHandler.getUserEntryByOnlineUuid(onlineUuid);
 
             // 验证服务器不符
-            if(updUserEntry = userData != null){
-                if(!PluginData.isEmpty(userData.getYggdrasil_service())){
-                    if(!userData.getYggdrasil_service().equals(yggdrasilService.getPath())){
+            if (updUserEntry = userData != null) {
+                if (!PluginData.isEmpty(userData.getYggdrasil_service())) {
+                    if (!userData.getYggdrasil_service().equals(yggdrasilService.getPath())) {
                         return new VerificationResult(configurationConfig.getString("msgNoChae"));
                     }
                 }
             }
 
             //重名检查
-            if(!PluginData.getSafeIdService().equalsIgnoreCase(yggdrasilService.getPath())){
+            if (!PluginData.getSafeIdService().equalsIgnoreCase(yggdrasilService.getPath())) {
                 List<UserEntry> repeatedNameUserEntries = SQLHandler.getUserEntryByCurrentName(currentName);
                 for (UserEntry repeatedNameUserEntry : repeatedNameUserEntries) {
-                    if(!repeatedNameUserEntry.equals(userData)){
+                    if (!repeatedNameUserEntry.equals(userData)) {
                         return new VerificationResult(configurationConfig.getString("msgRushName"));
                     }
                 }
@@ -145,14 +151,14 @@ public class MultiCore {
             userData.setCurrent_name(currentName);
 
             // 白名单检查
-            if(userData.getWhitelist() == 0){
-                if(!(PluginData.removeCacheWhitelist(currentName) | PluginData.removeCacheWhitelist(onlineUuid.toString()))){
+            if (userData.getWhitelist() == 0) {
+                if (!(PluginData.removeCacheWhitelist(currentName) | PluginData.removeCacheWhitelist(onlineUuid.toString()))) {
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
                 }
                 userData.setWhitelist(1);
             }
 
-            if(updUserEntry){
+            if (updUserEntry) {
                 SQLHandler.updateUserEntry(userData);
             } else {
                 SQLHandler.writeNewUserEntry(userData);
@@ -174,7 +180,7 @@ public class MultiCore {
 
             plugin.getPluginLogger().info(String.format("uuid: %s, 来自玩家: %s, 验证服务器: %s(%s)", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));
             return new VerificationResult(UUID.fromString(userData.getRedirect_uuid()));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             getPlugin().getPluginLogger().severe("验证遭到异常");
             return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
@@ -183,6 +189,7 @@ public class MultiCore {
 
     /**
      * 通过玩家名字排序Yggdrasil验证服务器
+     *
      * @param name name
      * @return 验证服务器排序的结果
      */
@@ -197,7 +204,7 @@ public class MultiCore {
                 one.add(userEntry.getServiceEntry());
             }
         }
-        for(YggdrasilServiceEntry serviceEntry : PluginData.getServiceSet()){
+        for (YggdrasilServiceEntry serviceEntry : PluginData.getServiceSet()) {
             if (cac.add(serviceEntry)) {
                 two.add(serviceEntry);
             }
@@ -210,6 +217,7 @@ public class MultiCore {
 
     /**
      * 向指定的url发送GET请求
+     *
      * @param url 指定的url
      * @return 请求结果
      */
@@ -229,6 +237,7 @@ public class MultiCore {
 
     /**
      * 向指定的url发送GET请求
+     *
      * @param url 指定的url
      * @return 请求结果
      */
@@ -238,8 +247,9 @@ public class MultiCore {
 
     /**
      * 执行一个插件命令
-     * @param cmd 根命令
-     * @param sender 命令执行者
+     *
+     * @param cmd     根命令
+     * @param sender  命令执行者
      * @param strings 命令参数
      * @return 命令执行结果
      */
@@ -277,12 +287,12 @@ public class MultiCore {
                     }
                 } else if (strings[0].equalsIgnoreCase("reload") &&
                         strings.length == 1) {
-                    CommandHandler .executeReload(sender);
+                    CommandHandler.executeReload(sender);
                     return true;
                 }
             }
             sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd")));
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             plugin.getPluginLogger().severe("执行命令时出现异常");
             sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
@@ -292,22 +302,23 @@ public class MultiCore {
 
     /**
      * 请求一个命令建议
-     * @param cmd 根命令
-     * @param sender 命令发送者
+     *
+     * @param cmd     根命令
+     * @param sender  命令发送者
      * @param strings 参数
      * @return 建议列表
      */
     public static List<String> suggestCommand(String cmd, ISender sender, String[] strings) {
         if (cmd.equalsIgnoreCase("whitelist")) {
             if (sender.isOp() || sender.hasPermission("multilogin.whitelist.tab")) {
-                if (strings.length == 1){
-                    return Stream.of(new String[] { "add", "remove", "on", "off", "list" }).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+                if (strings.length == 1) {
+                    return Stream.of(new String[]{"add", "remove", "on", "off", "list"}).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
                 }
             }
         } else if (cmd.equalsIgnoreCase("multilogin") && (
                 sender.isOp() || sender.hasPermission("multilogin.multilogin.tab")) &&
                 strings.length == 1) {
-            return Stream.of(new String[] { "query", "reload" }).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+            return Stream.of(new String[]{"query", "reload"}).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
