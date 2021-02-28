@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import moe.caa.multilogin.core.auth.HttpAuth;
 import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static moe.caa.multilogin.core.data.data.PluginData.configurationConfig;
+import static moe.caa.multilogin.core.data.data.PluginData.getTimeOut;
 
 /**
  * 插件核心类
@@ -60,6 +62,7 @@ public class MultiCore {
      */
     public static void disable() {
         PluginData.close();
+        HttpAuth.shutDown();
     }
 
     /**
@@ -220,8 +223,8 @@ public class MultiCore {
      */
     public static String httpGet(URL url) throws IOException {
         URLConnection connection = url.openConnection();
-        connection.setConnectTimeout(15000);
-        connection.setReadTimeout(15000);
+        connection.setConnectTimeout((int) getTimeOut());
+        connection.setReadTimeout((int) getTimeOut());
         InputStream input = connection.getInputStream();
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];

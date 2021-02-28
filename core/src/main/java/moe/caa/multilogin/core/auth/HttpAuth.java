@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
@@ -17,6 +19,8 @@ import java.util.concurrent.FutureTask;
  * 处理Yggdrasil验证请求的类
  */
 public class HttpAuth {
+
+    private static ExecutorService threadPool = Executors.newCachedThreadPool();
 
     /**
      * 进行Yggdrasil验证，将会按name生成Yggdrasil访问顺序并且进行验证
@@ -33,6 +37,7 @@ public class HttpAuth {
         List<List<YggdrasilServiceEntry>> order = MultiCore.getVeriOrder(name);
         boolean down = false;
         for (List<YggdrasilServiceEntry> entries : order) {
+//            分批验证 根据超时进行分批
             AuthResult<T> result = yggAuth(entries, arg, gson, clazz);
             if (result.getErr() == null) {
                 return result;
@@ -56,19 +61,26 @@ public class HttpAuth {
      */
     private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, String arg, Gson gson, Class<T> clazz) {
         T getResult = null;
+//        服务器关闭
         boolean down = false;
+//        任务列表
         Map<Future<T>, YggdrasilServiceEntry> tasks = new HashMap<>();
-        Future<T> taskDown = null;
-        long time = System.currentTimeMillis() + PluginData.getTimeOut();
+//        完成任务的task
+        Future<T> done = null;
+        long endTime = System.currentTimeMillis() + PluginData.getTimeOut();
 
         for (YggdrasilServiceEntry entry : serviceEntryList) {
+            if (entry == null) continue;
+//            请求json数据 转换成需要的对象
             FutureTask<T> task = new FutureTask<>(() -> gson.fromJson(MultiCore.httpGet(entry.buildUrlStr(arg)), clazz));
-            MultiCore.getPlugin().runTaskAsyncLater(task, 0);
+            threadPool.execute(task);
+//            MultiCore.getPlugin().runTaskAsyncLater(task, 0);
+//            执行后放在列表里
             tasks.put(task, entry);
         }
 
         dos:
-        while (time > System.currentTimeMillis() && tasks.size() != 0) {
+        while (endTime > System.currentTimeMillis() && tasks.size() != 0) {
             Iterator<Future<T>> itr = tasks.keySet().iterator();
             while (itr.hasNext()) {
                 Future<T> task = itr.next();
@@ -79,9 +91,11 @@ public class HttpAuth {
                         down = true;
                     }
                     if (getResult != null) {
-                        taskDown = task;
+//                        成功结果
+                        done = task;
                         break dos;
                     }
+//                    完成移除
                     itr.remove();
                 }
             }
@@ -94,6 +108,10 @@ public class HttpAuth {
                 return new AuthResult<>(AuthErrorEnum.SERVER_DOWN);
             return new AuthResult<>(AuthErrorEnum.VALIDATION_FAILED);
         }
-        return new AuthResult<T>(getResult, tasks.get(taskDown));
+        return new AuthResult<>(getResult, tasks.get(done));
+    }
+
+    public static void shutDown() {
+        threadPool.shutdown();
     }
 }
