@@ -72,7 +72,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 } else if (constructors instanceof Constructor[]) {
                     constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-                    throw new UnsupportedOperationException("不兼容的BungeeCord");
+                    throw new UnsupportedOperationException(String.format("不兼容的BungeeCord : %s %s", getProxy().getName(), getProxy().getVersion()));
                 }
             }
         }
