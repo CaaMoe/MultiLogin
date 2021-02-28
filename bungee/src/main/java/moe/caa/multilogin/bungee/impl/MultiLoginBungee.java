@@ -2,9 +2,9 @@ package moe.caa.multilogin.bungee.impl;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import moe.caa.multilogin.bungee.BungeeListener;
+import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.Metrics;
-import moe.caa.multilogin.bungee.MultiLoginEncryptionResponse;
+import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  * 蹦极端的插件主类
  */
 public class MultiLoginBungee extends Plugin implements IPlugin {
-    public static File configFile ;
+    public static File configFile;
     private final Timer TIMER = new Timer("MultiLogin", true);
     private BungeeConfiguration configuration;
     public static MultiLoginBungee INSTANCE;
@@ -59,14 +59,21 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         Object to_server = field_TO_SERVER.get(Protocol.LOGIN);
         TIntObjectMap<?> protocols = (TIntObjectMap<?>) field_protocols.get(to_server);
         for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
-            if(protocol >= 47){
+            if (protocol >= 47) {
                 Object data = protocols.get(protocol);
                 TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
                 packetMap.remove(EncryptionResponse.class);
                 packetMap.put(packetClass, packetID);
-                // TODO: 2021/2/27 有有问题的 
-                Constructor<? extends DefinedPacket>[] constructors = (Constructor<? extends DefinedPacket>[]) field_packetConstructors.get(data);
-                constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
+                //2021/2/28 Fixed Supplier unsupported problem
+                Object[] constructors = (Object[]) field_packetConstructors.get(data);
+                if (constructors instanceof Supplier[]) {
+                    Supplier<? extends DefinedPacket>[] suppliers = (Supplier<? extends DefinedPacket>[]) constructors;
+                    suppliers[packetID] = MultiLoginEncryptionResponse::new;
+                } else if (constructors instanceof Constructor[]) {
+                    constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
+                } else {
+                    throw new UnsupportedOperationException("不兼容的BungeeCord");
+                }
             }
         }
     }
@@ -113,7 +120,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void onDisable() {
         try {
             TIMER.cancel();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+        }
         MultiCore.disable();
         BungeeCord.getInstance().stop();
     }
@@ -137,7 +145,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 byte[] buf = new byte[1024];
                 int len;
 
-                while((len = input.read(buf)) > 0) {
+                while ((len = input.read(buf)) > 0) {
                     fOut.write(buf, 0, len);
                 }
                 fOut.flush();
@@ -153,7 +161,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void reloadPluginConfig() {
         try {
             configuration = new BungeeConfiguration(ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml")));
-        } catch (Exception ignore){
+        } catch (Exception ignore) {
             getPluginLogger().log(Level.SEVERE, "无法读取文件 " + configFile.getName());
         }
     }
@@ -171,7 +179,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void kickPlayer(UUID uuid, String msg) {
         ProxiedPlayer player = BungeeCord.getInstance().getPlayer(uuid);
-        if(player != null){
+        if (player != null) {
             player.disconnect(new TextComponent(msg));
         }
     }

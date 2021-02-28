@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bungee;
+package moe.caa.multilogin.bungee.proxy;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
