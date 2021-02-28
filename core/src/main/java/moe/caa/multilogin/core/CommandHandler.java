@@ -6,6 +6,7 @@ import moe.caa.multilogin.core.data.UserEntry;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,12 +70,13 @@ public class CommandHandler {
      * 处理命令“whitelist add target”
      */
     public static void executeAdd(ISender sender, String[] args) {
-        if (testPermission(sender, "multilogin.whitelist.add"))
+        if (testPermission(sender, "multilogin.whitelist.add")){
             if (PluginData.addCacheWhitelist(args[1])) {
                 sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist"), args[1])));
             } else {
                 sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready"), args[1])));
             }
+        }
     }
 
     /**
@@ -82,12 +84,36 @@ public class CommandHandler {
      * todo whitelist remove target命令仍未完成
      */
     public static void executeRemove(ISender sender, String[] args) {
-        if (testPermission(sender, "multilogin.whitelist.remove"))
-            if (PluginData.removeCacheWhitelist(args[1])) {
-                sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelist"), args[1])));
-            } else {
-                sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready"), args[1])));
-            }
+        if (testPermission(sender, "multilogin.whitelist.remove")){
+            MultiCore.getPlugin().runTaskAsyncLater(()->{
+                boolean flag = false;
+                if (PluginData.removeCacheWhitelist(args[1])) {
+                    flag = true;
+                }
+                try {
+                    List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
+                    for (UserEntry entry : userEntries) {
+                        entry.setWhitelist(0);
+                        SQLHandler.updateUserEntry(entry);
+                    }
+                    UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
+                    byUuid.setWhitelist(0);
+                    SQLHandler.updateUserEntry(byUuid);
+                } catch (IllegalArgumentException | NullPointerException ignored) {
+                } catch (Exception e){
+                    e.printStackTrace();
+                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
+                    sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                    return;
+                }
+                if (flag) {
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelist"), args[1])));
+                } else {
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready"), args[1])));
+                }
+            }, 0);
+        }
+
     }
 
     /**
