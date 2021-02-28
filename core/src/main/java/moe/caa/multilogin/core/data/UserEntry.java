@@ -1,23 +1,21 @@
 package moe.caa.multilogin.core.data;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * 表示数据库中存放的玩家对象
  */
 public class UserEntry {
 
-    private final String online_uuid;
+    private final UUID online_uuid;
     private String current_name;
-    private String redirect_uuid;
+    private UUID redirect_uuid;
     private String yggdrasil_service;
     private int whitelist;
     private transient YggdrasilServiceEntry serviceEntry;
 
-    public UserEntry(String online_uuid, String current_name, String redirect_uuid, String yggdrasil_service, int whitelist) {
+    public UserEntry(UUID online_uuid, String current_name, UUID redirect_uuid, String yggdrasil_service, int whitelist) {
         this.online_uuid = online_uuid;
         this.current_name = current_name;
         this.redirect_uuid = redirect_uuid;
@@ -26,27 +24,13 @@ public class UserEntry {
         this.serviceEntry = PluginData.getYggdrasilServerEntry(yggdrasil_service);
     }
 
-    /**
-     * 通过一个数据库检索结果生成一个数据对象
-     *
-     * @param resultSet 数据库检索结果
-     * @return 数据对象
-     */
-    protected static UserEntry fromSQLResultSet(ResultSet resultSet) throws SQLException {
-        return new UserEntry(
-                resultSet.getString(1),
-                resultSet.getString(2),
-                resultSet.getString(3),
-                resultSet.getString(4),
-                resultSet.getInt(5));
-    }
 
     /**
      * 获得在线UUID
      *
      * @return 在线UUID
      */
-    public String getOnline_uuid() {
+    public UUID getOnline_uuid() {
         return online_uuid;
     }
 
@@ -73,7 +57,7 @@ public class UserEntry {
      *
      * @return 重定向的UUID字符串
      */
-    public String getRedirect_uuid() {
+    public UUID getRedirect_uuid() {
         return redirect_uuid;
     }
 
@@ -82,7 +66,7 @@ public class UserEntry {
      *
      * @param redirect_uuid 新的UUID字符串
      */
-    public void setRedirect_uuid(String redirect_uuid) {
+    public void setRedirect_uuid(UUID redirect_uuid) {
         this.redirect_uuid = redirect_uuid;
     }
 
@@ -154,21 +138,5 @@ public class UserEntry {
     @Override
     public int hashCode() {
         return Objects.hash(online_uuid);
-    }
-
-    protected void writeNewUserEntryPreparedStatement(PreparedStatement ps) throws SQLException {
-        ps.setString(1, online_uuid);
-        ps.setString(2, current_name);
-        ps.setString(3, redirect_uuid);
-        ps.setString(4, yggdrasil_service);
-        ps.setInt(5, whitelist);
-    }
-
-    protected void updateUserEntryPreparedStatement(PreparedStatement ps) throws SQLException {
-        ps.setString(1, current_name);
-        ps.setString(2, redirect_uuid);
-        ps.setString(3, yggdrasil_service);
-        ps.setInt(4, whitelist);
-        ps.setString(5, online_uuid);
     }
 }

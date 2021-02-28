@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.data;
 
+import moe.caa.multilogin.core.util.UUIDSerializer;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,12 +33,12 @@ public class SQLHandler {
 
         try (Statement s = conn.createStatement()) {
             s.executeUpdate("" +
-                    "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "                                  ( " +
-                    ONLINE_UUID + "  VARCHAR(255) PRIMARY KEY NOT NULL,                       " +
-                    CURRENT_NAME + "  VARCHAR(255)                     ,                       " +
-                    REDIRECT_UUID + "  VARCHAR(255)                     ,                       " +
-                    YGGDRASIL_SERVICE + "  VARCHAR(255)                     ,                       " +
-                    WHITELIST + "  INTEGER                                                  )");
+                    "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
+                    ONLINE_UUID + "  binary(16) PRIMARY KEY NOT NULL," +
+                    CURRENT_NAME + "  VARCHAR(32)," +
+                    REDIRECT_UUID + "  binary(16)," +
+                    YGGDRASIL_SERVICE + "  VARCHAR(50)," +
+                    WHITELIST + "  INTEGER)");
         }
     }
 
@@ -47,14 +49,14 @@ public class SQLHandler {
      * @return 检索到的UserEntry数据
      */
     public static UserEntry getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
+        try (PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, ONLINE_UUID
         ))) {
             ps.setString(1, uuid.toString());
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 try {
-                    return UserEntry.fromSQLResultSet(resultSet);
+                    return fromSQLResultSet(resultSet);
                 } catch (Exception e) {
                     throw new RuntimeException(String.format("以唯一标识符检索游戏数据时失败，数据疑似遭到损坏: %s", uuid.toString()), e);
                 }
@@ -78,7 +80,7 @@ public class SQLHandler {
             List<UserEntry> ret = new ArrayList<>();
             while (resultSet.next()) {
                 try {
-                    UserEntry add = UserEntry.fromSQLResultSet(resultSet);
+                    UserEntry add = fromSQLResultSet(resultSet);
                     ret.add(add);
                 } catch (Exception e) {
                     throw new RuntimeException(String.format("以用户名检索游戏数据时失败，数据疑似遭到损坏: %s", name), e);
@@ -86,6 +88,21 @@ public class SQLHandler {
             }
             return ret;
         }
+    }
+
+    /**
+     * 通过一个数据库检索结果生成一个数据对象
+     *
+     * @param resultSet 数据库检索结果
+     * @return 数据对象
+     */
+    protected static UserEntry fromSQLResultSet(ResultSet resultSet) throws SQLException {
+        return new UserEntry(
+                UUIDSerializer.toUUID(resultSet.getBytes(1)),
+                resultSet.getString(2),
+                UUIDSerializer.toUUID(resultSet.getBytes(3)),
+                resultSet.getString(4),
+                resultSet.getInt(5));
     }
 
     /**
@@ -97,7 +114,11 @@ public class SQLHandler {
         try (PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
         ))) {
-            entry.writeNewUserEntryPreparedStatement(ps);
+            ps.setBytes(1, UUIDSerializer.uuidToByte(entry.getOnline_uuid()));
+            ps.setString(2, entry.getCurrent_name());
+            ps.setBytes(3, UUIDSerializer.uuidToByte(entry.getRedirect_uuid()));
+            ps.setString(4, entry.getYggdrasil_service());
+            ps.setInt(5, entry.getWhitelist());
             ps.executeUpdate();
         }
     }
@@ -108,10 +129,14 @@ public class SQLHandler {
      * @param entry 需要更新的UserEntry
      */
     public static void updateUserEntry(UserEntry entry) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? ",
+        try (PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
         ))) {
-            entry.updateUserEntryPreparedStatement(ps);
+            ps.setString(1, entry.getCurrent_name());
+            ps.setBytes(2, UUIDSerializer.uuidToByte(entry.getRedirect_uuid()));
+            ps.setString(3, entry.getYggdrasil_service());
+            ps.setInt(4, entry.getWhitelist());
+            ps.setBytes(5, UUIDSerializer.uuidToByte(entry.getOnline_uuid()));
             ps.executeUpdate();
         }
     }

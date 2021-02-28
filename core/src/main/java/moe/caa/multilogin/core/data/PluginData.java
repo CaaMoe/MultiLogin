@@ -341,6 +341,7 @@ public class PluginData {
                         configuration.getString("mySqlDatabase")
                 ), configuration.getString("mySqlUsername"), configuration.getString("mySqlPassword")};
             }
+            //TODO 添加H2DB 删除SQLITE 添加连接池
         }
         return null;
     }

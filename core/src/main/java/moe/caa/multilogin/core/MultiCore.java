@@ -148,7 +148,7 @@ public class MultiCore {
                 }
             }
 
-            userData = !updUserEntry ? new UserEntry(onlineUuid.toString(), currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName).toString(), yggdrasilService.getPath(), 0) : userData;
+            userData = !updUserEntry ? new UserEntry(onlineUuid, currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName), yggdrasilService.getPath(), 0) : userData;
             userData.setCurrent_name(currentName);
 
             // 白名单检查
@@ -180,7 +180,7 @@ public class MultiCore {
             task.get();
 
             plugin.getPluginLogger().info(String.format("uuid: %s, 来自玩家: %s, 验证服务器: %s(%s)", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));
-            return new VerificationResult(UUID.fromString(userData.getRedirect_uuid()));
+            return new VerificationResult(userData.getRedirect_uuid());
         } catch (Exception e) {
             e.printStackTrace();
             getPlugin().getPluginLogger().severe("验证遭到异常");
