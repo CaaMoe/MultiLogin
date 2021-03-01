@@ -56,7 +56,7 @@ public class BukkitListener implements Listener {
 
     @EventHandler
     private void onJoin(PlayerJoinEvent event) {
-        if (AutoUpdater.isUpdate()) {
+        if (MultiCore.isUpdate()) {
             if (event.getPlayer().isOp() || event.getPlayer().hasPermission("multilogin.update")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "插件 " + ChatColor.YELLOW + "MultiLogin" + ChatColor.RED + " 有新的版本发布，请及时下载更新！");
             }

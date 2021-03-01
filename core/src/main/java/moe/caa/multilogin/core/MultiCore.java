@@ -3,6 +3,7 @@ package moe.caa.multilogin.core;
 import moe.caa.multilogin.core.auth.HttpAuth;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.impl.IPlugin;
+import moe.caa.multilogin.core.lib.LibChecker;
 import moe.caa.multilogin.core.util.AutoUpdater;
 
 /**
@@ -10,6 +11,8 @@ import moe.caa.multilogin.core.util.AutoUpdater;
  */
 public class MultiCore {
     private static IPlugin plugin = null;
+    private static AutoUpdater updater = new AutoUpdater();
+    private static LibChecker libChecker;
 
     /**
      * 启动服务
@@ -20,8 +23,14 @@ public class MultiCore {
     public static boolean initService(IPlugin plugin) {
         MultiCore.plugin = plugin;
 //        自动更新
-        plugin.runTaskAsyncTimer(AutoUpdater::update, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
-        plugin.runTaskAsyncLater(AutoUpdater::setUpUpdate, 0);
+        plugin.runTaskAsyncTimer(updater, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
+        plugin.runTaskAsyncLater(() -> updater.infoUpdate(), 0);
+//        检测并加载lib后启动
+        libChecker = new LibChecker(plugin.getPluginDataFolder());
+        if (!libChecker.check()) {
+            info("库加载失败");
+            return false;
+        }
         try {
             PluginData.initService();
             return true;
@@ -50,5 +59,9 @@ public class MultiCore {
 
     public static void info(String info) {
         plugin.getPluginLogger().info(info);
+    }
+
+    public static boolean isUpdate() {
+        return updater.isUpdate();
     }
 }

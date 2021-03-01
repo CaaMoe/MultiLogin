@@ -9,16 +9,19 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class AutoUpdater {
+public class AutoUpdater implements Runnable{
     private static final Base64.Decoder decoder = Base64.getDecoder();
     private static String relV = null;
 
+    @Override
+    public void run() {
+        update();
+    }
+
     /**
      * 判断插件是否有更新
-     *
-     * @return 是否有更新
      */
-    public static boolean isUpdate() {
+    public boolean isUpdate() {
         try {
             return !MultiCore.getPlugin().getVersion().endsWith(relV);
         } catch (Exception ignore) {
@@ -29,7 +32,7 @@ public class AutoUpdater {
     /**
      * 发送更新消息
      */
-    public static void setUpUpdate() {
+    public void infoUpdate() {
         update();
         if (isUpdate()) {
             MultiCore.info("=======================================================");
@@ -41,7 +44,7 @@ public class AutoUpdater {
     /**
      * 周期性的更新检查
      */
-    public static void update() {
+    private void update() {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
             JsonObject jo = (JsonObject) new JsonParser().parse(HttpGetter.httpGet(url));

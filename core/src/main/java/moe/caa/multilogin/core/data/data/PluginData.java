@@ -256,7 +256,7 @@ public class PluginData {
      * @param configuration SQL配置
      * @return 链接参数
      */
-    private static AbstractConnectionPool getSqlPool(IConfiguration configuration) throws Exception {
+    private static AbstractConnectionPool getSqlPool(IConfiguration configuration) {
         if (configuration == null) return null;
         String url;
         String userName = configuration.getString("username");

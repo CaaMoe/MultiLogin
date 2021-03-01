@@ -35,7 +35,7 @@ public class HttpAuth {
      * @throws SQLException 数据查询失败
      */
     public static <T> AuthResult<T> yggAuth(String name, String arg, Gson gson, Class<T> clazz) throws SQLException {
-        List<List<YggdrasilServiceEntry>> order = MultiCore.getVeriOrder(name);
+        List<List<YggdrasilServiceEntry>> order = Verifier.getVeriOrder(name);
         boolean down = false;
         for (List<YggdrasilServiceEntry> entries : order) {
 //            分批验证 根据超时进行分批
