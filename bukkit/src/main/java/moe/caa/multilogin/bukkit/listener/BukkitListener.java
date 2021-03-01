@@ -38,6 +38,6 @@ public class BukkitListener implements Listener {
             if(Bukkit.getPlayer(uuid) == null){
                 MultiLoginBukkit.USER_CACHE.remove(uuid);
             }
-        }, 20 * 60 * 30);
+        }, 0);
     }
 }
