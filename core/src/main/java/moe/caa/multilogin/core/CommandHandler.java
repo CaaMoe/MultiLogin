@@ -48,6 +48,12 @@ public class CommandHandler {
                         if (byUuid != null) {
                             userList.add(byUuid);
                         }
+
+                        byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
+                        if (byUuid != null) {
+                            userList.add(byUuid);
+                        }
+
                     } catch (IllegalArgumentException ignore) {
                     }
 
@@ -83,11 +89,20 @@ public class CommandHandler {
                     }
                     if (!flag) {
                         UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
-                        byUuid.setWhitelist(1);
-                        SQLHandler.updateUserEntry(byUuid);
-                        flag = true;
+                        if (byUuid != null) {
+                            byUuid.setWhitelist(1);
+                            SQLHandler.updateUserEntry(byUuid);
+                            flag = true;
+                        } else {
+                            byUuid = SQLHandler.getUserEntryByRedirectUuid(UUID.fromString(args[1]));
+                            if (byUuid != null) {
+                                byUuid.setWhitelist(1);
+                                SQLHandler.updateUserEntry(byUuid);
+                                flag = true;
+                            }
+                        }
                     }
-                } catch (IllegalArgumentException | NullPointerException ignored) {
+                } catch (IllegalArgumentException ignored) {
                 } catch (Exception e) {
                     e.printStackTrace();
                     MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
@@ -122,11 +137,22 @@ public class CommandHandler {
                         flag = true;
                     }
                     UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
-                    byUuid.setWhitelist(0);
-                    SQLHandler.updateUserEntry(byUuid);
-                    MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
-                    flag = true;
-                } catch (IllegalArgumentException | NullPointerException ignored) {
+                    if (byUuid != null) {
+                        byUuid.setWhitelist(0);
+                        SQLHandler.updateUserEntry(byUuid);
+                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                        flag = true;
+                    }
+
+                    byUuid = SQLHandler.getUserEntryByRedirectUuid(UUID.fromString(args[1]));
+                    if (byUuid != null) {
+                        byUuid.setWhitelist(0);
+                        SQLHandler.updateUserEntry(byUuid);
+                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                        flag = true;
+                    }
+
+                } catch (IllegalArgumentException ignored) {
                 } catch (Exception e) {
                     e.printStackTrace();
                     MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
