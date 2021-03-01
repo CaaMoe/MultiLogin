@@ -29,25 +29,7 @@ import java.util.logging.Logger;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
-    public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<UUID, UserEntry>(){
-        private final Set<UUID> todoList = new HashSet<>();
-
-        @Override
-        public synchronized UserEntry get(Object key) {
-            UserEntry ret = super.get(key);
-            if(key instanceof UUID && ret == null && todoList.add((UUID) key)){
-                MultiCore.getPlugin().runTaskAsyncLater(()->{
-                    try {
-                        put((UUID) key, SQLHandler.getUserEntryByOnlineUuid((UUID) key));
-                        todoList.remove(key);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }, 0);
-            }
-            return ret;
-        }
-    };
+    public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<>();
 
     private void initCoreService() throws Exception {
         final String NMS_VERSION = getServer().getClass().getPackage().getName().split("\\.")[3];

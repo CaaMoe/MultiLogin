@@ -70,6 +70,30 @@ public class SQLHandler {
     }
 
     /**
+     * 通过redirect_uuid检索UserEntry数据
+     *
+     * @param uuid online_uuid
+     * @return 检索到的UserEntry数据
+     */
+    public static UserEntry getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
+                USER_DATA_TABLE_NAME, REDIRECT_UUID
+        ))) {
+            ps.setBytes(1, UUIDSerializer.uuidToByte(uuid));
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                try {
+                    return fromSQLResultSet(resultSet);
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("以重定向的唯一标识符检索游戏数据时失败，数据疑似遭到损坏: %s", uuid.toString()), e);
+                }
+            }
+            return null;
+        }
+    }
+
+
+    /**
      * 通过主键current_name检索UserEntry数据
      *
      * @param name online_uuid
