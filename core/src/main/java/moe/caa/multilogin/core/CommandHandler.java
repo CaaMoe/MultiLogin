@@ -80,43 +80,51 @@ public class CommandHandler {
         if (testPermission(sender, "multilogin.whitelist.add")) {
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
                 boolean flag = false;
-                try {
-                    List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
-                    for (UserEntry entry : userEntries) {
-                        if (entry.getWhitelist() == 0) {
-                            entry.setWhitelist(1);
-                            SQLHandler.updateUserEntry(entry);
-                            flag = true;
+                do {
+                    try {
+                        List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
+                        for (UserEntry entry : userEntries) {
+                            if (entry.getWhitelist() == 0) {
+                                entry.setWhitelist(1);
+                                SQLHandler.updateUserEntry(entry);
+                                flag = true;
+                                break;
+                            }
+                        }
+                        if (userEntries.size() != 0) {
                             break;
                         }
-                    }
-                    if (!flag) {
-                        UUID uuid = UUID.fromString(args[1]);
-                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
-                        if (byUuid != null && byUuid.getWhitelist() == 0) {
-                            byUuid.setWhitelist(1);
-                            SQLHandler.updateUserEntry(byUuid);
-                            flag = true;
-                        }
-                        if (byUuid != null) {
+                        if (!flag) {
+                            UUID uuid = UUID.fromString(args[1]);
+                            UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
+                            if (byUuid != null && byUuid.getWhitelist() == 0) {
+                                byUuid.setWhitelist(1);
+                                SQLHandler.updateUserEntry(byUuid);
+                                flag = true;
+                                break;
+                            }
+
                             byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
                             if (byUuid != null && byUuid.getWhitelist() == 0) {
                                 byUuid.setWhitelist(1);
                                 SQLHandler.updateUserEntry(byUuid);
                                 flag = true;
+                                break;
                             }
+
                         }
+                    } catch (IllegalArgumentException ignored) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
+                        sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                        return;
                     }
-                } catch (IllegalArgumentException ignored) {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-                    sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
-                    return;
-                }
-                if (!flag) {
-                    flag = PluginData.addCacheWhitelist(args[1]);
-                }
+                    if (!flag) {
+                        flag = PluginData.addCacheWhitelist(args[1]);
+                    }
+                } while (false);
+
                 if (flag) {
                     sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist"), args[1])));
                 } else {
