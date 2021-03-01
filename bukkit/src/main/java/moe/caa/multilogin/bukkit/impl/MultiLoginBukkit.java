@@ -149,10 +149,12 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void kickPlayer(UUID uuid, String msg) {
-        Player p = getServer().getPlayer(uuid);
-        if(p != null){
-            p.kickPlayer(msg);
-        }
+        MultiCore.getPlugin().runTask(()->{
+            Player p = getServer().getPlayer(uuid);
+            if(p != null){
+                p.kickPlayer(msg);
+            }
+        }, 0);
     }
 
     @Override
