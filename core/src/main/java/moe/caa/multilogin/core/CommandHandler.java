@@ -83,7 +83,7 @@ public class CommandHandler {
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
-                        if(entry.getWhitelist() == 0){
+                        if (entry.getWhitelist() == 0) {
                             entry.setWhitelist(1);
                             SQLHandler.updateUserEntry(entry);
                             flag = true;
@@ -98,7 +98,7 @@ public class CommandHandler {
                             SQLHandler.updateUserEntry(byUuid);
                             flag = true;
                         }
-                        if(byUuid != null){
+                        if (byUuid != null) {
                             byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
                             if (byUuid != null && byUuid.getWhitelist() == 0) {
                                 byUuid.setWhitelist(1);
@@ -136,7 +136,7 @@ public class CommandHandler {
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
-                        if(entry.getWhitelist() != 0){
+                        if (entry.getWhitelist() != 0) {
                             entry.setWhitelist(0);
                             SQLHandler.updateUserEntry(entry);
                             MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
