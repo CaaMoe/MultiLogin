@@ -210,6 +210,7 @@ public class PluginData {
      */
     public synchronized static void setWhitelist(boolean whitelist) {
         PluginData.whitelist = whitelist;
+        MultiCore.getPlugin().savePluginConfig();
     }
 
     /**
@@ -246,8 +247,8 @@ public class PluginData {
             SQLHandler.close();
         } catch (SQLException ignored) {
         }
+        MultiCore.getPlugin().savePluginConfig();
     }
-
 
     /**
      * 通过configuration获得SQL链接

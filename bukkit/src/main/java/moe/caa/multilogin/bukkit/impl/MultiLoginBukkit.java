@@ -173,4 +173,9 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         }
         return ret;
     }
+
+    @Override
+    public void savePluginConfig() {
+        saveConfig();
+    }
 }

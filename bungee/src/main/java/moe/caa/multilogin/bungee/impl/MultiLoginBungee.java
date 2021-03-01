@@ -218,4 +218,9 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         }
         return ret;
     }
+
+    @Override
+    public void savePluginConfig() {
+        // TODO: 2021/3/1 保存配置文件 
+    }
 }

@@ -38,6 +38,11 @@ public interface IPlugin {
     void reloadPluginConfig();
 
     /**
+     * 保存插件配置文件
+     */
+    void savePluginConfig();
+
+    /**
      * 通过指定输入流生成一个配置文件对象
      *
      * @param reader 指定输入流
