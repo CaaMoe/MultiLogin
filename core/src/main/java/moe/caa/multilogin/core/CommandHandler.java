@@ -95,10 +95,14 @@ public class CommandHandler {
                     for (UserEntry entry : userEntries) {
                         entry.setWhitelist(0);
                         SQLHandler.updateUserEntry(entry);
+                        MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                        flag = true;
                     }
                     UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
                     byUuid.setWhitelist(0);
                     SQLHandler.updateUserEntry(byUuid);
+                    MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                    flag = true;
                 } catch (IllegalArgumentException | NullPointerException ignored) {
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -312,7 +312,7 @@ public class MultiCore {
         if (cmd.equalsIgnoreCase("whitelist")) {
             if (sender.isOp() || sender.hasPermission("multilogin.whitelist.tab")) {
                 if (strings.length == 1) {
-                    return Stream.of(new String[]{"add", "remove", "on", "off", "list"}).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
+                    return Stream.of(new String[]{"add", "remove", "on", "off"}).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
                 }
             }
         } else if (cmd.equalsIgnoreCase("multilogin") && (
