@@ -5,5 +5,6 @@ import java.sql.SQLException;
 
 public abstract class AbstractConnectionPool {
     public abstract Connection getConnection() throws SQLException;
+
     public abstract void close();
 }

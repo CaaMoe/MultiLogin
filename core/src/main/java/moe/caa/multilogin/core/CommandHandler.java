@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core;
 
 import moe.caa.multilogin.core.data.data.PluginData;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -81,7 +81,7 @@ public class CommandHandler {
                         SQLHandler.updateUserEntry(entry);
                         flag = true;
                     }
-                    if(!flag){
+                    if (!flag) {
                         UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
                         byUuid.setWhitelist(1);
                         SQLHandler.updateUserEntry(byUuid);
@@ -94,7 +94,7 @@ public class CommandHandler {
                     sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
                     return;
                 }
-                if(!flag){
+                if (!flag) {
                     flag = PluginData.addCacheWhitelist(args[1]);
                 }
                 if (flag) {

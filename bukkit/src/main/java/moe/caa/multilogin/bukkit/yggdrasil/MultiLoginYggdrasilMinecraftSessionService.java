@@ -13,11 +13,11 @@ import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.auth.AuthErrorEnum;
 import moe.caa.multilogin.core.auth.AuthResult;
 import moe.caa.multilogin.core.auth.HttpAuth;
 import moe.caa.multilogin.core.auth.VerificationResult;
+import moe.caa.multilogin.core.util.ReflectUtil;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -26,9 +26,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
-    private MinecraftSessionService vanService;
     private final URL CHECK_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
     private final Field yggdrasilAuthenticationServiceGson = ReflectUtil.getField(YggdrasilAuthenticationService.class, Gson.class);
+    private MinecraftSessionService vanService;
     private Gson gson;
 
     public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) {

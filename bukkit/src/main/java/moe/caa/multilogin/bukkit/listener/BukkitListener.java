@@ -20,9 +20,9 @@ public class BukkitListener implements Listener {
     public static final Map<Thread, String> AUTH_CACHE = new Hashtable<>();
 
     @EventHandler
-    private void onLogin(AsyncPlayerPreLoginEvent event){
+    private void onLogin(AsyncPlayerPreLoginEvent event) {
         String msg = AUTH_CACHE.remove(Thread.currentThread());
-        if(msg != null){
+        if (msg != null) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(msg);
             return;
@@ -42,10 +42,10 @@ public class BukkitListener implements Listener {
     }
 
     @EventHandler
-    private void onQuit(PlayerQuitEvent event){
+    private void onQuit(PlayerQuitEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
-        MultiCore.getPlugin().runTask(()->{
-            if(Bukkit.getPlayer(uuid) == null){
+        MultiCore.getPlugin().runTask(() -> {
+            if (Bukkit.getPlayer(uuid) == null) {
                 MultiLoginBukkit.USER_CACHE.remove(uuid);
             }
         }, 0);

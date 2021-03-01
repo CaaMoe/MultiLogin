@@ -177,7 +177,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void kickPlayer(UUID uuid, String msg) {
-        MultiCore.getPlugin().runTask(()->{
+        MultiCore.getPlugin().runTask(() -> {
             ProxiedPlayer player = BungeeCord.getInstance().getPlayer(uuid);
             if (player != null) {
                 player.disconnect(new TextComponent(msg));

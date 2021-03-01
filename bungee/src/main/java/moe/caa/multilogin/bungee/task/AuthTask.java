@@ -2,12 +2,12 @@ package moe.caa.multilogin.bungee.task;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.auth.AuthErrorEnum;
 import moe.caa.multilogin.core.auth.AuthResult;
 import moe.caa.multilogin.core.auth.HttpAuth;
 import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.data.data.PluginData;
+import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.Util;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -25,6 +25,7 @@ public class AuthTask implements Runnable {
     private static Method FINISH;
     InitialHandler handler;
     String arg;
+
     public AuthTask(InitialHandler handler, String arg) {
         this.handler = handler;
         this.arg = arg;
