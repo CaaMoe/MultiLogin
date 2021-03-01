@@ -21,7 +21,7 @@ public class BungeeListener implements Listener {
     }
 
     @EventHandler
-    public void onSwitch(ServerSwitchEvent event){
+    public void onSwitch(ServerSwitchEvent event) {
         if (MultiCore.isUpdate() && event.getPlayer().hasPermission("multilogin.update")) {
             event.getPlayer().sendMessage(new TextComponent(ChatColor.RED + "插件 " + ChatColor.YELLOW + "MultiLogin" + ChatColor.RED + " 有新的版本发布，请及时下载更新！"));
         }

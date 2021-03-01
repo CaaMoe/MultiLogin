@@ -224,7 +224,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void savePluginConfig() {
         try {
             ConfigurationProvider.getProvider(YamlConfiguration.class).save((Configuration) configuration.getVanConfiguration(), new File(getDataFolder(), "config.yml"));
-        } catch (Exception e){
+        } catch (Exception e) {
             getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
         }
     }
