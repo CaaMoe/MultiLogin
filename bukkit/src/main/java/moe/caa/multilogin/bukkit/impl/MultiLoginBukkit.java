@@ -29,7 +29,7 @@ import java.util.logging.Logger;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
-    public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<>(){
+    public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<UUID, UserEntry>(){
         private final Set<UUID> todoList = new HashSet<>();
 
         @Override
