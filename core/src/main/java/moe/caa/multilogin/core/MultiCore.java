@@ -155,7 +155,7 @@ public class MultiCore {
             userData.setCurrent_name(currentName);
 
             // 白名单检查
-            if (userData.getWhitelist() == 0) {
+            if (userData.getWhitelist() == 0 && yggdrasilService.isWhitelist()) {
                 if (!(SQLHandler.removeCacheWhitelist(currentName) | SQLHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
                 }
