@@ -16,8 +16,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 public class LibChecker {
-//    下载池子
-    ExecutorService executor= Executors.newCachedThreadPool();
+    //    下载池子
+    ExecutorService executor = Executors.newCachedThreadPool();
     //    下载任务列表
     Map<String, FutureTask<Boolean>> downloadTasks = new HashMap<>();
     List<String> toLoad = new ArrayList<>();

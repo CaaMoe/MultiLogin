@@ -20,7 +20,7 @@ import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.lang.reflect.Field;
+import java.lang.invoke.MethodHandle;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.URLEncoder;
@@ -28,16 +28,16 @@ import java.security.MessageDigest;
 
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private static Class<?> INITIAL_HANDLE_CLASS_STATE_CLASS;
-    private static Field THIS_STATE;
-    private static Field REQUEST;
-    private static Field CHANNEL_WRAPPER;
+    private static MethodHandle THIS_STATE;
+    private static MethodHandle REQUEST;
+    private static MethodHandle CHANNEL_WRAPPER;
 
-    public static void init() throws ClassNotFoundException {
+    public static void init() throws ClassNotFoundException, IllegalAccessException {
         Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
         INITIAL_HANDLE_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
-        THIS_STATE = ReflectUtil.getField(INITIAL_HANDLE_CLASS, INITIAL_HANDLE_CLASS_STATE_CLASS);
-        REQUEST = ReflectUtil.getField(INITIAL_HANDLE_CLASS, EncryptionRequest.class);
-        CHANNEL_WRAPPER = ReflectUtil.getField(INITIAL_HANDLE_CLASS, ChannelWrapper.class);
+        THIS_STATE = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, INITIAL_HANDLE_CLASS_STATE_CLASS);
+        REQUEST = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, EncryptionRequest.class);
+        CHANNEL_WRAPPER = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, ChannelWrapper.class);
     }
 
     public void handle(AbstractPacketHandler handler) throws Exception {
@@ -47,9 +47,9 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         }
         InitialHandler initialHandler = (InitialHandler) handler;
         try {
-            EncryptionRequest request = (EncryptionRequest) REQUEST.get(handler);
-            ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.get(handler);
-            Preconditions.checkState(THIS_STATE.get(handler) == ReflectUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
+            EncryptionRequest request = (EncryptionRequest) REQUEST.invoke(handler);
+            ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.invoke(handler);
+            Preconditions.checkState(THIS_STATE.invoke(handler) == ReflectUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
             SecretKey sharedKey = EncryptionUtil.getSecret(this, request);
             if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
                 ch.close();
@@ -71,7 +71,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
 
             BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new AuthTask(initialHandler, arg));
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
             MultiCore.getPlugin().getPluginLogger().severe("处理用户数据时出现异常");

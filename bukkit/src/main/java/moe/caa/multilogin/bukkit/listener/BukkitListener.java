@@ -3,7 +3,6 @@ package moe.caa.multilogin.bukkit.listener;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
-import moe.caa.multilogin.core.util.AutoUpdater;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;

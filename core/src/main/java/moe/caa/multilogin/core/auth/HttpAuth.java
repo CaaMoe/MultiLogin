@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.auth;
 
 import com.google.gson.Gson;
-import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.http.HttpGetter;

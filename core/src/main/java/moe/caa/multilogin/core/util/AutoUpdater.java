@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class AutoUpdater implements Runnable{
+public class AutoUpdater implements Runnable {
     private static final Base64.Decoder decoder = Base64.getDecoder();
     private static String relV = null;
 

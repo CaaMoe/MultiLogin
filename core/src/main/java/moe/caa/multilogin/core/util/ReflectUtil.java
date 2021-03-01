@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.util;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.Arrays;
  * 反射工具类
  */
 public class ReflectUtil {
+    private static MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     /**
      * 通过class对象在指定的class类中检索第一次出现的Field
@@ -69,5 +72,49 @@ public class ReflectUtil {
             return constant;
         }
         throw new IllegalArgumentException(name);
+    }
+
+    /**
+     * 通过field名在指定的class类中检索FieldSetter
+     *
+     * @param clazz  指定的class
+     * @param target field的class类型
+     * @return 检索到的fieldSetter
+     */
+    public static MethodHandle getFieldUnReflectSetter(Class<?> clazz, Class<?> target) throws IllegalAccessException {
+        return lookup.unreflectSetter(getField(clazz, target));
+    }
+
+    /**
+     * 通过field名在指定的class类中检索FieldSetter
+     *
+     * @param clazz  指定的class
+     * @param target field的name
+     * @return 检索到的fieldSetter
+     */
+    public static MethodHandle getFieldUnReflectSetter(Class<?> clazz, String target) throws NoSuchFieldException, IllegalAccessException {
+        return lookup.unreflectSetter(getField(clazz, target));
+    }
+
+    /**
+     * 通过field名在指定的class类中检索FieldSetter
+     *
+     * @param clazz  指定的class
+     * @param target field的class类型
+     * @return 检索到的fieldGetter
+     */
+    public static MethodHandle getFieldUnReflectGetter(Class<?> clazz, Class<?> target) throws IllegalAccessException {
+        return lookup.unreflectGetter(getField(clazz, target));
+    }
+
+    /**
+     * 通过field名在指定的class类中检索FieldSetter
+     *
+     * @param clazz  指定的class
+     * @param target field的name
+     * @return 检索到的fieldGetter
+     */
+    public static MethodHandle getFieldUnReflectGetter(Class<?> clazz, String target) throws NoSuchFieldException, IllegalAccessException {
+        return lookup.unreflectGetter(getField(clazz, target));
     }
 }

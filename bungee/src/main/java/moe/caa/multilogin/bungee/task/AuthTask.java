@@ -11,15 +11,15 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.UUID;
 
 public class AuthTask implements Runnable {
-    private static Field LOGIN_PROFILE;
-    private static Field NAME;
-    private static Field UNIQUE_ID;
-    private static Method FINISH;
+    private static MethodHandle LOGIN_PROFILE;
+    private static MethodHandle NAME;
+    private static MethodHandle UNIQUE_ID;
+    private static MethodHandle FINISH;
     InitialHandler handler;
     String arg;
 
@@ -28,12 +28,13 @@ public class AuthTask implements Runnable {
         this.arg = arg;
     }
 
-    public static void init() throws NoSuchFieldException {
+    public static void init() throws NoSuchFieldException, IllegalAccessException {
         Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
-        LOGIN_PROFILE = ReflectUtil.getField(INITIAL_HANDLE_CLASS, LoginResult.class);
-        NAME = ReflectUtil.getField(INITIAL_HANDLE_CLASS, "name");
-        UNIQUE_ID = ReflectUtil.getField(INITIAL_HANDLE_CLASS, "uniqueId");
-        FINISH = ReflectUtil.getMethod(INITIAL_HANDLE_CLASS, "finish");
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        LOGIN_PROFILE = ReflectUtil.getFieldUnReflectSetter(INITIAL_HANDLE_CLASS, LoginResult.class);
+        NAME = ReflectUtil.getFieldUnReflectSetter(INITIAL_HANDLE_CLASS, "name");
+        UNIQUE_ID = ReflectUtil.getFieldUnReflectSetter(INITIAL_HANDLE_CLASS, "uniqueId");
+        FINISH = lookup.unreflect(ReflectUtil.getMethod(INITIAL_HANDLE_CLASS, "finish"));
     }
 
     @Override
@@ -55,11 +56,11 @@ public class AuthTask implements Runnable {
                 handler.disconnect(new TextComponent(verificationResult.getFAIL_MSG()));
                 return;
             }
-            LOGIN_PROFILE.set(handler, new MultiLoginSignLoginResult(loginResult));
-            UNIQUE_ID.set(handler, verificationResult.getREDIRECT_UUID());
-            NAME.set(handler, loginResult.getName());
+            LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));
+            UNIQUE_ID.invoke(handler, verificationResult.getREDIRECT_UUID());
+            NAME.invoke(handler, loginResult.getName());
             FINISH.invoke(handler);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             handler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
             MultiCore.getPlugin().getPluginLogger().severe("处理用户数据时出现异常");
