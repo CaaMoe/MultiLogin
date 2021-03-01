@@ -88,13 +88,14 @@ public class CommandHandler {
                         flag = true;
                     }
                     if (!flag) {
-                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
+                        UUID uuid = UUID.fromString(args[1]);
+                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
                         if (byUuid != null) {
                             byUuid.setWhitelist(1);
                             SQLHandler.updateUserEntry(byUuid);
                             flag = true;
                         } else {
-                            byUuid = SQLHandler.getUserEntryByRedirectUuid(UUID.fromString(args[1]));
+                            byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
                             if (byUuid != null) {
                                 byUuid.setWhitelist(1);
                                 SQLHandler.updateUserEntry(byUuid);
@@ -136,7 +137,10 @@ public class CommandHandler {
                         MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                         flag = true;
                     }
-                    UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
+
+                    UUID uuid = UUID.fromString(args[1]);
+
+                    UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
                     if (byUuid != null) {
                         byUuid.setWhitelist(0);
                         SQLHandler.updateUserEntry(byUuid);
@@ -144,7 +148,7 @@ public class CommandHandler {
                         flag = true;
                     }
 
-                    byUuid = SQLHandler.getUserEntryByRedirectUuid(UUID.fromString(args[1]));
+                    byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
                     if (byUuid != null) {
                         byUuid.setWhitelist(0);
                         SQLHandler.updateUserEntry(byUuid);
