@@ -10,6 +10,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
+import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -78,6 +79,9 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             if (response.getProperties() != null) {
                 result.getProperties().putAll(response.getProperties());
             }
+
+            MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.getREDIRECT_UUID());
+            MultiLoginBukkit.LOGIN_CACHE.put(verificationResult.getREDIRECT_UUID(), System.currentTimeMillis());
 
             return result;
 

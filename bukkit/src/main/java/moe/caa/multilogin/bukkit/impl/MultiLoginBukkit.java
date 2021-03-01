@@ -2,12 +2,15 @@ package moe.caa.multilogin.bukkit.impl;
 
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import moe.caa.multilogin.bukkit.expansions.MultiLoginPlaceholderExpansion;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.bukkit.Metrics;
 import moe.caa.multilogin.bukkit.yggdrasil.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.core.data.data.PluginData;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -20,12 +23,31 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
+    public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
+    public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<>(){
+        private final Set<UUID> todoList = new HashSet<>();
+
+        @Override
+        public synchronized UserEntry get(Object key) {
+            UserEntry ret = super.get(key);
+            if(key instanceof UUID && ret == null && todoList.add((UUID) key)){
+                MultiCore.getPlugin().runTaskAsyncLater(()->{
+                    try {
+                        put((UUID) key, SQLHandler.getUserEntryByOnlineUuid((UUID) key));
+                        todoList.remove(key);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }, 0);
+            }
+            return ret;
+        }
+    };
 
     private void initCoreService() throws Exception {
         final String NMS_VERSION = getServer().getClass().getPackage().getName().split("\\.")[3];
@@ -75,6 +97,11 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         if (!MultiCore.initService(this)) {
             setEnabled(false);
             return;
+        }
+
+        if(getServer().getPluginManager().getPlugin("PlaceholderAPI") != null){
+            new MultiLoginPlaceholderExpansion().register();
+            getLogger().info("已加载PlaceholderAPI");
         }
         getLogger().info("插件已加载");
     }

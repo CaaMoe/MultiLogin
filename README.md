@@ -40,6 +40,13 @@
             multilogin.multilogin.tab                           // 自动补全Multilogin命令参数所需要的权限(Bukkit Only)
             multilogin.multilogin.query                         // 使用命令Multilogin query命令所需的权限
             multilogin.multilogin.reload                        // 使用命令Multilogin reload命令所需的权限
+### 变量 （Bukkit Only）
+            %multilogin_currentname%                            // 玩家当前ID
+            %multilogin_onlineuuid%                             // 玩家在线的UUID
+            %multilogin_redirecteduuid%                         // 玩家在游戏内的UUID
+            %multilogin_whitelist%                              // 玩家具有白名单
+            %multilogin_yggdrasilname%                          // 玩家所在的Yggdrasil服务器的名字
+            %multilogin_yggdrasilpath%                          // 玩家所在的Yggdrasil服务器的路径
 
 ## 使用
 请查阅插件config.yml文件
