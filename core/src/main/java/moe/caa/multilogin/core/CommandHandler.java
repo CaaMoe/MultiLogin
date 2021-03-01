@@ -72,11 +72,37 @@ public class CommandHandler {
      */
     public static void executeAdd(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.add")) {
-            if (PluginData.addCacheWhitelist(args[1])) {
-                sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist"), args[1])));
-            } else {
-                sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready"), args[1])));
-            }
+            MultiCore.getPlugin().runTaskAsyncLater(() -> {
+                boolean flag = false;
+                try {
+                    List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
+                    for (UserEntry entry : userEntries) {
+                        entry.setWhitelist(1);
+                        SQLHandler.updateUserEntry(entry);
+                        flag = true;
+                    }
+                    if(!flag){
+                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(UUID.fromString(args[1]));
+                        byUuid.setWhitelist(1);
+                        SQLHandler.updateUserEntry(byUuid);
+                        flag = true;
+                    }
+                } catch (IllegalArgumentException | NullPointerException ignored) {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
+                    sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                    return;
+                }
+                if(!flag){
+                    flag = PluginData.addCacheWhitelist(args[1]);
+                }
+                if (flag) {
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist"), args[1])));
+                } else {
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready"), args[1])));
+                }
+            }, 0);
         }
     }
 
@@ -86,10 +112,7 @@ public class CommandHandler {
     public static void executeRemove(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.remove")) {
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                boolean flag = false;
-                if (PluginData.removeCacheWhitelist(args[1])) {
-                    flag = true;
-                }
+                boolean flag = PluginData.removeCacheWhitelist(args[1]);
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
