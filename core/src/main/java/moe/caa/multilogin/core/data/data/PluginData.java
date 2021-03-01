@@ -335,13 +335,13 @@ public class PluginData {
     private static AbstractConnectionPool getSqlPool(IConfiguration configuration) throws Exception {
         if (configuration == null) return null;
         String url;
-        String userName = configuration.getString("Username");
-        String password = configuration.getString("Password");
+        String userName = configuration.getString("username");
+        String password = configuration.getString("password");
         String backend = configuration.getString("backend", "H2");
         if ("MYSQL".equalsIgnoreCase(backend)) {
 //            ip port 数据库名
             url = "jdbc:mysql://%s:%s/%s?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
-            url = String.format(url, configuration.getString("Ip"), configuration.getString("Port"), configuration.getString("Database"));
+            url = String.format(url, configuration.getString("ip"), configuration.getString("port"), configuration.getString("database"));
             return new MysqlConnectionPool(url, userName, password);
         } else if ("H2".equalsIgnoreCase(backend)) {
 //            位置 库名

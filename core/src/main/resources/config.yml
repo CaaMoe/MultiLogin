@@ -82,19 +82,19 @@ sql:
   backend: 'H2'
 
   # 数据库地址
-  Ip: '127.0.0.1'
+  ip: '127.0.0.1'
 
   # 数据库端口
-  Port: '3306'
+  port: '3306'
 
   # 数据库用户名
-  Username: 'root'
+  username: 'root'
 
   # 数据库密码
-  Password: '12345'
+  password: '12345'
 
   # 数据库名称
-  Database: 'multilogin'
+  database: 'multilogin'
 
 ##############
 #   Message
