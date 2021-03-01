@@ -23,6 +23,8 @@ processResources {
 }
 
 jar {
+    archiveBaseName.set "MultiLogin-Bungee-" + project.plugin_version
+    outgoingVariants.name
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)

@@ -29,6 +29,7 @@ processResources {
 }
 
 jar {
+    archiveBaseName.set "MultiLogin-Bukkit-" + project.plugin_version
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
