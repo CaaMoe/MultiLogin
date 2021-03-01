@@ -2,10 +2,7 @@ package moe.caa.multilogin.bungee.task;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.auth.AuthErrorEnum;
-import moe.caa.multilogin.core.auth.AuthResult;
-import moe.caa.multilogin.core.auth.HttpAuth;
-import moe.caa.multilogin.core.auth.VerificationResult;
+import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
@@ -53,7 +50,7 @@ public class AuthTask implements Runnable {
             }
             LoginResult loginResult = result.getResult();
             UUID onlineId = Util.getUUID(loginResult.getId());
-            VerificationResult verificationResult = MultiCore.getUserVerificationMessage(onlineId, handler.getName(), result.getYggdrasilService());
+            VerificationResult verificationResult = Verifier.getUserVerificationMessage(onlineId, handler.getName(), result.getYggdrasilService());
             if (verificationResult.getFAIL_MSG() != null) {
                 handler.disconnect(new TextComponent(verificationResult.getFAIL_MSG()));
                 return;

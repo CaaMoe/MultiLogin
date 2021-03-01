@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.impl;
 
 /**
  * 可被core识别的配置文件对象

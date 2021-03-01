@@ -7,7 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class MysqlConnectionPool extends AbstractConnectionPool {
-    private HikariDataSource dataSource;
+    private final HikariDataSource dataSource;
 
     public MysqlConnectionPool(String url, String username, String password) {
         HikariConfig config = new HikariConfig();

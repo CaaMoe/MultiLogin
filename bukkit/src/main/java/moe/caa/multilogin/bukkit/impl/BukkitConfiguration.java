@@ -1,6 +1,6 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import moe.caa.multilogin.core.IConfiguration;
+import moe.caa.multilogin.core.impl.IConfiguration;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class BukkitConfiguration implements IConfiguration {

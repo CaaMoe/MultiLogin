@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.impl;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 

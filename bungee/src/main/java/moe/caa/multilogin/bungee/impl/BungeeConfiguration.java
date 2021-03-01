@@ -1,6 +1,6 @@
 package moe.caa.multilogin.bungee.impl;
 
-import moe.caa.multilogin.core.IConfiguration;
+import moe.caa.multilogin.core.impl.IConfiguration;
 import net.md_5.bungee.config.Configuration;
 
 public class BungeeConfiguration implements IConfiguration {

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.impl;
 
 import java.io.File;
 import java.io.IOException;

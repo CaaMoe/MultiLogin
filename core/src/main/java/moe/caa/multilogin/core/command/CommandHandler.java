@@ -1,8 +1,10 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.command;
 
+import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.impl.ISender;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 

@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
+import moe.caa.multilogin.core.http.HttpGetter;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import java.util.concurrent.FutureTask;
  */
 public class HttpAuth {
 
-    private static ExecutorService threadPool = Executors.newCachedThreadPool();
+    private static final ExecutorService threadPool = Executors.newCachedThreadPool();
 
     /**
      * 进行Yggdrasil验证，将会按name生成Yggdrasil访问顺序并且进行验证
@@ -72,7 +73,7 @@ public class HttpAuth {
         for (YggdrasilServiceEntry entry : serviceEntryList) {
             if (entry == null) continue;
 //            请求json数据 转换成需要的对象
-            FutureTask<T> task = new FutureTask<>(() -> gson.fromJson(MultiCore.httpGet(entry.buildUrlStr(arg)), clazz));
+            FutureTask<T> task = new FutureTask<>(() -> gson.fromJson(HttpGetter.httpGet(entry.buildUrlStr(arg)), clazz));
             threadPool.execute(task);
 //            MultiCore.getPlugin().runTaskAsyncLater(task, 0);
 //            执行后放在列表里

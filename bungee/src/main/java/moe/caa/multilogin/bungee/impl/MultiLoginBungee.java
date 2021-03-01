@@ -6,9 +6,10 @@ import moe.caa.multilogin.bungee.Metrics;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.bungee.task.AuthTask;
-import moe.caa.multilogin.core.IConfiguration;
-import moe.caa.multilogin.core.IPlugin;
+import moe.caa.multilogin.core.impl.IConfiguration;
+import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.command.CommandMain;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
@@ -104,13 +105,13 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("whitelist") {
             @Override
             public void execute(CommandSender commandSender, String[] strings) {
-                MultiCore.submitCommand("whitelist", new BungeeSender(commandSender), strings);
+                CommandMain.submitCommand("whitelist", new BungeeSender(commandSender), strings);
             }
         });
         BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("multilogin") {
             @Override
             public void execute(CommandSender commandSender, String[] strings) {
-                MultiCore.submitCommand("multilogin", new BungeeSender(commandSender), strings);
+                CommandMain.submitCommand("multilogin", new BungeeSender(commandSender), strings);
             }
         });
 

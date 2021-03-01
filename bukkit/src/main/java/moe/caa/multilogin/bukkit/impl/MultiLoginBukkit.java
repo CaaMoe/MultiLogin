@@ -6,9 +6,10 @@ import moe.caa.multilogin.bukkit.Metrics;
 import moe.caa.multilogin.bukkit.expansions.MultiLoginPlaceholderExpansion;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.bukkit.yggdrasil.MultiLoginYggdrasilMinecraftSessionService;
-import moe.caa.multilogin.core.IConfiguration;
-import moe.caa.multilogin.core.IPlugin;
+import moe.caa.multilogin.core.impl.IConfiguration;
+import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.command.CommandMain;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -72,10 +73,10 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
 
-        getCommand("whitelist").setExecutor((sender, cmd, l, strings) -> MultiCore.submitCommand("whitelist", new BukkitSender(sender), strings));
-        getCommand("multilogin").setExecutor((sender, cmd, l, strings) -> MultiCore.submitCommand("multilogin", new BukkitSender(sender), strings));
-        getCommand("whitelist").setTabCompleter((sender, cmd, l, strings) -> MultiCore.suggestCommand("whitelist", new BukkitSender(sender), strings));
-        getCommand("multilogin").setTabCompleter((sender, cmd, l, strings) -> MultiCore.suggestCommand("multilogin", new BukkitSender(sender), strings));
+        getCommand("whitelist").setExecutor((sender, cmd, l, strings) -> CommandMain.submitCommand("whitelist", new BukkitSender(sender), strings));
+        getCommand("multilogin").setExecutor((sender, cmd, l, strings) -> CommandMain.submitCommand("multilogin", new BukkitSender(sender), strings));
+        getCommand("whitelist").setTabCompleter((sender, cmd, l, strings) -> CommandMain.suggestCommand("whitelist", new BukkitSender(sender), strings));
+        getCommand("multilogin").setTabCompleter((sender, cmd, l, strings) -> CommandMain.suggestCommand("multilogin", new BukkitSender(sender), strings));
 
         if (!MultiCore.initService(this)) {
             setEnabled(false);

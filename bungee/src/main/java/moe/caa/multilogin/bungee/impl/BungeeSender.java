@@ -1,6 +1,6 @@
 package moe.caa.multilogin.bungee.impl;
 
-import moe.caa.multilogin.core.ISender;
+import moe.caa.multilogin.core.impl.ISender;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

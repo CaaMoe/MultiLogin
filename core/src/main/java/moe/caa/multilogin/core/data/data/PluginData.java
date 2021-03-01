@@ -1,12 +1,12 @@
 package moe.caa.multilogin.core.data.data;
 
-import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.ConvUuid;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.MysqlConnectionPool;
+import moe.caa.multilogin.core.impl.IConfiguration;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

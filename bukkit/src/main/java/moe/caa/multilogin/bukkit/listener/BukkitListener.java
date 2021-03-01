@@ -3,6 +3,7 @@ package moe.caa.multilogin.bukkit.listener;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.util.AutoUpdater;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -55,7 +56,7 @@ public class BukkitListener implements Listener {
 
     @EventHandler
     private void onJoin(PlayerJoinEvent event) {
-        if (MultiCore.isUpdate()) {
+        if (AutoUpdater.isUpdate()) {
             if (event.getPlayer().isOp() || event.getPlayer().hasPermission("multilogin.update")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "插件 " + ChatColor.YELLOW + "MultiLogin" + ChatColor.RED + " 有新的版本发布，请及时下载更新！");
             }

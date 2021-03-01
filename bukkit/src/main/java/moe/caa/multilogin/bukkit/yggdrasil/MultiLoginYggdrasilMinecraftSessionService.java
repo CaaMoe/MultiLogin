@@ -13,10 +13,7 @@ import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.auth.AuthErrorEnum;
-import moe.caa.multilogin.core.auth.AuthResult;
-import moe.caa.multilogin.core.auth.HttpAuth;
-import moe.caa.multilogin.core.auth.VerificationResult;
+import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.util.ReflectUtil;
 
 import java.lang.reflect.Field;
@@ -69,7 +66,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             }
 
             if (response == null || response.getId() == null) return null;
-            VerificationResult verificationResult = MultiCore.getUserVerificationMessage(response.getId(), user.getName(), authResult.getYggdrasilService());
+            VerificationResult verificationResult = Verifier.getUserVerificationMessage(response.getId(), user.getName(), authResult.getYggdrasilService());
             if (verificationResult.getFAIL_MSG() != null) {
                 BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.getFAIL_MSG());
                 return new GameProfile(response.getId(), user.getName());
