@@ -1,10 +1,5 @@
 package moe.caa.multilogin.core.data.data;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
 import moe.caa.multilogin.core.IConfiguration;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.ConvUuid;
@@ -13,11 +8,10 @@ import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.MysqlConnectionPool;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -25,8 +19,6 @@ import java.util.logging.Logger;
  * 处理插件数据
  */
 public class PluginData {
-    private static final File cacheWhitelistFile = new File(MultiCore.getPlugin().getPluginDataFolder(), "cache_whitelist.json");
-    private static final Set<String> cacheWhitelist = Collections.synchronizedSet(new HashSet<>());
     private static final Set<YggdrasilServiceEntry> serviceSet = new HashSet<>();
     public static IConfiguration configurationConfig = null;
     private static IConfiguration defaultConfigurationConfig = null;
@@ -37,9 +29,6 @@ public class PluginData {
      */
     public static void initService() throws Exception {
         genFile();
-        if (!cacheWhitelistFile.exists() && !cacheWhitelistFile.createNewFile()) {
-            throw new IOException(String.format("无法创建文件: %s", cacheWhitelistFile.getPath()));
-        }
         reloadConfig();
 
         AbstractConnectionPool args = getSqlPool(configurationConfig.getConfigurationSection("sql"));
@@ -100,17 +89,7 @@ public class PluginData {
         }
         log.info(String.format("成功载入%d个Yggdrasil验证服务器", serviceSet.size()));
 
-        cacheWhitelist.clear();
-
-        try {
-            JsonObject json = (JsonObject) new JsonParser().parse(new FileReader(cacheWhitelistFile));
-            whitelist = Optional.ofNullable(json.get("whitelist_enable")).map(JsonElement::getAsBoolean).orElse(true);
-            JsonArray array = json.get("cache_whitelist").getAsJsonArray();
-            for (JsonElement element : array) {
-                cacheWhitelist.add(element.getAsString());
-            }
-        } catch (Exception ignored) {
-        }
+        whitelist = configurationConfig.getBoolean("whitelist", true);
 
         testMsg(log, "msgNoAdopt");
         testMsg(log, "msgNoChae");
@@ -131,34 +110,6 @@ public class PluginData {
         testMsg(log, "msgReload");
         testMsg(log, "msgNoPlayer");
         testMsg(log, "msgRushNameOnl");
-    }
-
-    /**
-     * 移除某名未曾进入服务器的玩家的白名单权限
-     *
-     * @param name 玩家名称或uuid
-     * @return 移除结果
-     */
-    public static boolean removeCacheWhitelist(String name) {
-        boolean ret = cacheWhitelist.remove(name);
-        if (ret) {
-            saveWhitelist();
-        }
-        return ret;
-    }
-
-    /**
-     * 添加白名单
-     *
-     * @param name 玩家名称或uuid
-     * @return 添加结果
-     */
-    public static boolean addCacheWhitelist(String name) {
-        boolean ret = cacheWhitelist.add(name);
-        if (ret) {
-            saveWhitelist();
-        }
-        return ret;
     }
 
     /**
@@ -259,7 +210,6 @@ public class PluginData {
      */
     public synchronized static void setWhitelist(boolean whitelist) {
         PluginData.whitelist = whitelist;
-        saveWhitelist();
     }
 
     /**
@@ -296,33 +246,8 @@ public class PluginData {
             SQLHandler.close();
         } catch (SQLException ignored) {
         }
-        saveWhitelist();
     }
 
-    /**
-     * 保存白名单数据
-     */
-    public synchronized static void saveWhitelist() {
-        try {
-            genFile();
-            JsonObject root = new JsonObject();
-            root.addProperty("whitelist_enable", whitelist);
-            JsonArray array = new JsonArray();
-            for (String s : cacheWhitelist) {
-                array.add(s);
-            }
-            root.add("cache_whitelist", array);
-
-            JsonWriter jw = new JsonWriter(new FileWriter(cacheWhitelistFile));
-            jw.setIndent("  ");
-            MultiCore.GSON.toJson(root, jw);
-            jw.flush();
-            jw.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            MultiCore.getPlugin().getPluginLogger().severe(String.format("无法保存文件: %s", cacheWhitelistFile.getPath()));
-        }
-    }
 
     /**
      * 通过configuration获得SQL链接

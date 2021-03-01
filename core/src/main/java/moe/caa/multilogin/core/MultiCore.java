@@ -156,7 +156,7 @@ public class MultiCore {
 
             // 白名单检查
             if (userData.getWhitelist() == 0) {
-                if (!(PluginData.removeCacheWhitelist(currentName) | PluginData.removeCacheWhitelist(onlineUuid.toString()))) {
+                if (!(SQLHandler.removeCacheWhitelist(currentName) | SQLHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
                 }
                 userData.setWhitelist(1);

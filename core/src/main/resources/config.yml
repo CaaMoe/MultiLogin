@@ -75,6 +75,9 @@ safeId: ""
 # 设置验证服务器超时时间
 servicesTimeOut: 7000
 
+# 全局白名单开关
+whitelist: true
+
 # 插件数据的存放方式
 sql:
 

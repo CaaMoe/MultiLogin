@@ -121,7 +121,7 @@ public class CommandHandler {
                         return;
                     }
                     if (!flag) {
-                        flag = PluginData.addCacheWhitelist(args[1]);
+                        flag = SQLHandler.addCacheWhitelist(args[1]);
                     }
                 } while (false);
 
@@ -140,7 +140,7 @@ public class CommandHandler {
     public static void executeRemove(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.remove")) {
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                boolean flag = PluginData.removeCacheWhitelist(args[1]);
+                boolean flag = SQLHandler.removeCacheWhitelist(args[1]);
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {

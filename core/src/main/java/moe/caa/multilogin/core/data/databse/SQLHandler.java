@@ -22,6 +22,7 @@ public class SQLHandler {
     private static final String REDIRECT_UUID = "redirect_name";
     private static final String YGGDRASIL_SERVICE = "yggdrasil_service";
     private static final String WHITELIST = "whitelist";
+    private static final String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private static AbstractConnectionPool pool;
 
     /**
@@ -39,11 +40,37 @@ public class SQLHandler {
                     REDIRECT_UUID + "  binary(16)," +
                     YGGDRASIL_SERVICE + "  VARCHAR(50)," +
                     WHITELIST + "  INTEGER)");
+
+            s.executeUpdate("" +
+                    "CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
+                    WHITELIST + "  VARCHAR(36) PRIMARY KEY NOT NULL)");
         }
     }
 
     private static Connection getConnection() throws SQLException {
         return pool.getConnection();
+    }
+
+    public static boolean removeCacheWhitelist(String nameOrUuid) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
+                CACHE_WHITELIST_TABLE_NAME, WHITELIST
+        ))) {
+            ps.setString(1, nameOrUuid);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    public static boolean addCacheWhitelist(String nameOrUuid) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s) VALUES(?)",
+                CACHE_WHITELIST_TABLE_NAME, WHITELIST
+        ))) {
+            ps.setString(1, nameOrUuid);
+            return ps.executeUpdate() != 0;
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     /**
@@ -72,7 +99,7 @@ public class SQLHandler {
     /**
      * 通过redirect_uuid检索UserEntry数据
      *
-     * @param uuid online_uuid
+     * @param uuid redirect_uuid
      * @return 检索到的UserEntry数据
      */
     public static UserEntry getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
