@@ -126,8 +126,6 @@ public class PluginData {
         testMsg(log, "msgOpenWhitelistAlready");
         testMsg(log, "msgCloseWhitelist");
         testMsg(log, "msgCloseWhitelistAlready");
-        testMsg(log, "msgWhitelistListNoth");
-        testMsg(log, "msgWhitelistListN", 0, "null");
         testMsg(log, "msgYDQuery", "null", "null");
         testMsg(log, "msgYDQueryNoRel", "null");
         testMsg(log, "msgReload");
