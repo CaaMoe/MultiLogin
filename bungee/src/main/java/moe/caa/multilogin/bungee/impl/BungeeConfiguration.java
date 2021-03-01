@@ -58,4 +58,9 @@ public class BungeeConfiguration implements IConfiguration {
     public String[] getKeys(boolean b) {
         return vanConfiguration.getKeys().toArray(new String[0]);
     }
+
+    @Override
+    public Configuration getVanConfiguration() {
+        return vanConfiguration;
+    }
 }

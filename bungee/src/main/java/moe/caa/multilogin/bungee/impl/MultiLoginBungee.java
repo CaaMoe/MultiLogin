@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -221,6 +222,10 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void savePluginConfig() {
-        // TODO: 2021/3/1 保存配置文件 
+        try {
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save((Configuration) configuration.getVanConfiguration(), new File(getDataFolder(), "config.yml"));
+        } catch (Exception e){
+            getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
+        }
     }
 }

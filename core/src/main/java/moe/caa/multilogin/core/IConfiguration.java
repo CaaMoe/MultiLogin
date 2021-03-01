@@ -79,4 +79,6 @@ public interface IConfiguration {
      * @return 节点列表
      */
     String[] getKeys(boolean b);
+
+    Object getVanConfiguration();
 }

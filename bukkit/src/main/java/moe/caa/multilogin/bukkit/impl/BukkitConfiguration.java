@@ -54,4 +54,9 @@ public class BukkitConfiguration implements IConfiguration {
     public String[] getKeys(boolean b) {
         return vanHandle.getKeys(b).toArray(new String[0]);
     }
+
+    @Override
+    public Object getVanConfiguration() {
+        return vanHandle;
+    }
 }
