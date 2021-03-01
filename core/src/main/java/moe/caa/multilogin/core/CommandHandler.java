@@ -83,20 +83,24 @@ public class CommandHandler {
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
-                        entry.setWhitelist(1);
-                        SQLHandler.updateUserEntry(entry);
-                        flag = true;
+                        if(entry.getWhitelist() == 0){
+                            entry.setWhitelist(1);
+                            SQLHandler.updateUserEntry(entry);
+                            flag = true;
+                            break;
+                        }
                     }
                     if (!flag) {
                         UUID uuid = UUID.fromString(args[1]);
                         UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
-                        if (byUuid != null) {
+                        if (byUuid != null && byUuid.getWhitelist() == 0) {
                             byUuid.setWhitelist(1);
                             SQLHandler.updateUserEntry(byUuid);
                             flag = true;
-                        } else {
+                        }
+                        if(byUuid != null){
                             byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
-                            if (byUuid != null) {
+                            if (byUuid != null && byUuid.getWhitelist() == 0) {
                                 byUuid.setWhitelist(1);
                                 SQLHandler.updateUserEntry(byUuid);
                                 flag = true;
@@ -132,16 +136,18 @@ public class CommandHandler {
                 try {
                     List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
-                        entry.setWhitelist(0);
-                        SQLHandler.updateUserEntry(entry);
-                        MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
-                        flag = true;
+                        if(entry.getWhitelist() != 0){
+                            entry.setWhitelist(0);
+                            SQLHandler.updateUserEntry(entry);
+                            MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                            flag = true;
+                        }
                     }
 
                     UUID uuid = UUID.fromString(args[1]);
 
                     UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
-                    if (byUuid != null) {
+                    if (byUuid != null && byUuid.getWhitelist() != 0) {
                         byUuid.setWhitelist(0);
                         SQLHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
@@ -149,7 +155,7 @@ public class CommandHandler {
                     }
 
                     byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
-                    if (byUuid != null) {
+                    if (byUuid != null && byUuid.getWhitelist() != 0) {
                         byUuid.setWhitelist(0);
                         SQLHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
