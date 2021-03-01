@@ -51,7 +51,7 @@ public class AutoUpdater implements Runnable {
             String pat = jo.get("content").getAsString();
             pat = pat.substring(0, pat.length() - 1);
             String v = new String(decoder.decode(pat), StandardCharsets.UTF_8);
-            relV = v.split("\\s+")[2];
+            relV = v.split("=")[1].trim();
         } catch (Exception ignore) {
         }
     }
