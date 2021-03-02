@@ -1,8 +1,12 @@
 # MultiLogin
 
-这是一款高版本可用的外置登入插件，理论上支持Paper 1.8+版本和近代Bungee版本。
+**目前项目正在重构，暂不推荐使用**
 
-该插件通过使用反射修改核心内容从而达到实现多Yggdrasil共存的效果。
+这是一款高兼容性的外置登入插件，理论上支持Spigot 1.8+版本和大多数Bungee版本。
+
+该插件通过使用反射修改Yggdrasil验证过程从而达到实现多Yggdrasil共存的效果。
+
+该插件最大的好处就是 完全不需要去对启动服务器的命令行进行修改 只需要放在plugins内就可以使用
 
 ## 功能
 
@@ -22,36 +26,28 @@
 
 ## 命令、权限和变量
 
-### 命令
-
-            /Whitelist add <target>                             // 添加target到白名单中
-            /Whitelist remove <target>                          // 移除target的白名单
-            /Whitelist on                                       // 开启全局白名单
-            /Whitelist off                                      // 关闭全局白名单
-            /Multilogin query [target]                          // 查询target（可以是离线玩家）是通过何种方式登入的游戏
-            /Multilogin reload                                  // 重新加载配置文件
-
-### 权限
-
-            multilogin.update                                   // 接收新版本通知
-            multilogin.whitelist.tab                            // 自动补全Whitelist命令参数所需要的权限(Bukkit Only)
-            multilogin.whitelist.add                            // 使用命令Whitelist add命令所需的权限
-            multilogin.whitelist.remove                         // 使用命令Whitelist remove命令所需的权限
-            multilogin.whitelist.on                             // 使用命令Whitelist on命令所需的权限
-            multilogin.whitelist.off                            // 使用命令Whitelist off命令所需的权限
-                    
-            multilogin.multilogin.tab                           // 自动补全Multilogin命令参数所需要的权限(Bukkit Only)
-            multilogin.multilogin.query                         // 使用命令Multilogin query命令所需的权限
-            multilogin.multilogin.reload                        // 使用命令Multilogin reload命令所需的权限
+|  命令   | 权限  | 说明 |
+|  ----  | ---- | ---- |
+|/Whitelist add <target>|multilogin.whitelist.add|添加target到白名单中|
+|/Whitelist remove <target>|multilogin.whitelist.remove|添移除target的白名单|
+|/Whitelist on|multilogin.whitelist.on|开启全局白名单|
+|/Whitelist off|multilogin.whitelist.off|关闭全局白名单|
+|/Multilogin query [target]|multilogin.multilogin.query|查询target（可以是离线玩家）是通过何种方式登入的游戏|
+|/Multilogin reload<target>|multilogin.multilogin.reload|重新加载配置文件|
+| |multilogin.update|接收新版本通知|
+| |	multilogin.whitelist.tab|自动补全Whitelist命令参数所需要的权限|
+| |	multilogin.multilogin.tab|自动补全Multilogin命令参数所需要的权限|
 
 ### 变量 （Bukkit Only）
 
-            %multilogin_currentname%                            // 玩家当前ID
-            %multilogin_onlineuuid%                             // 玩家在线的UUID
-            %multilogin_redirecteduuid%                         // 玩家在游戏内的UUID
-            %multilogin_whitelist%                              // 玩家具有白名单
-            %multilogin_yggdrasilname%                          // 玩家所在的Yggdrasil服务器的名字
-            %multilogin_yggdrasilpath%                          // 玩家所在的Yggdrasil服务器的路径
+| 变量 | 说明 |
+|  ----  | ---- |
+|%multilogin_currentname%    | 玩家当前ID|
+|%multilogin_onlineuuid%     | 玩家在线的UUID|
+|%multilogin_redirecteduuid% | 玩家在游戏内的UUID|
+|%multilogin_whitelist%      | 玩家具有白名单|
+|%multilogin_yggdrasilname%  | 玩家所在的Yggdrasil服务器的名字|
+|%multilogin_yggdrasilpath%  | 玩家所在的Yggdrasil服务器的路径|
 
 ## 使用
 
