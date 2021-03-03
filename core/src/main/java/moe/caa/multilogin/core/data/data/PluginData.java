@@ -13,7 +13,6 @@
 package moe.caa.multilogin.core.data.data;
 
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.data.ConvUuid;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
@@ -78,10 +77,6 @@ public class PluginData {
         IConfiguration services = configurationConfig.getConfigurationSection("services");
         if (services != null) {
             for (String path : services.getKeys(false)) {
-                if (path.equalsIgnoreCase("official")) {
-                    log.warning("请勿将official值设置于验证服务器标记名称处，该节点所定义的Yggdrasil服务器失效!");
-                    continue;
-                }
                 YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
                 if (section == null) {
                     log.severe(String.format("无效的Yggdrasil验证服务器： %s", path));
@@ -90,14 +85,6 @@ public class PluginData {
                 if (!section.isEnable()) continue;
                 serviceSet.add(section);
             }
-        }
-        if (isOfficialYgg()) {
-            YggdrasilServiceEntry.OFFICIAL_YGG.setName(getOfficialName());
-            YggdrasilServiceEntry.OFFICIAL_YGG.setConvUuid(getOfficialConvUuid());
-            YggdrasilServiceEntry.OFFICIAL_YGG.setWhitelist(isOfficialYggWhitelist());
-            YggdrasilServiceEntry.OFFICIAL_YGG.setEnable(true);
-            serviceSet.add(YggdrasilServiceEntry.OFFICIAL_YGG);
-            log.info("已启用正版验证");
         }
         log.info(String.format("成功载入%d个Yggdrasil验证服务器", serviceSet.size()));
 
@@ -137,24 +124,6 @@ public class PluginData {
     }
 
     /**
-     * 获得是否启用正版验证
-     *
-     * @return 是否启用正版验证
-     */
-    public static boolean isOfficialYgg() {
-        return configurationConfig.getBoolean("officialEnable", false);
-    }
-
-    /**
-     * 获得是否启用正版白名单
-     *
-     * @return 是否启用正版白名单
-     */
-    public static boolean isOfficialYggWhitelist() {
-        return configurationConfig.getBoolean("officialServicesWhitelist", true);
-    }
-
-    /**
      * 获得设置拥有ID保护功能的Yggdrasil服务器的path
      *
      * @return 设置拥有ID保护功能的Yggdrasil服务器的path
@@ -173,37 +142,12 @@ public class PluginData {
     }
 
     /**
-     * 获得正版验证服务器的别称
-     *
-     * @return 正版验证服务器的别称
-     */
-    private static String getOfficialName() {
-        return configurationConfig.getString("officialName", "Official");
-    }
-
-    /**
      * 获得当前所有Yggdrasil验证服务器
      *
      * @return 当前所有Yggdrasil验证服务器
      */
     public static Set<YggdrasilServiceEntry> getServiceSet() {
         return serviceSet;
-    }
-
-    /**
-     * 获得正版验证服务器的UUID生成规则
-     *
-     * @return 正版验证服务器的UUID生成规则
-     */
-    private static ConvUuid getOfficialConvUuid() {
-        try {
-            ConvUuid ret;
-            ret = ConvUuid.valueOf(configurationConfig.getString("officialConvUuid"));
-            return ret;
-        } catch (Exception ignore) {
-        }
-        MultiCore.getPlugin().getPluginLogger().severe("无法读取配置文件节点 officialConvUuid ，已应用为默认值 DEFAULT.");
-        return ConvUuid.DEFAULT;
     }
 
     /**

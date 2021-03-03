@@ -29,9 +29,6 @@ import java.util.logging.Logger;
  * 表示Yggdrasil服务器对象
  */
 public class YggdrasilServiceEntry {
-
-    //    正版验证服务器对象
-    public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "https://sessionserver.mojang.com/session/minecraft", null, null, false, false, false, true);
     private final String path;
     private final String url;
     private final String head;
@@ -41,30 +38,36 @@ public class YggdrasilServiceEntry {
     private ConvUuid convUuid;
     private boolean whitelist;
 
-    private YggdrasilServiceEntry(String path, String name, String oUrl, String head, ConvUuid convUuid, boolean whitelist, boolean logger, boolean postMode, boolean noUrlDeal) {
+    private YggdrasilServiceEntry(String path, String name, String oUrl, String head, ConvUuid convUuid, boolean whitelist, boolean enable, boolean checkUrl, boolean postMode, boolean noUrlDeal) {
         this.path = path;
         this.name = name;
         this.convUuid = convUuid;
         this.whitelist = whitelist;
         this.postMode = postMode;
         this.head = head == null ? "hasJoined?" : head;
+        this.enable = enable;
 //        url处理
         if (!oUrl.endsWith("minecraft") && !noUrlDeal) {
             this.url = oUrl + "/sessionserver/session/minecraft";
         } else {
             this.url = oUrl;
         }
-        if (logger && !postMode) {
-            Logger log = MultiCore.getPlugin().getPluginLogger();
-            MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                String onlineName = checkUrl(oUrl);
-                if (onlineName == null) {
-                    log.severe(String.format("无法识别的Yggdrasil验证服务器: %s (仍然会应用到现有列表中)", name));
-                } else {
-                    log.info(String.format("添加Yggdrasil验证服务器: %s, 来自节点: %s", onlineName, name));
-                }
-            }, 0L);
+        Logger log = MultiCore.getPlugin().getPluginLogger();
+        if(enable){
+            if (checkUrl && !postMode) {
+                MultiCore.getPlugin().runTaskAsyncLater(() -> {
+                    String onlineName = checkUrl(oUrl);
+                    if (onlineName == null) {
+                        log.severe(String.format("无法识别的Yggdrasil验证服务器: %s (仍然会应用到现有列表中)", path));
+                    } else {
+                        log.info(String.format("添加Yggdrasil验证服务器: %s, 来自节点: %s", onlineName, path));
+                    }
+                }, 0L);
+            } else {
+                MultiCore.getPlugin().runTaskAsyncLater(() -> log.info(String.format("添加Yggdrasil验证服务器（no check）: %s, 来自节点: %s", name, path)), 0);
+            }
         }
+
     }
 
     /**
@@ -91,9 +94,9 @@ public class YggdrasilServiceEntry {
                 return null;
             }
             if (!PluginData.isEmpty(name) && !PluginData.isEmpty(url)) {
-                boolean enable = section.getBoolean("enable");
-                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable, postMode, noUrlDeal);
-                ret.enable = enable;
+                boolean enable = section.getBoolean("enable", false);
+                boolean checkUrl = section.getBoolean("checkUrl", true);
+                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable , checkUrl, postMode, noUrlDeal);
                 return ret;
             }
         }
