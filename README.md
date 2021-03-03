@@ -33,8 +33,8 @@
 |/Multilogin query [target]|multilogin.multilogin.query|查询target（可以是离线玩家）是通过何种方式登入的游戏|
 |/Multilogin reload<target>|multilogin.multilogin.reload|重新加载配置文件|
 | |multilogin.update|接收新版本通知|
-| |	multilogin.whitelist.tab|自动补全Whitelist命令参数所需要的权限|
-| |	multilogin.multilogin.tab|自动补全Multilogin命令参数所需要的权限|
+| |    multilogin.whitelist.tab|自动补全Whitelist命令参数所需要的权限|
+| |    multilogin.multilogin.tab|自动补全Multilogin命令参数所需要的权限|
 
 ### 变量 （Bukkit Only）
 

@@ -19,7 +19,10 @@ import moe.caa.multilogin.core.data.ConvUuid;
 import moe.caa.multilogin.core.impl.IConfiguration;
 
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -27,32 +30,32 @@ import java.util.logging.Logger;
  */
 public class YggdrasilServiceEntry {
 
-    /**
-     * 正版验证服务器对象
-     */
-    public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "", null, false, false) {
-        @Override
-        public String buildUrlStr(String arg) {
-            return String.format("https://sessionserver.mojang.com/session/minecraft/%s", arg);
-        }
-    };
+    //    正版验证服务器对象
+    public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "https://sessionserver.mojang.com/session/minecraft", null, false, false, false);
     private final String path;
     private final String url;
+    private final boolean postMode;//网易模式
     private boolean enable;
     private String name;
     private ConvUuid convUuid;
     private boolean whitelist;
 
-    private YggdrasilServiceEntry(String path, String name, String url, ConvUuid convUuid, boolean whitelist, boolean logger) {
+    private YggdrasilServiceEntry(String path, String name, String oUrl, ConvUuid convUuid, boolean whitelist, boolean logger, boolean postMode) {
         this.path = path;
         this.name = name;
-        this.url = url;
         this.convUuid = convUuid;
         this.whitelist = whitelist;
-        if (logger) {
+        this.postMode = postMode;
+//        url处理
+        if (!oUrl.endsWith("minecraft")) {
+            this.url = oUrl + "/sessionserver/session/minecraft";
+        } else {
+            this.url = oUrl;
+        }
+        if (logger && !postMode) {
             Logger log = MultiCore.getPlugin().getPluginLogger();
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                String onlineName = checkUrl();
+                String onlineName = checkUrl(oUrl);
                 if (onlineName == null) {
                     log.severe(String.format("无法识别的Yggdrasil验证服务器: %s (仍然会应用到现有列表中)", name));
                 } else {
@@ -76,6 +79,7 @@ public class YggdrasilServiceEntry {
             String convUuid = section.getString("convUuid");
             ConvUuid convUuidEnum;
             boolean whitelist;
+            boolean postMode = section.getBoolean("postMode", false);
             try {
                 convUuidEnum = ConvUuid.valueOf(convUuid);
                 whitelist = section.getBoolean("whitelist");
@@ -84,7 +88,7 @@ public class YggdrasilServiceEntry {
             }
             if (!PluginData.isEmpty(name) && !PluginData.isEmpty(url)) {
                 boolean enable = section.getBoolean("enable");
-                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, convUuidEnum, whitelist, enable);
+                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, convUuidEnum, whitelist, enable, postMode);
                 ret.enable = enable;
                 return ret;
             }
@@ -97,9 +101,9 @@ public class YggdrasilServiceEntry {
      *
      * @return 该URL是否符合规定
      */
-    private String checkUrl() {
+    private String checkUrl(String oUrl) {
         try {
-            URL url = new URL(this.url);
+            URL url = new URL(oUrl);
             JsonObject jo = (JsonObject) new JsonParser().parse(new InputStreamReader(url.openConnection().getInputStream()));
             return jo.get("meta").getAsJsonObject().get("serverName").getAsString();
         } catch (Exception ignored) {
@@ -113,8 +117,30 @@ public class YggdrasilServiceEntry {
      * @param arg GET的请求参数，为“hasJoined?username=%s&serverId=%s%s”
      * @return 请求链接
      */
-    public String buildUrlStr(String arg) {
-        return String.format("%s/sessionserver/session/minecraft/%s", url, arg);
+    public String buildUrlStr(Map<String, String> arg) throws UnsupportedEncodingException {
+        if (postMode) return url;
+        return String.format("%s/%s", url, _buildUrlStr(arg));
+    }
+
+    //    构造URL参数的方法
+    private String _buildUrlStr(Map<String, String> arg) throws UnsupportedEncodingException {
+        if (arg == null) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder();
+        for (final Map.Entry<String, String> entry : arg.entrySet()) {
+            if (sb.length() > 0) {
+                sb.append('&');
+            } else {
+                sb.append("hasJoined?");
+            }
+            sb.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
+            if (entry.getValue() != null) {
+                sb.append('=');
+                sb.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+            }
+        }
+        return sb.toString();
     }
 
     public String getPath() {
@@ -155,5 +181,9 @@ public class YggdrasilServiceEntry {
 
     protected void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public boolean isPostMode() {
+        return postMode;
     }
 }

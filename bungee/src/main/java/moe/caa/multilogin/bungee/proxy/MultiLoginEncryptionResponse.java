@@ -32,17 +32,23 @@ import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
 import java.lang.invoke.MethodHandle;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private static Class<?> INITIAL_HANDLE_CLASS_STATE_CLASS;
     private static MethodHandle THIS_STATE;
     private static MethodHandle REQUEST;
     private static MethodHandle CHANNEL_WRAPPER;
+    InitialHandler initialHandler;
+    SecretKey sharedKey;
+    EncryptionRequest request;
 
     public static void init() throws ClassNotFoundException, IllegalAccessException {
         Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
@@ -57,36 +63,47 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             handler.handle(this);
             return;
         }
-        InitialHandler initialHandler = (InitialHandler) handler;
+        initialHandler = (InitialHandler) handler;
         try {
-            EncryptionRequest request = (EncryptionRequest) REQUEST.invoke(handler);
-            ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.invoke(handler);
-            Preconditions.checkState(THIS_STATE.invoke(handler) == ReflectUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
-            SecretKey sharedKey = EncryptionUtil.getSecret(this, request);
-            if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
-                ch.close();
-                return;
-            }
-            BungeeCipher decrypt = EncryptionUtil.getCipher(false, sharedKey);
-            ch.addBefore("frame-decoder", "decrypt", new CipherDecoder(decrypt));
-            BungeeCipher encrypt = EncryptionUtil.getCipher(true, sharedKey);
-            ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
-            String encName = URLEncoder.encode(initialHandler.getName(), "UTF-8");
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            byte[][] var7 = new byte[][]{request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
-
-            for (byte[] bit : var7) {
-                sha.update(bit);
-            }
-            String encodedHash = URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
-            String preventProxy = BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress ? "&ip=" + URLEncoder.encode(initialHandler.getAddress().getAddress().getHostAddress(), "UTF-8") : "";
-            String arg = String.format("hasJoined?username=%s&serverId=%s%s", encName, encodedHash, preventProxy);
-
-            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new AuthTask(initialHandler, arg));
+            request = (EncryptionRequest) REQUEST.invoke(handler);
+            addEncrypt();
+            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new AuthTask(initialHandler, genAuthMap()));
         } catch (Throwable e) {
             e.printStackTrace();
             initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
             MultiCore.getPlugin().getPluginLogger().severe("处理用户数据时出现异常");
         }
+    }
+
+    private void addEncrypt() throws Throwable {
+        ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.invoke(initialHandler);
+        Preconditions.checkState(THIS_STATE.invoke(initialHandler) == ReflectUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
+        sharedKey = EncryptionUtil.getSecret(this, request);
+        if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
+            ch.close();
+            return;
+        }
+        BungeeCipher decrypt = EncryptionUtil.getCipher(false, sharedKey);
+        ch.addBefore("frame-decoder", "decrypt", new CipherDecoder(decrypt));
+        BungeeCipher encrypt = EncryptionUtil.getCipher(true, sharedKey);
+        ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
+    }
+
+    private String genServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        for (byte[] bit : new byte[][]{request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()}) {
+            sha.update(bit);
+        }
+        return (new BigInteger(sha.digest())).toString(16);
+    }
+
+    private Map<String, String> genAuthMap() throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        Map<String, String> map = new HashMap<>();
+        map.put("username", initialHandler.getName());
+        map.put("serverId", genServerId());
+        if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
+            map.put("ip", initialHandler.getAddress().getAddress().getHostAddress());
+        }
+        return map;
     }
 }

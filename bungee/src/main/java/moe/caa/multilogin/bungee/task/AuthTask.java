@@ -25,6 +25,7 @@ import net.md_5.bungee.connection.LoginResult;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.Map;
 import java.util.UUID;
 
 public class AuthTask implements Runnable {
@@ -33,9 +34,9 @@ public class AuthTask implements Runnable {
     private static MethodHandle UNIQUE_ID;
     private static MethodHandle FINISH;
     InitialHandler handler;
-    String arg;
+    Map<String, String> arg;
 
-    public AuthTask(InitialHandler handler, String arg) {
+    public AuthTask(InitialHandler handler, Map<String, String> arg) {
         this.handler = handler;
         this.arg = arg;
     }

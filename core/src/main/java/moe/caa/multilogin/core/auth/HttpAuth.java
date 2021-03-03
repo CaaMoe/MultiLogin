@@ -15,7 +15,6 @@ package moe.caa.multilogin.core.auth;
 import com.google.gson.Gson;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
-import moe.caa.multilogin.core.http.HttpGetter;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -45,7 +44,7 @@ public class HttpAuth {
      * @return 验证结果
      * @throws SQLException 数据查询失败
      */
-    public static <T> AuthResult<T> yggAuth(String name, String arg, Gson gson, Class<T> clazz) throws SQLException {
+    public static <T> AuthResult<T> yggAuth(String name, Map<String, String> arg, Gson gson, Class<T> clazz) throws SQLException {
         List<List<YggdrasilServiceEntry>> order = Verifier.getVeriOrder(name);
         boolean down = false;
         for (List<YggdrasilServiceEntry> entries : order) {
@@ -71,7 +70,7 @@ public class HttpAuth {
      * @param <T>              请求返回的数据对象
      * @return 验证结果
      */
-    private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, String arg, Gson gson, Class<T> clazz) {
+    private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg, Gson gson, Class<T> clazz) {
         T getResult = null;
 //        服务器关闭
         boolean down = false;
@@ -84,9 +83,8 @@ public class HttpAuth {
         for (YggdrasilServiceEntry entry : serviceEntryList) {
             if (entry == null) continue;
 //            请求json数据 转换成需要的对象
-            FutureTask<T> task = new FutureTask<>(() -> gson.fromJson(HttpGetter.httpGet(entry.buildUrlStr(arg)), clazz));
+            FutureTask<T> task = new FutureTask<>(new AuthTask<>(entry, arg, clazz, gson));
             threadPool.execute(task);
-//            MultiCore.getPlugin().runTaskAsyncLater(task, 0);
 //            执行后放在列表里
             tasks.put(task, entry);
         }

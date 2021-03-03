@@ -281,7 +281,7 @@ public class PluginData {
             return new MysqlConnectionPool(url, userName, password);
         } else if ("H2".equalsIgnoreCase(backend)) {
 //            位置 库名
-            url = "jdbc:h2:%s%s";
+            url = "jdbc:h2:%s%s;TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=0";
             url = String.format(url, MultiCore.getPlugin().getPluginDataFolder().getAbsolutePath(), "/multilogin");
             return new H2ConnectionPool(url, userName, password);
         } else {

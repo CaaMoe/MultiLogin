@@ -54,24 +54,17 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     }
 
     public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
-        Map<String, Object> arguments = new HashMap<>();
+        Map<String, String> arguments = new HashMap<>();
         arguments.put("username", user.getName());
         arguments.put("serverId", serverId);
         if (address != null) {
             arguments.put("ip", address.getHostAddress());
         }
 
-        URL url = HttpAuthenticationService.concatenateURL(CHECK_URL, HttpAuthenticationService.buildQuery(arguments));
-
         try {
-            String arg = null;
-            for (String s : url.toString().split("/")) {
-                if (s.startsWith("hasJoined?")) {
-                    arg = s;
-                }
-            }
-
-            AuthResult<HasJoinedMinecraftServerResponse> authResult = HttpAuth.yggAuth(user.getName(), arg, gson, HasJoinedMinecraftServerResponse.class);
+//            验证阶段
+            AuthResult<HasJoinedMinecraftServerResponse> authResult = HttpAuth.yggAuth(user.getName(), arguments, gson, HasJoinedMinecraftServerResponse.class);
+//            后处理
             HasJoinedMinecraftServerResponse response = authResult.getResult();
             if (authResult.getErr() == AuthErrorEnum.SERVER_DOWN) {
                 throw new AuthenticationUnavailableException();
