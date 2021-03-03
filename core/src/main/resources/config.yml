@@ -40,16 +40,13 @@ services:
     # 当某名玩家使用此节点所设置的验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
     # 当全局白名单生效时，此节点无效。
     whitelist: true
-  netease:
-    enable: false
-    name: "网易"
-    url: "http://x19authexpr.nie.netease.com/check"
-    convUuid: DEFAULT
-    whitelist: false
-    #post Http请求 是网易的验证方式(该选项可不配置 默认false
-    postMode: true
-    #针对一些不守规矩的服务器 不对URL进行自动补充(该选项可不配置 默认false
+
+    # post Http请求 是网易的验证方式(该选项可不配置 默认false
+    #postMode: true
+
+    # 针对一些不守规矩的服务器 不对URL进行自动补充(该选项可不配置 默认false
     #noUrlDeal: false
+
     #针对一些不守规矩的服务器 自定义head内容(该选项可不配置 默认hasJoined?
     #head: "hasJoined?"
 

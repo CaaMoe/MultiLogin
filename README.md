@@ -49,9 +49,9 @@
 
 ## 使用
 
-###添加一个Yggdrasil服务器
+### 添加一个Yggdrasil服务器
 
 
-todo
+// todo
 
 详细请查阅插件config.yml文件
