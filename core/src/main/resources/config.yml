@@ -46,8 +46,12 @@ services:
     url: "http://x19authexpr.nie.netease.com/check"
     convUuid: DEFAULT
     whitelist: false
-    #post Http请求 是网易的验证方式
+    #post Http请求 是网易的验证方式(该选项可不配置 默认false
     postMode: true
+    #针对一些不守规矩的服务器 不对URL进行自动补充(该选项可不配置 默认false
+    #noUrlDeal: false
+    #针对一些不守规矩的服务器 自定义head内容(该选项可不配置 默认hasJoined?
+    #head: "hasJoined?"
 
 
 # 正版验证服务器的别称，可随意修改。

@@ -31,23 +31,25 @@ import java.util.logging.Logger;
 public class YggdrasilServiceEntry {
 
     //    正版验证服务器对象
-    public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "https://sessionserver.mojang.com/session/minecraft", null, false, false, false);
+    public static final YggdrasilServiceEntry OFFICIAL_YGG = new YggdrasilServiceEntry("official", "", "https://sessionserver.mojang.com/session/minecraft", null, null, false, false, false, true);
     private final String path;
     private final String url;
+    private final String head;
     private final boolean postMode;//网易模式
     private boolean enable;
     private String name;
     private ConvUuid convUuid;
     private boolean whitelist;
 
-    private YggdrasilServiceEntry(String path, String name, String oUrl, ConvUuid convUuid, boolean whitelist, boolean logger, boolean postMode) {
+    private YggdrasilServiceEntry(String path, String name, String oUrl, String head, ConvUuid convUuid, boolean whitelist, boolean logger, boolean postMode, boolean noUrlDeal) {
         this.path = path;
         this.name = name;
         this.convUuid = convUuid;
         this.whitelist = whitelist;
         this.postMode = postMode;
+        this.head = head == null ? "hasJoined?" : head;
 //        url处理
-        if (!oUrl.endsWith("minecraft")) {
+        if (!oUrl.endsWith("minecraft") && !noUrlDeal) {
             this.url = oUrl + "/sessionserver/session/minecraft";
         } else {
             this.url = oUrl;
@@ -77,9 +79,11 @@ public class YggdrasilServiceEntry {
             String name = section.getString("name");
             String url = section.getString("url");
             String convUuid = section.getString("convUuid");
+            String head = section.getString("head");
             ConvUuid convUuidEnum;
             boolean whitelist;
             boolean postMode = section.getBoolean("postMode", false);
+            boolean noUrlDeal = section.getBoolean("noUrlDeal", false);
             try {
                 convUuidEnum = ConvUuid.valueOf(convUuid);
                 whitelist = section.getBoolean("whitelist");
@@ -88,7 +92,7 @@ public class YggdrasilServiceEntry {
             }
             if (!PluginData.isEmpty(name) && !PluginData.isEmpty(url)) {
                 boolean enable = section.getBoolean("enable");
-                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, convUuidEnum, whitelist, enable, postMode);
+                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable, postMode, noUrlDeal);
                 ret.enable = enable;
                 return ret;
             }
@@ -132,7 +136,7 @@ public class YggdrasilServiceEntry {
             if (sb.length() > 0) {
                 sb.append('&');
             } else {
-                sb.append("hasJoined?");
+                sb.append(head);
             }
             sb.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
             if (entry.getValue() != null) {
