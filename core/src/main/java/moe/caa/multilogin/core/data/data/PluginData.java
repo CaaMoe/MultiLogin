@@ -282,7 +282,7 @@ public class PluginData {
         } else if ("H2".equalsIgnoreCase(backend)) {
 //            位置 库名
             url = "jdbc:h2:%s%s";
-            url = String.format(url, MultiCore.getPlugin().getPluginDataFolder().getAbsolutePath(), "/multilogin.db");
+            url = String.format(url, MultiCore.getPlugin().getPluginDataFolder().getAbsolutePath(), "/multilogin");
             return new H2ConnectionPool(url, userName, password);
         } else {
 //            不支持
