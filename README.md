@@ -49,4 +49,9 @@
 
 ## 使用
 
-请查阅插件config.yml文件
+###添加一个Yggdrasil服务器
+
+
+todo
+
+详细请查阅插件config.yml文件
