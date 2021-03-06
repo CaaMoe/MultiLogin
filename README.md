@@ -51,7 +51,41 @@
 
 ### 添加一个Yggdrasil服务器
 
+插件现在支持添加几乎所有类型的Yggdrasil服务器，设置它也是个很简单的过程
 
-// todo
+一般，它的配置格式为
+
+                        demo:
+                            enable: false
+                            name: "yggdrasil name"
+                            url: "https://example.com/yggdrasil"
+                            checkUrl: true
+                            convUuid: DEFAULT
+                            whitelist: true
+                            postMode: false
+                            noUrlDeal: false
+                            head: "hasJoined?"
+
+配置的根节点 ‘demo’ 为插件识别Yggdrasil服务器的唯一方式，该值不建议设置除数字、字母以外的值。若执意修改它，将会导致所有曾经通过该验证方式验证的玩家无法登入游戏。
+
+节点’enable‘，意思为是否启用当前Yggdrasil服务器，若他的值为false，就相当于它什么都做不了.
+
+节点’name‘，既为Yggdrasil验证服务器的名称，您可以随便修改它，根节点更加像玩家的uuid，此节点的值像玩家的name
+
+节点’url‘，它用来设置Yggdrasil验证链接，一般符合技术规范的Yggdrasil链接都可以直接使用浏览器打开，可以看到一些JSON消息（纯文本）
+
+节点’checkUrl‘，它用来设置插件启动或重载时，是否进行检查节点’url‘内的值的有效性，若当前Yggdrasil不遵循技术规范的话，此值建议为false（比如Minecraft正版验证，它就不遵循第三方设定的技术规范）
+
+节点’convUuid‘，在配置文件节点中已经明确定义了他的用法，即控制玩家第一次进入服务器时所分配到的UUID，适用于离线服转正版或伪正版服。若您不知道此节点是干嘛的，那使用默认值。
+
+节点’whitelist‘，即为白名单，没什么好讲的，都在注释里面写清楚了
+
+节点’postMode‘，如果该Yggdrasil验证方式是使用post报文的方式响应数据，此值设置为true。绝大多数情况下，Yggdrasil服务器都是以GET方式响应数据的，不是特殊需求，请使用默认值.
+
+节点’noUrlDeal‘，若此Yggdrasil验证服务器的最终链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的，请将此值设置为true，并将完整的验证链接填入节点url中（末尾不带hasJoined?username=%s&serverId=%s%s）.
+
+节点’head‘，若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
+
+最后，若配置无误，将配置节点全部复制到services节点下，重启或重载插件配置文件即可生效
 
 详细请查阅插件config.yml文件
