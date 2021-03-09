@@ -4,7 +4,6 @@
 ###################################
 
 # 存放所有的Yggdrasil验证服务器，
-# 正版Yggdrasil在officialServices节点中单独设置。
 services:
 
   # 插件标记名称，一旦设置请谨慎修改。
