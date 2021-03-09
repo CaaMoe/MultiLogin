@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.http.HttpDownload;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -40,14 +41,16 @@ public class LibChecker {
     boolean loadFail = false;
     Method addUrlMethod;
 
-    public LibChecker(File pluginDataFolder) {
+    public LibChecker(File pluginDataFolder) throws IOException {
         libFolder = new File(pluginDataFolder, "libs");
-        if (!libFolder.exists()) libFolder.mkdirs();
+        if (!libFolder.exists() && !libFolder.mkdirs()) {
+            throw new IOException(String.format("无法创建配置文件夹: %s", libFolder.getPath()));
+        }
     }
 
     public boolean check() {
         checkClass();
-        MultiCore.info("开始加载库");
+        MultiCore.info("正在加载核心依赖库文件，可能需要一些时间...");
         startDownload();
         if (downloadFail) return false;
         load();
@@ -74,11 +77,10 @@ public class LibChecker {
         }
     }
 
-    private Class getClass(String name) {
+    private Class<?> getClass(String name) {
         try {
             return Class.forName(name);
         } catch (ClassNotFoundException ignored) {
-
         }
         return null;
     }
@@ -113,7 +115,7 @@ public class LibChecker {
     }
 
     public void download(String name, File downloadFile) {
-        MultiCore.info("开始下载 " + name);
+        MultiCore.info("正在下载: " + name);
         String url = genUrl(name);
         HttpDownload download = new HttpDownload(url, downloadFile);
         FutureTask<Boolean> task = new FutureTask<>(download);
@@ -181,6 +183,6 @@ public class LibChecker {
     private void load(String name) throws Throwable {
         File toLoad = new File(libFolder, genJarName(name));
         addUrlMH.invoke(urlClassLoader, toLoad.toURI().toURL());
-        MultiCore.info("成功加载库 " + toLoad.getName());
+        MultiCore.info("成功加载依赖库文件 " + toLoad.getName());
     }
 }
