@@ -13,6 +13,7 @@
 package moe.caa.multilogin.core.http;
 
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.util.I18n;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,16 +62,16 @@ public class HttpDownload implements Callable<Boolean> {
                 inputStream.close();
                 downloadingFile.renameTo(downloadFile);
                 success = true;
-                MultiCore.info("下载成功 " + url);
+                MultiCore.info(I18n.getTransString("plugin_download_success", url));
             } else {
 //                请求失败
                 success = false;
-                MultiCore.info("下载失败 " + url);
+                MultiCore.info(I18n.getTransString("plugin_severe_download_fail", url));
             }
         } catch (Exception exception) {
 //            下载失败
             success = false;
-            MultiCore.info("下载失败 " + url);
+            MultiCore.info(I18n.getTransString("plugin_severe_download_fail", url));
             exception.printStackTrace();
         } finally {
             if (httpurlconnection != null) {

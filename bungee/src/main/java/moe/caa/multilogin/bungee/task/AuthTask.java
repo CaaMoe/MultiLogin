@@ -16,6 +16,7 @@ import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.data.data.PluginData;
+import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.Util;
@@ -76,7 +77,7 @@ public class AuthTask implements Runnable {
         } catch (Throwable e) {
             e.printStackTrace();
             handler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
-            MultiCore.getPlugin().getPluginLogger().severe("处理用户数据时出现异常");
+            MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_io_user"));
         }
     }
 }

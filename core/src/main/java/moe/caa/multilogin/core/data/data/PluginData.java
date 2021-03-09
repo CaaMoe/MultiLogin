@@ -18,6 +18,7 @@ import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.MysqlConnectionPool;
 import moe.caa.multilogin.core.impl.IConfiguration;
+import moe.caa.multilogin.core.util.I18n;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,10 +48,10 @@ public class PluginData {
         try {
             SQLHandler.init(args);
         } catch (Exception e) {
-            MultiCore.getPlugin().getPluginLogger().info("连接到数据库时出现异常");
+            MultiCore.getPlugin().getPluginLogger().info(I18n.getTransString("plugin_error_loading_database"));
             throw e;
         }
-        MultiCore.getPlugin().getPluginLogger().info("成功链接到数据库");
+        MultiCore.getPlugin().getPluginLogger().info(I18n.getTransString("plugin_connected_database"));
     }
 
     /**
@@ -58,7 +59,7 @@ public class PluginData {
      */
     private static void genFile() throws IOException {
         if (!MultiCore.getPlugin().getPluginDataFolder().exists() && !MultiCore.getPlugin().getPluginDataFolder().mkdirs()) {
-            throw new IOException(String.format("无法创建配置文件夹: %s", MultiCore.getPlugin().getPluginDataFolder().getPath()));
+            throw new IOException(I18n.getTransString("plugin_severe_io_directory_mkdirs", MultiCore.getPlugin().getPluginDataFolder().getPath()));
         }
         MultiCore.getPlugin().savePluginDefaultConfig();
     }
@@ -79,14 +80,14 @@ public class PluginData {
             for (String path : services.getKeys(false)) {
                 YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
                 if (section == null) {
-                    log.severe(String.format("无效的Yggdrasil验证服务器： %s", path));
+                    log.severe(I18n.getTransString("plugin_severe_invalid_yggdrasil", path));
                     continue;
                 }
                 if (!section.isEnable()) continue;
                 serviceSet.add(section);
             }
         }
-        log.info(String.format("成功载入%d个Yggdrasil验证服务器", serviceSet.size()));
+        log.info(I18n.getTransString("plugin_loaded_multi_Yggdrasil", serviceSet.size()));
 
         whitelist = configurationConfig.getBoolean("whitelist", true);
 
@@ -119,7 +120,7 @@ public class PluginData {
             String.format(configurationConfig.getString(path), args);
         } catch (Exception ignore) {
             configurationConfig.set(path, defaultConfigurationConfig.getString(path));
-            log.warning(String.format("无效的节点 %s 已恢复默认值", path));
+            log.warning(I18n.getTransString("plugin_severe_invalid_config_key", path));
         }
     }
 

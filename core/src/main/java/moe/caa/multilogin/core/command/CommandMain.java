@@ -14,7 +14,7 @@ package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.impl.ISender;
-import net.md_5.bungee.api.ChatColor;
+import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.Collections;
@@ -75,8 +75,8 @@ public class CommandMain {
             sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd")));
         } catch (Exception e) {
             e.printStackTrace();
-            MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-            sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+            MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
+            sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
         }
         return true;
     }

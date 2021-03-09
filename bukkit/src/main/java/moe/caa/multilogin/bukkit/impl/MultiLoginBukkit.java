@@ -24,6 +24,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.impl.IPlugin;
+import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -66,8 +67,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void onEnable() {
         if (!getServer().getOnlineMode()) {
-            getLogger().severe("插件只能运行在“online-mode=true”的环境下");
-            getLogger().severe("请打开服务端的正版验证！");
+            getLogger().severe(I18n.getTransString("bukkit_error_loading_online"));
             setEnabled(false);
             return;
         }
@@ -76,7 +76,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             initCoreService();
         } catch (Throwable e) {
             e.printStackTrace();
-            getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
+            getLogger().severe(I18n.getTransString("plugin_error_loading_reflect"));
             setEnabled(false);
             return;
         }
@@ -97,9 +97,9 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             new MultiLoginPlaceholderExpansion().register();
-            getLogger().info("已加载PlaceholderAPI");
+            getLogger().info(I18n.getTransString("bukkit_loaded_papi"));
         }
-        getLogger().info("插件已加载");
+        getLogger().info(I18n.getTransString("plugin_enabled"));
     }
 
     @Override
@@ -108,7 +108,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             PluginData.close();
         } catch (Throwable ignored) {
         }
-        getLogger().info("插件已关闭");
+        getLogger().info(I18n.getTransString("plugin_disable"));
         getServer().getScheduler().cancelTasks(this);
         getServer().shutdown();
     }

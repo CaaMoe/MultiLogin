@@ -17,6 +17,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.util.I18n;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -94,11 +95,11 @@ public class Verifier {
             MultiCore.getPlugin().runTask(task, 0);
             task.get();
 
-            MultiCore.getPlugin().getPluginLogger().info(String.format("uuid: %s, 来自玩家: %s, 验证服务器: %s(%s)", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));
+            MultiCore.getPlugin().getPluginLogger().info(I18n.getTransString("player_login", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));
             return new VerificationResult(userData.getRedirect_uuid());
         } catch (Exception e) {
             e.printStackTrace();
-            MultiCore.getPlugin().getPluginLogger().severe("验证遭到异常");
+            MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_verification"));
             return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
         }
     }

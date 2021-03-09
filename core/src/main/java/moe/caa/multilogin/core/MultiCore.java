@@ -17,13 +17,14 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.lib.LibChecker;
 import moe.caa.multilogin.core.util.AutoUpdater;
+import moe.caa.multilogin.core.util.I18n;
 
 /**
  * 插件核心类
  */
 public class MultiCore {
-    private static IPlugin plugin = null;
     private static final AutoUpdater updater = new AutoUpdater();
+    private static IPlugin plugin = null;
 
     /**
      * 启动服务
@@ -36,7 +37,7 @@ public class MultiCore {
         try {
             LibChecker libChecker = new LibChecker(plugin.getPluginDataFolder());
             if (!libChecker.check()) {
-                severe("核心依赖库文件加载失败");
+                severe(I18n.getTransString("plugin_error_loading_library"));
                 return false;
             }
             PluginData.initService();

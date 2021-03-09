@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.ConvUuid;
 import moe.caa.multilogin.core.impl.IConfiguration;
+import moe.caa.multilogin.core.util.I18n;
 
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -53,18 +54,18 @@ public class YggdrasilServiceEntry {
             this.url = oUrl;
         }
         Logger log = MultiCore.getPlugin().getPluginLogger();
-        if(enable){
+        if (enable) {
             if (checkUrl && !postMode) {
                 MultiCore.getPlugin().runTaskAsyncLater(() -> {
                     String onlineName = checkUrl(oUrl);
                     if (onlineName == null) {
-                        log.severe(String.format("无法识别的Yggdrasil验证服务器: %s (仍然会应用到现有列表中)", path));
+                        log.severe(I18n.getTransString("plugin_severe_invalid_distinguish_yggdrasil", path));
                     } else {
-                        log.info(String.format("添加Yggdrasil验证服务器: %s, 来自节点: %s", onlineName, path));
+                        log.info(I18n.getTransString("plugin_loaded_distinguish_Yggdrasil", onlineName, path));
                     }
                 }, 0L);
             } else {
-                MultiCore.getPlugin().runTaskAsyncLater(() -> log.info(String.format("添加Yggdrasil验证服务器（no check）: %s, 来自节点: %s", name, path)), 0);
+                MultiCore.getPlugin().runTaskAsyncLater(() -> log.info(I18n.getTransString("plugin_loaded_distinguish_Yggdrasil_no_check", name, path)), 0);
             }
         }
 
@@ -96,7 +97,7 @@ public class YggdrasilServiceEntry {
             if (!PluginData.isEmpty(name) && !PluginData.isEmpty(url)) {
                 boolean enable = section.getBoolean("enable", false);
                 boolean checkUrl = section.getBoolean("checkUrl", true);
-                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable , checkUrl, postMode, noUrlDeal);
+                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable, checkUrl, postMode, noUrlDeal);
                 return ret;
             }
         }

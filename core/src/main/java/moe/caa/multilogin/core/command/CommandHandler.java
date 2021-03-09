@@ -17,7 +17,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.impl.ISender;
-import net.md_5.bungee.api.ChatColor;
+import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.List;
@@ -80,8 +80,8 @@ public class CommandHandler {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-                    commandSender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                    MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
+                    commandSender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
                 }
             }, 0);
         }
@@ -130,8 +130,8 @@ public class CommandHandler {
                     } catch (IllegalArgumentException ignored) {
                     } catch (Exception e) {
                         e.printStackTrace();
-                        MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-                        sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                        MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
+                        sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
                         return;
                     }
                     if (!flag) {
@@ -187,8 +187,8 @@ public class CommandHandler {
                 } catch (IllegalArgumentException ignored) {
                 } catch (Exception e) {
                     e.printStackTrace();
-                    MultiCore.getPlugin().getPluginLogger().severe("执行命令时出现异常");
-                    sender.sendMessage(new TextComponent(ChatColor.RED + "执行命令时出现异常"));
+                    MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
+                    sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
                     return;
                 }
                 if (flag) {

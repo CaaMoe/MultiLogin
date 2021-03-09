@@ -47,9 +47,7 @@ public class AutoUpdater implements Runnable {
     public void infoUpdate() {
         update();
         if (isUpdate()) {
-            MultiCore.info("=======================================================");
-            MultiCore.info(String.format("插件有新版本发布，当前版本为 %s，最新版本为 %s", MultiCore.getPlugin().getVersion(), relV));
-            MultiCore.info("=======================================================");
+            MultiCore.info(I18n.getTransString("plugin_new_version_info", MultiCore.getPlugin().getVersion(), relV));
         }
     }
 

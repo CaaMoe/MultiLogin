@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.lib;
 
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.http.HttpDownload;
+import moe.caa.multilogin.core.util.I18n;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,13 +45,13 @@ public class LibChecker {
     public LibChecker(File pluginDataFolder) throws IOException {
         libFolder = new File(pluginDataFolder, "libs");
         if (!libFolder.exists() && !libFolder.mkdirs()) {
-            throw new IOException(String.format("无法创建配置文件夹: %s", libFolder.getPath()));
+            throw new IOException(I18n.getTransString("plugin_severe_io_directory_mkdirs", libFolder.getPath()));
         }
     }
 
     public boolean check() {
         checkClass();
-        MultiCore.info("正在加载核心依赖库文件，可能需要一些时间...");
+        MultiCore.info(I18n.getTransString("plugin_loading_library"));
         startDownload();
         if (downloadFail) return false;
         load();
@@ -171,7 +172,7 @@ public class LibChecker {
         ClassLoader classLoader = MultiCore.getPlugin().getClass().getClassLoader();
         if (!(classLoader instanceof URLClassLoader)) {
             loadFail = true;
-            throw new AssertionError("找不到URLClassLoader");
+            throw new AssertionError(I18n.getTransString("plugin_error_loading_library_class_loader"));
         }
         urlClassLoader = (URLClassLoader) classLoader;
         addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
@@ -183,6 +184,6 @@ public class LibChecker {
     private void load(String name) throws Throwable {
         File toLoad = new File(libFolder, genJarName(name));
         addUrlMH.invoke(urlClassLoader, toLoad.toURI().toURL());
-        MultiCore.info("成功加载依赖库文件 " + toLoad.getName());
+        MultiCore.info(I18n.getTransString("plugin_loaded_library", toLoad.getName()));
     }
 }

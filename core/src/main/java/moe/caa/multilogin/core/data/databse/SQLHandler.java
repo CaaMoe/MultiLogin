@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
+import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.UUIDSerializer;
 
 import java.sql.*;
@@ -101,7 +102,7 @@ public class SQLHandler {
                 try {
                     return fromSQLResultSet(resultSet);
                 } catch (Exception e) {
-                    throw new RuntimeException(String.format("以唯一标识符检索游戏数据时失败，数据疑似遭到损坏: %s", uuid.toString()), e);
+                    throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_online_uuid", uuid.toString()), e);
                 }
             }
             return null;
@@ -124,7 +125,7 @@ public class SQLHandler {
                 try {
                     return fromSQLResultSet(resultSet);
                 } catch (Exception e) {
-                    throw new RuntimeException(String.format("以重定向的唯一标识符检索游戏数据时失败，数据疑似遭到损坏: %s", uuid.toString()), e);
+                    throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_redirected_uuid", uuid.toString()), e);
                 }
             }
             return null;
@@ -150,7 +151,7 @@ public class SQLHandler {
                     UserEntry add = fromSQLResultSet(resultSet);
                     ret.add(add);
                 } catch (Exception e) {
-                    throw new RuntimeException(String.format("以用户名检索游戏数据时失败，数据疑似遭到损坏: %s", name), e);
+                    throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_current_name", name), e);
                 }
             }
             return ret;
@@ -174,7 +175,7 @@ public class SQLHandler {
                 try {
                     ret.add(PluginData.getYggdrasilServerEntry(resultSet.getString(1)));
                 } catch (Exception e) {
-                    throw new RuntimeException(String.format("以用户名检索YggdrasilServiceEntry时失败，数据疑似遭到损坏: %s", name), e);
+                    throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_current_name_from_yggdrasil_list", name), e);
                 }
             }
             return ret;

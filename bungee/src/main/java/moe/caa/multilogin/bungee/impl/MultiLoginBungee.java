@@ -22,6 +22,7 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.command.CommandMain;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.impl.IPlugin;
+import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.CommandSender;
@@ -29,7 +30,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -37,7 +37,10 @@ import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -92,7 +95,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 } else if (constructors instanceof Constructor[]) {
                     constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-                    throw new UnsupportedOperationException(String.format("不兼容的BungeeCord : %s %s", getProxy().getName(), getProxy().getVersion()));
+                    throw new UnsupportedOperationException(I18n.getTransString("bungee_error_loading_reflect", getProxy().getName(), getProxy().getVersion()));
                 }
             }
         }
@@ -107,7 +110,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
             initCoreService();
         } catch (Throwable e) {
             e.printStackTrace();
-            getLogger().severe("初始化修改失败，插件可能不兼容您的服务端！");
+            getLogger().severe(I18n.getTransString("plugin_error_loading_reflect"));
             BungeeCord.getInstance().stop();
             return;
         }
@@ -133,7 +136,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         }
 
         new Metrics(this, 9888);
-        getLogger().info("插件已加载");
+        getLogger().info(I18n.getTransString("plugin_enabled"));
     }
 
     @Override
@@ -143,6 +146,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         } catch (Exception ignored) {
         }
         MultiCore.disable();
+        getLogger().info(I18n.getTransString("plugin_disable"));
         BungeeCord.getInstance().stop();
     }
 
@@ -166,7 +170,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 fOut.write(buf, 0, len);
             }
         } catch (Exception e) {
-            getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
+            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_save", configFile.getName()));
         }
     }
 
@@ -175,12 +179,12 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         try {
             configuration = new BungeeConfiguration(ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml")));
         } catch (Exception ignore) {
-            getPluginLogger().log(Level.SEVERE, "无法读取文件 " + configFile.getName());
+            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_load", configFile.getName()));
         }
     }
 
     @Override
-    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) throws IOException {
+    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) {
         return new BungeeConfiguration(ConfigurationProvider.getProvider(YamlConfiguration.class).load(reader));
     }
 
@@ -236,9 +240,9 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void savePluginConfig() {
         try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save((Configuration) configuration.getVanConfiguration(), new File(getDataFolder(), "config.yml"));
+            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration.getVanConfiguration(), new File(getDataFolder(), "config.yml"));
         } catch (Exception e) {
-            getPluginLogger().log(Level.SEVERE, "无法保存文件 " + configFile.getName());
+            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_save", configFile.getName()));
         }
     }
 }

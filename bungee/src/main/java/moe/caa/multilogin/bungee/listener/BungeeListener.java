@@ -15,7 +15,7 @@ package moe.caa.multilogin.bungee.listener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
-import net.md_5.bungee.api.ChatColor;
+import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
@@ -35,7 +35,7 @@ public class BungeeListener implements Listener {
     @EventHandler
     public void onSwitch(ServerSwitchEvent event) {
         if (MultiCore.isUpdate() && event.getPlayer().hasPermission("multilogin.update")) {
-            event.getPlayer().sendMessage(new TextComponent(ChatColor.RED + "插件 " + ChatColor.YELLOW + "MultiLogin" + ChatColor.RED + " 有新的版本发布，请及时下载更新！"));
+            event.getPlayer().sendMessage(new TextComponent(I18n.getTransString("plugin_new_version_game")));
         }
     }
 }
