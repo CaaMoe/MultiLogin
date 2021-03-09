@@ -34,6 +34,7 @@ public class MultiCore {
      */
     public static boolean initService(IPlugin plugin) {
         MultiCore.plugin = plugin;
+        I18n.initService();
         try {
             LibChecker libChecker = new LibChecker(plugin.getPluginDataFolder());
             if (!libChecker.check()) {
