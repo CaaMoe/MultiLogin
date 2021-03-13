@@ -4,13 +4,12 @@
 ###################################
 
 # 存放所有的Yggdrasil验证服务器，
-# 正版Yggdrasil在officialServices节点中单独设置。
 services:
 
-  # 插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为识别用户的验证服务器，为系统标记.胡乱更改很有可能会导致系统无法验证身份。
+  # 节点名称为插件标记名称，一旦设置请谨慎修改。
+  # 该标记作为识别用户的验证服务器，为系统标记。胡乱更改会导致系统无法验证用户身份。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
-  # 该值表示Minecraft正版验证
+  # 该节点表示Minecraft正版验证
   official:
 
     # 启用该验证服务器
@@ -26,14 +25,13 @@ services:
     url: "https://sessionserver.mojang.com/session/minecraft"
 
     # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki/Yggdrasil-服务端技术规范“来检查一个链接是否有效
-    # 当postMode为true时，此值锁定为false
     checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
     # 目前只支持以下值:
     #   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
     #   OFFLINE   -自动生成离线UUID（盗版UUID）
-    # 所有生成的结果均会保存到数据库相应值中。
+    # 所有生成的结果均会保存到数据库相应位置中。
     # 该值的优先级低于数据库所保存的值。
     # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
     # 必填，不允许为无效的值。
@@ -59,10 +57,10 @@ services:
     # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
     head: "hasJoined?"
 
-  # 插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为识别用户的验证服务器，为系统标记.胡乱更改很有可能会导致系统无法验证身份。
+  # 节点名称为插件标记名称，一旦设置请谨慎修改。
+  # 该标记作为识别用户的验证服务器，为系统标记。胡乱更改会导致系统无法验证用户身份。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
-  # 该值表示LittleSkin皮肤站验证
+  # 该节点表示LittleSkin的Yggdrasil验证
   littleSkin:
 
     # 启用该验证服务器
@@ -78,7 +76,6 @@ services:
     url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
     # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki/Yggdrasil-服务端技术规范“来检查一个链接是否有效
-    # 当postMode为true时，此值锁定为false
     checkUrl: true
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
