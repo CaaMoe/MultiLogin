@@ -1,0 +1,185 @@
+###################################
+#       MultiLogin
+#              --config
+###################################
+
+# Stores all Yggdrasil validation server settings.
+services:
+
+  # The node name is the plug-in tag name, Once set, modify carefully.
+  # This tag is a system tag, Changing can cause the system to fail to authenticate the user.
+  # You can mimic this node to add a new Yggdrasil authentication server.
+  # This node represents Minecraft native authentication.
+  official:
+
+    # Enable the authentication server
+    # Close will deny login to all players who have logged in using this authentication
+    enable: false
+
+    # Verify the nickname of the server.
+    name: "official"
+
+    # Verify the server address.
+    # For details, please see the noUrlDeal node.
+    url: "https://sessionserver.mojang.com/session/minecraft"
+
+    # Check whether the link is valid.
+    # Turn it off ，please!
+    checkUrl: false
+
+    # When the player first logs into the game, his UUID is generated based on the value set by that node.
+    # This node has only two values, DEFAULT and OFFLINE.
+    #   DEFAULT   -Use Yggdrasil to validate the UUID provided by the server
+    #   OFFLINE   -Use an offline UUID
+    # This node value is recommended to be set to DEFAULT
+    convUuid: DEFAULT
+
+    # Set up a separate whitelist for the authentication server.
+    # This node is invalid when the global whitelist is true.
+    whitelist: true
+
+    # Use POST requests to verify player login requests
+    # This value is false most of the time, but if you know how yggdrasil works, you may want to modify it
+    postMode: false
+
+    # The supplementary content referred to by the node is '/sessionserver/session/minecraft' 
+    # The verification link is generally: '%s/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    # If your link does not contain'/session/minecraft' 
+    # Please set this value to true, and set ‘%s/xxxx’ to the url.
+    #
+    # example1:
+    #   your link is 'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to true, and set ‘https://a.com/yggdrasil/session/minecraft’ to the node url 
+    #
+    # example2:
+    #   your link is 'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to false, and set ‘https://a.com/yggdrasil’ to the node url 
+    #
+    noUrlDeal: true
+
+    # The verification link is generally: '%s/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    # If your link does not contain ‘hasJoined? ’Is other value, please set other value to this node.
+    # example1:
+    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoined?'.
+    #
+    # example2:
+    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoinserver?'.
+    head: "hasJoined?"
+
+  # The node name is the plug-in tag name, Once set, modify carefully.
+  # This tag is a system tag, Changing can cause the system to fail to authenticate the user.
+  # You can mimic this node to add a new Yggdrasil authentication server.
+  # This node represents littleskin.cn yggdrasil authentication.
+  littleSkin:
+
+    # Enable the authentication server
+    # Close will deny login to all players who have logged in using this authentication
+    enable: false
+
+    # Verify the nickname of the server.
+    name: "littleSkin"
+
+    # Verify the server address.
+    # For details, please see the noUrlDeal node.
+    url: "https://mcskin.littleservice.cn/api/yggdrasil"
+
+    # Check whether the link is valid.
+    # Turn it off ，please!
+    checkUrl: true
+
+    # When the player first logs into the game, his UUID is generated based on the value set by that node.
+    # This node has only two values, DEFAULT and OFFLINE.
+    #   DEFAULT   -Use Yggdrasil to validate the UUID provided by the server
+    #   OFFLINE   -Use an offline UUID
+    # This node value is recommended to be set to DEFAULT
+    convUuid: DEFAULT
+
+    # Set up a separate whitelist for the authentication server.
+    # This node is invalid when the global whitelist is true.
+    whitelist: true
+
+    # Use POST requests to verify player login requests
+    # This value is false most of the time, but if you know how yggdrasil works, you may want to modify it
+    postMode: false
+
+    # The supplementary content referred to by the node is '/sessionserver/session/minecraft' 
+    # The verification link is generally: '%s/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    # If your link does not contain'/session/minecraft' 
+    # Please set this value to true, and set ‘%s/xxxx’ to the url.
+    #
+    # example1:
+    #   your link is 'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to true, and set ‘https://a.com/yggdrasil/session/minecraft’ to the node url 
+    #
+    # example2:
+    #   your link is 'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to false, and set ‘https://a.com/yggdrasil’ to the node url 
+    #
+    noUrlDeal: false
+
+    # The verification link is generally: '%s/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    # If your link does not contain ‘hasJoined? ’Is other value, please set other value to this node.
+    # example1:
+    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoined?'.
+    #
+    # example2:
+    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoinserver?'.
+    head: "hasJoined?"
+
+# Skip id check for authentication server.
+# Ensure the ID rights and interests of the verification server.
+safeId: ""
+
+# Set the authentication server timeout period 
+servicesTimeOut: 7000
+
+# Global whitelist switch 
+whitelist: true
+
+# How to store plugin data 
+sql:
+
+  # H2(default), MYSQL
+  backend: 'H2'
+
+  ip: '127.0.0.1'
+
+  port: '3306'
+
+  username: 'root'
+
+  password: '12345'
+
+  database: 'multilogin'
+
+##############
+#   Message
+##############
+
+msgNoAdopt: "§cVerification failed, please try again "
+msgNoChae: "§cYou can only login to the game through the specified verification method "
+msgRushName: "§cYour ID has been pre-registered, please reset your ID"
+msgRushNameOnl: "§cplease reset your ID"
+
+msgNoWhitelist: "§cYou have no whitelist"
+msgNoPermission: "§cYou do not have permission "
+msgInvCmd: "§cInvalid command "
+msgAddWhitelist: "§a%s has been added to the whitelist "
+msgAddWhitelistAlready: "§cPlease do not add %s to the whitelist repeatedly "
+msgDelWhitelistInGame: "§cThe administrator has removed your whitelist "
+msgDelWhitelist: "§aWhitelisted %s has been removed "
+msgDelWhitelistAlready: "§c%s is not in the whitelist "
+msgOpenWhitelist: "§aWhitelist enabled "
+msgOpenWhitelistAlready: "§c Do not open the whitelist repeatedly "
+msgCloseWhitelist: "§aWhitelist is closed "
+msgCloseWhitelistAlready: "§c Do not close the whitelist repeatedly "
+
+msgYDQuery: "§fPlayer §e%s §f The login method used is §e%s "
+msgYDQueryNoRel: "§cNo record found: %s "
+
+msgReload: "§aConfiguration file reloaded "
+msgNoPlayer: "§cYou are not a player "
