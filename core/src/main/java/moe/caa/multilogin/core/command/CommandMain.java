@@ -13,6 +13,7 @@
 package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -40,22 +41,22 @@ public class CommandMain {
                 if (strings.length > 0)
                     if (strings[0].equalsIgnoreCase("add")) {
                         if (strings.length == 2) {
-                            CommandHandler.executeAdd(sender, strings);
+                            WhitelistCommand.executeAdd(sender, strings);
                             return true;
                         }
                     } else if (strings[0].equalsIgnoreCase("remove")) {
                         if (strings.length == 2) {
-                            CommandHandler.executeRemove(sender, strings);
+                            WhitelistCommand.executeRemove(sender, strings);
                             return true;
                         }
                     } else if (strings[0].equalsIgnoreCase("on")) {
                         if (strings.length == 1) {
-                            CommandHandler.executeOn(sender);
+                            WhitelistCommand.executeOn(sender);
                             return true;
                         }
                     } else if (strings[0].equalsIgnoreCase("off")) {
                         if (strings.length == 1) {
-                            CommandHandler.executeOff(sender);
+                            WhitelistCommand.executeOff(sender);
                             return true;
                         }
                     }
@@ -63,12 +64,12 @@ public class CommandMain {
                     strings.length > 0) {
                 if (strings[0].equalsIgnoreCase("query")) {
                     if (strings.length <= 2) {
-                        CommandHandler.executeQuery(sender, strings);
+                        MultiLoginCommand.executeQuery(sender, strings);
                         return true;
                     }
                 } else if (strings[0].equalsIgnoreCase("reload") &&
                         strings.length == 1) {
-                    CommandHandler.executeReload(sender);
+                    MultiLoginCommand.executeReload(sender);
                     return true;
                 }
             }
@@ -102,5 +103,20 @@ public class CommandMain {
             return Stream.of(new String[]{"query", "reload"}).filter(s1 -> s1.startsWith(strings[0])).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    /**
+     * 测试sender是否有permission权限
+     *
+     * @param sender     指令发送者
+     * @param permission 权限
+     * @return 是否拥有该权限，若没有该权限将会自动回复
+     */
+    public static boolean testPermission(ISender sender, String permission) {
+        if (sender.hasPermission(permission)) {
+            return true;
+        }
+        sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPermission")));
+        return false;
     }
 }
