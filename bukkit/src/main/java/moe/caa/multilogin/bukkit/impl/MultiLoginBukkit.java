@@ -31,7 +31,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
@@ -134,7 +133,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
-    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) throws IOException {
+    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) {
         return new BukkitConfiguration(YamlConfiguration.loadConfiguration(reader));
     }
 
