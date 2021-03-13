@@ -7,7 +7,7 @@
 services:
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为识别用户的验证服务器，为系统标记。胡乱更改会导致系统无法验证用户身份。
+  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
   # 该节点表示Minecraft正版验证
   official:
@@ -16,31 +16,29 @@ services:
     # 关闭将拒绝所有使用该验证登入的玩家登入游戏
     enable: false
 
-    # 验证服务器的别称，可随意修改。
+    # 验证服务器的别称。
     # 必填，不允许为空字符串。
     name: "正版"
 
     # 验证服务器地址。
     # 必填，不允许为空字符串，URL末尾不需要'/'。
+    # 关于他的详细解释，请查看noUrlDeal节点注释
     url: "https://sessionserver.mojang.com/session/minecraft"
 
-    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki/Yggdrasil-服务端技术规范“来检查一个链接是否有效
+    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki“来检查一个链接是否有效
     checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
     # 目前只支持以下值:
     #   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
     #   OFFLINE   -自动生成离线UUID（盗版UUID）
-    # 所有生成的结果均会保存到数据库相应位置中。
-    # 该值的优先级低于数据库所保存的值。
     # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
     # 必填，不允许为无效的值。
     # 为避免触发Paper端的某些机制，强烈建议此值为 DEFAULT
     convUuid: DEFAULT
 
     # 是否为当前验证服务器单独设置白名单。
-    # 当某名玩家使用此节点所设置的验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
-    # 当全局白名单生效时，此节点无效。
+    # 当全局白名单为true时，此节点无效。
     whitelist: true
 
     # 以post请求方式验证账户身份
@@ -49,16 +47,32 @@ services:
     postMode: false
 
     # 不对URL进行自动补充，
+    # 补充的值为‘/sessionserver/session/minecraft’
     # 若此Yggdrasil验证服务器的最终链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
     # 请将此值设置为true，并将完整的验证链接填入节点url中（不带hasJoined?username=%s&serverId=%s%s）
+    # 例子1：
+    #    你的链接：'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #    请将此节点设置为true，并且设置url为‘https://a.com/yggdrasil/session/minecraft’
+    #
+    # 例子2:
+    #   你的链接：'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   请将此节点设置为false, 并且设置url为‘https://a.com/yggdrasil’
     noUrlDeal: true
 
     # 自定义head内容
     # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
+    #
+    # 例子1:
+    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoined?'.
+    #
+    # 例子2:
+    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoinserver?'.
     head: "hasJoined?"
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为识别用户的验证服务器，为系统标记。胡乱更改会导致系统无法验证用户身份。
+  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
   # 该节点表示LittleSkin的Yggdrasil验证
   littleSkin:
@@ -67,31 +81,29 @@ services:
     # 关闭将拒绝所有使用该验证登入的玩家登入游戏
     enable: false
 
-    # 验证服务器的别称，可随意修改。
+    # 验证服务器的别称。
     # 必填，不允许为空字符串。
     name: "LS皮肤站"
 
     # 验证服务器地址。
     # 必填，不允许为空字符串，URL末尾不需要'/'。
+    # 关于他的详细解释，请查看noUrlDeal节点注释
     url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
-    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki/Yggdrasil-服务端技术规范“来检查一个链接是否有效
+    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki“来检查一个链接是否有效
     checkUrl: true
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
     # 目前只支持以下值:
     #   DEFAULT   -使用Yggdrasil验证服务器提供的UUID
     #   OFFLINE   -自动生成离线UUID（盗版UUID）
-    # 所有生成的结果均会保存到数据库相应值中。
-    # 该值的优先级低于数据库所保存的值。
     # 请谨慎设置和修改该节点，避免增加日后维护的心智负担。
     # 必填，不允许为无效的值。
     # 为避免触发Paper端的某些机制，强烈建议此值为 DEFAULT
     convUuid: DEFAULT
 
     # 是否为当前验证服务器单独设置白名单。
-    # 当某名玩家使用此节点所设置的验证服务器验证通过后，将会检查他是否具有登入到此服务器的白名单权限。
-    # 当全局白名单生效时，此节点无效。
+    # 当全局白名单为true时，此节点无效。
     whitelist: true
 
     # 以post请求方式验证账户身份
@@ -100,12 +112,28 @@ services:
     postMode: false
 
     # 不对URL进行自动补充，
+    # 补充的值为‘/sessionserver/session/minecraft’
     # 若此Yggdrasil验证服务器的最终链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
     # 请将此值设置为true，并将完整的验证链接填入节点url中（不带hasJoined?username=%s&serverId=%s%s）
+    # 例子1：
+    #    你的链接：'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #    请将此节点设置为true，并且设置url为‘https://a.com/yggdrasil/session/minecraft’
+    #
+    # 例子2:
+    #   你的链接：'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   请将此节点设置为false, 并且设置url为‘https://a.com/yggdrasil’
     noUrlDeal: false
 
     # 自定义head内容
     # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
+    #
+    # 例子1:
+    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoined?'.
+    #
+    # 例子2:
+    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
+    #   Please set the value of this node to 'hasJoinserver?'.
     head: "hasJoined?"
 
 # 通过此节点下定义的验证服务器验证的玩家都将跳过账户重名检查，
