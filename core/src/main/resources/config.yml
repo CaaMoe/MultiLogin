@@ -48,27 +48,28 @@ services:
 
     # 不对URL进行自动补充，
     # 补充的值为‘/sessionserver/session/minecraft’
-    # 若此Yggdrasil验证服务器的最终链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
-    # 请将此值设置为true，并将完整的验证链接填入节点url中（不带hasJoined?username=%s&serverId=%s%s）
+    #
+    # 若此Yggdrasil验证服务器的验证链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
+    # 请将此值设置为true，并将完整的验证链接填入节点url中（url不包含hasJoined?username=%s&serverId=%s%s）
     # 例子1：
-    #    你的链接：'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #    请将此节点设置为true，并且设置url为‘https://a.com/yggdrasil/session/minecraft’
+    #    你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #    此节点设置为true，设置url为‘https://example.com/yggdrasil/session/minecraft’
     #
     # 例子2:
-    #   你的链接：'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   请将此节点设置为false, 并且设置url为‘https://a.com/yggdrasil’
+    #   你的链接为：'https://example.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   此节点设置为false, 设置url为‘https://a.com/yggdrasil’
     noUrlDeal: true
 
     # 自定义head内容
     # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
     #
     # 例子1:
-    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
-    #   Please set the value of this node to 'hasJoined?'.
+    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   此节点设置为 'hasJoined?'.
     #
     # 例子2:
-    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
-    #   Please set the value of this node to 'hasJoinserver?'.
+    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoinserver?username=%s&serverId=%s%s'
+    #   此节点设置为 'hasJoinserver?'.
     head: "hasJoined?"
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
@@ -113,27 +114,28 @@ services:
 
     # 不对URL进行自动补充，
     # 补充的值为‘/sessionserver/session/minecraft’
-    # 若此Yggdrasil验证服务器的最终链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
-    # 请将此值设置为true，并将完整的验证链接填入节点url中（不带hasJoined?username=%s&serverId=%s%s）
+    #
+    # 若此Yggdrasil验证服务器的验证链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
+    # 请将此值设置为true，并将完整的验证链接填入节点url中（url不包含hasJoined?username=%s&serverId=%s%s）
     # 例子1：
-    #    你的链接：'https://a.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #    请将此节点设置为true，并且设置url为‘https://a.com/yggdrasil/session/minecraft’
+    #    你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #    此节点设置为true，设置url为‘https://example.com/yggdrasil/session/minecraft’
     #
     # 例子2:
-    #   你的链接：'https://a.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   请将此节点设置为false, 并且设置url为‘https://a.com/yggdrasil’
+    #   你的链接为：'https://example.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   此节点设置为false, 设置url为‘https://a.com/yggdrasil’
     noUrlDeal: false
 
     # 自定义head内容
     # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
     #
     # 例子1:
-    #   your link is '%s/hasJoined?username=%s&serverId=%s%s'
-    #   Please set the value of this node to 'hasJoined?'.
+    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
+    #   此节点设置为 'hasJoined?'.
     #
     # 例子2:
-    #   your link is '%s/hasJoinserver?username=%s&serverId=%s%s'
-    #   Please set the value of this node to 'hasJoinserver?'.
+    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoinserver?username=%s&serverId=%s%s'
+    #   此节点设置为 'hasJoinserver?'.
     head: "hasJoined?"
 
 # 通过此节点下定义的验证服务器验证的玩家都将跳过账户重名检查，
