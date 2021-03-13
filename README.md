@@ -158,3 +158,26 @@
 
     # head内容为‘hasJoined?’
     head: "hasJoined?"
+
+#### 其他例子
+
+一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的Yggdrasil验证服务器的设置关键值都可以为
+
+    # 验证链接，详见noUrlDeal节点注释
+    url: "https://xxxxx.xxx/xxx/yggdrasil"
+
+    # 该验证服务器是以‘https://github.com/yushijinhun/authlib-injector/wiki’为标准设计的，检查理论通过
+    checkUrl: true
+
+    # 验证方式不为POST请求
+    postMode: false
+
+    # 验证链接是以‘/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的
+    # 所以将‘https://xxxxx.xxx/xxx/yggdrasil’写入到url中并且设置此值为false
+    noUrlDeal: false
+
+    # head内容为‘hasJoined?’
+    head: "hasJoined?"
+
+国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、奇怪的Yggdrasil验证服务器。
+如果没有特别需求的话，尽量使用节点的默认值
