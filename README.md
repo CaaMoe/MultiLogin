@@ -119,6 +119,42 @@
         #   此节点设置为 'hasJoinserver?'.
         head: "hasJoined?"
 
-在添加一个Yggdrasil之前，我们需要知道验证服务器的完整的验证链接。（以下链接中使用 %s 作为变量）
+在添加一个Yggdrasil之前，我们需要知道验证服务器的完整的验证链接。
 
-一般的，它的链接为`%s/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s`，如果你有认真地阅读配置节点上面的注释
+#### 例子 1
+ 官方的验证链接为`https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s%s` ，它的配置关键值为
+
+    # 验证链接，详见noUrlDeal节点注释
+    url: "https://sessionserver.mojang.com/session/minecraft"
+
+    # 官方并没有‘https://github.com/yushijinhun/authlib-injector/wiki’所定义的公共api，检查并不会通过
+    checkUrl: false
+
+    # 验证方式不为POST请求
+    postMode: false
+
+    # 验证链接并不是以‘/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的
+    # 所以将‘https://sessionserver.mojang.com/session/minecraft’写入到url中并且设置此值为true
+    noUrlDeal: true
+
+    # head内容为‘hasJoined?’
+    head: "hasJoined?"
+
+#### 例子 2
+ littleSkin.cn 的验证链接为`https://mcskin.littleservice.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s` ，它的配置关键值为
+
+    # 验证链接，详见noUrlDeal节点注释
+    url: "https://mcskin.littleservice.cn/api/yggdrasil"
+
+    # 该验证服务器是以‘https://github.com/yushijinhun/authlib-injector/wiki’为标准设计的，检查理论通过
+    checkUrl: true
+
+    # 验证方式不为POST请求
+    postMode: false
+
+    # 验证链接是以‘/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的
+    # 所以将‘https://mcskin.littleservice.cn/api/yggdrasil’写入到url中并且设置此值为false
+    noUrlDeal: false
+
+    # head内容为‘hasJoined?’
+    head: "hasJoined?"
