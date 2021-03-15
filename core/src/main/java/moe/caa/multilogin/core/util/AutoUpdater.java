@@ -57,7 +57,7 @@ public class AutoUpdater implements Runnable {
     private void update() {
         try {
             URL url = new URL("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
-            JsonObject jo = (JsonObject) new JsonParser().parse(HttpGetter.httpGet(url));
+            JsonObject jo = (JsonObject) new JsonParser().parse(HttpGetter.httpGet(url, 1));
             String pat = jo.get("content").getAsString();
             pat = pat.substring(0, pat.length() - 1);
             String v = new String(decoder.decode(pat), StandardCharsets.UTF_8);

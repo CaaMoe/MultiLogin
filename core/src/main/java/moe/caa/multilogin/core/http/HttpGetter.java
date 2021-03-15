@@ -28,43 +28,59 @@ public class HttpGetter {
      * 向指定的url发送GET请求
      *
      * @param url 指定的url
+     * @param retry 重试次数
      * @return 请求结果
      */
-    public static String httpGet(URL url) throws IOException {
-        URLConnection connection = url.openConnection();
-        connection.setConnectTimeout((int) getTimeOut());
-        connection.setReadTimeout((int) getTimeOut());
-        InputStream input = connection.getInputStream();
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = input.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
+    public static String httpGet(URL url, int retry) throws IOException {
+        IOException thr = null;
+        for (int i = 0; i < retry; i++) {
+            try {
+                URLConnection connection = url.openConnection();
+                connection.setConnectTimeout((int) getTimeOut());
+                connection.setReadTimeout((int) getTimeOut());
+                InputStream input = connection.getInputStream();
+                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = input.read(buffer)) != -1) {
+                    result.write(buffer, 0, length);
+                }
+                return result.toString(StandardCharsets.UTF_8.name());
+            } catch (IOException e){
+                thr = e;
+            }
         }
-        return result.toString(StandardCharsets.UTF_8.name());
+        throw thr == null ? new IOException("unknown") : thr;
     }
 
-    //针对网易支持添加的方法
-    public static String httpPost(URL url, String content) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("Content-Type", "application/json");
-        byte[] raw = content.getBytes(StandardCharsets.UTF_8);
-        connection.setRequestProperty("Content-Length", String.valueOf(raw.length));
-        connection.setConnectTimeout((int) getTimeOut());
-        connection.setReadTimeout((int) getTimeOut());
-        OutputStream output = connection.getOutputStream();
-        output.write(raw);
-        output.flush();
-        InputStream input = connection.getInputStream();
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = input.read(buffer)) != -1) {
-            result.write(buffer, 0, length);
+    public static String httpPost(URL url, String content, int retry) throws IOException {
+        IOException thr = null;
+        for (int i = 0; i < retry; i++) {
+            try {
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json");
+                byte[] raw = content.getBytes(StandardCharsets.UTF_8);
+                connection.setRequestProperty("Content-Length", String.valueOf(raw.length));
+                connection.setConnectTimeout((int) getTimeOut());
+                connection.setReadTimeout((int) getTimeOut());
+                OutputStream output = connection.getOutputStream();
+                output.write(raw);
+                output.flush();
+                InputStream input = connection.getInputStream();
+                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                byte[] buffer = new byte[1024];
+                int length;
+                while ((length = input.read(buffer)) != -1) {
+                    result.write(buffer, 0, length);
+                }
+                return result.toString(StandardCharsets.UTF_8.name());
+            } catch (IOException e){
+                thr = e;
+            }
         }
-        return result.toString(StandardCharsets.UTF_8.name());
+        throw thr == null ? new IOException("unknown") : thr;
     }
 
     /**
@@ -74,10 +90,10 @@ public class HttpGetter {
      * @return 请求结果
      */
     public static String httpGet(String url) throws IOException {
-        return httpGet(new URL(url));
+        return httpGet(new URL(url), 1);
     }
 
     public static String httpPost(String url, String context) throws IOException {
-        return httpPost(new URL(url), context);
+        return httpPost(new URL(url), context, 1);
     }
 }
