@@ -61,6 +61,7 @@ public class HttpGetter {
                 connection.setDoOutput(true);
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "application/json");
+                connection.setRequestProperty("Accept", "application/json");
                 byte[] raw = content.getBytes(StandardCharsets.UTF_8);
                 connection.setRequestProperty("Content-Length", String.valueOf(raw.length));
                 connection.setConnectTimeout((int) getTimeOut());
