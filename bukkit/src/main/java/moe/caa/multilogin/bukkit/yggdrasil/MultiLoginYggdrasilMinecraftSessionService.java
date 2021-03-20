@@ -20,12 +20,16 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.*;
+import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.skin.SkinRepairHandler;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
 
@@ -34,6 +38,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
     private final URL CHECK_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
@@ -79,8 +84,25 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             }
 
             GameProfile result = new GameProfile(verificationResult.getREDIRECT_UUID(), user.getName());
-            if (response.getProperties() != null) {
-                result.getProperties().putAll(response.getProperties());
+
+            PropertyMap propertyMap = response.getProperties();
+            if (propertyMap != null) {
+                AtomicReference<UserProperty> userProperty = new AtomicReference<>();
+                propertyMap.forEach((s, property) -> {
+                    try {
+                        if(s.equals("textures")){
+                            if(userProperty.get() == null){
+                                userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), property.getValue(), property.getSignature()));
+                            }
+                            result.getProperties().put("textures", new Property(userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
+                        } else {
+                            result.getProperties().put(s, property);
+                        }
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                });
             }
 
             MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.getREDIRECT_UUID());
