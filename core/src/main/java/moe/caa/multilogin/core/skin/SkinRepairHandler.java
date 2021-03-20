@@ -69,5 +69,6 @@ public class SkinRepairHandler {
                 SQLHandler.updateUserProperty(userProperty);
             }
         }
+        return userProperty;
     }
 }
