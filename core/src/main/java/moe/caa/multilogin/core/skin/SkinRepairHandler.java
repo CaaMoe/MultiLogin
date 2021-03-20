@@ -21,22 +21,9 @@ import moe.caa.multilogin.core.http.HttpGetter;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Signature;
 import java.util.Optional;
 
 public class SkinRepairHandler {
-    public static UserProperty repairSkin(UserProperty property) throws IOException {
-        boolean value = true;
-        try {
-            Signature signature = Signature.getInstance("SHA1withRSA");
-
-            signature.update(property.getValue().getBytes());
-            value = signature.verify(property.getDecoderSignature());
-        } catch (Exception ignore){
-        }
-
-        return value ? property : repairThirdPartySkin(property);
-    }
 
     private static UserProperty repairThirdPartySkin(UserProperty property) throws IOException {
         String skin = Optional.ofNullable(new JsonParser().parse(new String(property.getDecoderValue())))
@@ -64,6 +51,7 @@ public class SkinRepairHandler {
                 return property;
             }
         }
+        // TODO: 2021/3/20 I18N Message
         throw new RuntimeException(String.format("生成有效签名皮肤失败，API数据： %s", value));
     }
 }

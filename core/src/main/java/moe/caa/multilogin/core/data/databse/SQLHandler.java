@@ -14,7 +14,6 @@ package moe.caa.multilogin.core.data.databse;
 
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
-import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.util.I18n;
@@ -38,7 +37,7 @@ public class SQLHandler {
     private static final String WHITELIST = "whitelist";
     private static final String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private static final String REPAIR_SKIN_TABLE_NAME = "repair_skin";
-    private static final String THIRD_PARTY_PROPERTY = "third_party_property";
+    private static final String PROPERTY = "property";
     private static final String REPAIR_PROPERTY = "repair_property";
     private static AbstractConnectionPool pool;
 
@@ -61,7 +60,7 @@ public class SQLHandler {
             s.executeUpdate("" +
                     "CREATE TABLE IF NOT EXISTS " + REPAIR_SKIN_TABLE_NAME + "( " +
                     ONLINE_UUID + "  binary(16) PRIMARY KEY NOT NULL, " +
-                    THIRD_PARTY_PROPERTY + " TEXT, " +
+                    PROPERTY + " TEXT, " +
                     REPAIR_PROPERTY + " TEXT)");
 
             s.executeUpdate("" +

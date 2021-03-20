@@ -19,11 +19,15 @@ public class UserProperty {
     private UUID onlineUuid;
     private String value;
     private String signature;
+    private String mineSkinValue;
+    private String mineSkinSignature;
 
-    public UserProperty(UUID onlineUuid, String value, String signature) {
+    public UserProperty(UUID onlineUuid, String value, String signature, String mineSkinValue, String mineSkinSignature) {
         this.onlineUuid = onlineUuid;
         this.value = value;
         this.signature = signature;
+        this.mineSkinValue = mineSkinValue;
+        this.mineSkinSignature = mineSkinSignature;
     }
 
     public UUID getOnlineUuid() {
@@ -50,13 +54,35 @@ public class UserProperty {
         this.signature = signature;
     }
 
+    public String getMineSkinValue() {
+        return mineSkinValue;
+    }
+
+    public void setMineSkinValue(String mineSkinValue) {
+        this.mineSkinValue = mineSkinValue;
+    }
+
+    public String getMineSkinSignature() {
+        return mineSkinSignature;
+    }
+
+    public void setMineSkinSignature(String mineSkinSignature) {
+        this.mineSkinSignature = mineSkinSignature;
+    }
+
     public byte[] getDecoderSignature(){
-        // TODO: 2021/3/15  property.signature contains '\n' ?
         return Base64.getDecoder().decode(signature);
     }
 
     public byte[] getDecoderValue(){
-        // TODO: 2021/3/15  property.value contains '\n' ?
         return Base64.getDecoder().decode(value);
+    }
+
+    public byte[] getDecoderMineSkinSignature(){
+        return Base64.getDecoder().decode(mineSkinSignature);
+    }
+
+    public byte[] getDecoderMineSkinValue(){
+        return Base64.getDecoder().decode(mineSkinValue);
     }
 }
