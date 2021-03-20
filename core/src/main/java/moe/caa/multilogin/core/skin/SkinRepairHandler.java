@@ -36,7 +36,7 @@ public class SkinRepairHandler {
                 .map(JsonElement::getAsString)
                 .map(url -> "url=" + URLEncoder.encode(url, StandardCharsets.UTF_8))
                 .orElseThrow(()-> new RuntimeException("no skin"));
-        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin);
+        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 3);
 
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();
         if(value.has("data")){

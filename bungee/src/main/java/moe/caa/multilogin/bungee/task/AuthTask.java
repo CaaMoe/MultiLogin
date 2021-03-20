@@ -70,6 +70,8 @@ public class AuthTask implements Runnable {
                 handler.disconnect(new TextComponent(verificationResult.getFAIL_MSG()));
                 return;
             }
+
+
             LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));
             UNIQUE_ID.invoke(handler, verificationResult.getREDIRECT_UUID());
             NAME.invoke(handler, loginResult.getName());

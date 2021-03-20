@@ -17,10 +17,17 @@ import java.util.UUID;
 
 public class UserProperty {
     private UUID onlineUuid;
-    private String value;
-    private String signature;
-    private String mineSkinValue;
-    private String mineSkinSignature;
+    private Property property;
+    private Property repair_property;
+
+    public UserProperty(UUID onlineUuid, Property property, Property repair_property) {
+        this.onlineUuid = onlineUuid;
+        this.property = property;
+        this.repair_property = repair_property;
+    }
+
+    public UserProperty() {
+    }
 
     public UUID getOnlineUuid() {
         return onlineUuid;
@@ -30,51 +37,58 @@ public class UserProperty {
         this.onlineUuid = onlineUuid;
     }
 
-    public String getValue() {
-        return value;
+    public Property getProperty() {
+        return property;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setProperty(Property property) {
+        this.property = property;
     }
 
-    public String getSignature() {
-        return signature;
+    public Property getRepair_property() {
+        return repair_property;
     }
 
-    public void setSignature(String signature) {
-        this.signature = signature;
+    public void setRepair_property(Property repair_property) {
+        this.repair_property = repair_property;
     }
 
-    public String getMineSkinValue() {
-        return mineSkinValue;
-    }
+    public static class Property{
+        private String name;
+        private String value;
+        private String signature;
 
-    public void setMineSkinValue(String mineSkinValue) {
-        this.mineSkinValue = mineSkinValue;
-    }
+        public Property(String name, String value, String signature) {
+            this.name = name;
+            this.value = value;
+            this.signature = signature;
+        }
 
-    public String getMineSkinSignature() {
-        return mineSkinSignature;
-    }
+        public Property() {
+        }
 
-    public void setMineSkinSignature(String mineSkinSignature) {
-        this.mineSkinSignature = mineSkinSignature;
-    }
+        public String getName() {
+            return name;
+        }
 
-    public byte[] getDecoderSignature(){
-        return Base64.getDecoder().decode(signature);
-    }
+        public void setName(String name) {
+            this.name = name;
+        }
 
-    public byte[] getDecoderValue(){
-        return Base64.getDecoder().decode(value);
-    }
+        public String getValue() {
+            return value;
+        }
 
-    public byte[] getDecoderMineSkinSignature(){
-        return Base64.getDecoder().decode(mineSkinSignature);
-    }
+        public void setValue(String value) {
+            this.value = value;
+        }
 
-    public byte[] getDecoderMineSkinValue(){
-        return Base64.getDecoder().decode(mineSkinValue);
+        public String getSignature() {
+            return signature;
+        }
+
+        public void setSignature(String signature) {
+            this.signature = signature;
+        }
     }
 }

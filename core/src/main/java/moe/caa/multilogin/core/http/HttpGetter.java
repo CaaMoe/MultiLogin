@@ -97,4 +97,12 @@ public class HttpGetter {
     public static String httpPost(String url, String context) throws IOException {
         return httpPost(new URL(url), context, 1);
     }
+
+    public static String httpGet(String url, int retry) throws IOException {
+        return httpGet(new URL(url), retry);
+    }
+
+    public static String httpPost(String url,String context, int retry) throws IOException {
+        return httpPost(new URL(url), context, retry);
+    }
 }
