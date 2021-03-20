@@ -15,12 +15,14 @@ package moe.caa.multilogin.core.skin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,8 +39,8 @@ public class SkinRepairHandler {
                 .map(jsonObject -> jsonObject.get("url"))
                 .map(JsonElement::getAsString)
                 .map(url -> "url=" + URLEncoder.encode(url, StandardCharsets.UTF_8))
-                // TODO: 2021/3/20 I18N Message
-                .orElseThrow(()-> new RuntimeException("no skin"));
+                .orElse("");
+        if(PluginData.isEmpty(skin)) return true;
         String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 3);
 
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();
@@ -50,11 +52,17 @@ public class SkinRepairHandler {
             if(data != null){
                 property.setProperty(onlineProperty);
                 property.setRepair_property(new UserProperty.Property(data.get("value").getAsString(),  data.get("signature").getAsString()));
-                return true;
             }
         }
-        // TODO: 2021/3/20 I18N Message
-        throw new RuntimeException(String.format("生成有效签名皮肤失败，API数据： %s", value));
+        return true;
+    }
+
+    public static boolean isVanilla(String value){
+        String skinUrl = Optional.ofNullable(new JsonParser().parse(new String(Base64.getDecoder().decode(value))).getAsJsonObject())
+                .map(jsonObject -> jsonObject.get("textures"))
+                .map(element -> element.getAsJsonObject().get("SKIN"))
+                .map(JsonElement::getAsString).orElse("");
+        return skinUrl.startsWith("https://sessionserver.mojang.com/session/minecraft/profile");
     }
 
     public static UserProperty repairThirdPartySkin(UUID onlineUuid, String name, String value, String signature) throws Exception {
