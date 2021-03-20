@@ -16,17 +16,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.UUID;
 
 public class SkinRepairHandler {
 
-    private static UserProperty repairThirdPartySkin(UserProperty property) throws IOException {
-        String skin = Optional.ofNullable(new JsonParser().parse(new String(property.getDecoderValue())))
+    private static boolean repairThirdPartySkin(UserProperty property, UserProperty.Property onlineProperty) throws Exception {
+        if(property.getProperty().equals(onlineProperty)) return false;
+        String skin = Optional.ofNullable(new JsonParser().parse(new String(onlineProperty.getDecoderValue())))
                 .map(JsonElement::getAsJsonObject)
                 .map(jsonObject -> jsonObject.get("textures"))
                 .map(JsonElement::getAsJsonObject)
@@ -35,6 +37,7 @@ public class SkinRepairHandler {
                 .map(jsonObject -> jsonObject.get("url"))
                 .map(JsonElement::getAsString)
                 .map(url -> "url=" + URLEncoder.encode(url, StandardCharsets.UTF_8))
+                // TODO: 2021/3/20 I18N Message
                 .orElseThrow(()-> new RuntimeException("no skin"));
         String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 3);
 
@@ -45,13 +48,26 @@ public class SkinRepairHandler {
                     .map(jsonObject -> jsonObject.get("texture"))
                     .map(JsonElement::getAsJsonObject).orElse(null);
             if(data != null){
-                JsonElement entry;
-                property.setValue((entry = data.get("value")).isJsonPrimitive() ? entry.getAsString() : null);
-                property.setSignature((entry = data.get("signature")).isJsonPrimitive() ? entry.getAsString() : null);
-                return property;
+                property.setProperty(onlineProperty);
+                property.setRepair_property(new UserProperty.Property(data.get("name").getAsString(), data.get("value").getAsString(),  data.get("signature").getAsString()));
+                return true;
             }
         }
         // TODO: 2021/3/20 I18N Message
         throw new RuntimeException(String.format("生成有效签名皮肤失败，API数据： %s", value));
+    }
+
+    public static UserProperty repairThirdPartySkin(UUID onlineUuid, String name, String value, String signature) throws Exception {
+        boolean newUserEntry;
+        UserProperty userProperty;
+        newUserEntry = (userProperty = SQLHandler.getUserPropertyByOnlineUuid(onlineUuid)) == null;
+
+        if(repairThirdPartySkin(userProperty == null ? userProperty = new UserProperty() : userProperty, new UserProperty.Property(name, value, signature))){
+            if(newUserEntry){
+                SQLHandler.writeNewUserProperty(userProperty);
+            } else {
+                SQLHandler.updateUserProperty(userProperty);
+            }
+        }
     }
 }

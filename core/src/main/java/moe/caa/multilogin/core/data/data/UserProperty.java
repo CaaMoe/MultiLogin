@@ -13,6 +13,7 @@
 package moe.caa.multilogin.core.data.data;
 
 import java.util.Base64;
+import java.util.Objects;
 import java.util.UUID;
 
 public class UserProperty {
@@ -89,6 +90,23 @@ public class UserProperty {
 
         public void setSignature(String signature) {
             this.signature = signature;
+        }
+
+        public byte[] getDecoderValue() {
+            return Base64.getDecoder().decode(value);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Property property = (Property) o;
+            return Objects.equals(name, property.name) && Objects.equals(value, property.value) && Objects.equals(signature, property.signature);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, value, signature);
         }
     }
 }
