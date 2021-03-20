@@ -49,7 +49,7 @@ public class SkinRepairHandler {
                     .map(JsonElement::getAsJsonObject).orElse(null);
             if(data != null){
                 property.setProperty(onlineProperty);
-                property.setRepair_property(new UserProperty.Property(data.get("name").getAsString(), data.get("value").getAsString(),  data.get("signature").getAsString()));
+                property.setRepair_property(new UserProperty.Property(data.get("value").getAsString(),  data.get("signature").getAsString()));
                 return true;
             }
         }
@@ -62,7 +62,7 @@ public class SkinRepairHandler {
         UserProperty userProperty;
         newUserEntry = (userProperty = SQLHandler.getUserPropertyByOnlineUuid(onlineUuid)) == null;
 
-        if(repairThirdPartySkin(userProperty == null ? userProperty = new UserProperty() : userProperty, new UserProperty.Property(name, value, signature))){
+        if(repairThirdPartySkin(userProperty == null ? userProperty = new UserProperty() : userProperty, new UserProperty.Property(value, signature))){
             if(newUserEntry){
                 SQLHandler.writeNewUserProperty(userProperty);
             } else {

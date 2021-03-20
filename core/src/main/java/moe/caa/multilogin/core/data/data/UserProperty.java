@@ -55,12 +55,10 @@ public class UserProperty {
     }
 
     public static class Property{
-        private String name;
         private String value;
         private String signature;
 
-        public Property(String name, String value, String signature) {
-            this.name = name;
+        public Property(String value, String signature) {
             this.value = value;
             this.signature = signature;
         }
@@ -68,13 +66,6 @@ public class UserProperty {
         public Property() {
         }
 
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
 
         public String getValue() {
             return value;
@@ -101,12 +92,12 @@ public class UserProperty {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Property property = (Property) o;
-            return Objects.equals(name, property.name) && Objects.equals(value, property.value) && Objects.equals(signature, property.signature);
+            return Objects.equals(value, property.value) && Objects.equals(signature, property.signature);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(name, value, signature);
+            return Objects.hash(value, signature);
         }
     }
 }

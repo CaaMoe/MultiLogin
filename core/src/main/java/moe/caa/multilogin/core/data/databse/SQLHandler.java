@@ -254,9 +254,9 @@ public class SQLHandler {
                     UserProperty ret = new UserProperty();
                     ret.setOnlineUuid(uuid);
                     String[] args = resultSet.getString(2).split("\\s+");
-                    ret.setProperty(new UserProperty.Property(args[0], args[1], args[2]));
+                    ret.setProperty(new UserProperty.Property(args[0], args[1]));
                     args = resultSet.getString(3).split("\\s+");
-                    ret.setRepair_property(new UserProperty.Property(args[0], args[1], args[2]));
+                    ret.setRepair_property(new UserProperty.Property(args[0], args[1]));
                     return ret;
                 } catch (Exception e) {
                     throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_online_uuid", uuid.toString()), e);
@@ -270,8 +270,8 @@ public class SQLHandler {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ? limit 1",
                 REPAIR_SKIN_TABLE_NAME, PROPERTY, REPAIR_PROPERTY, ONLINE_UUID
         ))) {
-            ps.setString(1, userProperty.getProperty().getName() + " " + userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
-            ps.setString(2, userProperty.getRepair_property().getName() + " " + userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
+            ps.setString(1, userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
+            ps.setString(2, userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
             ps.setBytes(3, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
             ps.executeUpdate();
         }
@@ -282,8 +282,8 @@ public class SQLHandler {
                 REPAIR_SKIN_TABLE_NAME, ONLINE_UUID, PROPERTY, REPAIR_PROPERTY
         ))) {
             ps.setBytes(1, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
-            ps.setString(2, userProperty.getProperty().getName() + " " + userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
-            ps.setString(3, userProperty.getRepair_property().getName() + " " + userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
+            ps.setString(2, userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
+            ps.setString(3, userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
             ps.executeUpdate();
         }
     }
