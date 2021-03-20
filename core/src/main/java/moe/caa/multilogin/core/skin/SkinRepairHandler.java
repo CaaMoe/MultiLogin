@@ -20,9 +20,8 @@ import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,10 +37,20 @@ public class SkinRepairHandler {
                 .map(JsonElement::getAsJsonObject)
                 .map(jsonObject -> jsonObject.get("url"))
                 .map(JsonElement::getAsString)
-                .map(url -> "url=" + URLEncoder.encode(url, StandardCharsets.UTF_8))
+                .map(url -> {
+                    try {
+                        if(!url.contains("minecraft.net")){
+                            return "url=" + URLEncoder.encode(url, "UTF-8");
+                        }
+                    } catch (UnsupportedEncodingException ignored) {
+                    }
+                    return "";
+                })
                 .orElse("");
-        if(PluginData.isEmpty(skin)) return true;
-        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 3);
+        if(PluginData.isEmpty(skin)) return false;
+
+        // TODO: 2021/3/20 FAIL REQUEST : 500 
+        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 1);
 
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();
         if(value.has("data")){
@@ -57,25 +66,18 @@ public class SkinRepairHandler {
         return true;
     }
 
-    public static boolean isVanilla(String value){
-        String skinUrl = Optional.ofNullable(new JsonParser().parse(new String(Base64.getDecoder().decode(value))).getAsJsonObject())
-                .map(jsonObject -> jsonObject.get("textures"))
-                .map(element -> element.getAsJsonObject().get("SKIN"))
-                .map(JsonElement::getAsString).orElse("");
-        return skinUrl.startsWith("https://sessionserver.mojang.com/session/minecraft/profile");
-    }
-
-    public static UserProperty repairThirdPartySkin(UUID onlineUuid, String name, String value, String signature) throws Exception {
+    public static UserProperty repairThirdPartySkin(UUID onlineUuid, String value, String signature) throws Exception {
         boolean newUserEntry;
         UserProperty userProperty;
         newUserEntry = (userProperty = SQLHandler.getUserPropertyByOnlineUuid(onlineUuid)) == null;
 
-        if(repairThirdPartySkin(userProperty == null ? userProperty = new UserProperty() : userProperty, new UserProperty.Property(value, signature))){
+        if(repairThirdPartySkin(userProperty == null ? userProperty = new UserProperty(onlineUuid, new UserProperty.Property(), new UserProperty.Property()) : userProperty, new UserProperty.Property(value, signature))){
             if(newUserEntry){
                 SQLHandler.writeNewUserProperty(userProperty);
             } else {
                 SQLHandler.updateUserProperty(userProperty);
             }
+            userProperty.setRepair_property(new UserProperty.Property(value, signature));
         }
         return userProperty;
     }
