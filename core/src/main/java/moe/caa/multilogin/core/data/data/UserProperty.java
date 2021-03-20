@@ -22,14 +22,6 @@ public class UserProperty {
     private String mineSkinValue;
     private String mineSkinSignature;
 
-    public UserProperty(UUID onlineUuid, String value, String signature, String mineSkinValue, String mineSkinSignature) {
-        this.onlineUuid = onlineUuid;
-        this.value = value;
-        this.signature = signature;
-        this.mineSkinValue = mineSkinValue;
-        this.mineSkinSignature = mineSkinSignature;
-    }
-
     public UUID getOnlineUuid() {
         return onlineUuid;
     }

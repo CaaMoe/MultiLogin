@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.data.databse;
 
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
+import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.util.I18n;
@@ -238,6 +239,53 @@ public class SQLHandler {
             ps.setString(3, entry.getYggdrasil_service());
             ps.setInt(4, entry.getWhitelist());
             ps.setBytes(5, UUIDSerializer.uuidToByte(entry.getOnline_uuid()));
+            ps.executeUpdate();
+        }
+    }
+
+    public static UserProperty getUserPropertyByOnlineUuid(UUID uuid) throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
+                REPAIR_SKIN_TABLE_NAME, ONLINE_UUID
+        ))) {
+            ps.setBytes(1, UUIDSerializer.uuidToByte(uuid));
+            ResultSet resultSet = ps.executeQuery();
+            if (resultSet.next()) {
+                try {
+                    UserProperty ret = new UserProperty();
+                    ret.setOnlineUuid(uuid);
+                    String[] args = resultSet.getString(2).split("\\s+");
+                    ret.setValue(args[0]);
+                    ret.setSignature(args[1]);
+                    args = resultSet.getString(3).split("\\s+");
+                    ret.setMineSkinValue(args[0]);
+                    ret.setMineSkinSignature(args[1]);
+                    return ret;
+                } catch (Exception e) {
+                    throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_online_uuid", uuid.toString()), e);
+                }
+            }
+            return null;
+        }
+    }
+
+    public static void updateUserProperty(UserProperty userProperty) throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ? limit 1",
+                REPAIR_SKIN_TABLE_NAME, PROPERTY, REPAIR_PROPERTY, ONLINE_UUID
+        ))) {
+            ps.setString(1, userProperty.getValue() + " " + userProperty.getSignature());
+            ps.setString(2, userProperty.getMineSkinValue() + " " + userProperty.getMineSkinSignature());
+            ps.setBytes(3, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
+            ps.executeUpdate();
+        }
+    }
+
+    public static void writeNewUserProperty(UserProperty userProperty) throws SQLException {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s) VALUES(?, ?, ?)",
+                REPAIR_SKIN_TABLE_NAME, ONLINE_UUID, PROPERTY, REPAIR_PROPERTY
+        ))) {
+            ps.setBytes(1, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
+            ps.setString(2, userProperty.getValue() + " " + userProperty.getSignature());
+            ps.setString(3, userProperty.getMineSkinValue() + " " + userProperty.getMineSkinSignature());
             ps.executeUpdate();
         }
     }
