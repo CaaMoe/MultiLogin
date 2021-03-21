@@ -17,20 +17,30 @@ import com.google.gson.JsonObject;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.http.HttpGetter;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 public class AuthTask<T> implements Callable<T> {
     YggdrasilServiceEntry yggdrasilServiceEntry;
     Map<String, String> arg;
-    Class<T> clazz;
-    Gson gson;
+    private static Type type;
+    private static Gson gson;
 
-    public AuthTask(YggdrasilServiceEntry yggdrasilServiceEntry, Map<String, String> arg, Class<T> clazz, Gson gson) {
+    /**
+     * 启动必须调用的函数
+     *
+     * @param type 序列化后类型
+     * @param gson 反序列化用的gson
+     */
+    public static void setServicePair(Type type, Gson gson) {
+        AuthTask.type = type;
+        AuthTask.gson = gson;
+    }
+
+    public AuthTask(YggdrasilServiceEntry yggdrasilServiceEntry, Map<String, String> arg) {
         this.yggdrasilServiceEntry = yggdrasilServiceEntry;
         this.arg = arg;
-        this.clazz = clazz;
-        this.gson = gson;
     }
 
     @Override
@@ -46,6 +56,6 @@ public class AuthTask<T> implements Callable<T> {
         } else {
             result = HttpGetter.httpGet(url);
         }
-        return gson.fromJson(result, clazz);
+        return gson.fromJson(result, type);
     }
 }

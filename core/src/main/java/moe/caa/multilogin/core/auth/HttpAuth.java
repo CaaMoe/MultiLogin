@@ -12,7 +12,6 @@
 
 package moe.caa.multilogin.core.auth;
 
-import com.google.gson.Gson;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
@@ -36,20 +35,18 @@ public class HttpAuth {
     /**
      * 进行Yggdrasil验证，将会按name生成Yggdrasil访问顺序并且进行验证
      *
-     * @param name  玩家的name，作为Yggdrasil的排序依据
-     * @param arg   GET的请求参数，为“hasJoined?username=%s&serverId=%s%s”
-     * @param gson  包含泛型类型 T 的GSON对象
-     * @param clazz 请求返回的数据对象
-     * @param <T>   请求返回的数据对象
+     * @param name 玩家的name，作为Yggdrasil的排序依据
+     * @param arg  GET的请求参数，为“hasJoined?username=%s&serverId=%s%s”
+     * @param <T>  请求返回的数据对象
      * @return 验证结果
      * @throws SQLException 数据查询失败
      */
-    public static <T> AuthResult<T> yggAuth(String name, Map<String, String> arg, Gson gson, Class<T> clazz) throws SQLException {
+    public static <T> AuthResult<T> yggAuth(String name, Map<String, String> arg) throws SQLException {
         List<List<YggdrasilServiceEntry>> order = Verifier.getVeriOrder(name);
         boolean down = false;
         for (List<YggdrasilServiceEntry> entries : order) {
 //            分批验证 根据超时进行分批
-            AuthResult<T> result = yggAuth(entries, arg, gson, clazz);
+            AuthResult<T> result = yggAuth(entries, arg);
             if (result.getErr() == null) {
                 return result;
             }
@@ -65,12 +62,10 @@ public class HttpAuth {
      *
      * @param serviceEntryList 指定的Yggdrasil服务器列表
      * @param arg              GET的请求参数，为“hasJoined?username=%s&serverId=%s%s”
-     * @param gson             包含泛型类型 T 的GSON对象
-     * @param clazz            请求返回的数据对象
      * @param <T>              请求返回的数据对象
      * @return 验证结果
      */
-    private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg, Gson gson, Class<T> clazz) {
+    private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg) {
         T getResult = null;
 //        服务器关闭
         boolean down = false;
@@ -83,7 +78,7 @@ public class HttpAuth {
         for (YggdrasilServiceEntry entry : serviceEntryList) {
             if (entry == null) continue;
 //            请求json数据 转换成需要的对象
-            FutureTask<T> task = new FutureTask<>(new AuthTask<>(entry, arg, clazz, gson));
+            FutureTask<T> task = new FutureTask<>(new AuthTask<>(entry, arg));
             threadPool.execute(task);
 //            执行后放在列表里
             tasks.put(task, entry);
@@ -99,6 +94,7 @@ public class HttpAuth {
                         getResult = task.get();
                     } catch (Exception ignored) {
                         down = true;
+//                        ignored.printStackTrace();
                     }
                     if (getResult != null) {
 //                        成功结果

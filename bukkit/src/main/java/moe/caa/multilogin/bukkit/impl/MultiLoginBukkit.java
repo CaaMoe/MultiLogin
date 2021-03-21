@@ -65,6 +65,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void onEnable() {
+//        AuthTask.setServicePair located at MultiLoginYggdrasilMinecraftSessionService.setVanService
         if (!getServer().getOnlineMode()) {
             getLogger().severe(I18n.getTransString("bukkit_error_loading_online"));
             setEnabled(false);

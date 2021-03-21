@@ -35,16 +35,13 @@ import moe.caa.multilogin.core.util.ReflectUtil;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
-    private final URL CHECK_URL = HttpAuthenticationService.constantURL("https://sessionserver.mojang.com/session/minecraft/hasJoined");
     private final Field yggdrasilAuthenticationServiceGson = ReflectUtil.getField(YggdrasilAuthenticationService.class, Gson.class);
     private MinecraftSessionService vanService;
-    private Gson gson;
 
     public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) {
         super(authenticationService);
@@ -71,7 +68,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
         try {
 //            验证阶段
-            AuthResult<HasJoinedMinecraftServerResponse> authResult = HttpAuth.yggAuth(user.getName(), arguments, gson, HasJoinedMinecraftServerResponse.class);
+            AuthResult<HasJoinedMinecraftServerResponse> authResult = HttpAuth.yggAuth(user.getName(), arguments);
 //            后处理
             HasJoinedMinecraftServerResponse response = authResult.getResult();
             if (authResult.getErr() == AuthErrorEnum.SERVER_DOWN) {
@@ -91,9 +88,9 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             if (propertyMap != null) {
                 try {
                     AtomicReference<UserProperty> userProperty = new AtomicReference<>();
-                    for(Map.Entry<String, Property> entry : propertyMap.entries()){
-                        if(entry.getKey().equals("textures")){
-                            if(userProperty.get() == null){
+                    for (Map.Entry<String, Property> entry : propertyMap.entries()) {
+                        if (entry.getKey().equals("textures")) {
+                            if (userProperty.get() == null) {
                                 userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), entry.getValue().getValue(), entry.getValue().getSignature()));
                             }
                         }
@@ -103,12 +100,12 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
                     result.getProperties().put("textures", new Property("textures", userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
 
 
-                } catch (Exception e){
+                } catch (Exception e) {
 
                     // TODO: 2021/3/21 I18N MESSAGE 
                     MultiCore.severe("无法修复皮肤，来自：" + user.getName());
                     e.printStackTrace();
-                };
+                }
             }
 
             MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.getREDIRECT_UUID());
@@ -135,6 +132,6 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
     public void setVanService(MinecraftSessionService vanService) throws IllegalAccessException {
         this.vanService = vanService;
-        gson = (Gson) yggdrasilAuthenticationServiceGson.get(this.getAuthenticationService());
+        AuthTask.setServicePair(HasJoinedMinecraftServerResponse.class, (Gson) yggdrasilAuthenticationServiceGson.get(this.getAuthenticationService()));
     }
 }

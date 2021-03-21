@@ -17,8 +17,9 @@ import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.bungee.Metrics;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
-import moe.caa.multilogin.bungee.task.AuthTask;
+import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.auth.AuthTask;
 import moe.caa.multilogin.core.command.CommandMain;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -32,6 +33,7 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
@@ -67,7 +69,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
      */
     private void initCoreService() throws Exception {
         MultiLoginEncryptionResponse.init();
-        AuthTask.init();
+        BungeeAuthTask.init();
 
         Class<MultiLoginEncryptionResponse> packetClass = MultiLoginEncryptionResponse.class;
         int packetID = 0x01;
@@ -103,6 +105,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void onEnable() {
+        AuthTask.setServicePair(LoginResult.class, BungeeCord.getInstance().gson);
+
         MultiLoginBungee.INSTANCE = this;
         configFile = new File(this.getPluginDataFolder(), "config.yml");
 

@@ -14,7 +14,7 @@ package moe.caa.multilogin.bungee.proxy;
 
 import com.google.common.base.Preconditions;
 import moe.caa.multilogin.bungee.impl.MultiLoginBungee;
-import moe.caa.multilogin.bungee.task.AuthTask;
+import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.util.I18n;
@@ -68,7 +68,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         try {
             request = (EncryptionRequest) REQUEST.invoke(handler);
             addEncrypt();
-            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new AuthTask(initialHandler, genAuthMap()));
+            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new BungeeAuthTask(initialHandler, genAuthMap()));
         } catch (Throwable e) {
             e.printStackTrace();
             initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));

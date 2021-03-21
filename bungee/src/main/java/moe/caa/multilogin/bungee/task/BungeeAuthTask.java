@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AuthTask implements Runnable {
+public class BungeeAuthTask implements Runnable {
     private static MethodHandle LOGIN_PROFILE;
     private static MethodHandle NAME;
     private static MethodHandle UNIQUE_ID;
@@ -40,7 +40,7 @@ public class AuthTask implements Runnable {
     InitialHandler handler;
     Map<String, String> arg;
 
-    public AuthTask(InitialHandler handler, Map<String, String> arg) {
+    public BungeeAuthTask(InitialHandler handler, Map<String, String> arg) {
         this.handler = handler;
         this.arg = arg;
     }
@@ -57,7 +57,7 @@ public class AuthTask implements Runnable {
     @Override
     public void run() {
         try {
-            AuthResult<LoginResult> result = HttpAuth.yggAuth(handler.getName(), arg, BungeeCord.getInstance().gson, LoginResult.class);
+            AuthResult<LoginResult> result = HttpAuth.yggAuth(handler.getName(), arg);
             if (result.getErr() != null) {
                 if (result.getErr() == AuthErrorEnum.SERVER_DOWN) {
                     handler.disconnect(BungeeCord.getInstance().getTranslation("mojang_fail"));

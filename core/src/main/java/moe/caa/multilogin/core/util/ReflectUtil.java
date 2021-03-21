@@ -22,7 +22,7 @@ import java.util.Arrays;
  * 反射工具类
  */
 public class ReflectUtil {
-    private static MethodHandles.Lookup lookup = MethodHandles.lookup();
+    private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     /**
      * 通过class对象在指定的class类中检索第一次出现的Field
