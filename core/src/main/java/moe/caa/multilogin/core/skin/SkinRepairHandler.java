@@ -55,10 +55,10 @@ public class SkinRepairHandler {
         boolean newUserEntry;
         UserProperty userProperty = SQLHandler.getUserPropertyByOnlineUuid(onlineUuid);
         newUserEntry = userProperty == null;
-        userProperty = userProperty == null ? new UserProperty(onlineUuid, new UserProperty.Property(), new UserProperty.Property()) : userProperty:
+        userProperty = userProperty == null ? new UserProperty(onlineUuid, new UserProperty.Property(), new UserProperty.Property()) : userProperty;
 
         repairThirdPartySkin(userProperty, new UserProperty.Property(value, signature));
-        userProperty.setRepair_property(new UserProperty.Property(value, signature));
+        userProperty.setProperty(new UserProperty.Property(value, signature));
         if(newUserEntry){
             SQLHandler.writeNewUserProperty(userProperty);
         } else {

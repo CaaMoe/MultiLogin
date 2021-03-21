@@ -88,7 +88,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             PropertyMap propertyMap = response.getProperties();
             if (propertyMap != null) {
                 AtomicReference<UserProperty> userProperty = new AtomicReference<>();
-                propertyMap.forEach((s, property) -> {
+                result.getProperties().forEach((s, property) -> {
                     try {
                         if(s.equals("textures")){
                             if(userProperty.get() == null){
