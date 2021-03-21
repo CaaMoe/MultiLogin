@@ -55,10 +55,12 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
         vanService.joinServer(gameProfile, s, s1);
     }
 
+    // Do not add Override annotation !
     public GameProfile hasJoinedServer(GameProfile user, String serverId) {
         return hasJoinedServer(user, serverId, null);
     }
 
+    // Do not add Override annotation !
     public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
         Map<String, String> arguments = new HashMap<>();
         arguments.put("username", user.getName());
@@ -88,15 +90,15 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             PropertyMap propertyMap = response.getProperties();
             if (propertyMap != null) {
                 AtomicReference<UserProperty> userProperty = new AtomicReference<>();
-                result.getProperties().forEach((s, property) -> {
+                response.getProperties().forEach((s, property) -> {
                     try {
                         if(s.equals("textures")){
                             if(userProperty.get() == null){
                                 userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), property.getValue(), property.getSignature()));
                             }
-                            result.getProperties().put("textures", new Property(userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
+                            propertyMap.put("textures", new Property(userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
                         } else {
-                            result.getProperties().put(s, property);
+                            propertyMap.put(s, property);
                         }
                     } catch (Exception e){
                         e.printStackTrace();
