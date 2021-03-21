@@ -140,6 +140,8 @@ servicesTimeOut: 7000
 # Global whitelist switch 
 whitelist: true
 
+skinRepair: false
+
 # How to store plugin data 
 sql:
 

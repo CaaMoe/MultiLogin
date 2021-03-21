@@ -149,6 +149,8 @@ servicesTimeOut: 7000
 # 全局白名单开关
 whitelist: true
 
+skinRepair: false
+
 # 插件数据的存放方式
 sql:
 
