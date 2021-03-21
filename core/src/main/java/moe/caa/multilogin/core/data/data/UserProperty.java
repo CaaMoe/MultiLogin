@@ -84,6 +84,7 @@ public class UserProperty {
         }
 
         public byte[] getDecoderValue() {
+            if (value == null) return new byte[0];
             return Base64.getDecoder().decode(value);
         }
 

@@ -16,6 +16,8 @@ import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.data.data.PluginData;
+import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.skin.SkinRepairHandler;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
@@ -28,6 +30,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AuthTask implements Runnable {
     private static MethodHandle LOGIN_PROFILE;
@@ -71,6 +74,24 @@ public class AuthTask implements Runnable {
                 return;
             }
 
+            AtomicReference<UserProperty> userProperty = new AtomicReference<>();
+
+            try {
+                for(LoginResult.Property entry : loginResult.getProperties()){
+                    if(entry.getName().equals("textures")){
+                        if(userProperty.get() == null){
+                            userProperty.set(SkinRepairHandler.repairThirdPartySkin(onlineId, entry.getValue(), entry.getSignature()));
+                        }
+                    }
+                }
+
+                loginResult.setProperties(new LoginResult.Property[]{new LoginResult.Property("textures", userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature())});
+            } catch (Exception e){
+
+                // TODO: 2021/3/21 I18N MESSAGE
+                MultiCore.severe("无法修复皮肤，来自：" + handler.getName());
+                e.printStackTrace();
+            }
 
             LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));
             UNIQUE_ID.invoke(handler, verificationResult.getREDIRECT_UUID());

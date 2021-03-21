@@ -89,23 +89,26 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
             PropertyMap propertyMap = response.getProperties();
             if (propertyMap != null) {
-                AtomicReference<UserProperty> userProperty = new AtomicReference<>();
-                response.getProperties().forEach((s, property) -> {
-                    try {
-                        if(s.equals("textures")){
+                try {
+                    AtomicReference<UserProperty> userProperty = new AtomicReference<>();
+                    for(Map.Entry<String, Property> entry : propertyMap.entries()){
+                        if(entry.getKey().equals("textures")){
                             if(userProperty.get() == null){
-                                userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), property.getValue(), property.getSignature()));
+                                userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), entry.getValue().getValue(), entry.getValue().getSignature()));
                             }
-                            propertyMap.put("textures", new Property(userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
-                            System.out.println(new String(userProperty.get().getRepair_property().getDecoderValue()));
-                        } else {
-                            propertyMap.put(s, property);
                         }
-                    } catch (Exception e){
-                        e.printStackTrace();
                     }
 
-                });
+                    result.getProperties().clear();
+                    result.getProperties().put("textures", new Property("textures", userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
+
+
+                } catch (Exception e){
+
+                    // TODO: 2021/3/21 I18N MESSAGE 
+                    MultiCore.severe("无法修复皮肤，来自：" + user.getName());
+                    e.printStackTrace();
+                };
             }
 
             MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.getREDIRECT_UUID());
