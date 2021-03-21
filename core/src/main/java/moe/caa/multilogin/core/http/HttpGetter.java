@@ -65,6 +65,7 @@ public class HttpGetter {
                 connection.setRequestProperty("Accept", "application/json");
                 byte[] raw = content.getBytes(StandardCharsets.UTF_8);
                 connection.setRequestProperty("Content-Length", String.valueOf(raw.length));
+                connection.setRequestProperty("User-Agent", "MultiLogin");
                 connection.setConnectTimeout((int) getTimeOut());
                 connection.setReadTimeout((int) getTimeOut());
                 OutputStream output = connection.getOutputStream();

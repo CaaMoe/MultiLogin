@@ -97,6 +97,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
                                 userProperty.set(SkinRepairHandler.repairThirdPartySkin(response.getId(), property.getValue(), property.getSignature()));
                             }
                             propertyMap.put("textures", new Property(userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature()));
+                            System.out.println(new String(userProperty.get().getRepair_property().getDecoderValue()));
                         } else {
                             propertyMap.put(s, property);
                         }

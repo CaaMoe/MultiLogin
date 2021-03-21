@@ -19,17 +19,27 @@ import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class SkinRepairHandler {
 
     private static boolean repairThirdPartySkin(UserProperty property, UserProperty.Property onlineProperty) throws Exception {
         String skin = getSkinUrl(new String(onlineProperty.getDecoderValue()));
+        String cacSkin = getSkinUrl(new String(Optional.of(property).map(UserProperty::getProperty).map(UserProperty.Property::getDecoderValue).orElse(new byte[0])));
 
-        if(PluginData.isEmpty(skin) || skin.contains("minecraft.net")) return false;
+        if(PluginData.isEmpty(skin) || skin.contains("minecraft.net")) {
+            property.setRepair_property(onlineProperty);
+            property.setProperty(onlineProperty);
+            return false;
+        }
 
-        // TODO: 2021/3/20 FAIL REQUEST : 500 
-        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", skin, 1);
+        if(skin.equalsIgnoreCase(cacSkin))
+            return false;
+
+        JsonObject jo = new JsonObject();
+        jo.addProperty("url", skin);
+        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", jo.toString(), 1);
 
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();
         if(value.has("data")){
@@ -47,7 +57,7 @@ public class SkinRepairHandler {
         try {
             return new JsonParser().parse(root).getAsJsonObject().get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
         } catch (Exception ignore){}
-        return null;
+        return "";
     }
 
     public static UserProperty repairThirdPartySkin(UUID onlineUuid, String value, String signature) throws Exception {
