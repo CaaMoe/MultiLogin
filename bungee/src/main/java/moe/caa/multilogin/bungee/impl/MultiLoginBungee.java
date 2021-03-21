@@ -71,31 +71,24 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         MultiLoginEncryptionResponse.init();
         BungeeAuthTask.init();
 
-        Class<MultiLoginEncryptionResponse> packetClass = MultiLoginEncryptionResponse.class;
-        int packetID = 0x01;
-
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
         Class<?> protocol_protocolDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
 
         Field field_protocols = ReflectUtil.getField(protocol_directionDataClass, "protocols");
         Field field_TO_SERVER = ReflectUtil.getField(Protocol.class, "TO_SERVER");
-        Field field_packetMap = ReflectUtil.getField(protocol_protocolDataClass, "packetMap");
         Field field_packetConstructors = ReflectUtil.getField(protocol_protocolDataClass, "packetConstructors");
         Object to_server = field_TO_SERVER.get(Protocol.LOGIN);
         TIntObjectMap<?> protocols = (TIntObjectMap<?>) field_protocols.get(to_server);
         for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
             if (protocol >= 47) {
                 Object data = protocols.get(protocol);
-                TObjectIntMap<Class<? extends DefinedPacket>> packetMap = (TObjectIntMap) field_packetMap.get(data);
-                packetMap.remove(EncryptionResponse.class);
-                packetMap.put(packetClass, packetID);
                 //2021/2/28 Fixed Supplier unsupported problem
                 Object[] constructors = (Object[]) field_packetConstructors.get(data);
                 if (constructors instanceof Supplier[]) {
                     Supplier<? extends DefinedPacket>[] suppliers = (Supplier<? extends DefinedPacket>[]) constructors;
-                    suppliers[packetID] = MultiLoginEncryptionResponse::new;
+                    suppliers[0x01] = MultiLoginEncryptionResponse::new;
                 } else if (constructors instanceof Constructor[]) {
-                    constructors[packetID] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
+                    constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
                     throw new UnsupportedOperationException(I18n.getTransString("bungee_error_loading_reflect", getProxy().getName(), getProxy().getVersion()));
                 }
