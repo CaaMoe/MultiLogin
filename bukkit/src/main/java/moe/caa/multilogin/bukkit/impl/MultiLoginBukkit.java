@@ -150,7 +150,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             if (p != null) {
                 p.kickPlayer(msg);
             }
-        }, 0);
+        });
     }
 
     @Override
@@ -176,6 +176,11 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void runTask(Runnable run, long delay) {
         getServer().getScheduler().runTaskLater(this, run, delay);
+    }
+
+    @Override
+    public void runTask(Runnable run) {
+        getServer().getScheduler().runTask(this, run);
     }
 
     @Override

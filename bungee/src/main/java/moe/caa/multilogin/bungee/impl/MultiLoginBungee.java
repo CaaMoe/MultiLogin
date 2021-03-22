@@ -13,7 +13,6 @@
 package moe.caa.multilogin.bungee.impl;
 
 import gnu.trove.map.TIntObjectMap;
-import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.bungee.Metrics;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
@@ -37,7 +36,6 @@ import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
-import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -197,7 +195,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
             if (player != null) {
                 player.disconnect(new TextComponent(msg));
             }
-        }, 0);
+        });
     }
 
     @Override
@@ -223,6 +221,11 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void runTask(Runnable run, long delay) {
         BungeeCord.getInstance().getScheduler().schedule(this, run, delay, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void runTask(Runnable run) {
+        BungeeCord.getInstance().getScheduler().schedule(this, run, 0, TimeUnit.MILLISECONDS);
     }
 
     @Override

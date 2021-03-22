@@ -90,9 +90,13 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
     }
 
-    private String genServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    private String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        return decode(request.getServerId().getBytes("ISO_8859_1"));
+    }
+
+    private String decode(byte[] message) throws NoSuchAlgorithmException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        for (byte[] bit : new byte[][]{request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()}) {
+        for (byte[] bit : new byte[][]{message, sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()}) {
             sha.update(bit);
         }
         return (new BigInteger(sha.digest())).toString(16);
@@ -101,7 +105,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private Map<String, String> genAuthMap() throws UnsupportedEncodingException, NoSuchAlgorithmException {
         Map<String, String> map = new HashMap<>();
         map.put("username", initialHandler.getName());
-        map.put("serverId", genServerId());
+        map.put("serverId", getServerId());
         if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
             map.put("ip", initialHandler.getAddress().getAddress().getHostAddress());
         }

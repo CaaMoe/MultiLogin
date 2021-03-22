@@ -118,6 +118,13 @@ public interface IPlugin {
     void runTask(Runnable run, long delay);
 
     /**
+     * 执行一个同步任务
+     *
+     * @param run   run
+     */
+    void runTask(Runnable run);
+
+    /**
      * 获得在线玩家列表
      *
      * @return 在线玩家列表

@@ -92,7 +92,7 @@ public class Verifier {
             });
 
             // 等待主线程任务
-            MultiCore.getPlugin().runTask(task, 0);
+            MultiCore.getPlugin().runTask(task);
             task.get();
 
             MultiCore.getPlugin().getPluginLogger().info(I18n.getTransString("player_login", userData.getRedirect_uuid(), currentName, yggdrasilService.getName(), yggdrasilService.getPath()));

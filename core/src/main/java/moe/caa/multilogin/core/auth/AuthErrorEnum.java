@@ -26,4 +26,7 @@ public enum AuthErrorEnum {
      * 身份验证失败
      */
     VALIDATION_FAILED,
+
+    //没有服务器
+    NO_SERVER
 }

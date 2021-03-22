@@ -23,17 +23,36 @@ public class AuthResult<T> {
     private final AuthErrorEnum err;
     private final T result;
     private final YggdrasilServiceEntry yggdrasilService;
+    private Throwable throwable;
 
     protected AuthResult(T result, YggdrasilServiceEntry yggdrasilService) {
         this.err = null;
         this.result = result;
         this.yggdrasilService = yggdrasilService;
+        throwable = null;
     }
+
+    protected AuthResult(AuthErrorEnum err, YggdrasilServiceEntry yggdrasilService) {
+        this.err = err;
+        this.result = null;
+        this.yggdrasilService = yggdrasilService;
+        throwable = null;
+    }
+
 
     protected AuthResult(AuthErrorEnum err) {
         this.err = err;
         this.result = null;
         this.yggdrasilService = null;
+        throwable = null;
+    }
+
+    public Throwable getThrowable() {
+        return throwable;
+    }
+
+    public void setThrowable(Throwable throwable) {
+        this.throwable = throwable;
     }
 
     /**
@@ -61,6 +80,10 @@ public class AuthResult<T> {
      */
     public YggdrasilServiceEntry getYggdrasilService() {
         return yggdrasilService;
+    }
+
+    public boolean isSuccess() {
+        return result != null && err == null && throwable == null;
     }
 }
 

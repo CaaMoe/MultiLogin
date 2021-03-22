@@ -48,8 +48,8 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     }
 
     @Override
-    public void joinServer(GameProfile gameProfile, String s, String s1) throws AuthenticationException {
-        vanService.joinServer(gameProfile, s, s1);
+    public void joinServer(GameProfile gameProfile, String authenticationToken, String serverId) throws AuthenticationException {
+        vanService.joinServer(gameProfile, authenticationToken, serverId);
     }
 
     // Do not add Override annotation !
@@ -121,13 +121,13 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     }
 
     @Override
-    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile, boolean b) {
-        return vanService.getTextures(gameProfile, b);
+    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile, boolean requireSecure) {
+        return vanService.getTextures(gameProfile, requireSecure);
     }
 
     @Override
-    public GameProfile fillProfileProperties(GameProfile gameProfile, boolean b) {
-        return vanService.fillProfileProperties(gameProfile, b);
+    public GameProfile fillProfileProperties(GameProfile gameProfile, boolean requireSecure) {
+        return vanService.fillProfileProperties(gameProfile, requireSecure);
     }
 
     public void setVanService(MinecraftSessionService vanService) throws IllegalAccessException {

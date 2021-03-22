@@ -16,8 +16,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -44,10 +43,11 @@ public class HttpAuth {
     public static <T> AuthResult<T> yggAuth(String name, Map<String, String> arg) throws SQLException {
         List<List<YggdrasilServiceEntry>> order = Verifier.getVeriOrder(name);
         boolean down = false;
+
         for (List<YggdrasilServiceEntry> entries : order) {
 //            分批验证 根据超时进行分批
-            AuthResult<T> result = yggAuth(entries, arg);
-            if (result.getErr() == null) {
+            AuthResult<T> result = authWithTasks(entries, arg);
+            if (result.isSuccess()) {
                 return result;
             }
             if (result.getErr() == AuthErrorEnum.SERVER_DOWN) {
@@ -65,56 +65,38 @@ public class HttpAuth {
      * @param <T>              请求返回的数据对象
      * @return 验证结果
      */
-    private static <T> AuthResult<T> yggAuth(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg) {
-        T getResult = null;
-//        服务器关闭
-        boolean down = false;
+    private static <T> AuthResult<T> authWithTasks(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg) {
+        AuthResult<T> getResult = null;
 //        任务列表
-        Map<Future<T>, YggdrasilServiceEntry> tasks = new HashMap<>();
-//        完成任务的task
-        Future<T> done = null;
+        List<FutureTask<AuthResult<T>>> tasks = new LinkedList<>();
         long endTime = System.currentTimeMillis() + PluginData.getTimeOut();
 
         for (YggdrasilServiceEntry entry : serviceEntryList) {
             if (entry == null) continue;
-//            请求json数据 转换成需要的对象
-            FutureTask<T> task = new FutureTask<>(new AuthTask<>(entry, arg));
+//            AuthTask进行具体验证
+            FutureTask<AuthResult<T>> task = new FutureTask<>(new AuthTask<>(entry, arg));
             threadPool.execute(task);
 //            执行后放在列表里
-            tasks.put(task, entry);
+            tasks.add(task);
         }
-
-        dos:
-        while (endTime > System.currentTimeMillis() && tasks.size() != 0) {
-            Iterator<Future<T>> itr = tasks.keySet().iterator();
-            while (itr.hasNext()) {
-                Future<T> task = itr.next();
-                if (task.isDone()) {
-                    try {
-                        getResult = task.get();
-                    } catch (Exception ignored) {
-                        down = true;
-//                        ignored.printStackTrace();
-                    }
-                    if (getResult != null) {
-//                        成功结果
-                        done = task;
-                        break dos;
-                    }
-//                    完成移除
-                    itr.remove();
+//        没有可验证服务器
+        if (tasks.size() == 0) return new AuthResult<>(AuthErrorEnum.NO_SERVER);
+//        时间限制
+        while (endTime > System.currentTimeMillis()) {
+            for (Future<AuthResult<T>> task : tasks) {
+                if (!task.isDone()) continue;
+                try {
+                    getResult = task.get();
+                } catch (Exception exception) {
+                    exception.printStackTrace();
                 }
             }
+            if (getResult != null && getResult.isSuccess()) break;
         }
-        for (Future<T> future : tasks.keySet()) {
+        for (FutureTask<AuthResult<T>> future : tasks) {
             future.cancel(true);
         }
-        if (getResult == null) {
-            if (down)
-                return new AuthResult<>(AuthErrorEnum.SERVER_DOWN);
-            return new AuthResult<>(AuthErrorEnum.VALIDATION_FAILED);
-        }
-        return new AuthResult<>(getResult, tasks.get(done));
+        return getResult;
     }
 
     public static void shutDown() {

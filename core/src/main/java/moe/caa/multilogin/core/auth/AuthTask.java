@@ -22,7 +22,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-public class AuthTask<T> implements Callable<T> {
+public class AuthTask<T> implements Callable<AuthResult<T>> {
     YggdrasilServiceEntry yggdrasilServiceEntry;
     Map<String, String> arg;
     private static Type type;
@@ -45,18 +45,26 @@ public class AuthTask<T> implements Callable<T> {
     }
 
     @Override
-    public T call() throws Exception {
-        String url = yggdrasilServiceEntry.buildUrlStr(arg);
-        String result;
-        if (yggdrasilServiceEntry.isPostMode()) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("username", arg.get("username"));
-            jsonObject.addProperty("serverId", arg.get("serverId"));
-            String context = jsonObject.toString();
-            result = HttpGetter.httpPost(url, context, (int) PluginData.configurationConfig.getLong("authRetry", 1));
-        } else {
-            result = HttpGetter.httpGet(url, (int) PluginData.configurationConfig.getLong("authRetry", 1));
+    public AuthResult<T> call() throws Exception {
+        AuthResult<T> authResult;
+        try {
+            String url = yggdrasilServiceEntry.buildUrlStr(arg);
+            String result;
+            if (yggdrasilServiceEntry.isPostMode()) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("username", arg.get("username"));
+                jsonObject.addProperty("serverId", arg.get("serverId"));
+                String context = jsonObject.toString();
+                result = HttpGetter.httpPost(url, context, (int) PluginData.configurationConfig.getLong("authRetry", 1));
+            } else {
+                result = HttpGetter.httpGet(url, (int) PluginData.configurationConfig.getLong("authRetry", 1));
+            }
+            T get = gson.fromJson(result, type);
+            authResult = new AuthResult<>(get, yggdrasilServiceEntry);
+        } catch (Exception e) {
+            authResult = new AuthResult<>(AuthErrorEnum.SERVER_DOWN, yggdrasilServiceEntry);
+            authResult.setThrowable(e);
         }
-        return gson.fromJson(result, type);
+        return authResult;
     }
 }
