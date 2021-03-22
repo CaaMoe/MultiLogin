@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.auth;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.http.HttpGetter;
 
@@ -52,9 +53,9 @@ public class AuthTask<T> implements Callable<T> {
             jsonObject.addProperty("username", arg.get("username"));
             jsonObject.addProperty("serverId", arg.get("serverId"));
             String context = jsonObject.toString();
-            result = HttpGetter.httpPost(url, context);
+            result = HttpGetter.httpPost(url, context, (int) PluginData.configurationConfig.getLong("authRetry", 1));
         } else {
-            result = HttpGetter.httpGet(url);
+            result = HttpGetter.httpGet(url, (int) PluginData.configurationConfig.getLong("authRetry", 1));
         }
         return gson.fromJson(result, type);
     }

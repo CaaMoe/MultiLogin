@@ -42,7 +42,7 @@ public class SkinRepairHandler {
 // 修复
         JsonObject jo = new JsonObject();
         jo.addProperty("url", skin);
-        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", jo.toString(), 1);
+        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", jo.toString(), (int) PluginData.configurationConfig.getLong("skinRepairRetry", 3));
 
 // 写入数据
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();

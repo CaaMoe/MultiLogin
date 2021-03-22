@@ -149,7 +149,14 @@ servicesTimeOut: 7000
 # 全局白名单开关
 whitelist: true
 
+# 启用皮肤修复功能
 skinRepair: false
+
+# 皮肤修复错误重试次数
+skinRepairRetry: 3
+
+# 验证错误重试次数
+authRetry: 1
 
 # 插件数据的存放方式
 sql:

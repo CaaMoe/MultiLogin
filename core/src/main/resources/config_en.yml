@@ -142,6 +142,10 @@ whitelist: true
 
 skinRepair: false
 
+skinRepairRetry: 3
+
+authRetry: 1
+
 # How to store plugin data 
 sql:
 
