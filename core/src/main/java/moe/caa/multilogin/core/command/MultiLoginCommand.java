@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,15 +56,15 @@ public class MultiLoginCommand {
             }
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
                 try {
-                    List<UserEntry> userList = SQLHandler.getUserEntryByCurrentName(s);
+                    List<UserEntry> userList = UserDataHandler.getUserEntryByCurrentName(s);
                     try {
                         UUID uuid = UUID.fromString(s);
-                        UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
+                        UserEntry byUuid = UserDataHandler.getUserEntryByOnlineUuid(uuid);
                         if (byUuid != null) {
                             userList.add(byUuid);
                         }
 
-                        byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
+                        byUuid = UserDataHandler.getUserEntryByRedirectUuid(uuid);
                         if (byUuid != null) {
                             userList.add(byUuid);
                         }

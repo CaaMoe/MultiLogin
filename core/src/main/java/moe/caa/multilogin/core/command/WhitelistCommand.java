@@ -16,6 +16,8 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
+import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -39,11 +41,11 @@ public class WhitelistCommand {
                 boolean flag = false;
                 do {
                     try {
-                        List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
+                        List<UserEntry> userEntries = UserDataHandler.getUserEntryByCurrentName(args[1]);
                         for (UserEntry entry : userEntries) {
                             if (entry.getWhitelist() == 0) {
                                 entry.setWhitelist(1);
-                                SQLHandler.updateUserEntry(entry);
+                                UserDataHandler.updateUserEntry(entry);
                                 flag = true;
                                 break;
                             }
@@ -53,18 +55,18 @@ public class WhitelistCommand {
                         }
                         if (!flag) {
                             UUID uuid = UUID.fromString(args[1]);
-                            UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
+                            UserEntry byUuid = UserDataHandler.getUserEntryByOnlineUuid(uuid);
                             if (byUuid != null && byUuid.getWhitelist() == 0) {
                                 byUuid.setWhitelist(1);
-                                SQLHandler.updateUserEntry(byUuid);
+                                UserDataHandler.updateUserEntry(byUuid);
                                 flag = true;
                                 break;
                             }
 
-                            byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
+                            byUuid = UserDataHandler.getUserEntryByRedirectUuid(uuid);
                             if (byUuid != null && byUuid.getWhitelist() == 0) {
                                 byUuid.setWhitelist(1);
-                                SQLHandler.updateUserEntry(byUuid);
+                                UserDataHandler.updateUserEntry(byUuid);
                                 flag = true;
                                 break;
                             }
@@ -78,7 +80,7 @@ public class WhitelistCommand {
                         return;
                     }
                     if (!flag) {
-                        flag = SQLHandler.addCacheWhitelist(args[1]);
+                        flag = CacheWhitelistDataHandler.addCacheWhitelist(args[1]);
                     }
                 } while (false);
 
@@ -97,13 +99,13 @@ public class WhitelistCommand {
     public static void executeRemove(ISender sender, String[] args) {
         if (testPermission(sender, "multilogin.whitelist.remove")) {
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
-                boolean flag = SQLHandler.removeCacheWhitelist(args[1]);
+                boolean flag = CacheWhitelistDataHandler.removeCacheWhitelist(args[1]);
                 try {
-                    List<UserEntry> userEntries = SQLHandler.getUserEntryByCurrentName(args[1]);
+                    List<UserEntry> userEntries = UserDataHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
                         if (entry.getWhitelist() != 0) {
                             entry.setWhitelist(0);
-                            SQLHandler.updateUserEntry(entry);
+                            UserDataHandler.updateUserEntry(entry);
                             MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                             flag = true;
                         }
@@ -111,18 +113,18 @@ public class WhitelistCommand {
 
                     UUID uuid = UUID.fromString(args[1]);
 
-                    UserEntry byUuid = SQLHandler.getUserEntryByOnlineUuid(uuid);
+                    UserEntry byUuid = UserDataHandler.getUserEntryByOnlineUuid(uuid);
                     if (byUuid != null && byUuid.getWhitelist() != 0) {
                         byUuid.setWhitelist(0);
-                        SQLHandler.updateUserEntry(byUuid);
+                        UserDataHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                         flag = true;
                     }
 
-                    byUuid = SQLHandler.getUserEntryByRedirectUuid(uuid);
+                    byUuid = UserDataHandler.getUserEntryByRedirectUuid(uuid);
                     if (byUuid != null && byUuid.getWhitelist() != 0) {
                         byUuid.setWhitelist(0);
-                        SQLHandler.updateUserEntry(byUuid);
+                        UserDataHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                         flag = true;
                     }

@@ -17,6 +17,8 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
+import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.util.I18n;
 
 import java.sql.SQLException;
@@ -43,7 +45,7 @@ public class Verifier {
             if (yggdrasilService == null) {
                 return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
             }
-            UserEntry userData = SQLHandler.getUserEntryByOnlineUuid(onlineUuid);
+            UserEntry userData = UserDataHandler.getUserEntryByOnlineUuid(onlineUuid);
 
             // 验证服务器不符
             if (updUserEntry = userData != null) {
@@ -56,7 +58,7 @@ public class Verifier {
 
             //重名检查
             if (!PluginData.getSafeIdService().equalsIgnoreCase(yggdrasilService.getPath())) {
-                List<UserEntry> repeatedNameUserEntries = SQLHandler.getUserEntryByCurrentName(currentName);
+                List<UserEntry> repeatedNameUserEntries = UserDataHandler.getUserEntryByCurrentName(currentName);
                 for (UserEntry repeatedNameUserEntry : repeatedNameUserEntries) {
                     if (!repeatedNameUserEntry.equals(userData)) {
                         return new VerificationResult(configurationConfig.getString("msgRushName"));
@@ -69,16 +71,16 @@ public class Verifier {
 
             // 白名单检查
             if (userData.getWhitelist() == 0 && yggdrasilService.isWhitelist()) {
-                if (!(SQLHandler.removeCacheWhitelist(currentName) | SQLHandler.removeCacheWhitelist(onlineUuid.toString()))) {
+                if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
                 }
                 userData.setWhitelist(1);
             }
 
             if (updUserEntry) {
-                SQLHandler.updateUserEntry(userData);
+                UserDataHandler.updateUserEntry(userData);
             } else {
-                SQLHandler.writeNewUserEntry(userData);
+                UserDataHandler.writeNewUserEntry(userData);
             }
 
             // 重名踢出
@@ -113,7 +115,7 @@ public class Verifier {
     public static List<List<YggdrasilServiceEntry>> getVeriOrder(String name) throws SQLException {
         List<List<YggdrasilServiceEntry>> ret = new ArrayList<>();
 //        第一批 缓存结果
-        List<YggdrasilServiceEntry> one = SQLHandler.getYggdrasilServiceEntryByCurrentName(name);
+        List<YggdrasilServiceEntry> one = UserDataHandler.getYggdrasilServiceEntryByCurrentName(name);
 //        第二批 非缓存
         List<YggdrasilServiceEntry> two = new ArrayList<>();
         Set<YggdrasilServiceEntry> cac = new HashSet<>(one);

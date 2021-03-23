@@ -17,6 +17,7 @@ import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserProperty;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.handler.PropertyDataHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
 import java.util.Optional;
@@ -69,7 +70,7 @@ public class SkinRepairHandler {
 // 判断是否启用该功能
         if(!PluginData.isOpenSkinRepair()) return new UserProperty(onlineUuid, null, new UserProperty.Property(value, signature));
         boolean newUserEntry;
-        UserProperty userProperty = SQLHandler.getUserPropertyByOnlineUuid(onlineUuid);
+        UserProperty userProperty = PropertyDataHandler.getUserPropertyByOnlineUuid(onlineUuid);
         newUserEntry = userProperty == null;
 
 // 新建皮肤档案
@@ -79,9 +80,9 @@ public class SkinRepairHandler {
         repairThirdPartySkin(userProperty, new UserProperty.Property(value, signature));
         userProperty.setProperty(new UserProperty.Property(value, signature));
         if(newUserEntry){
-            SQLHandler.writeNewUserProperty(userProperty);
+            PropertyDataHandler.writeNewUserProperty(userProperty);
         } else {
-            SQLHandler.updateUserProperty(userProperty);
+            PropertyDataHandler.updateUserProperty(userProperty);
         }
         return userProperty;
     }

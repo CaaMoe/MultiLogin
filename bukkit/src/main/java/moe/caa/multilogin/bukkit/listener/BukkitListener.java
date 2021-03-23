@@ -15,6 +15,7 @@ package moe.caa.multilogin.bukkit.listener;
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
+import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.util.I18n;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -47,7 +48,7 @@ public class BukkitListener implements Listener {
         }
 
         try {
-            MultiLoginBukkit.USER_CACHE.put(event.getUniqueId(), SQLHandler.getUserEntryByRedirectUuid(event.getUniqueId()));
+            MultiLoginBukkit.USER_CACHE.put(event.getUniqueId(), UserDataHandler.getUserEntryByRedirectUuid(event.getUniqueId()));
         } catch (SQLException e) {
             e.printStackTrace();
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
