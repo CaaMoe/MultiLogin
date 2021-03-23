@@ -31,6 +31,7 @@ dependencies {
     compile project(':core')
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
     implementation 'com.mojang:authlib:2.1.28'
+    compileOnly 'com.amihaiemil.web:eo-yaml:5.1.9'
 //    implementation files("D:/Java api/patched_1.16.4.jar")
 }
 

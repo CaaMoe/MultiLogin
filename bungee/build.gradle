@@ -26,6 +26,7 @@ dependencies {
     compile project(':core')
     compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
     compileOnly fileTree(dir: 'lib', include: ['*.jar'])
+    compileOnly 'com.amihaiemil.web:eo-yaml:5.1.9'
 }
 
 processResources {
