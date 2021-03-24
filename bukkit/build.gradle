@@ -27,7 +27,6 @@ repositories {
 
 dependencies {
     compileOnly 'me.clip:placeholderapi:2.10.9'
-    implementation group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.6.0";
     compile project(':core')
     implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
     implementation 'com.mojang:authlib:2.1.28'
