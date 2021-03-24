@@ -24,5 +24,4 @@ dependencies {
     compileOnly group: 'com.zaxxer', name: 'HikariCP', version: '4.0.2'
     compileOnly group: 'com.h2database', name: 'h2', version: '1.4.200'
     compileOnly 'net.md-5:bungeecord-chat:1.16-R0.3'
-    compileOnly 'com.amihaiemil.web:eo-yaml:5.1.9'
 }
