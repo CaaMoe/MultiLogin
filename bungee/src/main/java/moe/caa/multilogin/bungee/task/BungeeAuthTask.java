@@ -88,10 +88,8 @@ public class BungeeAuthTask implements Runnable {
 
                 loginResult.setProperties(new LoginResult.Property[]{new LoginResult.Property("textures", userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature())});
             } catch (Exception e){
-
-                // TODO: 2021/3/21 I18N MESSAGE
-                MultiCore.severe("无法修复皮肤，来自：" + handler.getName());
                 e.printStackTrace();
+                MultiCore.severe(I18n.getTransString("plugin_error_skin_repair", handler.getName()));
             }
 
             LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));

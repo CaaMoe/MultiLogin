@@ -101,10 +101,8 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
 
                 } catch (Exception e) {
-
-                    // TODO: 2021/3/21 I18N MESSAGE 
-                    MultiCore.severe("无法修复皮肤，来自：" + user.getName());
                     e.printStackTrace();
+                    MultiCore.severe(I18n.getTransString("plugin_error_skin_repair", user.getName()));
                 }
             }
 
