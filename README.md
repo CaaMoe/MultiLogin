@@ -12,7 +12,7 @@
 
 * 支持Bungee
 * 多Yggdrasil共存
-* 使多yggdrasil情况下正常显示皮肤
+* 使多yggdrasil情况下正常显示皮肤（α）
 * 可设置游戏内UUID
 * 兼容多Yggdrasil环境下的白名单
 * 可为单独的验证服务器内玩家开启白名单
