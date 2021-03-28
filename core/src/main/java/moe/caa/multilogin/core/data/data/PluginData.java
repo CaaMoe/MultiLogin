@@ -78,13 +78,13 @@ public class PluginData {
         IConfiguration services = configurationConfig.getConfigurationSection("services");
         if (services != null) {
             for (String path : services.getKeys(false)) {
-                YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
-                if (section == null) {
-                    log.severe(I18n.getTransString("plugin_severe_invalid_yggdrasil", path));
-                    continue;
+                try {
+                    YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
+                    if (!section.isEnable()) continue;
+                    serviceSet.add(section);
+                } catch (Exception e){
+                    log.severe(I18n.getTransString("plugin_severe_invalid_yggdrasil", path, e.getMessage()));
                 }
-                if (!section.isEnable()) continue;
-                serviceSet.add(section);
             }
         }
         log.info(I18n.getTransString("plugin_loaded_multi_Yggdrasil", serviceSet.size()));

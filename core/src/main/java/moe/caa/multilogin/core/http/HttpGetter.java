@@ -31,6 +31,8 @@ public class HttpGetter {
      * @return 请求结果
      */
     public static String httpGet(URL url) throws IOException {
+        System.out.println(url.toString());
+
         URLConnection connection = url.openConnection();
         connection.setConnectTimeout((int) getTimeOut());
         connection.setReadTimeout((int) getTimeOut());
@@ -57,6 +59,8 @@ public class HttpGetter {
     }
 
     public static String httpPost(URL url, String content) throws IOException {
+        System.out.println(url.toString());
+
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);

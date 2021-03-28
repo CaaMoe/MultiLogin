@@ -59,9 +59,9 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
                 jsonObject.addProperty("username", arg.get("username"));
                 jsonObject.addProperty("serverId", arg.get("serverId"));
                 String context = jsonObject.toString();
-                result = HttpGetter.httpPost(url, context, (int) PluginData.configurationConfig.getLong("authRetry", 1));
+                result = HttpGetter.httpPost(url, context, yggdrasilServiceEntry.getAuthRetry());
             } else {
-                result = HttpGetter.httpGet(url, (int) PluginData.configurationConfig.getLong("authRetry", 1));
+                result = HttpGetter.httpGet(url, yggdrasilServiceEntry.getAuthRetry());
             }
             T get = gson.fromJson(result, type);
             authResult = new AuthResult<>(get, yggdrasilServiceEntry);

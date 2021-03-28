@@ -16,16 +16,36 @@ services:
     # 关闭将拒绝所有使用该验证登入的玩家登入游戏
     enable: false
 
-    # 验证服务器的别称。
-    # 必填，不允许为空字符串。
-    name: "正版"
+    # Yggdrasil服务器的基本属性设置
+    body:
 
-    # 验证服务器地址。
-    # 必填，不允许为空字符串，URL末尾不需要'/'。
-    # 关于他的详细解释，请查看noUrlDeal节点注释
-    url: "https://sessionserver.mojang.com/session/minecraft"
+      # 服务器类型，只能是以下值
+      # BLESSING_SKIN                   // 表示Blessing skin验证
+      # MINECRAFT （仅能出现一次）         // 表示正版验证
+      # CUSTOM                          // 自定义验证
+      serverType: MINECRAFT
 
-    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki“来检查一个链接是否有效
+      # 验证服务器的别称。
+      # 必填，不允许为空字符串。
+      name: "正版"
+
+      # Yggdrasil验证请求链接
+      # 当serverType为‘MINECRAFT’时，此节点无效
+      # 当serverType为‘BLESSING_SKIN’时，只需要指定Yggdrasil api地址即可（比如LittleSkin的URL为：‘https://mcskin.littleservice.cn/api/yggdrasil’）
+      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则填写完整的请求链接）
+      url: ""
+
+      # 以post请求方式验证账户身份
+      # 绝大多数下，Yggdrasil服务器都使用GET请求方式验证用户数据的，
+      # 如果你不了解当前Yggdrasil验证流程的话，请勿擅自修改它
+      # 仅当serverType节点值为‘CUSTOM’时，此节点才有效
+      postMode: false
+
+      # 设置post的请求内容
+      # 仅当postMode节点值为true时，此节点才有效
+      postContent: '{"username":"{0}", "serverId":"{1}"}'
+
+    # 配置加载时是否通过发送假请求识别Yggdrasil配置是否正确.
     checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
@@ -41,58 +61,58 @@ services:
     # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # 以post请求方式验证账户身份
-    # 绝大多数下，Yggdrasil服务器都使用GET请求方式验证用户数据的，
-    # 如果你不了解当前Yggdrasil验证流程的话，请勿擅自修改它
-    postMode: false
+    # 设置当前验证服务器是否启用皮肤修复功能
+    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效
+    skinRepair: false
 
-    # 不对URL进行自动补充，
-    # 补充的值为‘/sessionserver/session/minecraft’
-    #
-    # 若此Yggdrasil验证服务器的验证链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
-    # 请将此值设置为true，并将完整的验证链接填入节点url中（url不包含hasJoined?username=%s&serverId=%s%s）
-    # 例子1：
-    #    你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #    此节点设置为true，设置url为‘https://example.com/yggdrasil/session/minecraft’
-    #
-    # 例子2:
-    #   你的链接为：'https://example.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   此节点设置为false, 设置url为‘https://a.com/yggdrasil’
-    noUrlDeal: true
+    # 设置当前验证服务器皮肤修复错误重试次数
+    # 仅当skinRepair节点值为true时，此节点才有效
+    skinRepairRetry: 3
 
-    # 自定义head内容
-    # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
-    #
-    # 例子1:
-    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   此节点设置为 'hasJoined?'.
-    #
-    # 例子2:
-    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoinserver?username=%s&serverId=%s%s'
-    #   此节点设置为 'hasJoinserver?'.
-    head: "hasJoined?"
+    # 验证错误重试次数
+    authRetry: 1
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
   # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
-  # 该节点表示LittleSkin的Yggdrasil验证
+  # 该节点表示LittleSkin皮肤站验证
   littleSkin:
 
     # 启用该验证服务器
     # 关闭将拒绝所有使用该验证登入的玩家登入游戏
     enable: false
 
-    # 验证服务器的别称。
-    # 必填，不允许为空字符串。
-    name: "LS皮肤站"
+    # Yggdrasil服务器的基本属性设置
+    body:
 
-    # 验证服务器地址。
-    # 必填，不允许为空字符串，URL末尾不需要'/'。
-    # 关于他的详细解释，请查看noUrlDeal节点注释
-    url: "https://mcskin.littleservice.cn/api/yggdrasil"
+      # 服务器类型，只能是以下值
+      # BLESSING_SKIN                   // 表示Blessing skin验证
+      # MINECRAFT （仅能出现一次）         // 表示正版验证
+      # CUSTOM                          // 自定义验证
+      serverType: BLESSING_SKIN
 
-    # 是否使用”https://github.com/yushijinhun/authlib-injector/wiki“来检查一个链接是否有效
-    checkUrl: true
+      # 验证服务器的别称。
+      # 必填，不允许为空字符串。
+      name: "LS皮肤站"
+
+      # Yggdrasil验证请求链接
+      # 当serverType为‘MINECRAFT’时，此节点无效
+      # 当serverType为‘BLESSING_SKIN’时，只需要指定Yggdrasil api地址即可（比如LittleSkin的URL为：‘https://mcskin.littleservice.cn/api/yggdrasil’）
+      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则填写完整的请求链接）
+      url: "https://mcskin.littleservice.cn/api/yggdrasil"
+
+      # 以post请求方式验证账户身份
+      # 绝大多数下，Yggdrasil服务器都使用GET请求方式验证用户数据的，
+      # 如果你不了解当前Yggdrasil验证流程的话，请勿擅自修改它
+      # 仅当serverType节点值为‘CUSTOM’时，此节点才有效
+      postMode: false
+
+      # 设置post的请求内容
+      # 仅当postMode节点值为true时，此节点才有效
+      postContent: '{"username":"{0}", "serverId":"{1}"}'
+
+    # 配置加载时是否通过发送假请求识别Yggdrasil配置是否正确.
+    checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
     # 目前只支持以下值:
@@ -107,56 +127,28 @@ services:
     # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # 以post请求方式验证账户身份
-    # 绝大多数下，Yggdrasil服务器都使用GET请求方式验证用户数据的，
-    # 如果你不了解当前Yggdrasil验证流程的话，请勿擅自修改它
-    postMode: false
+    # 设置当前验证服务器是否启用皮肤修复功能
+    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效
+    skinRepair: false
 
-    # 不对URL进行自动补充，
-    # 补充的值为‘/sessionserver/session/minecraft’
-    #
-    # 若此Yggdrasil验证服务器的验证链接并不是以’/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s‘结尾的.
-    # 请将此值设置为true，并将完整的验证链接填入节点url中（url不包含hasJoined?username=%s&serverId=%s%s）
-    # 例子1：
-    #    你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #    此节点设置为true，设置url为‘https://example.com/yggdrasil/session/minecraft’
-    #
-    # 例子2:
-    #   你的链接为：'https://example.com/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   此节点设置为false, 设置url为‘https://a.com/yggdrasil’
-    noUrlDeal: false
+    # 设置当前验证服务器皮肤修复错误重试次数
+    # 仅当skinRepair节点值为true时，此节点才有效
+    skinRepairRetry: 3
 
-    # 自定义head内容
-    # 若此Yggdrasil验证服务器的最终链接参数头部分并不是’hasJoined?‘而是’hasJoinserver?‘或其他值，请将该值填入此节点中
-    #
-    # 例子1:
-    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s%s'
-    #   此节点设置为 'hasJoined?'.
-    #
-    # 例子2:
-    #   你的链接为：'https://example.com/yggdrasil/session/minecraft/hasJoinserver?username=%s&serverId=%s%s'
-    #   此节点设置为 'hasJoinserver?'.
-    head: "hasJoined?"
+    # 验证错误重试次数
+    authRetry: 1
+
 
 # 通过此节点下定义的验证服务器验证的玩家都将跳过账户重名检查，
 # 并且强制下线在线的同名账户。
 # 请不要轻易修改此节点，可能会导致一些莫名其妙的错误。
 safeId: ""
 
-# 设置验证服务器超时时间
+# 设置所有请求超时时间
 servicesTimeOut: 7000
 
 # 全局白名单开关
 whitelist: true
-
-# 启用皮肤修复功能
-skinRepair: false
-
-# 皮肤修复错误重试次数
-skinRepairRetry: 3
-
-# 验证错误重试次数
-authRetry: 1
 
 # 插件数据的存放方式
 sql:
