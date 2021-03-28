@@ -81,7 +81,7 @@ public class BungeeAuthTask implements Runnable {
                 for(LoginResult.Property entry : loginResult.getProperties()){
                     if(entry.getName().equals("textures")){
                         if(userProperty.get() == null){
-                            userProperty.set(SkinRepairHandler.repairThirdPartySkin(onlineId, entry.getValue(), entry.getSignature()));
+                            userProperty.set(SkinRepairHandler.repairThirdPartySkin(onlineId, entry.getValue(), entry.getSignature(), result.getYggdrasilService()));
                         }
                     }
                 }

@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserTextures;
+import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.data.databse.handler.TexturesDataHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 public class SkinRepairHandler {
 
-    private static boolean repairThirdPartySkin(UserTextures property, UserTextures.Textures onlineTextures) throws Exception {
+    private static boolean repairThirdPartySkin(UserTextures property, UserTextures.Textures onlineTextures, YggdrasilServiceEntry serviceEntry) throws Exception {
         String skin = getSkinUrl(new String(onlineTextures.getDecoderValue()));
         String cacSkin = getSkinUrl(new String(Optional.of(property).map(UserTextures::getProperty).map(UserTextures.Textures::getDecoderValue).orElse(new byte[0])));
 
@@ -42,7 +43,7 @@ public class SkinRepairHandler {
 // 修复
         JsonObject jo = new JsonObject();
         jo.addProperty("url", skin);
-        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", jo.toString(), (int) PluginData.configurationConfig.getLong("skinRepairRetry", 3));
+        String response = HttpGetter.httpPost("https://api.mineskin.org/generate/url", jo.toString(), serviceEntry.getSkinRepairRetry());
 
 // 写入数据
         JsonObject value = new JsonParser().parse(response).getAsJsonObject();
@@ -64,7 +65,7 @@ public class SkinRepairHandler {
         return "";
     }
 
-    public static UserTextures repairThirdPartySkin(UUID onlineUuid, String value, String signature) throws Exception {
+    public static UserTextures repairThirdPartySkin(UUID onlineUuid, String value, String signature, YggdrasilServiceEntry serviceEntry) throws Exception {
 
 // 判断是否启用该功能
         if(!PluginData.isOpenSkinRepair()) return new UserTextures(onlineUuid, null, new UserTextures.Textures(value, signature));
@@ -76,7 +77,7 @@ public class SkinRepairHandler {
         userTextures = userTextures == null ? new UserTextures(onlineUuid, new UserTextures.Textures(), new UserTextures.Textures()) : userTextures;
 
 // 修复皮肤
-        repairThirdPartySkin(userTextures, new UserTextures.Textures(value, signature));
+        repairThirdPartySkin(userTextures, new UserTextures.Textures(value, signature), serviceEntry);
         userTextures.setProperty(new UserTextures.Textures(value, signature));
         if(newUserEntry){
             TexturesDataHandler.writeNewUserProperty(userTextures);
