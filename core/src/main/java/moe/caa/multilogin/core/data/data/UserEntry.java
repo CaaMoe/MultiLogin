@@ -24,10 +24,10 @@ public class UserEntry {
     private String current_name;
     private UUID redirect_uuid;
     private String yggdrasil_service;
-    private int whitelist;
+    private boolean whitelist;
     private transient YggdrasilServiceEntry serviceEntry;
 
-    public UserEntry(UUID online_uuid, String current_name, UUID redirect_uuid, String yggdrasil_service, int whitelist) {
+    public UserEntry(UUID online_uuid, String current_name, UUID redirect_uuid, String yggdrasil_service, boolean whitelist) {
         this.online_uuid = online_uuid;
         this.current_name = current_name;
         this.redirect_uuid = redirect_uuid;
@@ -106,7 +106,7 @@ public class UserEntry {
      *
      * @return 是否有白名单
      */
-    public int getWhitelist() {
+    public boolean hasWhitelist() {
         return whitelist;
     }
 
@@ -115,7 +115,7 @@ public class UserEntry {
      *
      * @param whitelist 该数据是否有白名单
      */
-    public void setWhitelist(int whitelist) {
+    public void setWhitelist(boolean whitelist) {
         this.whitelist = whitelist;
     }
 
@@ -126,17 +126,6 @@ public class UserEntry {
      */
     public YggdrasilServiceEntry getServiceEntry() {
         return serviceEntry;
-    }
-
-    @Override
-    public String toString() {
-        return "UserEntry{" +
-                "online_uuid='" + online_uuid + '\'' +
-                ", current_name='" + current_name + '\'' +
-                ", redirect_uuid='" + redirect_uuid + '\'' +
-                ", yggdrasil_service='" + yggdrasil_service + '\'' +
-                ", whitelist=" + whitelist +
-                '}';
     }
 
     @Override

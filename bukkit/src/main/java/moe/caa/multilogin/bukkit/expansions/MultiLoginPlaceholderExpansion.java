@@ -49,7 +49,7 @@ public class MultiLoginPlaceholderExpansion extends PlaceholderExpansion {
             } else if (params.equalsIgnoreCase("redirecteduuid")) {
                 ret = entry.getRedirect_uuid().toString();
             } else if (params.equalsIgnoreCase("whitelist")) {
-                ret = String.valueOf(entry.getWhitelist() != 0);
+                ret = String.valueOf(entry.hasWhitelist());
             } else if (params.equalsIgnoreCase("yggdrasilname")) {
                 ret = entry.getServiceEntry().getName();
             } else if (params.equalsIgnoreCase("yggdrasilpath")) {

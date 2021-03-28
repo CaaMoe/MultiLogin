@@ -145,7 +145,7 @@ public class UserDataHandler {
                 resultSet.getString(2),
                 UUIDSerializer.toUUID(resultSet.getBytes(3)),
                 resultSet.getString(4),
-                resultSet.getInt(5));
+                resultSet.getInt(5) != 0);
     }
 
 
@@ -162,7 +162,7 @@ public class UserDataHandler {
             ps.setString(2, entry.getCurrent_name());
             ps.setBytes(3, UUIDSerializer.uuidToByte(entry.getRedirect_uuid()));
             ps.setString(4, entry.getYggdrasil_service());
-            ps.setInt(5, entry.getWhitelist());
+            ps.setInt(5, entry.hasWhitelist() ? 1 : 0);
             ps.executeUpdate();
         }
     }
@@ -179,7 +179,7 @@ public class UserDataHandler {
             ps.setString(1, entry.getCurrent_name());
             ps.setBytes(2, UUIDSerializer.uuidToByte(entry.getRedirect_uuid()));
             ps.setString(3, entry.getYggdrasil_service());
-            ps.setInt(4, entry.getWhitelist());
+            ps.setInt(4, entry.hasWhitelist() ? 1 : 0);
             ps.setBytes(5, UUIDSerializer.uuidToByte(entry.getOnline_uuid()));
             ps.executeUpdate();
         }

@@ -66,15 +66,15 @@ public class Verifier {
                 }
             }
 
-            userData = !updUserEntry ? new UserEntry(onlineUuid, currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName), yggdrasilService.getPath(), 0) : userData;
+            userData = !updUserEntry ? new UserEntry(onlineUuid, currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName), yggdrasilService.getPath(), false) : userData;
             userData.setCurrent_name(currentName);
 
             // 白名单检查
-            if (userData.getWhitelist() == 0 && yggdrasilService.isWhitelist()) {
+            if (!userData.hasWhitelist() && yggdrasilService.isWhitelist()) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
                 }
-                userData.setWhitelist(1);
+                userData.setWhitelist(true);
             }
 
             if (updUserEntry) {

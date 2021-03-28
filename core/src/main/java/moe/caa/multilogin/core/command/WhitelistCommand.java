@@ -43,8 +43,8 @@ public class WhitelistCommand {
                     try {
                         List<UserEntry> userEntries = UserDataHandler.getUserEntryByCurrentName(args[1]);
                         for (UserEntry entry : userEntries) {
-                            if (entry.getWhitelist() == 0) {
-                                entry.setWhitelist(1);
+                            if (!entry.hasWhitelist()) {
+                                entry.setWhitelist(true);
                                 UserDataHandler.updateUserEntry(entry);
                                 flag = true;
                                 break;
@@ -56,16 +56,16 @@ public class WhitelistCommand {
                         if (!flag) {
                             UUID uuid = UUID.fromString(args[1]);
                             UserEntry byUuid = UserDataHandler.getUserEntryByOnlineUuid(uuid);
-                            if (byUuid != null && byUuid.getWhitelist() == 0) {
-                                byUuid.setWhitelist(1);
+                            if (byUuid != null && !byUuid.hasWhitelist()) {
+                                byUuid.setWhitelist(true);
                                 UserDataHandler.updateUserEntry(byUuid);
                                 flag = true;
                                 break;
                             }
 
                             byUuid = UserDataHandler.getUserEntryByRedirectUuid(uuid);
-                            if (byUuid != null && byUuid.getWhitelist() == 0) {
-                                byUuid.setWhitelist(1);
+                            if (byUuid != null && !byUuid.hasWhitelist()) {
+                                byUuid.setWhitelist(true);
                                 UserDataHandler.updateUserEntry(byUuid);
                                 flag = true;
                                 break;
@@ -103,8 +103,8 @@ public class WhitelistCommand {
                 try {
                     List<UserEntry> userEntries = UserDataHandler.getUserEntryByCurrentName(args[1]);
                     for (UserEntry entry : userEntries) {
-                        if (entry.getWhitelist() != 0) {
-                            entry.setWhitelist(0);
+                        if (entry.hasWhitelist()) {
+                            entry.setWhitelist(false);
                             UserDataHandler.updateUserEntry(entry);
                             MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                             flag = true;
@@ -114,16 +114,16 @@ public class WhitelistCommand {
                     UUID uuid = UUID.fromString(args[1]);
 
                     UserEntry byUuid = UserDataHandler.getUserEntryByOnlineUuid(uuid);
-                    if (byUuid != null && byUuid.getWhitelist() != 0) {
-                        byUuid.setWhitelist(0);
+                    if (byUuid != null && byUuid.hasWhitelist()) {
+                        byUuid.setWhitelist(false);
                         UserDataHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                         flag = true;
                     }
 
                     byUuid = UserDataHandler.getUserEntryByRedirectUuid(uuid);
-                    if (byUuid != null && byUuid.getWhitelist() != 0) {
-                        byUuid.setWhitelist(0);
+                    if (byUuid != null && byUuid.hasWhitelist()) {
+                        byUuid.setWhitelist(false);
                         UserDataHandler.updateUserEntry(byUuid);
                         MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
                         flag = true;
