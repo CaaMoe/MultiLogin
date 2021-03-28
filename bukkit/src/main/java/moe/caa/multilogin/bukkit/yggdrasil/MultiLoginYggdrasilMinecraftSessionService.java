@@ -53,12 +53,12 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     }
 
     // Do not add Override annotation !
-    public GameProfile hasJoinedServer(GameProfile user, String serverId) {
+    public GameProfile hasJoinedServer(GameProfile user, String serverId) throws AuthenticationUnavailableException {
         return hasJoinedServer(user, serverId, null);
     }
 
     // Do not add Override annotation !
-    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
+    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) throws AuthenticationUnavailableException {
         Map<String, String> arguments = new HashMap<>();
         arguments.put("username", user.getName());
         arguments.put("serverId", serverId);
@@ -111,6 +111,8 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
             return result;
 
+        } catch (AuthenticationUnavailableException e) {
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_io_user"));
