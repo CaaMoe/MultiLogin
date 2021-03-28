@@ -13,7 +13,7 @@
 package moe.caa.multilogin.core.data.databse;
 
 import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
-import moe.caa.multilogin.core.data.databse.handler.PropertyDataHandler;
+import moe.caa.multilogin.core.data.databse.handler.TexturesDataHandler;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 
@@ -33,8 +33,8 @@ public class SQLHandler {
     public static final String WHITELIST = "whitelist";
     public static final String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     public static final String REPAIR_SKIN_TABLE_NAME = "repair_skin";
-    public static final String PROPERTY = "property";
-    public static final String REPAIR_PROPERTY = "repair_property";
+    public static final String PROPERTY = "textures";
+    public static final String REPAIR_PROPERTY = "repair_textures";
     public static AbstractConnectionPool pool;
 
     /**
@@ -47,7 +47,7 @@ public class SQLHandler {
         try (Connection conn = getConnection(); Statement s = conn.createStatement()) {
             UserDataHandler.init(s);
             CacheWhitelistDataHandler.init(s);
-            PropertyDataHandler.init(s);
+            TexturesDataHandler.init(s);
         }
     }
 

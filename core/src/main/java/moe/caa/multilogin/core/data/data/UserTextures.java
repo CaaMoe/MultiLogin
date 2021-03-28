@@ -16,18 +16,18 @@ import java.util.Base64;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserProperty {
+public class UserTextures {
     private UUID onlineUuid;
-    private Property property;
-    private Property repair_property;
+    private Textures textures;
+    private Textures repair_textures;
 
-    public UserProperty(UUID onlineUuid, Property property, Property repair_property) {
+    public UserTextures(UUID onlineUuid, Textures textures, Textures repair_textures) {
         this.onlineUuid = onlineUuid;
-        this.property = property;
-        this.repair_property = repair_property;
+        this.textures = textures;
+        this.repair_textures = repair_textures;
     }
 
-    public UserProperty() {
+    public UserTextures() {
     }
 
     public UUID getOnlineUuid() {
@@ -38,32 +38,32 @@ public class UserProperty {
         this.onlineUuid = onlineUuid;
     }
 
-    public Property getProperty() {
-        return property;
+    public Textures getProperty() {
+        return textures;
     }
 
-    public void setProperty(Property property) {
-        this.property = property;
+    public void setProperty(Textures textures) {
+        this.textures = textures;
     }
 
-    public Property getRepair_property() {
-        return repair_property;
+    public Textures getRepair_property() {
+        return repair_textures;
     }
 
-    public void setRepair_property(Property repair_property) {
-        this.repair_property = repair_property;
+    public void setRepair_property(Textures repair_textures) {
+        this.repair_textures = repair_textures;
     }
 
-    public static class Property{
+    public static class Textures {
         private String value;
         private String signature;
 
-        public Property(String value, String signature) {
+        public Textures(String value, String signature) {
             this.value = value;
             this.signature = signature;
         }
 
-        public Property() {
+        public Textures() {
         }
 
 
@@ -92,8 +92,8 @@ public class UserProperty {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            Property property = (Property) o;
-            return Objects.equals(value, property.value) && Objects.equals(signature, property.signature);
+            Textures textures = (Textures) o;
+            return Objects.equals(value, textures.value) && Objects.equals(signature, textures.signature);
         }
 
         @Override

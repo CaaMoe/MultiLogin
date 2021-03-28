@@ -15,9 +15,8 @@ package moe.caa.multilogin.core.skin;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.data.data.PluginData;
-import moe.caa.multilogin.core.data.data.UserProperty;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
-import moe.caa.multilogin.core.data.databse.handler.PropertyDataHandler;
+import moe.caa.multilogin.core.data.data.UserTextures;
+import moe.caa.multilogin.core.data.databse.handler.TexturesDataHandler;
 import moe.caa.multilogin.core.http.HttpGetter;
 
 import java.util.Optional;
@@ -25,14 +24,14 @@ import java.util.UUID;
 
 public class SkinRepairHandler {
 
-    private static boolean repairThirdPartySkin(UserProperty property, UserProperty.Property onlineProperty) throws Exception {
-        String skin = getSkinUrl(new String(onlineProperty.getDecoderValue()));
-        String cacSkin = getSkinUrl(new String(Optional.of(property).map(UserProperty::getProperty).map(UserProperty.Property::getDecoderValue).orElse(new byte[0])));
+    private static boolean repairThirdPartySkin(UserTextures property, UserTextures.Textures onlineTextures) throws Exception {
+        String skin = getSkinUrl(new String(onlineTextures.getDecoderValue()));
+        String cacSkin = getSkinUrl(new String(Optional.of(property).map(UserTextures::getProperty).map(UserTextures.Textures::getDecoderValue).orElse(new byte[0])));
 
 // 判断当前皮肤url是否为空 或 判断当前皮肤url是官方
         if(PluginData.isEmpty(skin) || skin.contains("minecraft.net")) {
-            property.setRepair_property(onlineProperty);
-            property.setProperty(onlineProperty);
+            property.setRepair_property(onlineTextures);
+            property.setProperty(onlineTextures);
             return false;
         }
 
@@ -51,8 +50,8 @@ public class SkinRepairHandler {
             JsonObject data = value.get("data").getAsJsonObject().get("texture").getAsJsonObject();
             if(!data.has("signature"))
                 return false;
-            property.setProperty(onlineProperty);
-            property.setRepair_property(new UserProperty.Property(data.get("value").getAsString(),  data.get("signature").getAsString()));
+            property.setProperty(onlineTextures);
+            property.setRepair_property(new UserTextures.Textures(data.get("value").getAsString(),  data.get("signature").getAsString()));
             return true;
         }
         return false;
@@ -65,25 +64,25 @@ public class SkinRepairHandler {
         return "";
     }
 
-    public static UserProperty repairThirdPartySkin(UUID onlineUuid, String value, String signature) throws Exception {
+    public static UserTextures repairThirdPartySkin(UUID onlineUuid, String value, String signature) throws Exception {
 
 // 判断是否启用该功能
-        if(!PluginData.isOpenSkinRepair()) return new UserProperty(onlineUuid, null, new UserProperty.Property(value, signature));
+        if(!PluginData.isOpenSkinRepair()) return new UserTextures(onlineUuid, null, new UserTextures.Textures(value, signature));
         boolean newUserEntry;
-        UserProperty userProperty = PropertyDataHandler.getUserPropertyByOnlineUuid(onlineUuid);
-        newUserEntry = userProperty == null;
+        UserTextures userTextures = TexturesDataHandler.getUserPropertyByOnlineUuid(onlineUuid);
+        newUserEntry = userTextures == null;
 
 // 新建皮肤档案
-        userProperty = userProperty == null ? new UserProperty(onlineUuid, new UserProperty.Property(), new UserProperty.Property()) : userProperty;
+        userTextures = userTextures == null ? new UserTextures(onlineUuid, new UserTextures.Textures(), new UserTextures.Textures()) : userTextures;
 
 // 修复皮肤
-        repairThirdPartySkin(userProperty, new UserProperty.Property(value, signature));
-        userProperty.setProperty(new UserProperty.Property(value, signature));
+        repairThirdPartySkin(userTextures, new UserTextures.Textures(value, signature));
+        userTextures.setProperty(new UserTextures.Textures(value, signature));
         if(newUserEntry){
-            PropertyDataHandler.writeNewUserProperty(userProperty);
+            TexturesDataHandler.writeNewUserProperty(userTextures);
         } else {
-            PropertyDataHandler.updateUserProperty(userProperty);
+            TexturesDataHandler.updateUserProperty(userTextures);
         }
-        return userProperty;
+        return userTextures;
     }
 }

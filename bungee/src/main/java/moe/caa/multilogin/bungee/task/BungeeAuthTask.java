@@ -16,7 +16,7 @@ import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.data.data.PluginData;
-import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.data.data.UserTextures;
 import moe.caa.multilogin.core.skin.SkinRepairHandler;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -75,7 +75,7 @@ public class BungeeAuthTask implements Runnable {
                 return;
             }
 
-            AtomicReference<UserProperty> userProperty = new AtomicReference<>();
+            AtomicReference<UserTextures> userProperty = new AtomicReference<>();
 
             try {
                 for(LoginResult.Property entry : loginResult.getProperties()){

@@ -12,7 +12,7 @@
 
 package moe.caa.multilogin.core.data.databse.handler;
 
-import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.data.data.UserTextures;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.UUIDSerializer;
 
@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import static moe.caa.multilogin.core.data.databse.SQLHandler.*;
 
-public class PropertyDataHandler {
+public class TexturesDataHandler {
 
     public static void init(Statement statement) throws SQLException {
         statement.executeUpdate("" +
@@ -32,7 +32,7 @@ public class PropertyDataHandler {
     }
 
 
-    public static UserProperty getUserPropertyByOnlineUuid(UUID uuid) throws SQLException {
+    public static UserTextures getUserPropertyByOnlineUuid(UUID uuid) throws SQLException {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 REPAIR_SKIN_TABLE_NAME, ONLINE_UUID
         ))) {
@@ -40,12 +40,12 @@ public class PropertyDataHandler {
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 try {
-                    UserProperty ret = new UserProperty();
+                    UserTextures ret = new UserTextures();
                     ret.setOnlineUuid(uuid);
                     String[] args = resultSet.getString(2).split("\\s+");
-                    ret.setProperty(new UserProperty.Property(args[0], args[1]));
+                    ret.setProperty(new UserTextures.Textures(args[0], args[1]));
                     args = resultSet.getString(3).split("\\s+");
-                    ret.setRepair_property(new UserProperty.Property(args[0], args[1]));
+                    ret.setRepair_property(new UserTextures.Textures(args[0], args[1]));
                     return ret;
                 } catch (Exception e) {
                     throw new RuntimeException(I18n.getTransString("plugin_severe_database_select_by_online_uuid", uuid.toString()), e);
@@ -55,24 +55,24 @@ public class PropertyDataHandler {
         }
     }
 
-    public static void updateUserProperty(UserProperty userProperty) throws SQLException {
+    public static void updateUserProperty(UserTextures userTextures) throws SQLException {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ? limit 1",
                 REPAIR_SKIN_TABLE_NAME, PROPERTY, REPAIR_PROPERTY, ONLINE_UUID
         ))) {
-            ps.setString(1, userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
-            ps.setString(2, userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
-            ps.setBytes(3, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
+            ps.setString(1, userTextures.getProperty().getValue() + " " + userTextures.getProperty().getSignature());
+            ps.setString(2, userTextures.getRepair_property().getValue() + " " + userTextures.getRepair_property().getSignature());
+            ps.setBytes(3, UUIDSerializer.uuidToByte(userTextures.getOnlineUuid()));
             ps.executeUpdate();
         }
     }
 
-    public static void writeNewUserProperty(UserProperty userProperty) throws SQLException {
+    public static void writeNewUserProperty(UserTextures userTextures) throws SQLException {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s) VALUES(?, ?, ?)",
                 REPAIR_SKIN_TABLE_NAME, ONLINE_UUID, PROPERTY, REPAIR_PROPERTY
         ))) {
-            ps.setBytes(1, UUIDSerializer.uuidToByte(userProperty.getOnlineUuid()));
-            ps.setString(2, userProperty.getProperty().getValue() + " " + userProperty.getProperty().getSignature());
-            ps.setString(3, userProperty.getRepair_property().getValue() + " " + userProperty.getRepair_property().getSignature());
+            ps.setBytes(1, UUIDSerializer.uuidToByte(userTextures.getOnlineUuid()));
+            ps.setString(2, userTextures.getProperty().getValue() + " " + userTextures.getProperty().getSignature());
+            ps.setString(3, userTextures.getRepair_property().getValue() + " " + userTextures.getRepair_property().getSignature());
             ps.executeUpdate();
         }
     }

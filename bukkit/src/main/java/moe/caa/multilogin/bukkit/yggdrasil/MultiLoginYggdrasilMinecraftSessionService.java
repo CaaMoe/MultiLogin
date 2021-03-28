@@ -28,7 +28,7 @@ import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.*;
-import moe.caa.multilogin.core.data.data.UserProperty;
+import moe.caa.multilogin.core.data.data.UserTextures;
 import moe.caa.multilogin.core.skin.SkinRepairHandler;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -87,7 +87,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             PropertyMap propertyMap = response.getProperties();
             if (propertyMap != null) {
                 try {
-                    AtomicReference<UserProperty> userProperty = new AtomicReference<>();
+                    AtomicReference<UserTextures> userProperty = new AtomicReference<>();
                     for (Map.Entry<String, Property> entry : propertyMap.entries()) {
                         if (entry.getKey().equals("textures")) {
                             if (userProperty.get() == null) {
