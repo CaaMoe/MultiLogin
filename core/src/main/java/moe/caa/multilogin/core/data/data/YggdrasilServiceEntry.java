@@ -18,8 +18,6 @@ import moe.caa.multilogin.core.http.HttpGetter;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.util.I18n;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -54,7 +52,7 @@ public class YggdrasilServiceEntry {
         this.convUuid = Optional.ofNullable(convUuid).orElseThrow(() -> new IllegalArgumentException("convUuid"));
         this.enable = enable;
         url1 = url;
-        this.postMode = postMode;
+        this.postMode = serverType == ServerType.CUSTOM && postMode;
         this.checkUrl = checkUrl;
         postContent1 = postContent;
         this.whitelist = whitelist;
