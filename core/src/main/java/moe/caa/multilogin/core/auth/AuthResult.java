@@ -15,7 +15,7 @@ package moe.caa.multilogin.core.auth;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
 /**
- * 对Yggdrasil的验证结果
+ * Yggdrasil的验证结果
  *
  * @param <T> 所需的数据类型
  */

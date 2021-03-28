@@ -13,7 +13,7 @@
 package moe.caa.multilogin.core.auth;
 
 /**
- * Yggdrasil验证失败枚举
+ * Yggdrasil验证失败类型枚举
  */
 public enum AuthErrorEnum {
 
@@ -27,6 +27,8 @@ public enum AuthErrorEnum {
      */
     VALIDATION_FAILED,
 
-    //没有服务器
+    /**
+     * 没有服务器
+     */
     NO_SERVER
 }

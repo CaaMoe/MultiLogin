@@ -16,9 +16,7 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -68,7 +66,7 @@ public class HttpAuth {
     private static <T> AuthResult<T> authWithTasks(List<YggdrasilServiceEntry> serviceEntryList, Map<String, String> arg) {
         AuthResult<T> getResult = null;
 //        任务列表
-        List<FutureTask<AuthResult<T>>> tasks = new LinkedList<>();
+        List<FutureTask<AuthResult<T>>> tasks = new ArrayList<>();
         long endTime = System.currentTimeMillis() + PluginData.getTimeOut();
 
         for (YggdrasilServiceEntry entry : serviceEntryList) {
@@ -82,13 +80,18 @@ public class HttpAuth {
 //        没有可验证服务器
         if (tasks.size() == 0) return new AuthResult<>(AuthErrorEnum.NO_SERVER);
 //        时间限制
-        while (endTime > System.currentTimeMillis()) {
-            for (Future<AuthResult<T>> task : tasks) {
+
+        while (tasks.size() != 0 && endTime > System.currentTimeMillis()) {
+            Iterator<FutureTask<AuthResult<T>>> itr = tasks.iterator();
+            while (itr.hasNext()){
+                FutureTask<AuthResult<T>> task = itr.next();
                 if (!task.isDone()) continue;
                 try {
                     getResult = task.get();
                 } catch (Exception exception) {
                     exception.printStackTrace();
+                } finally {
+                    itr.remove();
                 }
             }
             if (getResult != null && getResult.isSuccess()) break;

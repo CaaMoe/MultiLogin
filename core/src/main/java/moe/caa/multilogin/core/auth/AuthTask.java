@@ -22,9 +22,13 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+/**
+ * Yggdrasil验证
+ * @param <T> 数据类型
+ */
 public class AuthTask<T> implements Callable<AuthResult<T>> {
-    YggdrasilServiceEntry yggdrasilServiceEntry;
-    Map<String, String> arg;
+    private final YggdrasilServiceEntry yggdrasilServiceEntry;
+    private final Map<String, String> arg;
     private static Type type;
     private static Gson gson;
 
@@ -45,7 +49,7 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
     }
 
     @Override
-    public AuthResult<T> call() throws Exception {
+    public AuthResult<T> call() {
         AuthResult<T> authResult;
         try {
             String url = yggdrasilServiceEntry.buildUrlStr(arg);
