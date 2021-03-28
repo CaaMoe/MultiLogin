@@ -15,6 +15,7 @@ package moe.caa.multilogin.core.data.data;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.auth.AuthTask;
 import moe.caa.multilogin.core.data.ConvUuid;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.util.I18n;
@@ -23,6 +24,8 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,7 +36,7 @@ public class YggdrasilServiceEntry {
     private final String path;
     private final String url;
     private final String head;
-    private final boolean postMode;//网易模式
+    private final boolean postMode;
     private boolean enable;
     private String name;
     private ConvUuid convUuid;
@@ -68,7 +71,6 @@ public class YggdrasilServiceEntry {
                 MultiCore.getPlugin().runTaskAsyncLater(() -> log.info(I18n.getTransString("plugin_loaded_distinguish_Yggdrasil_no_check", name, path)), 0);
             }
         }
-
     }
 
     /**
@@ -85,20 +87,18 @@ public class YggdrasilServiceEntry {
             String convUuid = section.getString("convUuid");
             String head = section.getString("head");
             ConvUuid convUuidEnum;
-            boolean whitelist;
+            boolean whitelist = section.getBoolean("whitelist", true);;
             boolean postMode = section.getBoolean("postMode", false);
             boolean noUrlDeal = section.getBoolean("noUrlDeal", false);
             try {
                 convUuidEnum = ConvUuid.valueOf(convUuid);
-                whitelist = section.getBoolean("whitelist");
             } catch (Exception ignore) {
                 return null;
             }
             if (!PluginData.isEmpty(name) && !PluginData.isEmpty(url)) {
                 boolean enable = section.getBoolean("enable", false);
                 boolean checkUrl = section.getBoolean("checkUrl", true);
-                YggdrasilServiceEntry ret = new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable, checkUrl, postMode, noUrlDeal);
-                return ret;
+                return new YggdrasilServiceEntry(path, name, url, head, convUuidEnum, whitelist, enable, checkUrl, postMode, noUrlDeal);
             }
         }
         return null;
