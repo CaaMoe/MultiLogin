@@ -13,7 +13,7 @@
 package moe.caa.multilogin.core.data.data;
 
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.data.ConvUuid;
+import moe.caa.multilogin.core.data.ConvUuidEnum;
 import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.http.HttpGetter;
 import moe.caa.multilogin.core.impl.IConfiguration;
@@ -31,7 +31,7 @@ public class YggdrasilServiceEntry {
     private final String path;
     private final ServerTypeEnum serverTypeEnum;
     private final String postContent;
-    private final ConvUuid convUuid;
+    private final ConvUuidEnum convUuidEnum;
     private final String url;
     private final boolean postMode;
     private boolean enable;
@@ -43,14 +43,14 @@ public class YggdrasilServiceEntry {
     private int authRetry;
 
     public YggdrasilServiceEntry(String path, boolean enable, String name, ServerTypeEnum serverTypeEnum, String url,
-                                 boolean postMode, boolean checkUrl, String postContent, ConvUuid convUuid,
+                                 boolean postMode, boolean checkUrl, String postContent, ConvUuidEnum convUuidEnum,
                                  boolean whitelist, boolean skinRepair, int skinRepairRetry, int authRetry) throws Exception {
         String url1;
         String postContent1;
         this.path = Optional.ofNullable(path).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("path"));
         this.name = Optional.ofNullable(name).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("name"));
         this.serverTypeEnum = Optional.ofNullable(serverTypeEnum).orElseThrow(() -> new IllegalArgumentException("serverType"));
-        this.convUuid = Optional.ofNullable(convUuid).orElseThrow(() -> new IllegalArgumentException("convUuid"));
+        this.convUuidEnum = Optional.ofNullable(convUuidEnum).orElseThrow(() -> new IllegalArgumentException("convUuid"));
         this.enable = enable;
         url1 = url;
         this.postMode = serverTypeEnum == ServerTypeEnum.CUSTOM && postMode;
@@ -115,12 +115,12 @@ public class YggdrasilServiceEntry {
                 url = body.getString("url");
         }
         boolean checkUrl = section.getBoolean("checkUrl");
-        ConvUuid convUuid = ConvUuid.valueOf(section.getString("convUuid"));
+        ConvUuidEnum convUuidEnum = ConvUuidEnum.valueOf(section.getString("convUuid"));
         boolean whitelist = section.getBoolean("whitelist", true);
         boolean skinRepair = section.getBoolean("skinRepair", false);
         int skinRepairRetry = (int) section.getLong("skinRepairRetry", 3);
         int authRetry = (int) section.getLong("authRetry", 1);
-        return new YggdrasilServiceEntry(path, enable, name, serverTypeEnum, url, postMode, checkUrl, postContent, convUuid, whitelist, skinRepair, skinRepairRetry, authRetry);
+        return new YggdrasilServiceEntry(path, enable, name, serverTypeEnum, url, postMode, checkUrl, postContent, convUuidEnum, whitelist, skinRepair, skinRepairRetry, authRetry);
     }
 
     private void complete() {
@@ -192,8 +192,8 @@ public class YggdrasilServiceEntry {
         return postContent;
     }
 
-    public ConvUuid getConvUuid() {
-        return convUuid;
+    public ConvUuidEnum getConvUuid() {
+        return convUuidEnum;
     }
 
     public boolean isWhitelist() {

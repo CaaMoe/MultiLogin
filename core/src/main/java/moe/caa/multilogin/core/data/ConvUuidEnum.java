@@ -4,7 +4,7 @@
  * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
  * @github  https://github.com/CaaMoe/MultiLogin
  *
- * moe.caa.multilogin.core.data.ConvUuid
+ * moe.caa.multilogin.core.data.ConvUuidEnum
  *
  * Use of this source code is governed by the GPLv3 license that can be found via the following link.
  * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
@@ -18,7 +18,7 @@ import java.util.UUID;
 /**
  * UUID生成规则的枚举
  */
-public enum ConvUuid {
+public enum ConvUuidEnum {
 
     /**
      * Yggdrasil验证服务器提供的UUID
