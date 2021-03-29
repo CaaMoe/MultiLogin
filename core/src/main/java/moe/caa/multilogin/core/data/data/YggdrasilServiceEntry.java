@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.data.data;
 
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.ConvUuid;
+import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.http.HttpGetter;
 import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.util.I18n;
@@ -28,7 +29,7 @@ import java.util.logging.Logger;
  */
 public class YggdrasilServiceEntry {
     private final String path;
-    private final ServerType serverType;
+    private final ServerTypeEnum serverTypeEnum;
     private final String postContent;
     private final ConvUuid convUuid;
     private final String url;
@@ -41,26 +42,26 @@ public class YggdrasilServiceEntry {
     private int skinRepairRetry;
     private int authRetry;
 
-    public YggdrasilServiceEntry(String path, boolean enable, String name, ServerType serverType, String url,
+    public YggdrasilServiceEntry(String path, boolean enable, String name, ServerTypeEnum serverTypeEnum, String url,
                                  boolean postMode, boolean checkUrl, String postContent, ConvUuid convUuid,
                                  boolean whitelist, boolean skinRepair, int skinRepairRetry, int authRetry) throws Exception {
         String url1;
         String postContent1;
         this.path = Optional.ofNullable(path).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("path"));
         this.name = Optional.ofNullable(name).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("name"));
-        this.serverType = Optional.ofNullable(serverType).orElseThrow(() -> new IllegalArgumentException("serverType"));
+        this.serverTypeEnum = Optional.ofNullable(serverTypeEnum).orElseThrow(() -> new IllegalArgumentException("serverType"));
         this.convUuid = Optional.ofNullable(convUuid).orElseThrow(() -> new IllegalArgumentException("convUuid"));
         this.enable = enable;
         url1 = url;
-        this.postMode = serverType == ServerType.CUSTOM && postMode;
+        this.postMode = serverTypeEnum == ServerTypeEnum.CUSTOM && postMode;
         this.checkUrl = checkUrl;
         postContent1 = postContent;
         this.whitelist = whitelist;
-        this.skinRepair = skinRepair;
+        this.skinRepair = serverTypeEnum != ServerTypeEnum.MINECRAFT && skinRepair;
         this.skinRepairRetry = skinRepairRetry;
         this.authRetry = authRetry;
 
-        switch (serverType) {
+        switch (serverTypeEnum) {
             case CUSTOM:
                 postContent1 = Optional.ofNullable(postContent).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("postContent"));
             case BLESSING_SKIN:
@@ -102,11 +103,11 @@ public class YggdrasilServiceEntry {
         IConfiguration body = section.getConfigurationSection("body");
         boolean enable = section.getBoolean("enable", false);
         String name = body.getString("name");
-        ServerType serverType = ServerType.valueOf(body.getString("serverType"));
+        ServerTypeEnum serverTypeEnum = ServerTypeEnum.valueOf(body.getString("serverType"));
         String url = null;
         boolean postMode = false;
         String postContent = null;
-        switch (serverType) {
+        switch (serverTypeEnum) {
             case CUSTOM:
                 postContent = body.getString("postContent");
                 postMode = body.getBoolean("postMode");
@@ -119,7 +120,7 @@ public class YggdrasilServiceEntry {
         boolean skinRepair = section.getBoolean("skinRepair", false);
         int skinRepairRetry = (int) section.getLong("skinRepairRetry", 3);
         int authRetry = (int) section.getLong("authRetry", 1);
-        return new YggdrasilServiceEntry(path, enable, name, serverType, url, postMode, checkUrl, postContent, convUuid, whitelist, skinRepair, skinRepairRetry, authRetry);
+        return new YggdrasilServiceEntry(path, enable, name, serverTypeEnum, url, postMode, checkUrl, postContent, convUuid, whitelist, skinRepair, skinRepairRetry, authRetry);
     }
 
     private void complete() {
@@ -167,8 +168,8 @@ public class YggdrasilServiceEntry {
         this.name = name;
     }
 
-    public ServerType getServerType() {
-        return serverType;
+    public ServerTypeEnum getServerType() {
+        return serverTypeEnum;
     }
 
     public String getUrl() {
@@ -241,23 +242,5 @@ public class YggdrasilServiceEntry {
         String username = arg.get("username");
         String serverId = arg.get("serverId");
         return String.format(url, username, serverId);
-    }
-
-    public enum ServerType {
-
-        /**
-         * 基于Blessing Skin设计的Yggdrasil验证服务器
-         */
-        BLESSING_SKIN,
-
-        /**
-         * 原版官方的正版验证服务器
-         */
-        MINECRAFT,
-
-        /**
-         * 其他自定义服务器
-         */
-        CUSTOM;
     }
 }
