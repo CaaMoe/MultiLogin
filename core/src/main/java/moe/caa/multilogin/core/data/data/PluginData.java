@@ -13,6 +13,7 @@
 package moe.caa.multilogin.core.data.data;
 
 import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
@@ -77,10 +78,18 @@ public class PluginData {
         Logger log = MultiCore.getPlugin().getPluginLogger();
         IConfiguration services = configurationConfig.getConfigurationSection("services");
         if (services != null) {
+            boolean enableMinecraft = false;
             for (String path : services.getKeys(false)) {
                 try {
                     YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
                     if (!section.isEnable()) continue;
+                    if(section.getServerType() == ServerTypeEnum.MINECRAFT){
+                        if(enableMinecraft){
+                            log.warning(I18n.getTransString("plugin_severe_invalid_yggdrasil_repeat_vanilla", path));
+                            continue;
+                        }
+                        enableMinecraft = true;
+                    }
                     serviceSet.add(section);
                 } catch (Exception e){
                     log.severe(I18n.getTransString("plugin_severe_invalid_yggdrasil", path, e.getMessage()));
@@ -115,6 +124,7 @@ public class PluginData {
     /**
      * 测试文本消息是否正确，并且将不正确的文本消息设置为默认值
      */
+    @SuppressWarnings("all")
     private static void testMsg(Logger log, String path, Object... args) {
         try {
             String.format(configurationConfig.getString(path), args);
