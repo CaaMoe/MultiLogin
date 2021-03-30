@@ -47,6 +47,10 @@ public class YamlConfig {
         }
         return false;
     }
+    
+    public YamlConfig getSection(String path){
+        return new YamlConfig((Map<?, ?>)get(path, Map.class).orElse(null));
+    }
    
     public Optional<?> get(String path){
         return Optional.ofNullable(contents.get(path));
