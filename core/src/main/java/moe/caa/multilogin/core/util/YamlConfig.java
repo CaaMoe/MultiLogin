@@ -32,34 +32,35 @@ public class YamlConfig {
         return new YamlConfig(contents);
     }
     
-    private Class<?> getType(Object obj){
-        return obj == null ?  null : obj.getClass();
-    }
-    
-    public Optional<?> get(String path){
-        return Optional.ofNullable(contents.get(path));
-    }
-    
-    public Optional<String> getString(String path){
-        Optional<?> value = get(path);
-        if(value.isPresent() && value.get() instanceof String){
-            return (Optional<String>)value;
+    private <T> Optional<T> caseVale(Optional<?> value, Class<T> type){
+        if(value.isPresent() && value.get().getClass() == type){
+            return (Optional<T>) value;
         }
         return Optional.empty();
     }
-    
-    public Optional<String> getString(String path, String defaultValue){
-        Optional<String> value = getString(path);
-        return value.isPresent() ? value : Optional.ofNullable(defaultValue);
-        
-    }
-    
-    public boolean hasValue(String path, Class<?> type){
-        if(contents.containsKey(path)){
-            if(type == getType(contents.get(path))){
+   
+    private boolean hasValue(Optional<?> value, Class<?> type){
+        if(value.isPresent()){
+            if(type == value.get().getClass()){
                 return true;
             }
         }
         return false;
+    }
+   
+    public Optional<?> get(String path){
+        return Optional.ofNullable(contents.get(path));
+    }
+    
+    public <T> Optional<T> get(String path, Class<T> type){
+        return caseVale(get(path) ,type);
+    }
+    
+    public <T> T getOrElse(String path, T other){
+        return ((Optional<T>)get(path, other.getClass())).orElse(other);
+    }
+    
+    public boolean hasValue(String path, Class<?> type){
+        return hasValue(get(path), type);
     }
 }
