@@ -3,13 +3,13 @@
 #              --config
 ###################################
 
-# 存放所有的Yggdrasil验证服务器，
+# 设置所有的Yggdrasil验证服务器
 services:
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
+  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入游戏。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
-  # 该节点表示Minecraft正版验证
+  # 该节点表示Minecraft原版验证服务器
   official:
 
     # 启用该验证服务器
@@ -20,9 +20,9 @@ services:
     body:
 
       # 服务器类型，只能是以下值
-      # BLESSING_SKIN                   // 表示Blessing skin验证
-      # MINECRAFT （仅能出现一次）         // 表示正版验证
-      # CUSTOM                          // 自定义验证
+      # BLESSING_SKIN                   // 表示Blessing skin验证类型服务器
+      # MINECRAFT （仅能出现一次）         // 表示正版验证类型服务器
+      # CUSTOM                          // 自定义验证类型服务器
       serverType: MINECRAFT
 
       # 验证服务器的别称。
@@ -30,9 +30,10 @@ services:
       name: "正版"
 
       # Yggdrasil验证请求链接
-      # 当serverType为‘MINECRAFT’时，此节点无效
+      # 当serverType为‘MINECRAFT’时，此节点无需设置
       # 当serverType为‘BLESSING_SKIN’时，只需要指定Yggdrasil api地址即可（比如LittleSkin的URL为：‘https://mcskin.littleservice.cn/api/yggdrasil’）
-      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则填写完整的请求链接）
+      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则需填写完整的请求链接）
+      # 最终的GET请求不传递ip地址，请勿额外添加不必要的属性信息
       url: ""
 
       # 以post请求方式验证账户身份
@@ -43,9 +44,10 @@ services:
 
       # 设置post的请求内容
       # 仅当postMode节点值为true时，此节点才有效
+      # 最终的POST请求不传递ip地址，请勿额外添加不必要的属性信息
       postContent: '{"username":"{0}", "serverId":"{1}"}'
 
-    # 配置加载时是否通过发送假请求识别Yggdrasil配置是否正确.
+    # 加载配置时是否通过发送假请求识别Yggdrasil配置是否正确.
     checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
@@ -62,20 +64,21 @@ services:
     whitelist: true
 
     # 设置当前验证服务器是否启用皮肤修复功能
-    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效
+    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效。
     skinRepair: false
 
     # 设置当前验证服务器皮肤修复错误重试次数
     # 仅当skinRepair节点值为true时，此节点才有效
+    # 皮肤修复服务器来自 mineskin.org ，国内访问环境较差
     skinRepairRetry: 3
 
     # 验证错误重试次数
     authRetry: 1
 
   # 节点名称为插件标记名称，一旦设置请谨慎修改。
-  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
+  # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入游戏。
   # 您可以仿写此节点用来添加新的Yggdrasil验证服务器。
-  # 该节点表示LittleSkin皮肤站验证
+  # 该节点表示LittleSkin皮肤站验证服务器
   littleSkin:
 
     # 启用该验证服务器
@@ -86,9 +89,9 @@ services:
     body:
 
       # 服务器类型，只能是以下值
-      # BLESSING_SKIN                   // 表示Blessing skin验证
-      # MINECRAFT （仅能出现一次）         // 表示正版验证
-      # CUSTOM                          // 自定义验证
+      # BLESSING_SKIN                   // 表示Blessing skin验证类型服务器
+      # MINECRAFT （仅能出现一次）         // 表示正版验证类型服务器
+      # CUSTOM                          // 自定义验证类型服务器
       serverType: BLESSING_SKIN
 
       # 验证服务器的别称。
@@ -96,9 +99,10 @@ services:
       name: "LS皮肤站"
 
       # Yggdrasil验证请求链接
-      # 当serverType为‘MINECRAFT’时，此节点无效
+      # 当serverType为‘MINECRAFT’时，此节点无需设置
       # 当serverType为‘BLESSING_SKIN’时，只需要指定Yggdrasil api地址即可（比如LittleSkin的URL为：‘https://mcskin.littleservice.cn/api/yggdrasil’）
-      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则填写完整的请求链接）
+      # 当serverType为‘CUSTOM’时，必须指定完整的请求链接（比如：‘https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s’， 若是POST请求，则需填写完整的请求链接）
+      # 最终的GET请求不传递ip地址，请勿额外添加不必要的属性信息
       url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
       # 以post请求方式验证账户身份
@@ -109,9 +113,10 @@ services:
 
       # 设置post的请求内容
       # 仅当postMode节点值为true时，此节点才有效
+      # 最终的POST请求不传递ip地址，请勿额外添加不必要的属性信息
       postContent: '{"username":"{0}", "serverId":"{1}"}'
 
-    # 配置加载时是否通过发送假请求识别Yggdrasil配置是否正确.
+    # 加载配置时是否通过发送假请求识别Yggdrasil配置是否正确.
     checkUrl: false
 
     # 当某名玩家首次在此节点所设置的验证服务器中验证通过后，游戏内的UUID会按照此节点所填写的规则来生成
@@ -128,16 +133,16 @@ services:
     whitelist: true
 
     # 设置当前验证服务器是否启用皮肤修复功能
-    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效
+    # 仅当serverType节点值不为‘MINECRAFT’时，此节点才有效。
     skinRepair: false
 
     # 设置当前验证服务器皮肤修复错误重试次数
     # 仅当skinRepair节点值为true时，此节点才有效
+    # 皮肤修复服务器来自 mineskin.org ，国内访问环境较差
     skinRepairRetry: 3
 
     # 验证错误重试次数
     authRetry: 1
-
 
 # 通过此节点下定义的验证服务器验证的玩家都将跳过账户重名检查，
 # 并且强制下线在线的同名账户。
