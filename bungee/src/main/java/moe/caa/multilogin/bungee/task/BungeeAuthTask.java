@@ -78,16 +78,16 @@ public class BungeeAuthTask implements Runnable {
             AtomicReference<UserTextures> userProperty = new AtomicReference<>();
 
             try {
-                for(LoginResult.Property entry : loginResult.getProperties()){
-                    if(entry.getName().equals("textures")){
-                        if(userProperty.get() == null){
+                for (LoginResult.Property entry : loginResult.getProperties()) {
+                    if (entry.getName().equals("textures")) {
+                        if (userProperty.get() == null) {
                             userProperty.set(SkinRepairHandler.repairThirdPartySkin(onlineId, entry.getValue(), entry.getSignature(), result.getYggdrasilService()));
                         }
                     }
                 }
 
                 loginResult.setProperties(new LoginResult.Property[]{new LoginResult.Property("textures", userProperty.get().getRepair_property().getValue(), userProperty.get().getRepair_property().getSignature())});
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 MultiCore.severe(I18n.getTransString("plugin_error_skin_repair", handler.getName()));
             }
@@ -98,7 +98,7 @@ public class BungeeAuthTask implements Runnable {
             FINISH.invoke(handler);
         } catch (Throwable e) {
             e.printStackTrace();
-            handler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
+            handler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt").get()));
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_io_user"));
         }
     }

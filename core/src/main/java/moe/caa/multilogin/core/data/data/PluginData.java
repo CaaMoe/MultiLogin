@@ -18,13 +18,13 @@ import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.pool.AbstractConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.databse.pool.MysqlConnectionPool;
-import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.util.I18n;
+import moe.caa.multilogin.core.util.YamlConfig;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -33,8 +33,8 @@ import java.util.logging.Logger;
  */
 public class PluginData {
     private static final Set<YggdrasilServiceEntry> serviceSet = new HashSet<>();
-    public static IConfiguration configurationConfig = null;
-    private static IConfiguration defaultConfigurationConfig = null;
+    public static YamlConfig configurationConfig = null;
+    private static YamlConfig defaultConfigurationConfig = null;
     private static boolean whitelist = true;
 
     /**
@@ -44,7 +44,7 @@ public class PluginData {
         genFile();
         reloadConfig();
 
-        AbstractConnectionPool args = getSqlPool(configurationConfig.getConfigurationSection("sql"));
+        AbstractConnectionPool args = getSqlPool(configurationConfig.getSection("sql").get());
 
         try {
             SQLHandler.init(args);
@@ -62,7 +62,21 @@ public class PluginData {
         if (!MultiCore.getPlugin().getPluginDataFolder().exists() && !MultiCore.getPlugin().getPluginDataFolder().mkdirs()) {
             throw new IOException(I18n.getTransString("plugin_severe_io_directory_mkdirs", MultiCore.getPlugin().getPluginDataFolder().getPath()));
         }
-        MultiCore.getPlugin().savePluginDefaultConfig();
+        saveResource("config.yml");
+    }
+
+    private static void saveResource(String path) {
+        File file = new File(MultiCore.getPlugin().getPluginDataFolder(), path);
+        if (file.exists()) return;
+        try (InputStream input = MultiCore.getPlugin().getPluginResource(path); FileOutputStream fOut = new FileOutputStream(file)) {
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = input.read(buf)) > 0) {
+                fOut.write(buf, 0, len);
+            }
+        } catch (Exception e) {
+            MultiCore.severe(I18n.getTransString("plugin_severe_io_file_save", file.getName()));
+        }
     }
 
     /**
@@ -70,35 +84,34 @@ public class PluginData {
      */
     public static void reloadConfig() throws IOException {
         serviceSet.clear();
-        MultiCore.getPlugin().reloadPluginConfig();
 
-        defaultConfigurationConfig = MultiCore.getPlugin().yamlLoadConfiguration(new InputStreamReader(MultiCore.getPlugin().getPluginResource("config.yml")));
-        configurationConfig = MultiCore.getPlugin().getPluginConfig();
+        defaultConfigurationConfig = YamlConfig.fromReader(new InputStreamReader(MultiCore.getPlugin().getPluginResource("config.yml")));
+        configurationConfig = YamlConfig.fromReader(new FileReader(new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml")));
 
         Logger log = MultiCore.getPlugin().getPluginLogger();
-        IConfiguration services = configurationConfig.getConfigurationSection("services");
-        if (services != null) {
+        Optional<YamlConfig> services = configurationConfig.getSection("services");
+        if (services.isPresent()) {
             boolean enableMinecraft = false;
-            for (String path : services.getKeys(false)) {
+            for (String path : services.get().getKeys()) {
                 try {
-                    YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.getConfigurationSection(path));
+                    YggdrasilServiceEntry section = YggdrasilServiceEntry.fromYaml(path, services.get().getSection(path).get());
                     if (!section.isEnable()) continue;
-                    if(section.getServerType() == ServerTypeEnum.MINECRAFT){
-                        if(enableMinecraft){
+                    if (section.getServerType() == ServerTypeEnum.MINECRAFT) {
+                        if (enableMinecraft) {
                             log.warning(I18n.getTransString("plugin_severe_invalid_yggdrasil_repeat_vanilla", path));
                             continue;
                         }
                         enableMinecraft = true;
                     }
                     serviceSet.add(section);
-                } catch (Exception e){
+                } catch (Exception e) {
                     log.severe(I18n.getTransString("plugin_severe_invalid_yggdrasil", path, e.getMessage()));
                 }
             }
         }
         log.info(I18n.getTransString("plugin_loaded_multi_Yggdrasil", serviceSet.size()));
 
-        whitelist = configurationConfig.getBoolean("whitelist", true);
+        whitelist = configurationConfig.getBooleanOrElse("whitelist", true);
 
         testMsg(log, "msgNoAdopt");
         testMsg(log, "msgNoChae");
@@ -127,7 +140,7 @@ public class PluginData {
     @SuppressWarnings("all")
     private static void testMsg(Logger log, String path, Object... args) {
         try {
-            String.format(configurationConfig.getString(path), args);
+            String.format(configurationConfig.getString(path).get(), args);
         } catch (Exception ignore) {
             configurationConfig.set(path, defaultConfigurationConfig.getString(path));
             log.warning(I18n.getTransString("plugin_severe_invalid_config_key", path));
@@ -140,7 +153,7 @@ public class PluginData {
      * @return 设置拥有ID保护功能的Yggdrasil服务器的path
      */
     public static String getSafeIdService() {
-        return configurationConfig.getString("safeId", "");
+        return configurationConfig.getStringOrElse("safeId", "");
     }
 
     /**
@@ -149,11 +162,11 @@ public class PluginData {
      * @return Yggdrasil验证超时时间
      */
     public static long getTimeOut() {
-        return configurationConfig.getLong("servicesTimeOut", 7000);
+        return configurationConfig.getLongOrElse("servicesTimeOut", 7000);
     }
 
-    public static boolean isOpenSkinRepair(){
-        return configurationConfig.getBoolean("skinRepair", false);
+    public static boolean isOpenSkinRepair() {
+        return configurationConfig.getBooleanOrElse("skinRepair", false);
     }
 
     /**
@@ -181,7 +194,16 @@ public class PluginData {
      */
     public synchronized static void setWhitelist(boolean whitelist) {
         PluginData.whitelist = whitelist;
-        MultiCore.getPlugin().savePluginConfig();
+        saveConfig();
+    }
+
+    private static void saveConfig() {
+        try {
+            configurationConfig.save(new FileWriter(new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml")));
+        } catch (Exception e) {
+            MultiCore.severe(I18n.getTransString("plugin_severe_io_file_save", "config.yml"));
+        }
+
     }
 
     /**
@@ -218,7 +240,7 @@ public class PluginData {
             SQLHandler.close();
         } catch (SQLException ignored) {
         }
-        MultiCore.getPlugin().savePluginConfig();
+        saveConfig();
     }
 
     /**
@@ -227,12 +249,12 @@ public class PluginData {
      * @param configuration SQL配置
      * @return 链接参数
      */
-    private static AbstractConnectionPool getSqlPool(IConfiguration configuration) {
+    private static AbstractConnectionPool getSqlPool(YamlConfig configuration) {
         if (configuration == null) return null;
         String url;
-        String userName = configuration.getString("username");
-        String password = configuration.getString("password");
-        String backend = configuration.getString("backend", "H2");
+        String userName = configuration.getString("username").get();
+        String password = configuration.getString("password").get();
+        String backend = configuration.getStringOrElse("backend", "H2");
         if ("MYSQL".equalsIgnoreCase(backend)) {
 //            ip port 数据库名
             url = "jdbc:mysql://%s:%s/%s?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";

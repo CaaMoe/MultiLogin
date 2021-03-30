@@ -22,17 +22,14 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.command.CommandMain;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
-import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -119,26 +116,6 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
-    public IConfiguration getPluginConfig() {
-        return new BukkitConfiguration(getConfig());
-    }
-
-    @Override
-    public void savePluginDefaultConfig() {
-        saveDefaultConfig();
-    }
-
-    @Override
-    public void reloadPluginConfig() {
-        reloadConfig();
-    }
-
-    @Override
-    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) {
-        return new BukkitConfiguration(YamlConfiguration.loadConfiguration(reader));
-    }
-
-    @Override
     public InputStream getPluginResource(String path) {
         return getResource(path);
     }
@@ -190,10 +167,5 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             ret.put(player.getUniqueId(), player.getName());
         }
         return ret;
-    }
-
-    @Override
-    public void savePluginConfig() {
-        saveConfig();
     }
 }

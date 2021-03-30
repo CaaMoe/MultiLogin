@@ -15,7 +15,6 @@ package moe.caa.multilogin.core.command;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
@@ -85,9 +84,9 @@ public class WhitelistCommand {
                 } while (false);
 
                 if (flag) {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist"), args[1])));
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist").get(), args[1])));
                 } else {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready"), args[1])));
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready").get(), args[1])));
                 }
             }, 0);
         }
@@ -106,7 +105,7 @@ public class WhitelistCommand {
                         if (entry.hasWhitelist()) {
                             entry.setWhitelist(false);
                             UserDataHandler.updateUserEntry(entry);
-                            MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                            MultiCore.getPlugin().kickPlayer(entry.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame").get());
                             flag = true;
                         }
                     }
@@ -117,7 +116,7 @@ public class WhitelistCommand {
                     if (byUuid != null && byUuid.hasWhitelist()) {
                         byUuid.setWhitelist(false);
                         UserDataHandler.updateUserEntry(byUuid);
-                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame").get());
                         flag = true;
                     }
 
@@ -125,7 +124,7 @@ public class WhitelistCommand {
                     if (byUuid != null && byUuid.hasWhitelist()) {
                         byUuid.setWhitelist(false);
                         UserDataHandler.updateUserEntry(byUuid);
-                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame"));
+                        MultiCore.getPlugin().kickPlayer(byUuid.getRedirect_uuid(), PluginData.configurationConfig.getString("msgDelWhitelistInGame").get());
                         flag = true;
                     }
 
@@ -137,9 +136,9 @@ public class WhitelistCommand {
                     return;
                 }
                 if (flag) {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelist"), args[1])));
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelist").get(), args[1])));
                 } else {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready"), args[1])));
+                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready").get(), args[1])));
                 }
             }, 0);
         }
@@ -153,9 +152,9 @@ public class WhitelistCommand {
         if (testPermission(sender, "multilogin.whitelist.on"))
             if (!PluginData.isWhitelist()) {
                 PluginData.setWhitelist(true);
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelist")));
+                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelist").get()));
             } else {
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelistAlready")));
+                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelistAlready").get()));
             }
     }
 
@@ -166,9 +165,9 @@ public class WhitelistCommand {
         if (testPermission(sender, "multilogin.whitelist.off"))
             if (PluginData.isWhitelist()) {
                 PluginData.setWhitelist(false);
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelist")));
+                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelist").get()));
             } else {
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelistAlready")));
+                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelistAlready").get()));
             }
     }
 }

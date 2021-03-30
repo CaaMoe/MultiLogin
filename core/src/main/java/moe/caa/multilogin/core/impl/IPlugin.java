@@ -13,9 +13,7 @@
 package moe.caa.multilogin.core.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -31,36 +29,6 @@ public interface IPlugin {
      * @return 插件数据文件夹
      */
     File getPluginDataFolder();
-
-    /**
-     * 获得插件配置文件
-     *
-     * @return 插件配置文件
-     */
-    IConfiguration getPluginConfig();
-
-    /**
-     * 保存插件默认配置文件（不覆盖）
-     */
-    void savePluginDefaultConfig();
-
-    /**
-     * 重新读取插件配置文件
-     */
-    void reloadPluginConfig();
-
-    /**
-     * 保存插件配置文件
-     */
-    void savePluginConfig();
-
-    /**
-     * 通过指定输入流生成一个配置文件对象
-     *
-     * @param reader 指定输入流
-     * @return 配置文件对象
-     */
-    IConfiguration yamlLoadConfiguration(InputStreamReader reader) throws IOException;
 
     /**
      * 获得jar包文件数据流
@@ -120,7 +88,7 @@ public interface IPlugin {
     /**
      * 执行一个同步任务
      *
-     * @param run   run
+     * @param run run
      */
     void runTask(Runnable run);
 

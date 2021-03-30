@@ -16,10 +16,12 @@ import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
@@ -83,7 +85,7 @@ public class HttpAuth {
 
         while (tasks.size() != 0 && endTime > System.currentTimeMillis()) {
             Iterator<FutureTask<AuthResult<T>>> itr = tasks.iterator();
-            while (itr.hasNext()){
+            while (itr.hasNext()) {
                 FutureTask<AuthResult<T>> task = itr.next();
                 if (!task.isDone()) continue;
                 try {

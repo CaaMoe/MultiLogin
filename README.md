@@ -120,22 +120,24 @@
         # 验证错误重试次数
         authRetry: 1
 
-
 在添加一个Yggdrasil之前，我们需要知道验证服务器的完整的验证链接。
 
 #### 例子 1
- 官方的验证链接为`https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s` ，配置文件值为：
+
+官方的验证链接为`https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s` ，配置文件值为：
 
     body:
         serverType: MINECRAFT
 
 #### 例子 2
- littleSkin.cn 的验证链接为`https://mcskin.littleservice.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s` ，配置文件值为：
+
+littleSkin.cn
+的验证链接为`https://mcskin.littleservice.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s`
+，配置文件值为：
 
     body:
         serverType: BLESSING_SKIN
         url: "https://mcskin.littleservice.cn/api/yggdrasil"
-
 
 #### 其他例子
 
@@ -145,9 +147,8 @@
         serverType: BLESSING_SKIN
         url: "https://example.cn/api/yggdrasil"
 
-国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、奇怪的Yggdrasil验证服务器。
-如果没有特别需求的话，尽量使用节点的默认值
+国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、奇怪的Yggdrasil验证服务器。 如果没有特别需求的话，尽量使用节点的默认值
 
-## 
+##  
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入Q群互相讨论：832210691

@@ -71,7 +71,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new BungeeAuthTask(initialHandler, genAuthMap()));
         } catch (Throwable e) {
             e.printStackTrace();
-            initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt")));
+            initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt").get()));
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_io_user"));
         }
     }

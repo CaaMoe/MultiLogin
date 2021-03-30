@@ -16,8 +16,8 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.ConvUuidEnum;
 import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.http.HttpGetter;
-import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.util.I18n;
+import moe.caa.multilogin.core.util.YamlConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,27 +99,27 @@ public class YggdrasilServiceEntry {
      * @param section configuration
      * @return Yggdrasil对象
      */
-    public static YggdrasilServiceEntry fromYaml(String path, IConfiguration section) throws Exception {
-        IConfiguration body = section.getConfigurationSection("body");
-        boolean enable = section.getBoolean("enable", false);
-        String name = body.getString("name");
-        ServerTypeEnum serverTypeEnum = ServerTypeEnum.valueOf(body.getString("serverType"));
+    public static YggdrasilServiceEntry fromYaml(String path, YamlConfig section) throws Exception {
+        YamlConfig body = section.getSection("body").orElseThrow(() -> new IllegalArgumentException("未定义数据：body"));
+        boolean enable = section.getBooleanOrElse("enable", false);
+        String name = body.getString("name").map(s -> s.trim().length() == 0 ? null : s).orElseThrow(() -> new IllegalArgumentException("name"));
+        ServerTypeEnum serverTypeEnum = ServerTypeEnum.valueOf(body.getString("serverType").orElseThrow(() -> new IllegalArgumentException("serverType")));
         String url = null;
         boolean postMode = false;
         String postContent = null;
         switch (serverTypeEnum) {
             case CUSTOM:
-                postContent = body.getString("postContent");
-                postMode = body.getBoolean("postMode");
+                postContent = body.getString("postContent").get();
+                postMode = body.getBoolean("postMode").get();
             case BLESSING_SKIN:
-                url = body.getString("url");
+                url = body.getString("url").get();
         }
-        boolean checkUrl = section.getBoolean("checkUrl");
-        ConvUuidEnum convUuidEnum = ConvUuidEnum.valueOf(section.getString("convUuid"));
-        boolean whitelist = section.getBoolean("whitelist", true);
-        boolean skinRepair = section.getBoolean("skinRepair", false);
-        int skinRepairRetry = (int) section.getLong("skinRepairRetry", 3);
-        int authRetry = (int) section.getLong("authRetry", 1);
+        boolean checkUrl = section.getBoolean("checkUrl").get();
+        ConvUuidEnum convUuidEnum = ConvUuidEnum.valueOf(section.getString("convUuid").get());
+        boolean whitelist = section.getBooleanOrElse("whitelist", true);
+        boolean skinRepair = section.getBooleanOrElse("skinRepair", false);
+        int skinRepairRetry = section.getIntegerOrElse("skinRepairRetry", 3);
+        int authRetry = section.getIntegerOrElse("authRetry", 1);
         return new YggdrasilServiceEntry(path, enable, name, serverTypeEnum, url, postMode, checkUrl, postContent, convUuidEnum, whitelist, skinRepair, skinRepairRetry, authRetry);
     }
 
@@ -152,12 +152,12 @@ public class YggdrasilServiceEntry {
         return enable;
     }
 
-    public String getPath() {
-        return path;
-    }
-
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public String getName() {

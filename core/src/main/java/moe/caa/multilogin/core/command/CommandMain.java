@@ -73,7 +73,7 @@ public class CommandMain {
                     return true;
                 }
             }
-            sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd")));
+            sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd").get()));
         } catch (Exception e) {
             e.printStackTrace();
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
@@ -116,7 +116,7 @@ public class CommandMain {
         if (sender.hasPermission(permission)) {
             return true;
         }
-        sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPermission")));
+        sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPermission").get()));
         return false;
     }
 }

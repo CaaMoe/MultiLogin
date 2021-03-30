@@ -16,7 +16,6 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.util.I18n;
@@ -43,7 +42,7 @@ public class Verifier {
 
             // 验证服务器为空
             if (yggdrasilService == null) {
-                return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
+                return new VerificationResult(configurationConfig.getString("msgNoAdopt").get());
             }
             UserEntry userData = UserDataHandler.getUserEntryByOnlineUuid(onlineUuid);
 
@@ -51,7 +50,7 @@ public class Verifier {
             if (updUserEntry = userData != null) {
                 if (!PluginData.isEmpty(userData.getYggdrasil_service())) {
                     if (!userData.getYggdrasil_service().equals(yggdrasilService.getPath())) {
-                        return new VerificationResult(configurationConfig.getString("msgNoChae"));
+                        return new VerificationResult(configurationConfig.getString("msgNoChae").get());
                     }
                 }
             }
@@ -61,7 +60,7 @@ public class Verifier {
                 List<UserEntry> repeatedNameUserEntries = UserDataHandler.getUserEntryByCurrentName(currentName);
                 for (UserEntry repeatedNameUserEntry : repeatedNameUserEntries) {
                     if (!repeatedNameUserEntry.equals(userData)) {
-                        return new VerificationResult(configurationConfig.getString("msgRushName"));
+                        return new VerificationResult(configurationConfig.getString("msgRushName").get());
                     }
                 }
             }
@@ -72,7 +71,7 @@ public class Verifier {
             // 白名单检查
             if (!userData.hasWhitelist() && yggdrasilService.isWhitelist()) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
-                    return new VerificationResult(configurationConfig.getString("msgNoWhitelist"));
+                    return new VerificationResult(configurationConfig.getString("msgNoWhitelist").get());
                 }
                 userData.setWhitelist(true);
             }
@@ -87,7 +86,7 @@ public class Verifier {
             FutureTask<String> task = new FutureTask<>(() -> {
                 for (Map.Entry<UUID, String> entry : MultiCore.getPlugin().getOnlineList().entrySet()) {
                     if (entry.getValue().equalsIgnoreCase(currentName) && !entry.getKey().equals(onlineUuid)) {
-                        MultiCore.getPlugin().kickPlayer(entry.getKey(), configurationConfig.getString("msgRushNameOnl"));
+                        MultiCore.getPlugin().kickPlayer(entry.getKey(), configurationConfig.getString("msgRushNameOnl").get());
                     }
                 }
                 return null;
@@ -102,7 +101,7 @@ public class Verifier {
         } catch (Exception e) {
             e.printStackTrace();
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_verification"));
-            return new VerificationResult(configurationConfig.getString("msgNoAdopt"));
+            return new VerificationResult(configurationConfig.getString("msgNoAdopt").get());
         }
     }
 

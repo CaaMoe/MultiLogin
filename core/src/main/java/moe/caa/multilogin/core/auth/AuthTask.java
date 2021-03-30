@@ -14,7 +14,6 @@ package moe.caa.multilogin.core.auth;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
 import moe.caa.multilogin.core.http.HttpGetter;
 
@@ -24,13 +23,19 @@ import java.util.concurrent.Callable;
 
 /**
  * Yggdrasil验证
+ *
  * @param <T> 数据类型
  */
 public class AuthTask<T> implements Callable<AuthResult<T>> {
-    private final YggdrasilServiceEntry yggdrasilServiceEntry;
-    private final Map<String, String> arg;
     private static Type type;
     private static Gson gson;
+    private final YggdrasilServiceEntry yggdrasilServiceEntry;
+    private final Map<String, String> arg;
+
+    public AuthTask(YggdrasilServiceEntry yggdrasilServiceEntry, Map<String, String> arg) {
+        this.yggdrasilServiceEntry = yggdrasilServiceEntry;
+        this.arg = arg;
+    }
 
     /**
      * 启动必须调用的函数
@@ -41,11 +46,6 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
     public static void setServicePair(Type type, Gson gson) {
         AuthTask.type = type;
         AuthTask.gson = gson;
-    }
-
-    public AuthTask(YggdrasilServiceEntry yggdrasilServiceEntry, Map<String, String> arg) {
-        this.yggdrasilServiceEntry = yggdrasilServiceEntry;
-        this.arg = arg;
     }
 
     @Override

@@ -14,7 +14,6 @@ package moe.caa.multilogin.bukkit.listener;
 
 import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
 import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.data.databse.SQLHandler;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.util.I18n;
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class BukkitListener implements Listener {
         }
         if (MultiLoginBukkit.LOGIN_CACHE.remove(event.getUniqueId()) == null) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(configurationConfig.getString("msgNoAdopt"));
+            event.setKickMessage(configurationConfig.getString("msgNoAdopt").get());
         }
 
         try {
@@ -52,7 +51,7 @@ public class BukkitListener implements Listener {
         } catch (SQLException e) {
             e.printStackTrace();
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(configurationConfig.getString("msgNoAdopt"));
+            event.setKickMessage(configurationConfig.getString("msgNoAdopt").get());
         }
     }
 

@@ -20,7 +20,6 @@ import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.auth.AuthTask;
 import moe.caa.multilogin.core.command.CommandMain;
-import moe.caa.multilogin.core.impl.IConfiguration;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.util.I18n;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -30,17 +29,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -50,7 +45,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -60,7 +54,6 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public static File configFile;
     public static MultiLoginBungee INSTANCE;
     private final ScheduledExecutorService TIMER = Executors.newScheduledThreadPool(10);
-    private BungeeConfiguration configuration;
 
     /**
      * 修改服务
@@ -151,39 +144,6 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     }
 
     @Override
-    public IConfiguration getPluginConfig() {
-        return configuration;
-    }
-
-    @Override
-    public void savePluginDefaultConfig() {
-        if (configFile.exists()) return;
-        try (InputStream input = getPluginResource("config.yml"); FileOutputStream fOut = new FileOutputStream(configFile)) {
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = input.read(buf)) > 0) {
-                fOut.write(buf, 0, len);
-            }
-        } catch (Exception e) {
-            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_save", configFile.getName()));
-        }
-    }
-
-    @Override
-    public void reloadPluginConfig() {
-        try {
-            configuration = new BungeeConfiguration(ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml")));
-        } catch (Exception ignore) {
-            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_load", configFile.getName()));
-        }
-    }
-
-    @Override
-    public IConfiguration yamlLoadConfiguration(InputStreamReader reader) {
-        return new BungeeConfiguration(ConfigurationProvider.getProvider(YamlConfiguration.class).load(reader));
-    }
-
-    @Override
     public InputStream getPluginResource(String path) {
         return getResourceAsStream(path);
     }
@@ -235,14 +195,5 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
             ret.put(player.getUniqueId(), player.getName());
         }
         return ret;
-    }
-
-    @Override
-    public void savePluginConfig() {
-        try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(configuration.getVanConfiguration(), new File(getDataFolder(), "config.yml"));
-        } catch (Exception e) {
-            getPluginLogger().log(Level.SEVERE, I18n.getTransString("plugin_severe_io_file_save", configFile.getName()));
-        }
     }
 }
