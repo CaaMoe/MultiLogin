@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unchecked")
 public class YamlConfig {
     private static final Yaml YAML;
 
@@ -20,9 +21,9 @@ public class YamlConfig {
         YAML = new Yaml(dumperOptions);
     }
 
-    private final Map<?, ?> contents;
+    private final Map<String, Object> contents;
 
-    private YamlConfig(Map<?, ?> contents) {
+    private YamlConfig(Map<String, Object> contents) {
         this.contents = contents == null ? new LinkedHashMap<>() : contents;
     }
 
@@ -101,14 +102,13 @@ public class YamlConfig {
     public Optional<YamlConfig> getSection(String path) {
         Optional<?> value = get(path);
         if (value.isPresent() && value.get() instanceof Map) {
-            return Optional.of(new YamlConfig((Map<?, ?>) value.get()));
+            return Optional.of(new YamlConfig((Map<String, Object>) value.get()));
         }
         return Optional.empty();
     }
 
     public void set(String path, Object value) {
-        // contents.put(path, value);
-        // TODO: 2021/3/30  
+        contents.put(path, value);
     }
 
     public Set<String> getKeys() {
