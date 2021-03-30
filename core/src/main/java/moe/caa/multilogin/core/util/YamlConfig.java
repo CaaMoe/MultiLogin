@@ -7,10 +7,10 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class YamlConfig {
     private final Map<?, ?> contents;
-    private final Map<?, ?> defaultContents;
     private static final Yaml YAML;
 
     static {
@@ -19,22 +19,47 @@ public class YamlConfig {
         YAML = new Yaml(dumperOptions);
     }
 
-    private YamlConfig(Map<?, ?> contents, Map<?, ?> defaultContents){
+    private YamlConfig(Map<?, ?> contents){
         this.contents = contents == null ? new LinkedHashMap<>() : contents;
-        this.defaultContents = defaultContents == null ? new LinkedHashMap<>() : defaultContents;
     }
 
     public void save(Writer writer){
         YAML.dump(contents, writer);
     }
 
-    public static YamlConfig fromReader(Reader reader, Reader defaultReader){
+    public static YamlConfig fromReader(Reader reader){
         Map<?, ?> contents = YAML.loadAs(reader, LinkedHashMap.class);
-        Map<?, ?> defaultContents = YAML.loadAs(defaultReader, LinkedHashMap.class);
-        return new YamlConfig(contents, defaultContents);
+        return new YamlConfig(contents);
     }
     
-    public String getString(String path){
-        return (String)contents.get(path);
+    private Class<?> getType(Object obj){
+        return obj == null ?  null : obj.getClass();
+    }
+    
+    public Optional<?> get(String path){
+        return Optional.ofNullable(contents.get(path));
+    }
+    
+    public Optional<String> getString(String path){
+        Optional<?> value = get(path);
+        if(value.isPresent() && value.get() instanceof String){
+            return (Optional<String>)value;
+        }
+        return Optional.empty();
+    }
+    
+    public Optional<String> getString(String path, String defaultValue){
+        Optional<String> value = getString(path);
+        return value.isPresent() ? value : Optional.ofNullable(defaultValue);
+        
+    }
+    
+    public boolean hasValue(String path, Class<?> type){
+        if(contents.containsKey(path)){
+            if(type == getType(contents.get(path))){
+                return true;
+            }
+        }
+        return false;
     }
 }
