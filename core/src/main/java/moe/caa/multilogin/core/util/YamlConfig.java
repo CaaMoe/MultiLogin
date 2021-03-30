@@ -33,4 +33,8 @@ public class YamlConfig {
         Map<?, ?> defaultContents = YAML.loadAs(defaultReader, LinkedHashMap.class);
         return new YamlConfig(contents, defaultContents);
     }
+    
+    public String getString(String path){
+        return (String)contents.get(path);
+    }
 }
