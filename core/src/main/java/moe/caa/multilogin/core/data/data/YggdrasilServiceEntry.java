@@ -47,10 +47,10 @@ public class YggdrasilServiceEntry {
                                  boolean whitelist, boolean skinRepair, int skinRepairRetry, int authRetry) throws Exception {
         String url1;
         String postContent1;
-        this.path = Optional.ofNullable(path).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("path"));
-        this.name = Optional.ofNullable(name).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("name"));
-        this.serverTypeEnum = Optional.ofNullable(serverTypeEnum).orElseThrow(() -> new IllegalArgumentException("serverType"));
-        this.convUuidEnum = Optional.ofNullable(convUuidEnum).orElseThrow(() -> new IllegalArgumentException("convUuid"));
+        this.path = Optional.ofNullable(path).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "path")));
+        this.name = Optional.ofNullable(name).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "name")));
+        this.serverTypeEnum = Optional.ofNullable(serverTypeEnum).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "serverType")));
+        this.convUuidEnum = Optional.ofNullable(convUuidEnum).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "convUuid")));
         this.enable = enable;
         url1 = url;
         this.postMode = serverTypeEnum == ServerTypeEnum.CUSTOM && postMode;
@@ -63,9 +63,9 @@ public class YggdrasilServiceEntry {
 
         switch (serverTypeEnum) {
             case CUSTOM:
-                postContent1 = Optional.ofNullable(postContent).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException("postContent"));
+                postContent1 = Optional.ofNullable(postContent).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "postContent")));
             case BLESSING_SKIN:
-                url1 = Optional.ofNullable(url).map(s -> PluginData.isEmpty(s) ? null : s + "/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s").orElseThrow(() -> new IllegalArgumentException("url"));
+                url1 = Optional.ofNullable(url).map(s -> PluginData.isEmpty(s) ? null : s + "/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "url")));
                 break;
             case MINECRAFT:
                 url1 = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s";
@@ -100,22 +100,24 @@ public class YggdrasilServiceEntry {
      * @return Yggdrasil对象
      */
     public static YggdrasilServiceEntry fromYaml(String path, YamlConfig section) throws Exception {
-        YamlConfig body = section.getSection("body").orElseThrow(() -> new IllegalArgumentException("未定义数据：body"));
+        YamlConfig body = section.getSection("body").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "body")));
         boolean enable = section.getBooleanOrElse("enable", false);
-        String name = body.getString("name").map(s -> s.trim().length() == 0 ? null : s).orElseThrow(() -> new IllegalArgumentException("name"));
-        ServerTypeEnum serverTypeEnum = ServerTypeEnum.valueOf(body.getString("serverType").orElseThrow(() -> new IllegalArgumentException("serverType")));
+        String name = body.getString("name").orElse(null);
+
+        ConvUuidEnum convUuidEnum = PluginData.getEnum(ConvUuidEnum.values(), section.getString("convUuid").orElse(null));
+        ServerTypeEnum serverTypeEnum = PluginData.getEnum(ServerTypeEnum.values(), section.getString("serverType").orElse(null));
+
         String url = null;
         boolean postMode = false;
         String postContent = null;
         switch (serverTypeEnum) {
             case CUSTOM:
-                postContent = body.getString("postContent").get();
-                postMode = body.getBoolean("postMode").get();
+                postContent = body.getString("postContent").orElse(null);
+                postMode = body.getBoolean("postMode").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "postMode")));
             case BLESSING_SKIN:
-                url = body.getString("url").get();
+                url = body.getString("url").orElse(null);
         }
-        boolean checkUrl = section.getBoolean("checkUrl").get();
-        ConvUuidEnum convUuidEnum = ConvUuidEnum.valueOf(section.getString("convUuid").get());
+        boolean checkUrl = section.getBoolean("checkUrl").orElse(false);
         boolean whitelist = section.getBooleanOrElse("whitelist", true);
         boolean skinRepair = section.getBooleanOrElse("skinRepair", false);
         int skinRepairRetry = section.getIntegerOrElse("skinRepairRetry", 3);

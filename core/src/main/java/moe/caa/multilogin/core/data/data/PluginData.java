@@ -82,11 +82,16 @@ public class PluginData {
     /**
      * 重新加载配置和白名单文件
      */
-    public static void reloadConfig() throws IOException {
+    public static void reloadConfig() throws Exception {
         serviceSet.clear();
 
-        defaultConfigurationConfig = YamlConfig.fromReader(new InputStreamReader(MultiCore.getPlugin().getPluginResource("config.yml")));
-        configurationConfig = YamlConfig.fromReader(new FileReader(new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml")));
+        try {
+            defaultConfigurationConfig = YamlConfig.fromReader(new InputStreamReader(MultiCore.getPlugin().getPluginResource("config.yml")));
+            configurationConfig = YamlConfig.fromReader(new FileReader(new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml")));
+        } catch (Exception e) {
+            MultiCore.severe(I18n.getTransString("plugin_severe_io_file_load", "config.yml"));
+            throw e;
+        }
 
         Logger log = MultiCore.getPlugin().getPluginLogger();
         Optional<YamlConfig> services = configurationConfig.getSection("services");
@@ -241,6 +246,16 @@ public class PluginData {
         } catch (SQLException ignored) {
         }
         saveConfig();
+    }
+
+    public static <T extends Enum<T>> T getEnum(T[] types, String name) {
+        if (name == null) return null;
+        for (T t : types) {
+            if (t.name().equalsIgnoreCase(name)) {
+                return t;
+            }
+        }
+        return null;
     }
 
     /**
