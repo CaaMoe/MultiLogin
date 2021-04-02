@@ -21,6 +21,7 @@ import moe.caa.multilogin.core.util.YamlConfig;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -110,7 +111,7 @@ public class YggdrasilServiceEntry {
         String url = null;
         boolean postMode = false;
         String postContent = null;
-        switch (serverTypeEnum) {
+        switch (Objects.requireNonNull(serverTypeEnum)) {
             case CUSTOM:
                 postContent = body.getString("postContent").orElse(null);
                 postMode = body.getBoolean("postMode").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "postMode")));
