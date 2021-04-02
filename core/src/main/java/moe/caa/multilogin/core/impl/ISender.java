@@ -12,8 +12,6 @@
 
 package moe.caa.multilogin.core.impl;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-
 /**
  * 可被core识别的命令执行者对象
  */
@@ -39,7 +37,7 @@ public interface ISender {
      *
      * @param text 消息对象
      */
-    void sendMessage(BaseComponent text);
+    void sendMessage(String text);
 
     /**
      * 判断该命令执行者是不是服务器操作员

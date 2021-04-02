@@ -62,9 +62,9 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
         Map<String, String> arguments = new HashMap<>();
         arguments.put("username", user.getName());
         arguments.put("serverId", serverId);
-        if (address != null) {
-            arguments.put("ip", address.getHostAddress());
-        }
+//        if (address != null) {
+//            arguments.put("ip", address.getHostAddress());
+//        }
 
         try {
 //            验证阶段

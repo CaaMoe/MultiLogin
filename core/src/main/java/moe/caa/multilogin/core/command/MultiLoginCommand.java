@@ -18,7 +18,6 @@ import moe.caa.multilogin.core.data.data.UserEntry;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +37,7 @@ public class MultiLoginCommand {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            commandSender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgReload").get()));
+            commandSender.sendMessage(PluginData.configurationConfig.getString("msgReload").get());
         }
     }
 
@@ -50,7 +49,7 @@ public class MultiLoginCommand {
             String s = (strings.length == 2) ? strings[1] : (commandSender.isPlayer() ? commandSender.getSenderName() : null);
             if (s == null) {
 
-                commandSender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPlayer").get()));
+                commandSender.sendMessage(PluginData.configurationConfig.getString("msgNoPlayer").get());
                 return;
             }
             MultiCore.getPlugin().runTaskAsyncLater(() -> {
@@ -73,15 +72,15 @@ public class MultiLoginCommand {
 
                     if (userList.size() > 0) {
                         for (UserEntry entry : userList) {
-                            commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQuery").get(), s, entry.getServiceEntry().getName())));
+                            commandSender.sendMessage(String.format(PluginData.configurationConfig.getString("msgYDQuery").get(), s, entry.getServiceEntry().getName()));
                         }
                     } else {
-                        commandSender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgYDQueryNoRel").get(), s)));
+                        commandSender.sendMessage(String.format(PluginData.configurationConfig.getString("msgYDQueryNoRel").get(), s));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
-                    commandSender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
+                    commandSender.sendMessage(I18n.getTransString("plugin_severe_command"));
                 }
             }, 0);
         }

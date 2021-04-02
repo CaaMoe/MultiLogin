@@ -14,7 +14,7 @@ package moe.caa.multilogin.bungee.impl;
 
 import moe.caa.multilogin.core.impl.ISender;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class BungeeSender implements ISender {
@@ -35,8 +35,8 @@ public class BungeeSender implements ISender {
     }
 
     @Override
-    public void sendMessage(BaseComponent text) {
-        vanSender.sendMessage(text);
+    public void sendMessage(String text) {
+        vanSender.sendMessage(new TextComponent(text));
     }
 
     @Override

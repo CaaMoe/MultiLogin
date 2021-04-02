@@ -91,6 +91,12 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void onEnable() {
         AuthTask.setServicePair(LoginResult.class, BungeeCord.getInstance().gson);
 
+        if (!BungeeCord.getInstance().getConfig().isOnlineMode()) {
+            getLogger().severe(I18n.getTransString("bukkit_error_loading_online"));
+            BungeeCord.getInstance().stop();
+            return;
+        }
+
         MultiLoginBungee.INSTANCE = this;
         configFile = new File(this.getPluginDataFolder(), "config.yml");
 

@@ -19,7 +19,6 @@ import moe.caa.multilogin.core.data.databse.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.List;
 import java.util.UUID;
@@ -75,7 +74,7 @@ public class WhitelistCommand {
                     } catch (Exception e) {
                         e.printStackTrace();
                         MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
-                        sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
+                        sender.sendMessage(I18n.getTransString("plugin_severe_command"));
                         return;
                     }
                     if (!flag) {
@@ -84,9 +83,9 @@ public class WhitelistCommand {
                 } while (false);
 
                 if (flag) {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelist").get(), args[1])));
+                    sender.sendMessage(String.format(PluginData.configurationConfig.getString("msgAddWhitelist").get(), args[1]));
                 } else {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready").get(), args[1])));
+                    sender.sendMessage(String.format(PluginData.configurationConfig.getString("msgAddWhitelistAlready").get(), args[1]));
                 }
             }, 0);
         }
@@ -132,13 +131,13 @@ public class WhitelistCommand {
                 } catch (Exception e) {
                     e.printStackTrace();
                     MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
-                    sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
+                    sender.sendMessage(I18n.getTransString("plugin_severe_command"));
                     return;
                 }
                 if (flag) {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelist").get(), args[1])));
+                    sender.sendMessage(String.format(PluginData.configurationConfig.getString("msgDelWhitelist").get(), args[1]));
                 } else {
-                    sender.sendMessage(new TextComponent(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready").get(), args[1])));
+                    sender.sendMessage(String.format(PluginData.configurationConfig.getString("msgDelWhitelistAlready").get(), args[1]));
                 }
             }, 0);
         }
@@ -152,9 +151,9 @@ public class WhitelistCommand {
         if (testPermission(sender, "multilogin.whitelist.on"))
             if (!PluginData.isWhitelist()) {
                 PluginData.setWhitelist(true);
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelist").get()));
+                sender.sendMessage(PluginData.configurationConfig.getString("msgOpenWhitelist").get());
             } else {
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgOpenWhitelistAlready").get()));
+                sender.sendMessage(PluginData.configurationConfig.getString("msgOpenWhitelistAlready").get());
             }
     }
 
@@ -165,9 +164,9 @@ public class WhitelistCommand {
         if (testPermission(sender, "multilogin.whitelist.off"))
             if (PluginData.isWhitelist()) {
                 PluginData.setWhitelist(false);
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelist").get()));
+                sender.sendMessage(PluginData.configurationConfig.getString("msgCloseWhitelist").get());
             } else {
-                sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgCloseWhitelistAlready").get()));
+                sender.sendMessage(PluginData.configurationConfig.getString("msgCloseWhitelistAlready").get());
             }
     }
 }

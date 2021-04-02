@@ -16,7 +16,6 @@ import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.data.data.PluginData;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.util.I18n;
-import net.md_5.bungee.api.chat.TextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -73,11 +72,11 @@ public class CommandMain {
                     return true;
                 }
             }
-            sender.sendMessage(new TextComponent(configurationConfig.getString("msgInvCmd").get()));
+            sender.sendMessage(configurationConfig.getString("msgInvCmd").get());
         } catch (Exception e) {
             e.printStackTrace();
             MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_command"));
-            sender.sendMessage(new TextComponent(I18n.getTransString("plugin_severe_command")));
+            sender.sendMessage(I18n.getTransString("plugin_severe_command"));
         }
         return true;
     }
@@ -116,7 +115,7 @@ public class CommandMain {
         if (sender.hasPermission(permission)) {
             return true;
         }
-        sender.sendMessage(new TextComponent(PluginData.configurationConfig.getString("msgNoPermission").get()));
+        sender.sendMessage(PluginData.configurationConfig.getString("msgNoPermission").get());
         return false;
     }
 }

@@ -38,10 +38,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
+/**
+ * MultiLogin - Bukkit
+ */
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
     public static final Map<UUID, UserEntry> USER_CACHE = new Hashtable<>();
 
+    /**
+     * 反射替换原版的验证服务
+     */
     private void initCoreService() throws Exception {
         final String NMS_VERSION = getServer().getClass().getPackage().getName().split("\\.")[3];
         final Class<?> CRAFT_SERVER_CLASS = Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + ".CraftServer");

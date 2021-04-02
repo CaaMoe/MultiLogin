@@ -13,7 +13,6 @@
 package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.core.impl.ISender;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -35,8 +34,8 @@ public class BukkitSender implements ISender {
     }
 
     @Override
-    public void sendMessage(BaseComponent text) {
-        vanHandle.spigot().sendMessage(text);
+    public void sendMessage(String text) {
+        vanHandle.sendMessage(text);
     }
 
     @Override

@@ -42,12 +42,13 @@ public class MultiCore {
                 return false;
             }
             PluginData.initService();
+            plugin.runTaskAsyncTimer(updater, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
+            plugin.runTaskAsyncLater(updater::infoUpdate, 0);
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        plugin.runTaskAsyncTimer(updater, 20 * 60 * 60 * 12, 20 * 60 * 60 * 12);
-        plugin.runTaskAsyncLater(updater::infoUpdate, 0);
-        return true;
+        return false;
     }
 
     /**
