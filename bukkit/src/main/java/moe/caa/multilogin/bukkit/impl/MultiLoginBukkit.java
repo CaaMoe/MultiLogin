@@ -99,8 +99,14 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         }
 
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new MultiLoginPlaceholderExpansion().register();
-            getLogger().info(I18n.getTransString("bukkit_loaded_papi"));
+            try {
+                new MultiLoginPlaceholderExpansion().register();
+                getLogger().info(I18n.getTransString("bukkit_loaded_papi"));
+            } catch (Throwable t){
+                t.printStackTrace();
+                getLogger().info(I18n.getTransString("bukkit_loaded_papi_error"));
+            }
+
         }
         getLogger().info(I18n.getTransString("plugin_enabled"));
     }
