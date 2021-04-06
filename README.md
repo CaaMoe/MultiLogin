@@ -156,7 +156,7 @@ littleSkin.cn
         url: "https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s"
         postMode: false
 
-#### 例子 4
+#### 例子 5
 
 野生高级 Yggdrasil
 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
@@ -170,6 +170,8 @@ littleSkin.cn
         postContent: '{"username":"{0}", "serverId":"{1}"}'
 
 ###
+
+
 
 一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的Yggdrasil验证服务器都可以设置为：
 
