@@ -135,7 +135,41 @@ littleSkin.cn
         serverType: BLESSING_SKIN
         url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
-#### 其他例子
+#### 例子 3
+
+某某基于 BLESSING_SKIN 皮肤站框架设计的皮肤站
+的验证链接为`https://example.com/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s`
+，配置文件值为：
+
+    body:
+        serverType: BLESSING_SKIN
+        url: "https://example.com/api/yggdrasil"
+
+#### 例子 4
+
+野生高级 Yggdrasil
+的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s`
+（GET请求） ，配置文件值为：
+
+    body:
+        serverType: CUSTOM
+        url: "https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s"
+        postMode: false
+
+#### 例子 4
+
+野生高级 Yggdrasil
+的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
+（POST请求） ，POST格式为`{"username":"{0}", "serverId":"{1}"}'`
+，配置文件值为：
+
+    body:
+        serverType: CUSTOM
+        url: "https://example.com/yggdrasil/session/minecraft/hasJoined"
+        postMode: true
+        postContent: '{"username":"{0}", "serverId":"{1}"}'
+
+###
 
 一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的Yggdrasil验证服务器都可以设置为：
 
