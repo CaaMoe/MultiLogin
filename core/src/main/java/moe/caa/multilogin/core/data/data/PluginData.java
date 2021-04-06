@@ -170,10 +170,6 @@ public class PluginData {
         return configurationConfig.getLongOrElse("servicesTimeOut", 7000);
     }
 
-    public static boolean isOpenSkinRepair() {
-        return configurationConfig.getBooleanOrElse("skinRepair", false);
-    }
-
     /**
      * 获得当前所有Yggdrasil验证服务器
      *

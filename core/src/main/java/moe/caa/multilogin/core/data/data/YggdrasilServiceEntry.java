@@ -106,12 +106,14 @@ public class YggdrasilServiceEntry {
         String name = body.getString("name").orElse(null);
 
         ConvUuidEnum convUuidEnum = PluginData.getEnum(ConvUuidEnum.values(), section.getString("convUuid").orElse(null));
-        ServerTypeEnum serverTypeEnum = PluginData.getEnum(ServerTypeEnum.values(), section.getString("serverType").orElse(null));
+        ServerTypeEnum serverTypeEnum = PluginData.getEnum(ServerTypeEnum.values(), body.getString("serverType").orElse(null));
+
+        if(serverTypeEnum == null) throw new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "serverType"));
 
         String url = null;
         boolean postMode = false;
         String postContent = null;
-        switch (Objects.requireNonNull(serverTypeEnum)) {
+        switch (serverTypeEnum) {
             case CUSTOM:
                 postContent = body.getString("postContent").orElse(null);
                 postMode = body.getBoolean("postMode").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "postMode")));

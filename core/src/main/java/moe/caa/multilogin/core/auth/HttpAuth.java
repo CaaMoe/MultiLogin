@@ -47,10 +47,10 @@ public class HttpAuth {
         for (List<YggdrasilServiceEntry> entries : order) {
 //            分批验证 根据超时进行分批
             AuthResult<T> result = authWithTasks(entries, arg);
-            if (result.isSuccess()) {
+            if (result != null && result.isSuccess()) {
                 return result;
             }
-            if (result.getErr() == AuthErrorEnum.SERVER_DOWN) {
+            if (result != null && result.getErr() == AuthErrorEnum.SERVER_DOWN) {
                 down = true;
             }
         }

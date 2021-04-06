@@ -69,7 +69,7 @@ public class SkinRepairHandler {
     public static UserTextures repairThirdPartySkin(UUID onlineUuid, String value, String signature, YggdrasilServiceEntry serviceEntry) throws Exception {
 
 // 判断是否启用该功能
-        if (!PluginData.isOpenSkinRepair())
+        if (!serviceEntry.isSkinRepair())
             return new UserTextures(onlineUuid, null, new UserTextures.Textures(value, signature));
         boolean newUserEntry;
         UserTextures userTextures = TexturesDataHandler.getUserPropertyByOnlineUuid(onlineUuid);
