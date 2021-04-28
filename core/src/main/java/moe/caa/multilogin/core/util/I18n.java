@@ -18,10 +18,9 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 public class I18n {
-    private static ResourceBundle rb;
+    private static ResourceBundle rb = ResourceBundle.getBundle("lang/multilogin");
 
     public static void initService() {
-        rb = ResourceBundle.getBundle("lang/multilogin");
         MultiCore.info(getTransString("load_language"));
     }
 
