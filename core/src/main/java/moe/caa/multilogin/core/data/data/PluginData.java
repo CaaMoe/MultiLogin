@@ -147,7 +147,7 @@ public class PluginData {
         try {
             String.format(configurationConfig.getString(path).get(), args);
         } catch (Exception ignore) {
-            configurationConfig.set(path, defaultConfigurationConfig.getString(path));
+            configurationConfig.set(path, defaultConfigurationConfig.getString(path).get());
             log.warning(I18n.getTransString("plugin_severe_invalid_config_key", path));
         }
     }
@@ -269,7 +269,7 @@ public class PluginData {
         if ("MYSQL".equalsIgnoreCase(backend)) {
 //            ip port 数据库名
             url = "jdbc:mysql://%s:%s/%s?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
-            url = String.format(url, configuration.getString("ip"), configuration.getString("port"), configuration.getString("database"));
+            url = String.format(url, configuration.getString("ip").get(), configuration.getString("port").get(), configuration.getString("database").get());
             return new MysqlConnectionPool(url, userName, password);
         } else if ("H2".equalsIgnoreCase(backend)) {
 //            位置 库名
