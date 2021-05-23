@@ -200,7 +200,7 @@ public class PluginData {
 
     private static void saveConfig() {
         try {
-            if(configurationConfig != null)
+            if (configurationConfig != null)
                 configurationConfig.save(new FileWriter(new File(MultiCore.getPlugin().getPluginDataFolder(), "config.yml")));
         } catch (Exception e) {
             MultiCore.severe(I18n.getTransString("plugin_severe_io_file_save", "config.yml"));

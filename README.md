@@ -147,8 +147,7 @@ littleSkin.cn
 
 #### 例子 4
 
-野生高级 Yggdrasil
-的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s`
+野生高级 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s`
 （GET请求） ，配置文件值为：
 
     body:
@@ -158,8 +157,7 @@ littleSkin.cn
 
 #### 例子 5
 
-野生高级 Yggdrasil
-的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
+野生高级 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
 （POST请求） ，POST格式为`{"username":"{0}", "serverId":"{1}"}'`
 ，配置文件值为：
 
@@ -171,8 +169,6 @@ littleSkin.cn
 
 ##
 
-
-
 一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的Yggdrasil验证服务器都可以设置为：
 
     body:
@@ -181,6 +177,6 @@ littleSkin.cn
 
 国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、奇怪的Yggdrasil验证服务器。 如果没有特别需求的话，尽量使用节点的默认值
 
-##  
+##   
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入Q群互相讨论：832210691

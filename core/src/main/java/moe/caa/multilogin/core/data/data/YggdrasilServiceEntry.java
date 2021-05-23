@@ -21,7 +21,6 @@ import moe.caa.multilogin.core.util.YamlConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -108,7 +107,8 @@ public class YggdrasilServiceEntry {
         ConvUuidEnum convUuidEnum = PluginData.getEnum(ConvUuidEnum.values(), section.getString("convUuid").orElse(null));
         ServerTypeEnum serverTypeEnum = PluginData.getEnum(ServerTypeEnum.values(), body.getString("serverType").orElse(null));
 
-        if(serverTypeEnum == null) throw new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "serverType"));
+        if (serverTypeEnum == null)
+            throw new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "serverType"));
 
         String url = null;
         boolean postMode = false;

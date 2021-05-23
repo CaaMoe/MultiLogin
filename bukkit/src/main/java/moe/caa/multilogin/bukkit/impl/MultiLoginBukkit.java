@@ -102,7 +102,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             try {
                 new MultiLoginPlaceholderExpansion().register();
                 getLogger().info(I18n.getTransString("bukkit_loaded_papi"));
-            } catch (Throwable t){
+            } catch (Throwable t) {
                 t.printStackTrace();
                 getLogger().info(I18n.getTransString("bukkit_loaded_papi_error"));
             }
