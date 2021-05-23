@@ -59,6 +59,8 @@ public class SQLHandler {
      * 关闭连接池
      */
     public static void close() throws SQLException {
-        pool.close();
+        if(pool != null){
+            pool.close();
+        }
     }
 }
