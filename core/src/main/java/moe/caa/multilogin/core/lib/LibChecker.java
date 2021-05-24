@@ -15,11 +15,13 @@ package moe.caa.multilogin.core.lib;
 import moe.caa.multilogin.core.MultiCore;
 import moe.caa.multilogin.core.http.HttpDownload;
 import moe.caa.multilogin.core.util.I18n;
+import sun.misc.Unsafe;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -168,16 +170,25 @@ public class LibChecker {
         addUrlMethod.setAccessible(false);
     }
 
-    private void initLoader() throws NoSuchMethodException, IllegalAccessException {
+    private void initLoader() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, NoSuchFieldException {
         ClassLoader classLoader = MultiCore.getPlugin().getClass().getClassLoader();
         if (!(classLoader instanceof URLClassLoader)) {
             loadFail = true;
             throw new AssertionError(I18n.getTransString("plugin_error_loading_library_class_loader"));
         }
         urlClassLoader = (URLClassLoader) classLoader;
+
+        Field theUnsafe = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
+        theUnsafe.setAccessible(true);
+        Unsafe unsafe = (Unsafe) theUnsafe.get(null);
+        Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+
+
+        MethodHandles.Lookup lookup = (MethodHandles.Lookup) unsafe.getObject(MethodHandles.Lookup.class, unsafe.staticFieldOffset(implLookup));
+
         addUrlMethod = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        addUrlMethod.setAccessible(true);
+        // MethodHandles.Lookup lookup = MethodHandles.lookup();
+        // addUrlMethod.setAccessible(true);
         addUrlMH = lookup.unreflect(addUrlMethod);
     }
 
