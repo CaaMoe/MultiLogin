@@ -65,7 +65,8 @@ public class YggdrasilServiceEntry {
             case CUSTOM:
                 postContent1 = Optional.ofNullable(postContent).map(s -> PluginData.isEmpty(s) ? null : s).orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "postContent")));
             case BLESSING_SKIN:
-                url1 = Optional.ofNullable(url).map(s -> PluginData.isEmpty(s) ? null : s + "/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "url")));
+                if (!postMode)
+                    url1 = Optional.ofNullable(url).map(s -> PluginData.isEmpty(s) ? null : s + "/sessionserver/session/minecraft/hasJoined?username=%s&serverId=%s").orElseThrow(() -> new IllegalArgumentException(I18n.getTransString("plugin_severe_config_path", "url")));
                 break;
             case MINECRAFT:
                 url1 = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username=%s&serverId=%s";
