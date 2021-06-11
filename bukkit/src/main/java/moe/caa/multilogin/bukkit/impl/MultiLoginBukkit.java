@@ -49,8 +49,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
      * 反射替换原版的验证服务
      */
     private void initCoreService() throws Exception {
-        final String NMS_VERSION = getServer().getClass().getPackage().getName().split("\\.")[3];
-        final Class<?> CRAFT_SERVER_CLASS = Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + ".CraftServer");
+        final Class<?> CRAFT_SERVER_CLASS = getServer().getClass();
         final Method CRAFT_SERVER_GET_HANDLE = CRAFT_SERVER_CLASS.getDeclaredMethod("getHandle");
         final Class<?> DEDICATED_PLAYER_LIST_CLASS = CRAFT_SERVER_GET_HANDLE.getReturnType();
         final Method DEDICATED_PLAYER_LIST_GET_HANDLE = DEDICATED_PLAYER_LIST_CLASS.getDeclaredMethod("getServer");
