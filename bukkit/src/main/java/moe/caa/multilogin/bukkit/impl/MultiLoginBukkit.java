@@ -52,17 +52,15 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         final String NMS_VERSION = getServer().getClass().getPackage().getName().split("\\.")[3];
         final Class<?> CRAFT_SERVER_CLASS = Class.forName("org.bukkit.craftbukkit." + NMS_VERSION + ".CraftServer");
         final Method CRAFT_SERVER_GET_HANDLE = CRAFT_SERVER_CLASS.getDeclaredMethod("getHandle");
-        final Class<?> DEDICATED_PLAYER_LIST_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".DedicatedPlayerList");
+        final Class<?> DEDICATED_PLAYER_LIST_CLASS = CRAFT_SERVER_GET_HANDLE.getReturnType();
         final Method DEDICATED_PLAYER_LIST_GET_HANDLE = DEDICATED_PLAYER_LIST_CLASS.getDeclaredMethod("getServer");
-        final Class<?> MINECRAFT_SERVER_CLASS = Class.forName("net.minecraft.server." + NMS_VERSION + ".MinecraftServer");
+        final Class<?> MINECRAFT_SERVER_CLASS = DEDICATED_PLAYER_LIST_GET_HANDLE.getReturnType();
+
         final Field field = ReflectUtil.getField(MINECRAFT_SERVER_CLASS, MinecraftSessionService.class);
         final Object obj = DEDICATED_PLAYER_LIST_GET_HANDLE.invoke(CRAFT_SERVER_GET_HANDLE.invoke(getServer()));
-
         final HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
-
         final MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
         mlymss.setVanService(vanServer);
-
         field.set(obj, mlymss);
     }
 
