@@ -38,7 +38,7 @@ public class ReflectUtil {
             return field;
         }
         clazz = clazz.getSuperclass();
-        if(clazz != null) return getField(clazz, target);
+        if (clazz != null) return getField(clazz, target);
         throw new IllegalArgumentException(clazz + ": " + target);
     }
 
