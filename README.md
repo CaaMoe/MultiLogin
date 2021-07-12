@@ -1,21 +1,15 @@
 # MultiLogin
 
-这是一款高兼容性的外置登入插件，理论上支持Spigot 1.8+版本和大多数Bungee版本。
-
-该插件通过使用反射修改Yggdrasil验证过程从而达到实现多Yggdrasil共存的效果。
-
-该插件最大的好处就是 完全不需要去对启动服务器的命令行进行修改 只需要放入plugins内即可加载使用
+使多种 Yggdrasil 验证服务器共存的外置登入插件，支持 Spigot 1.8+ 版本和大多数 Bungee 版本。
 
 ## 功能
 
-截止目前，该插件有下列几项功能：
-
-* 实现多Yggdrasil共存
-* 自动修复多Yggdrasil下存在的皮肤显示问题
+* 多Yggdrasil共存
+* 修复多 Yggdrasil 下存在的皮肤显示问题
 * 设置玩家在游戏内的UUID
-* 高级的Yggdrasil白名单管理系统
+* 支持 Yggdrasil 分组的白名单管理系统
 * 阻止同名账户
-* 防止恶意抢注同名ID
+* 防止抢注ID
 * 账户限定一种登入方式
 
 ## 命令、权限和变量
@@ -45,11 +39,17 @@
 
 ## 使用
 
+### 下载安装
+
+理论上插件支持 Spigot 1.8+ 版本和大多数 Bungee 版本。
+
+不需要修改或添加启动参数， 将适合的插件本体丢入plugins文件夹下即可加载使用。
+
 ### 添加一个Yggdrasil服务器
 
-插件现在支持添加几乎所有类型的Yggdrasil服务器，设置它也是个很简单的过程。
+插件现在支持添加几乎所有类型的 Yggdrasil 验证服务器，设置它也是个很简单的过程。
 
-它的配置格式为
+模板：
 
     # 节点名称为插件标记名称，一旦设置请谨慎修改。
     # 该标记作为系统识别用户验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝登入请求。
@@ -116,7 +116,7 @@
         # 验证错误重试次数
         authRetry: 1
 
-在添加一个Yggdrasil之前，我们需要知道验证服务器的完整的验证链接。
+在添加一个 Yggdrasil 之前，我们需要知道验证服务器的完整的验证链接。
 
 #### 例子 1
 
@@ -147,7 +147,7 @@ littleSkin.cn
 
 #### 例子 4
 
-野生高级 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s`
+高级少见的 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined?username=%s&serverId=%s`
 （GET请求） ，配置文件值为：
 
     body:
@@ -157,7 +157,7 @@ littleSkin.cn
 
 #### 例子 5
 
-野生高级 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
+高级少见的 Yggdrasil 的验证链接为`https://example.com/yggdrasil/session/minecraft/hasJoined`
 （POST请求） ，POST格式为`{"username":"{0}", "serverId":"{1}"}'`
 ，配置文件值为：
 
@@ -169,14 +169,14 @@ littleSkin.cn
 
 ##
 
-一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的Yggdrasil验证服务器都可以设置为：
+一般的，所有以`https://github.com/yushijinhun/authlib-injector/wiki` 服务端技术规范设计的 Yggdrasil 验证服务器都可以设置为：
 
     body:
         serverType: BLESSING_SKIN
         url: "https://example.cn/api/yggdrasil"
 
-国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、奇怪的Yggdrasil验证服务器。 如果没有特别需求的话，尽量使用节点的默认值
+国内几乎所有的Yggdrasil验证服务器都是以它设计的，其他高级节点的设计是为了让插件兼容更多的、变种的 Yggdrasil 验证服务器。 如果没有特别需求的话，尽量使用节点的默认值
 
 ##    
 
-如果你在使用这个插件时有任何的疑问或建议，欢迎加入Q群互相讨论：832210691
+如果你在使用这个插件时有任何的疑问或建议，欢迎加入Q群讨论：832210691
