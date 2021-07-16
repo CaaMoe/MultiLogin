@@ -1,25 +1,12 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.impl.IPlugin
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.impl;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * 可被core识别的插件对象
+ * 代表一个插件对象
  */
 public interface IPlugin {
 
@@ -28,74 +15,41 @@ public interface IPlugin {
      *
      * @return 插件数据文件夹
      */
-    File getPluginDataFolder();
+    File getDataFolder();
 
     /**
-     * 获得jar包文件数据流
+     * 获得插件Jar包文件流
      *
-     * @param path 路径
-     * @return 文件数据流
+     * @param path Jar包文件路径
+     * @return 对应的文件流
      */
-    InputStream getPluginResource(String path);
+    InputStream getJarResource(String path);
 
     /**
-     * 将某名玩家踢出游戏
-     *
-     * @param uuid 玩家的uuid
-     * @param msg  玩家的名字
-     */
-    void kickPlayer(UUID uuid, String msg);
-
-    /**
-     * 获得插件的日志对象
-     *
-     * @return 插件日志对象
-     */
-    Logger getPluginLogger();
-
-    /**
-     * 获得插件当前版本
-     *
-     * @return 插件当前版本
-     */
-    String getVersion();
-
-    /**
-     * 延迟执行一个异步任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     */
-    void runTaskAsyncLater(Runnable run, long delay);
-
-    /**
-     * 执行一个异步延迟Timer任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     * @param per   循环
-     */
-    void runTaskAsyncTimer(Runnable run, long delay, long per);
-
-    /**
-     * 执行一个同步任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     */
-    void runTask(Runnable run, long delay);
-
-    /**
-     * 执行一个同步任务
-     *
-     * @param run run
-     */
-    void runTask(Runnable run);
-
-    /**
-     * 获得在线玩家列表
+     * 获得当前所有在线的玩家列表
      *
      * @return 在线玩家列表
      */
-    Map<UUID, String> getOnlineList();
+    List<ISender> getOnlinePlayers();
+
+    /**
+     * 获得插件的日志记录器
+     *
+     * @return 日志记录器
+     */
+    Logger getLogger();
+
+    /**
+     * 获得插件版本号
+     *
+     * @return 插件版本号
+     */
+    String getPluginVersion();
+
+    /**
+     * 获得线程调度器对象
+     *
+     * @return 调度器对象
+     */
+    ISchedule getSchedule();
 }

@@ -1,18 +1,20 @@
 package moe.caa.multilogin.core.util;
 
+import moe.caa.multilogin.core.NoSuchEnumException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-@SuppressWarnings("unchecked")
-public class YamlConfig {
+/**
+ * Yaml 配置文件读写类
+ */
+@SuppressWarnings("all")
+public final class YamlConfig {
     private static final Yaml YAML;
 
     static {
@@ -21,97 +23,70 @@ public class YamlConfig {
         YAML = new Yaml(dumperOptions);
     }
 
-    private final Map<String, Object> contents;
+    private final Map<String, Object> CONTENT;
 
-    private YamlConfig(Map<String, Object> contents) {
-        this.contents = contents == null ? new LinkedHashMap<>() : contents;
+    private YamlConfig(Map<String, Object> content) {
+        this.CONTENT = ValueUtil.getOrDef(content, new LinkedHashMap<>());
     }
 
-    public static YamlConfig fromReader(Reader reader) {
-        return new YamlConfig(YAML.loadAs(reader, LinkedHashMap.class));
+    /**
+     * 从 InputStream 对象构建这个 YamlConfig
+     *
+     * @param input 输入流
+     * @return YamlConfig
+     */
+    public static YamlConfig fromInputStream(InputStream input) {
+        return new YamlConfig(YAML.loadAs(new InputStreamReader(input, StandardCharsets.UTF_8), LinkedHashMap.class));
     }
 
-    public void save(Writer writer) {
-        YAML.dump(contents, writer);
+    /**
+     * 获得当前节点下所有的真子节点
+     * @return 真子节点
+     */
+    public Set<String> getKeys(){
+        return CONTENT.keySet();
     }
 
-    public Optional<?> get(String path) {
-        return Optional.ofNullable(contents.get(path));
-    }
-
-    public Optional<String> getString(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof String) {
-            return Optional.of((String) value.get());
+    /**
+     * 获取某个节点的值
+     *
+     * @param path 路径
+     * @param type 期望得到的类型的 class 对象
+     * @param <R>  期望得到的类型
+     * @return 值
+     */
+    public <R> R get(String path, Class<R> type) {
+        Object val = CONTENT.get(path);
+        if (type.isEnum()) {
+            if (val instanceof String)
+                try {
+                    return (R) ReflectUtil.getEnumIns((Class<? extends Enum<?>>) type, (String) val);
+                } catch (NoSuchEnumException ignore) {
+                }
+            return null;
         }
-        return Optional.empty();
-    }
 
-    public String getStringOrElse(String path, String other) {
-        return getString(path).orElse(other);
-    }
-
-    public Optional<Integer> getInteger(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof Integer) {
-            return Optional.of((Integer) value.get());
+        if (type == getClass()) {
+            if (!(val instanceof Map)) return null;
+            return (R) new YamlConfig((Map) val);
         }
-        return Optional.empty();
+        return val != null ? ReflectUtil.isCaseClass(val.getClass(), type) ? (R) val : null : null;
     }
 
-    public int getIntegerOrElse(String path, int other) {
-        return getInteger(path).orElse(other);
+    /**
+     * 获取某个节点的值
+     *
+     * @param path 路径
+     * @param type 期望得到的类型的 class 对象
+     * @param def  获取为 null 时返回此值
+     * @param <R>  期望得到的类型
+     * @return 值
+     */
+    public <R> R get(String path, Class<R> type, R def) {
+        return ValueUtil.getOrDef(get(path, type), def);
     }
 
-    public Optional<Long> getLong(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof Long) {
-            return Optional.of((Long) value.get());
-        }
-        return Optional.empty();
-    }
-
-    public Long getLongOrElse(String path, long other) {
-        return getLong(path).orElse(other);
-    }
-
-    public Optional<Double> getDouble(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof Double) {
-            return Optional.of((Double) value.get());
-        }
-        return Optional.empty();
-    }
-
-    public double getDoubleOrElse(String path, double other) {
-        return getDouble(path).orElse(other);
-    }
-
-    public Optional<Boolean> getBoolean(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof Boolean) {
-            return Optional.of((Boolean) value.get());
-        }
-        return Optional.empty();
-    }
-
-    public boolean getBooleanOrElse(String path, boolean other) {
-        return getBoolean(path).orElse(other);
-    }
-
-    public Optional<YamlConfig> getSection(String path) {
-        Optional<?> value = get(path);
-        if (value.isPresent() && value.get() instanceof Map) {
-            return Optional.of(new YamlConfig((Map<String, Object>) value.get()));
-        }
-        return Optional.empty();
-    }
-
-    public void set(String path, Object value) {
-        contents.put(path, value);
-    }
-
-    public Set<String> getKeys() {
-        return contents.keySet().stream().map(Object::toString).collect(Collectors.toSet());
+    public void set(String path, Object newValue) {
+        CONTENT.put(path, newValue);
     }
 }

@@ -28,19 +28,27 @@ public enum ConvUuidEnum {
     /**
      * 生成离线UUID（盗版UUID）
      */
-    OFFLINE;
+    OFFLINE,
 
     /**
-     * 获得UUID
+     * 随机UUID
+     */
+    RANDOM;
+
+    /**
+     * 获得 UUID
      *
-     * @param onlineUuid 玩家在Yggdrasil的在线UUID
-     * @param name       玩家的name
+     * @param onlineUuid 玩家在 Yggdrasil 的在线 UUID
+     * @param name       玩家的 name
      * @return 生成结果
      */
     public UUID getResultUuid(UUID onlineUuid, String name) {
         if (this == DEFAULT) {
             return onlineUuid;
         }
-        return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        if (this == OFFLINE) {
+            return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
+        }
+        return UUID.randomUUID();
     }
 }
