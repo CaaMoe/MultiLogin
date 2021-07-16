@@ -249,4 +249,5 @@ public class YggdrasilServiceEntry {
         String serverId = arg.get("serverId");
         return String.format(url, username, serverId);
     }
+
 }
