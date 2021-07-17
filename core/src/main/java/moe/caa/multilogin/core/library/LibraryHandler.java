@@ -110,9 +110,5 @@ public class LibraryHandler {
         if(ReflectUtil.getClass("com.google.gson.Gson") == null){
             NEED_LIBRARIES.put("com.google.code.gson gson 2.8.7", "com.google.gson.Gson");
         }
-
-        if(ReflectUtil.getClass("org.yaml.snakeyaml.Yaml") == null){
-            NEED_LIBRARIES.put("org.yaml snakeyaml 1.29", "org.yaml.snakeyaml.Yaml");
-        }
     }
 }

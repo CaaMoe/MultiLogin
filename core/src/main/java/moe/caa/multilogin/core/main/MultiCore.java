@@ -32,6 +32,17 @@ public class MultiCore {
         MultiCore.plugin = plugin;
 
         try {
+            genFile();
+            config = YamlConfig.fromInputStream(new FileInputStream(configFile));
+        } catch (IOException e) {
+            MultiLogger.log(LoggerLevel.ERROR, e);
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.CONFIG_LOAD_ERROR.getMessage());
+            return false;
+        }
+
+        MultiLogger.init();
+
+        try {
             ReflectUtil.init();
         } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
@@ -49,16 +60,6 @@ public class MultiCore {
             return false;
         }
 
-        try {
-            genFile();
-            config = YamlConfig.fromInputStream(new FileInputStream(configFile));
-        } catch (IOException e) {
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.CONFIG_LOAD_ERROR.getMessage());
-            return false;
-        }
-
-        MultiLogger.init();
         LanguageHandler.init();
         YggdrasilServicesHandler.init();
 
@@ -69,7 +70,6 @@ public class MultiCore {
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.DATABASE_CONNECT_ERROR.getMessage());
             return false;
         }
-
         return true;
     }
 
