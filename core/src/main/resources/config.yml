@@ -176,8 +176,8 @@ services:
 safeId:
   - 'official'
 
-# 设置所有请求超时时间
-servicesTimeOut: 7000
+# 设置 Yggdrasil hasJoined 请求超时时间
+servicesTimeOut: 10000
 
 # 全局白名单开关
 whitelist: true

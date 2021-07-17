@@ -7,10 +7,7 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static moe.caa.multilogin.core.data.database.SQLHandler.*;
 
@@ -79,13 +76,13 @@ public class UserDataHandler {
                 resultSet.getInt(5) != 0);
     }
 
-    public static List<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
+    public static Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
                 YGGDRASIL_SERVICE, USER_DATA_TABLE_NAME, CURRENT_NAME
         ))) {
             ps.setString(1, name);
             ResultSet resultSet = ps.executeQuery();
-            List<YggdrasilService> ret = new LinkedList<>();
+            Set<YggdrasilService> ret = new HashSet<>();
             while (resultSet.next()) {
                 ret.add(YggdrasilServicesHandler.getService(resultSet.getString(1)));
             }

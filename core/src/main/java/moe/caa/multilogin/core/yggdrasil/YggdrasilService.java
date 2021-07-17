@@ -88,4 +88,20 @@ public class YggdrasilService {
     public int hashCode() {
         return Objects.hash(path);
     }
+
+    public String buildUrl(String username, String serverId, String ip){
+        if (body.postMode) return body.url;
+        if(body.passIp && ValueUtil.notIsEmpty(ip)) {
+            return MessageFormat.format(body.url, username, serverId, MessageFormat.format(body.passIpContent, ip));
+        }
+        return MessageFormat.format(body.url, username, serverId, "");
+    }
+
+    public String buildPostContent(String username, String serverId, String ip){
+        if(!body.postMode) return null;
+        if(body.passIp && ValueUtil.notIsEmpty(ip)){
+            return MessageFormat.format(body.postContent, username, serverId, MessageFormat.format(body.passIpContentByPost, ip));
+        }
+        return MessageFormat.format(body.postContent, username, serverId, "");
+    }
 }

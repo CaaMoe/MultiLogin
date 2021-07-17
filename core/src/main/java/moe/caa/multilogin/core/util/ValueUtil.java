@@ -61,4 +61,9 @@ public class ValueUtil {
     public static <R> R getOrDef(R val, R def) {
         return val == null ? def : val;
     }
+
+    public static boolean notIsEmpty(String str){
+        if(str == null) return false;
+        return str.length() != 0;
+    }
 }

@@ -21,3 +21,13 @@ library_downloading: '正在下载依赖文件： {0}'
 library_downloaded: '依赖文件下载成功： {0}'
 library_loaded: '已加载依赖： {0}'
 library_load_failed: '有一个或多个依赖加载失败： {0}'
+
+verification_no_adapter: "§c验证未能通过，请重试"
+verification_no_chae: "§c您只能通过指定的验证方式登入游戏"
+verification_rush_name: "§c您的 ID 已被注册，请重新设置您的 ID"
+verification_rush_name_Onl: "§c请重新设置您的 ID"
+verification_no_whitelist: "§c您没有登入到此服务器的白名单权限"
+verification_error: "验证发生异常"
+verification_allow: "玩家： {1}， UUID： {0}， 登入成功，账户验证服务器： {2}（{3}）"
+
+

@@ -18,6 +18,9 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 核心类
@@ -26,6 +29,11 @@ public class MultiCore {
     public static IPlugin plugin = null;
     public static YamlConfig config = null;
     private static File configFile;
+
+    public static List<String> safeId = new ArrayList<>();
+    public static int servicesTimeOut = 10000;
+    public static boolean whitelist = true;
+    public static String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
 
     public static boolean init(IPlugin plugin) {
         configFile = new File(plugin.getDataFolder(), "config.yml");
@@ -39,6 +47,8 @@ public class MultiCore {
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.CONFIG_LOAD_ERROR.getMessage());
             return false;
         }
+
+        readConfig();
 
         MultiLogger.init();
 
@@ -71,6 +81,17 @@ public class MultiCore {
             return false;
         }
         return true;
+    }
+
+    private static void readConfig() {
+        servicesTimeOut = config.get("servicesTimeOut", Number.class, 10000).intValue();
+        List<?> list = config.get("safeId", List.class, Collections.emptyList());
+        safeId.clear();
+        for (Object o : list) {
+            safeId.add(o.toString());
+        }
+        whitelist = config.get("whitelist", Boolean.class, true);
+        nameAllowedRegular = config.get("nameAllowedRegular", String.class, "");
     }
 
     private static void genFile() throws IOException {

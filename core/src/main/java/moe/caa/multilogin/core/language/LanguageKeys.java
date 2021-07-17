@@ -22,7 +22,14 @@ public enum LanguageKeys {
     LIBRARY_DOWNLOADING("library_downloading", ""),
     LIBRARY_DOWNLOADED("library_downloaded", ""),
     LIBRARY_LOADED("library_loaded", ""),
-    LIBRARY_LOAD_FAILED("library_load_failed", "");
+    LIBRARY_LOAD_FAILED("library_load_failed", ""),
+    VERIFICATION_NO_ADAPTER("verification_no_adapter"),
+    VERIFICATION_NO_CHAE("verification_no_chae"),
+    VERIFICATION_RUSH_NAME("verification_rush_name"),
+    VERIFICATION_RUSH_NAME_ONL("verification_rush_name_Onl"),
+    VERIFICATION_NO_WHITELIST("verification_no_whitelist"),
+    VERIFICATION_ERROR("verification_error"),
+    VERIFICATION_ALLOW("verification_allow", "", "", "", "");
 
     public final String key;
     public final Object[] args;

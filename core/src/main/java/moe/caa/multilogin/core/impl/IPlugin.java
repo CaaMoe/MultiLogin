@@ -1,7 +1,10 @@
 package moe.caa.multilogin.core.impl;
 
+import com.google.gson.Gson;
+
 import java.io.File;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -73,4 +76,11 @@ public interface IPlugin {
      * 获得在线玩家
      */
     List<ISender> getPlayer(String name);
+
+    /**
+     * 获得原版验证时的 GSON 对象
+     */
+    Gson getAuthGson();
+
+    Type authResultType();
 }
