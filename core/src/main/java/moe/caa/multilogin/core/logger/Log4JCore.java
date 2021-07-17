@@ -13,24 +13,31 @@
 package moe.caa.multilogin.core.logger;
 
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.util.FileUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
 
 public class Log4JCore {
     private LoggerContext context;
     private Logger logger;
 
     public void init() throws Exception {
-        //        获取context
-        context = new LoggerContext("MultiLogin");
 
 //        注册logger
         File tempFile = File.createTempFile("log4j2-temp", "multilogin");
-        FileUtil.saveResource(MultiCore.plugin.getJarResource("log4j2/log4j2.xml"), tempFile, true);
+        InputStream inputStream = MultiCore.plugin.getJarResource("multiloginLog4j2/log4j2.xml");
+        byte[] bytes = new byte[inputStream.available()];
+        inputStream.read(bytes);
+        String config = new String(bytes);
+        FileWriter fw = new FileWriter(tempFile);
+        fw.write(config.replace("multiloginLog", MultiCore.plugin.getDataFolder().getAbsolutePath()));
+        fw.close();
+        //        获取context
+        context = new LoggerContext("MultiLogin");
         context.setConfigLocation(tempFile.toURI());
         context.reconfigure();
         logger = context.getLogger("MultiLogin");
@@ -48,7 +55,7 @@ public class Log4JCore {
                 logger.log(Level.WARN, message);
                 break;
             case DEBUG:
-                if (debug) logger.log(Level.DEBUG, "[DEBUG] " + message);
+                if (debug) logger.info("[DEBUG] " + message);
                 break;
         }
     }

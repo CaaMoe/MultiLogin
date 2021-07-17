@@ -14,8 +14,10 @@ public class MultiLogger {
 
         try {
             debug = MultiCore.config.get("debug", Boolean.class, true);
-            log4JCore = new Log4JCore();
-            log4JCore.init();
+            Log4JCore l4c = new Log4JCore();
+            l4c.init();
+//            防止提前赋值造成不可用
+            log4JCore = l4c;
         } catch (Exception e) {
             log(LoggerLevel.ERROR, e);
             log(LoggerLevel.ERROR, LanguageKeys.LOGGER_FILE_ERROR.getMessage());
@@ -36,6 +38,8 @@ public class MultiLogger {
                 MultiCore.plugin.getLogger().info(message);
                 break;
             case ERROR:
+                MultiCore.plugin.getLogger().severe(message);
+                break;
             case WARN:
                 MultiCore.plugin.getLogger().warning(message);
                 break;

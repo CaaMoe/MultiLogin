@@ -13,7 +13,6 @@ import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -26,19 +25,35 @@ public class LibraryHandler {
 
     public static void init() throws Throwable {
         check();
-        URLClassLoader classLoader = (URLClassLoader) MultiCore.plugin.getClass().getClassLoader();
-        MethodHandle handle = ReflectUtil.super_lookup.unreflect(URLClassLoader.class.getDeclaredMethod("addURL", URL.class));
         File libFolder = new File(MultiCore.plugin.getDataFolder(), "libraries");
         FileUtil.createNewFileOrFolder(libFolder, true);
+//        下载
+        download(libFolder);
+//        下载完再加载 否则爆炸
+        load(libFolder);
+        check();
+        String args = NEED_LIBRARIES.keySet().stream().map(LibraryHandler::genJarName).collect(Collectors.joining(", "));
+        if (args.length() == 0) return;
+        throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(args));
+    }
+
+    private static void load(File libFolder) throws Throwable {
+        URLClassLoader classLoader = (URLClassLoader) MultiCore.plugin.getClass().getClassLoader();
+        MethodHandle handle = ReflectUtil.super_lookup.unreflect(URLClassLoader.class.getDeclaredMethod("addURL", URL.class));
+        for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
+            String jarName = genJarName(library.getKey());
+            handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
+            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
+            continue;
+        }
+    }
+
+    private static void download(File libFolder) {
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             File file = new File(libFolder, jarName);
             if (file.exists()) {
-                handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
-                if (ReflectUtil.getClass(library.getValue()) != null) {
-                    MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
-                    continue;
-                }
+                continue;
             }
             EXECUTOR_SERVICE.submit(() -> {
                 try {
@@ -46,9 +61,6 @@ public class LibraryHandler {
                     String url = genUrl(library.getKey());
                     HttpUtil.downloadFile(url, file);
                     MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(file.getAbsolutePath()));
-                    synchronized (handle) {
-                        handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
-                    }
                     if (ReflectUtil.getClass(library.getValue()) != null) {
                         MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
                     }
@@ -58,10 +70,6 @@ public class LibraryHandler {
         }
         EXECUTOR_SERVICE.shutdown();
         while (!EXECUTOR_SERVICE.isTerminated()) ;
-        check();
-        String args = NEED_LIBRARIES.keySet().stream().map(LibraryHandler::genJarName).collect(Collectors.joining(", "));
-        if (args.length() == 0) return;
-        throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(args));
     }
 
 
@@ -95,6 +103,10 @@ public class LibraryHandler {
 
     private static void check() {
         NEED_LIBRARIES.clear();
+
+        if (ReflectUtil.getClass("org.slf4j.LoggerFactory") == null) {
+            NEED_LIBRARIES.put("org.slf4j slf4j-api 1.7.31", "org.slf4j.LoggerFactory");
+        }
 
         if (ReflectUtil.getClass("com.zaxxer.hikari.HikariDataSource") == null) {
             NEED_LIBRARIES.put("com.zaxxer HikariCP 4.0.3", "com.zaxxer.hikari.HikariDataSource");
