@@ -3,8 +3,7 @@ package moe.caa.multilogin.core.logger;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.logging.Level;
 
 public class MultiLogger {
     private static boolean debug = true;
@@ -26,28 +25,6 @@ public class MultiLogger {
         if (debug) log(LoggerLevel.INFO, LanguageKeys.DEBUG_ENABLE.getMessage());
     }
 
-    public static void log(LoggerLevel level, String message) {
-        logDefault(level, message);
-        if (log4JCore != null)
-            log4JCore.log(level, message, debug);
-    }
-
-    private static void logDefault(LoggerLevel level, String message) {
-        switch (level) {
-            case INFO:
-                MultiCore.plugin.getLogger().info(message);
-                break;
-            case ERROR:
-                MultiCore.plugin.getLogger().severe(message);
-                break;
-            case WARN:
-                MultiCore.plugin.getLogger().warning(message);
-                break;
-            case DEBUG:
-                if (debug) MultiCore.plugin.getLogger().info("[DEBUG] " + message);
-                break;
-        }
-    }
 
     /**
      * 记录Throwable
@@ -56,9 +33,35 @@ public class MultiLogger {
      * @param t     Throwable
      */
     public static void log(LoggerLevel level, Throwable t) {
-        StringWriter writer = new StringWriter();
-        t.printStackTrace(new PrintWriter(writer));
-        log(level, writer.toString());
+        log(level, "Throwable", t);
+    }
+
+    public static void log(LoggerLevel level, String message) {
+        log(level, message, null);
+    }
+
+    public static void log(LoggerLevel level, String message, Throwable throwable) {
+        logDefault(level, message, throwable);
+        if (log4JCore != null)
+            log4JCore.log(level, message, throwable, debug);
+    }
+
+    private static void logDefault(LoggerLevel level, String message, Throwable throwable) {
+        switch (level) {
+            case INFO:
+                MultiCore.plugin.getLogger().log(Level.INFO, message, throwable);
+                break;
+            case ERROR:
+                MultiCore.plugin.getLogger().log(Level.SEVERE, message, throwable);
+                break;
+            case WARN:
+                MultiCore.plugin.getLogger().log(Level.WARNING, message, throwable);
+                break;
+            case DEBUG:
+                if (debug)
+                    MultiCore.plugin.getLogger().log(Level.INFO, "[DEBUG] " + message, throwable);
+                break;
+        }
     }
 
 }

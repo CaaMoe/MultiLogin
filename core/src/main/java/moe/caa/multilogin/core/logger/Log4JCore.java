@@ -43,19 +43,19 @@ public class Log4JCore {
         logger = context.getLogger("MultiLogin");
     }
 
-    public void log(LoggerLevel level, String message, boolean debug) {
+    public void log(LoggerLevel level, String message, Throwable throwable, boolean debug) {
         switch (level) {
             case INFO:
-                logger.info(message);
+                logger.info(message, throwable);
                 break;
             case ERROR:
-                logger.log(Level.ERROR, message);
+                logger.log(Level.ERROR, message, throwable);
                 break;
             case WARN:
-                logger.log(Level.WARN, message);
+                logger.log(Level.WARN, message, throwable);
                 break;
             case DEBUG:
-                if (debug) logger.info("[DEBUG] " + message);
+                if (debug) logger.info("[DEBUG] " + message, throwable);
                 break;
         }
     }
