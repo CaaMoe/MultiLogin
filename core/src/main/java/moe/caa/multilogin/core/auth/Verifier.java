@@ -19,10 +19,6 @@ public class Verifier {
 
     public static VerificationResult getUserVerificationMessage(UUID onlineUuid, String currentName, YggdrasilService yggdrasilService) {
         try {
-            // 验证服务器为空
-            if (yggdrasilService == null) {
-                return new VerificationResult(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
-            }
             User userData = UserDataHandler.getUserEntryByOnlineUuid(onlineUuid);
 
             boolean updUserEntry = userData != null;
@@ -30,6 +26,7 @@ public class Verifier {
             // 验证服务器不符
             if (updUserEntry) {
                 if(!Objects.equals(userData.yggdrasilService, yggdrasilService.path)){
+                    MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.VERIFICATION_NO_CHAE.getMessage(currentName, onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path, userData.yggdrasilService));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_CHAE.getMessage());
                 }
             }
@@ -39,6 +36,7 @@ public class Verifier {
                 List<User> repeatedNameUserEntries = UserDataHandler.getUserEntryByCurrentName(currentName);
                 for (User repeatedNameUserEntry : repeatedNameUserEntries) {
                     if (!repeatedNameUserEntry.equals(userData)) {
+                        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_RUSH_NAME.getMessage(currentName, onlineUuid.toString(), repeatedNameUserEntry.onlineUuid));
                         return new VerificationResult(LanguageKeys.VERIFICATION_RUSH_NAME.getMessage());
                     }
                 }
@@ -50,6 +48,7 @@ public class Verifier {
             // 白名单检查
             if (!userData.whitelist && yggdrasilService.whitelist) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
+                    MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_NO_WHITELIST.getMessage(currentName, onlineUuid.toString()));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_WHITELIST.getMessage());
                 }
                 userData.whitelist = true;

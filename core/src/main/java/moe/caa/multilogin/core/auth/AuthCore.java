@@ -1,5 +1,8 @@
 package moe.caa.multilogin.core.auth;
 
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -16,18 +19,22 @@ public class AuthCore {
     }
 
     public static <T> AuthResult<T> yggAuth(String name, String serverId, String ip) throws SQLException {
+        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_START.getMessage(name, serverId, ip));
+
         List<List<YggdrasilService>> order = Verifier.getVeriOrder(name);
         boolean down = false;
 
         for (List<YggdrasilService> entries : order){
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
+                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.name, result.service.path));
                 return result;
             }
             if (result != null && result.err == AuthFailedEnum.SERVER_DOWN) {
                 down = true;
             }
         }
+        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(name, (down ? AuthFailedEnum.SERVER_DOWN : AuthFailedEnum.VALIDATION_FAILED).name()));
         return new AuthResult<>(down ? AuthFailedEnum.SERVER_DOWN : AuthFailedEnum.VALIDATION_FAILED);
     }
 

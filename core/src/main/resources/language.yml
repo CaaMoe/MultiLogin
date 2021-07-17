@@ -35,3 +35,14 @@ not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
 error_auth: '处理用户数据时出现异常'
 error_reflect_modify: '无法修改核心服务，插件可能不支持您的服务端'
 
+debug_login_start: '登入请求: username: {0}, serverId: {1}, ip: {2}'
+debug_login_auth_task_server_down: '验证请求，username: {0}, server: {1}({2}), 失败，服务器宕机'
+debug_login_auth_task_disallow: '验证请求，username: {0}, server: {1}({2}), 失败，身份验证失败'
+debug_login_auth_task_allow: '验证请求，username: {0}, server: {1}({2}), 成功'
+
+debug_login_end_allow: '身份验证成功，username: {0}, server: {1}({2})'
+debug_login_end_disallow: '身份验证失败，username: {0}, type: {1}'
+
+debug_verification_no_chae: '拒绝登入，username: {0}, online uuid: {1}, 验证服务器不匹配。当前验证服务器: {2}({3}), 指定的验证服务器(path): {4}'
+debug_verification_rush_name: '拒绝登入，username: {0}, online uuid: {1}, 与用户(online uuid) {2} 重名，可能还有更多'
+debug_verification_no_whitelist: '拒绝登入，username: {0}, online uuid: {1}, 没有白名单'

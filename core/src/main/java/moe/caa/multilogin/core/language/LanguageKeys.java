@@ -32,7 +32,19 @@ public enum LanguageKeys {
     VERIFICATION_ALLOW("verification_allow", "", "", "", "", ""),
     NIT_ONLINE("not_online"),
     ERROR_AUTH("error_auth"),
-    ERROR_REDIRECT_MODIFY("error_reflect_modify");
+    ERROR_REDIRECT_MODIFY("error_reflect_modify"),
+
+    DEBUG_LOGIN_START("debug_login_start", "", "", ""),
+    DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN("debug_login_auth_task_server_down", "", "", ""),
+    DEBUG_LOGIN_AUTH_TASK_DISALLOW("debug_login_auth_task_disallow", "", "", ""),
+    DEBUG_LOGIN_AUTH_TASK_ALLOW("debug_login_auth_task_allow", "", "", ""),
+
+    DEBUG_LOGIN_END_ALLOW("debug_login_end_allow", "", "", ""),
+    DEBUG_LOGIN_END_DISALLOW("debug_login_end_disallow", "", ""),
+
+    DEBUG_VERIFICATION_NO_CHAE("debug_verification_no_chae", "", "", "", "", ""),
+    DEBUG_VERIFICATION_RUSH_NAME("debug_verification_rush_name", "", "", "", "", ""),
+    DEBUG_VERIFICATION_NO_WHITELIST("debug_verification_no_whitelist", "", "");
 
     public final String key;
     public final Object[] args;
