@@ -1,0 +1,25 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+dependencies {
+    compile project(':core')
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
+    compileOnly fileTree(dir: 'lib', include: ['*.jar'])
+}
+
+jar {
+    archiveBaseName.set "MultiLogin-Bukkit-" + project.plugin_version
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
