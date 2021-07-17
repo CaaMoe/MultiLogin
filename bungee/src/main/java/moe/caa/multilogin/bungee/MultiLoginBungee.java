@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bungee;
 
+import com.google.gson.Gson;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
@@ -8,6 +9,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,5 +59,15 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
             if (player.getName().equalsIgnoreCase(name)) ret.add(new BungeeSender(player));
         }
         return ret;
+    }
+
+    @Override
+    public Gson getAuthGson() {
+        return null;
+    }
+
+    @Override
+    public Type authResultType() {
+        return null;
     }
 }

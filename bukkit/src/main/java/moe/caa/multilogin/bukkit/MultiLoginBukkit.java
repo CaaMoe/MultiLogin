@@ -1,5 +1,8 @@
 package moe.caa.multilogin.bukkit;
 
+import com.google.gson.Gson;
+import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
+import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
@@ -8,16 +11,19 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
-    private final ISchedule SCHEDULE = new BukkitSchedule(this);
+    public static ISchedule schedule;
+    public static Gson authGson;
+    public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
+    public static final Map<UUID, User> USER_CACHE = new Hashtable<>();
 
     @Override
     public void onEnable() {
+        schedule = new BukkitSchedule(this);
         System.out.println(MultiCore.init(this));
     }
 
@@ -38,7 +44,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public ISchedule getSchedule() {
-        return SCHEDULE;
+        return schedule;
     }
 
     @Override
@@ -59,5 +65,15 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
             if (player.getName().equalsIgnoreCase(name)) ret.add(new BukkitSender(player));
         }
         return ret;
+    }
+
+    @Override
+    public Gson getAuthGson() {
+        return authGson;
+    }
+
+    @Override
+    public Type authResultType() {
+        return HasJoinedMinecraftServerResponse.class;
     }
 }

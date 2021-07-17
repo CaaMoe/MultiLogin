@@ -29,7 +29,9 @@ public enum LanguageKeys {
     VERIFICATION_RUSH_NAME_ONL("verification_rush_name_Onl"),
     VERIFICATION_NO_WHITELIST("verification_no_whitelist"),
     VERIFICATION_ERROR("verification_error"),
-    VERIFICATION_ALLOW("verification_allow", "", "", "", "");
+    VERIFICATION_ALLOW("verification_allow", "", "", "", "", ""),
+    NIT_ONLINE("not_online"),
+    ERROR_AUTH("error_auth");
 
     public final String key;
     public final Object[] args;

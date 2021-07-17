@@ -15,7 +15,7 @@ public class AuthCore {
         return yggAuth(name, serverId, null);
     }
 
-    public static <T> Object yggAuth(String name, String serverId, String ip) throws SQLException {
+    public static <T> AuthResult<T> yggAuth(String name, String serverId, String ip) throws SQLException {
         List<List<YggdrasilService>> order = Verifier.getVeriOrder(name);
         boolean down = false;
 

@@ -80,6 +80,12 @@ public class MultiCore {
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.DATABASE_CONNECT_ERROR.getMessage());
             return false;
         }
+
+        if (!plugin.isOnlineMode()) {
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.NIT_ONLINE.getMessage());
+            return false;
+        }
+
         return true;
     }
 

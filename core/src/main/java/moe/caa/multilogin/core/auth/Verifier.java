@@ -77,7 +77,7 @@ public class Verifier {
             MultiCore.plugin.getSchedule().runTask(task);
             task.get();
 
-            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.redirectUuid.toString(), userData.currentName, yggdrasilService.name, yggdrasilService.path));
+            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.redirectUuid.toString(), userData.currentName, userData.onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path));
             return new VerificationResult(userData.redirectUuid);
         } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
