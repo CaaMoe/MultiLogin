@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class CheckUpdater {
     private static final URL SOURCE = HttpUtil.getUrlFromString("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
-    private static String latestVersion = null;
+    public static String latestVersion = null;
 
     /**
      * 检查更新
