@@ -116,4 +116,12 @@ public class ReflectUtil {
         if (src != null) return isCaseClass(src, parent);
         return false;
     }
+
+    public static Class<?> getClass(String name){
+        try {
+            return Class.forName(name);
+        } catch (Exception e){
+            return null;
+        }
+    }
 }

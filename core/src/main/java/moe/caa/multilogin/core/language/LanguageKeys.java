@@ -14,7 +14,15 @@ public enum LanguageKeys {
     URL_ILLEGAL_FORMAT("url_illegal_format", ""),
     YGGDRASIL_CONFIGURATION_ERROR("yggdrasil_configuration_error", "", ""),
     APPLY_YGGDRASIL("apply_yggdrasil", "", ""),
-    APPLY_YGGDRASIL_NO_ENABLE("apply_yggdrasil_no_enable", "", "");
+    APPLY_YGGDRASIL_NO_ENABLE("apply_yggdrasil_no_enable", "", ""),
+    DATABASE_CONNECTED("database_connected", ""),
+    DATABASE_CONNECT_ERROR("database_connect_error"),
+    REFLECT_INIT_ERROR("reflect_init_error", ""),
+    LIBRARY_INIT("library_init"),
+    LIBRARY_DOWNLOADING("library_downloading", ""),
+    LIBRARY_DOWNLOADED("library_downloaded", ""),
+    LIBRARY_LOADED("library_loaded", ""),
+    LIBRARY_LOAD_FAILED("library_load_failed", "");
 
     public final String key;
     public final Object[] args;

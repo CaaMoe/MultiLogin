@@ -1,5 +1,5 @@
 name: MultiLogin
-main: moe.caa.multilogin.bukkit.impl.MultiLoginBukkit
+main: moe.caa.multilogin.bukkit.MultiLoginBukkit
 version: @version@
 author: CaaMoe,ksqeib
 softdepend: [ PlaceholderAPI ]
