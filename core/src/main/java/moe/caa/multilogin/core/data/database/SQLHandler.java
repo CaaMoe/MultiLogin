@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.data.database;
 
-import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.data.database.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.data.database.pool.H2ConnectionPool;

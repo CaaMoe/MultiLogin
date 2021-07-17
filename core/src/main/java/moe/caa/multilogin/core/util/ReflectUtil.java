@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.util;
 
-import moe.caa.multilogin.core.NoSuchEnumException;
+import moe.caa.multilogin.core.exception.NoSuchEnumException;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;

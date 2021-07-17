@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.main;
 
 import moe.caa.multilogin.core.data.database.SQLHandler;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -44,9 +44,10 @@ public class MultiCore {
         try {
             LibraryHandler.init();
         } catch (Throwable e){
-            e.printStackTrace();
+            MultiLogger.log(LoggerLevel.ERROR, e);
+            MultiLogger.log(LoggerLevel.ERROR, e.getMessage());
+            return false;
         }
-
 
         try {
             genFile();

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.exception;
 
 public class NoSuchEnumException extends ReflectiveOperationException {
 

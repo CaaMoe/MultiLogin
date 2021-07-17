@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.language;
 
-import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.YamlConfig;

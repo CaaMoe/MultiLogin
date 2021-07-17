@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core;
+package moe.caa.multilogin.core.main;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

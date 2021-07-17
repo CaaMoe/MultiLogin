@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.util;
 
-import moe.caa.multilogin.core.NoSuchEnumException;
+import moe.caa.multilogin.core.exception.NoSuchEnumException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 

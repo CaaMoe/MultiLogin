@@ -1,6 +1,6 @@
 package moe.caa.multilogin.bukkit;
 
-import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;

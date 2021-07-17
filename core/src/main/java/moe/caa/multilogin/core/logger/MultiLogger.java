@@ -1,11 +1,10 @@
 package moe.caa.multilogin.core.logger;
 
-import moe.caa.multilogin.core.MultiCore;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.util.FileUtil;
 
 import java.io.*;
-import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
