@@ -50,8 +50,6 @@ public class MultiCore {
 
         readConfig();
 
-        MultiLogger.init();
-
         try {
             ReflectUtil.init();
         } catch (Exception e) {
@@ -70,6 +68,7 @@ public class MultiCore {
             return false;
         }
 
+        MultiLogger.init();
         LanguageHandler.init();
         YggdrasilServicesHandler.init();
 

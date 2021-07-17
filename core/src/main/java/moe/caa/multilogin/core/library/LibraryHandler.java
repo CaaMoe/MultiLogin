@@ -14,13 +14,14 @@ import java.lang.invoke.MethodHandle;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class LibraryHandler {
-    private static final Map<String, String> NEED_LIBRARIES = new HashMap<>();
+    private static final Map<String, String> NEED_LIBRARIES = new LinkedHashMap<>();
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     public static void init() throws Throwable {
@@ -109,6 +110,14 @@ public class LibraryHandler {
 
         if (ReflectUtil.getClass("com.google.gson.Gson") == null) {
             NEED_LIBRARIES.put("com.google.code.gson gson 2.8.7", "com.google.gson.Gson");
+        }
+
+        if (ReflectUtil.getClass("org.apache.logging.log4j.Level") == null) {
+            NEED_LIBRARIES.put("org.apache.logging.log4j log4j-api 2.13.2", "org.apache.logging.log4j.Level");
+        }
+
+        if (ReflectUtil.getClass("org.apache.logging.log4j.core.LoggerContext") == null) {
+            NEED_LIBRARIES.put("org.apache.logging.log4j log4j-core 2.13.2", "org.apache.logging.log4j.core.LoggerContext");
         }
     }
 }
