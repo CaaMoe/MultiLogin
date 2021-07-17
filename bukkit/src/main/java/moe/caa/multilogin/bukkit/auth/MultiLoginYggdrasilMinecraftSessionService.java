@@ -11,6 +11,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.MultiLoginBukkit;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.auth.*;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -25,7 +26,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     private final Field yggdrasilAuthenticationServiceGson = ReflectUtil.getField(YggdrasilAuthenticationService.class, Gson.class, true);
     private MinecraftSessionService vanService;
 
-    protected MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) throws NoSuchFieldException {
+    public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) throws NoSuchFieldException {
         super(authenticationService);
     }
 
@@ -49,7 +50,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             if (response == null || response.getId() == null) return null;
             VerificationResult verificationResult = Verifier.getUserVerificationMessage(response.getId(), user.getName(), authResult.service);
             if (verificationResult.FAIL_MSG != null) {
-                // BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.FAIL_MSG);
+                BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.FAIL_MSG);
                 return new GameProfile(response.getId(), user.getName());
             }
 
@@ -57,6 +58,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
             MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.REDIRECT_UUID);
             MultiLoginBukkit.LOGIN_CACHE.put(verificationResult.REDIRECT_UUID, System.currentTimeMillis());
+            MultiLoginBukkit.USER_CACHE.put(verificationResult.REDIRECT_UUID, verificationResult.USER);
             return result;
         } catch (AuthenticationUnavailableException e) {
             throw e;

@@ -14,7 +14,9 @@ public class YggdrasilServiceBody {
 
     private YggdrasilServiceBody(ServerTypeEnum serverType, String url, Boolean postMode, Boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
         this.serverType = serverType;
-        this.url = serverType == ServerTypeEnum.MINECRAFT ? "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : url;
+        this.url = serverType == ServerTypeEnum.MINECRAFT ?
+                "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : serverType == ServerTypeEnum.BLESSING_SKIN ?
+                url + "/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : url;
         this.postMode = postMode;
         this.passIp = passIp;
         this.passIpContent = passIpContent;

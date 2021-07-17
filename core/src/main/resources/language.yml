@@ -33,4 +33,5 @@ verification_allow: "玩家： {1}， UUID： {0}， 登入成功， UUID 重定
 not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
 
 error_auth: '处理用户数据时出现异常'
+error_reflect_modify: '无法修改核心服务，插件可能不支持您的服务端'
 

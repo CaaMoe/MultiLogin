@@ -31,7 +31,8 @@ public enum LanguageKeys {
     VERIFICATION_ERROR("verification_error"),
     VERIFICATION_ALLOW("verification_allow", "", "", "", "", ""),
     NIT_ONLINE("not_online"),
-    ERROR_AUTH("error_auth");
+    ERROR_AUTH("error_auth"),
+    ERROR_REDIRECT_MODIFY("error_reflect_modify");
 
     public final String key;
     public final Object[] args;
