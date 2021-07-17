@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
@@ -49,12 +50,21 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void onEnable() {
         schedule = new BukkitSchedule(this);
+        if (!MultiCore.init(this)) {
+            setEnabled(false);
+            return;
+        }
+
         try {
             initCoreService();
         } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
+            setEnabled(false);
+            return;
         }
+
+        getServer().getPluginManager().registerEvents(new BukkitListener(), this);
     }
 
     @Override

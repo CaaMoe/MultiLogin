@@ -29,18 +29,6 @@ public class BukkitListener implements Listener {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
         }
-
-        try {
-            for (User user : UserDataHandler.getUserEntryByRedirectUuid(event.getUniqueId())) {
-                if (user.currentName.equals(event.getName())){
-                    MultiLoginBukkit.USER_CACHE.put(event.getUniqueId(), user);
-                    return;
-                }
-            }
-        } catch (Exception ignored) {
-        }
-        event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-        event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
     }
 
     @EventHandler

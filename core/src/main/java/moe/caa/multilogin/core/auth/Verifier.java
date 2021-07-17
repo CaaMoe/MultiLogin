@@ -78,7 +78,7 @@ public class Verifier {
             task.get();
 
             MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.redirectUuid.toString(), userData.currentName, userData.onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path));
-            return new VerificationResult(userData.redirectUuid);
+            return new VerificationResult(userData.redirectUuid, userData);
         } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.VERIFICATION_ERROR.getMessage());

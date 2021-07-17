@@ -58,6 +58,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
             MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.REDIRECT_UUID);
             MultiLoginBukkit.LOGIN_CACHE.put(verificationResult.REDIRECT_UUID, System.currentTimeMillis());
+            MultiLoginBukkit.USER_CACHE.put(verificationResult.REDIRECT_UUID, verificationResult.USER);
             return result;
         } catch (AuthenticationUnavailableException e) {
             throw e;
