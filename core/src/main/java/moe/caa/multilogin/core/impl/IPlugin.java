@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.impl;
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
@@ -52,4 +53,24 @@ public interface IPlugin {
      * @return 调度器对象
      */
     ISchedule getSchedule();
+
+    /**
+     * 是否开启在线验证
+     *
+     * @return 在线验证模式
+     */
+    boolean isOnlineMode();
+
+    /**
+     * 获得在线玩家
+     * @param uuid uuid
+     * @return 玩家
+     */
+    ISender getPlayer(UUID uuid);
+
+    /**
+     * 获得在线玩家
+     *
+     */
+    List<ISender> getPlayer(String name);
 }

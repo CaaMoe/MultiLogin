@@ -48,4 +48,8 @@ public class YggdrasilServicesHandler {
         }
         return null;
     }
+
+    public static ArrayList<YggdrasilService> getServices() {
+        return SERVICES;
+    }
 }
