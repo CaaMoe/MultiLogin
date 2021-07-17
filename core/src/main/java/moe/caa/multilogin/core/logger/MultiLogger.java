@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.logger;
 
-import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FileUtil;
 
 import java.io.*;

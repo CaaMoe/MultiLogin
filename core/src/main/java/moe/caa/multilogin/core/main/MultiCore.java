@@ -23,9 +23,9 @@ import java.text.MessageFormat;
  * 核心类
  */
 public class MultiCore {
-    private static File configFile;
     public static IPlugin plugin = null;
     public static YamlConfig config = null;
+    private static File configFile;
 
     public static boolean init(IPlugin plugin) {
         configFile = new File(plugin.getDataFolder(), "config.yml");
@@ -54,7 +54,7 @@ public class MultiCore {
 
         try {
             LibraryHandler.init();
-        } catch (Throwable e){
+        } catch (Throwable e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, e.getMessage());
             return false;
@@ -78,7 +78,7 @@ public class MultiCore {
         FileUtil.saveResource(plugin.getJarResource("config.yml"), configFile, false);
     }
 
-    public static void reload(){
+    public static void reload() {
 
     }
 }

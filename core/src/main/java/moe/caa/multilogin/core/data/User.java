@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public class User {
     public final UUID onlineUuid;
+    public final transient YggdrasilService service;
     public String currentName;
     public UUID redirectUuid;
     public String yggdrasilService;
     public boolean whitelist;
-    public final transient YggdrasilService service;
 
     public User(UUID onlineUuid, String currentName, UUID redirectUuid, String yggdrasilService, boolean whitelist) {
         this.onlineUuid = onlineUuid;

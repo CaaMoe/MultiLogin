@@ -1,9 +1,9 @@
 package moe.caa.multilogin.bukkit;
 
-import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.main.MultiCore;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,7 +56,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public List<ISender> getPlayer(String name) {
         List<ISender> ret = new ArrayList<>();
         for (Player player : getServer().getOnlinePlayers()) {
-            if(player.getName().equalsIgnoreCase(name)) ret.add(new BukkitSender(player));
+            if (player.getName().equalsIgnoreCase(name)) ret.add(new BukkitSender(player));
         }
         return ret;
     }

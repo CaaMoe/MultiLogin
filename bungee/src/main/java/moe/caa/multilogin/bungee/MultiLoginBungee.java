@@ -54,7 +54,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public List<ISender> getPlayer(String name) {
         List<ISender> ret = new ArrayList<>();
         for (ProxiedPlayer player : getProxy().getPlayers()) {
-            if(player.getName().equalsIgnoreCase(name)) ret.add(new BungeeSender(player));
+            if (player.getName().equalsIgnoreCase(name)) ret.add(new BungeeSender(player));
         }
         return ret;
     }

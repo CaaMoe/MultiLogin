@@ -1,5 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'java'
 }
@@ -16,7 +14,7 @@ dependencies {
 }
 
 jar {
-    archiveBaseName.set "MultiLogin-Bukkit-" + project.plugin_version
+    archiveBaseName.set "MultiLogin-Bungee-" + project.plugin_version
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)

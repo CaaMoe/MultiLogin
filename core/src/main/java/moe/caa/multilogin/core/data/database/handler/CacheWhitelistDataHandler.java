@@ -12,7 +12,6 @@
 
 package moe.caa.multilogin.core.data.database.handler;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -37,7 +36,7 @@ public class CacheWhitelistDataHandler {
         }
     }
 
-    public static boolean addCacheWhitelist(String nameOrUuid) throws SQLException{
+    public static boolean addCacheWhitelist(String nameOrUuid) throws SQLException {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s) VALUES(?)",
                 CACHE_WHITELIST_TABLE_NAME, WHITELIST
         ))) {

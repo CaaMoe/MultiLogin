@@ -37,6 +37,21 @@ public class YggdrasilService {
         integrity();
     }
 
+    public static YggdrasilService fromYamlConfig(String path, YamlConfig config) {
+        return new YggdrasilService(
+                path,
+                config.get("enable", Boolean.class),
+                config.get("name", String.class),
+                YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
+                config.get("checkUrl", Boolean.class),
+                config.get("convUuid", ConvUuidEnum.class),
+                config.get("convRepeat", Boolean.class),
+                config.get("nameAllowedRegular", String.class),
+                config.get("whitelist", Boolean.class),
+                config.get("authRetry", Integer.class)
+        );
+    }
+
     private void integrity() {
         switch (ValueUtil.getOrThrow(body.serverType, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
             case CUSTOM:
@@ -72,20 +87,5 @@ public class YggdrasilService {
     @Override
     public int hashCode() {
         return Objects.hash(path);
-    }
-
-    public static YggdrasilService fromYamlConfig(String path, YamlConfig config) {
-        return new YggdrasilService(
-                path,
-                config.get("enable", Boolean.class),
-                config.get("name", String.class),
-                YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
-                config.get("checkUrl", Boolean.class),
-                config.get("convUuid", ConvUuidEnum.class),
-                config.get("convRepeat", Boolean.class),
-                config.get("nameAllowedRegular", String.class),
-                config.get("whitelist", Boolean.class),
-                config.get("authRetry", Integer.class)
-        );
     }
 }

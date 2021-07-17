@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.language;
 
-import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.YamlConfig;
 
 import java.io.File;
@@ -13,8 +13,8 @@ import java.text.MessageFormat;
  * 可读消息处理程序
  */
 public class LanguageHandler {
-    private static YamlConfig languageYamlConfig;
     private static final YamlConfig defaultLanguageYamlConfig;
+    private static YamlConfig languageYamlConfig;
     private static boolean outside = false;
 
     static {
@@ -32,7 +32,7 @@ public class LanguageHandler {
             }
         }
         MultiLogger.log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage() : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage());
-        if(outside) testLanguage();
+        if (outside) testLanguage();
     }
 
     private static void testLanguage() {

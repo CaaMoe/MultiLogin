@@ -22,8 +22,8 @@ public class YggdrasilServiceBody {
         this.passIpContentByPost = passIpContentByPost;
     }
 
-    public static YggdrasilServiceBody fromYaml(YamlConfig config){
-        if(config == null) return null;
+    public static YggdrasilServiceBody fromYaml(YamlConfig config) {
+        if (config == null) return null;
         return new YggdrasilServiceBody(
                 config.get("serverType", ServerTypeEnum.class),
                 config.get("url", String.class),

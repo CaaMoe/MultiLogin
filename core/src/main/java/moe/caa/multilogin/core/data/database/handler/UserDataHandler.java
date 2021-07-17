@@ -86,7 +86,7 @@ public class UserDataHandler {
             ps.setString(1, name);
             ResultSet resultSet = ps.executeQuery();
             List<YggdrasilService> ret = new LinkedList<>();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 ret.add(YggdrasilServicesHandler.getService(resultSet.getString(1)));
             }
             return ret;

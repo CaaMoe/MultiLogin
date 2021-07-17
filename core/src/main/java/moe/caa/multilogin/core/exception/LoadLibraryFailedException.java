@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.exception;
 
-public class LoadLibraryFailedException extends Exception{
+public class LoadLibraryFailedException extends Exception {
     public LoadLibraryFailedException() {
         super();
     }

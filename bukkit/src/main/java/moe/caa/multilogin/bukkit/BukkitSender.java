@@ -45,7 +45,7 @@ public class BukkitSender implements ISender {
 
     @Override
     public boolean kickPlayer(String message) {
-        if(isPlayer()){
+        if (isPlayer()) {
             ((Player) VAN_SENDER).kickPlayer(message);
             return true;
         }

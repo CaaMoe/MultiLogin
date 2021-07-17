@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.data.database;
 
-import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.data.database.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.data.database.pool.H2ConnectionPool;
@@ -9,6 +8,7 @@ import moe.caa.multilogin.core.impl.ISQLConnectionPool;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 

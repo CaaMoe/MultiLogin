@@ -63,6 +63,7 @@ public interface IPlugin {
 
     /**
      * 获得在线玩家
+     *
      * @param uuid uuid
      * @return 玩家
      */
@@ -70,7 +71,6 @@ public interface IPlugin {
 
     /**
      * 获得在线玩家
-     *
      */
     List<ISender> getPlayer(String name);
 }

@@ -117,10 +117,10 @@ public class ReflectUtil {
         return false;
     }
 
-    public static Class<?> getClass(String name){
+    public static Class<?> getClass(String name) {
         try {
             return Class.forName(name);
-        } catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
