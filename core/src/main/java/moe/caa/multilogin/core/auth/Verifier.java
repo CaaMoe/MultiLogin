@@ -25,7 +25,7 @@ public class Verifier {
 
             // 验证服务器不符
             if (updUserEntry) {
-                if(!Objects.equals(userData.yggdrasilService, yggdrasilService.path)){
+                if (!Objects.equals(userData.yggdrasilService, yggdrasilService.path)) {
                     MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.VERIFICATION_NO_CHAE.getMessage(currentName, onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path, userData.yggdrasilService));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_CHAE.getMessage());
                 }
@@ -63,7 +63,7 @@ public class Verifier {
             // 重名踢出
             FutureTask<String> task = new FutureTask<>(() -> {
                 for (ISender sender : MultiCore.plugin.getPlayer(currentName)) {
-                    if(!sender.getPlayerUniqueIdentifier().equals(onlineUuid)){
+                    if (!sender.getPlayerUniqueIdentifier().equals(onlineUuid)) {
                         sender.kickPlayer(LanguageKeys.VERIFICATION_RUSH_NAME_ONL.getMessage());
                     }
                 }
@@ -97,7 +97,7 @@ public class Verifier {
         one.removeIf(yggdrasilService -> !yggdrasilService.enable);
         List<YggdrasilService> two = new ArrayList<>();
         for (YggdrasilService serviceEntry : YggdrasilServicesHandler.getServices()) {
-            if(!serviceEntry.enable) continue;
+            if (!serviceEntry.enable) continue;
             if (!one.isEmpty() && one.contains(serviceEntry)) continue;
             two.add(serviceEntry);
         }

@@ -1,8 +1,6 @@
 package moe.caa.multilogin.bukkit.listener;
 
 import moe.caa.multilogin.bukkit.MultiLoginBukkit;
-import moe.caa.multilogin.core.data.User;
-import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 import org.bukkit.event.EventHandler;

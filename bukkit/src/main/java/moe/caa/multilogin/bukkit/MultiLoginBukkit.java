@@ -26,10 +26,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
-    public static ISchedule schedule;
-    public static Gson authGson;
     public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
     public static final Map<UUID, User> USER_CACHE = new Hashtable<>();
+    public static ISchedule schedule;
+    public static Gson authGson;
 
     private void initCoreService() throws Exception {
         Class<?> craftServerClass = getServer().getClass();

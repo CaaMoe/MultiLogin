@@ -62,8 +62,8 @@ public class ValueUtil {
         return val == null ? def : val;
     }
 
-    public static boolean notIsEmpty(String str){
-        if(str == null) return false;
+    public static boolean notIsEmpty(String str) {
+        if (str == null) return false;
         return str.length() != 0;
     }
 }

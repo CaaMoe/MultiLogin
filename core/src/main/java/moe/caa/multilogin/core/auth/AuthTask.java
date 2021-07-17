@@ -28,12 +28,12 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
         AuthResult<T> authResult;
         try {
             String result;
-            if(service.body.postMode){
+            if (service.body.postMode) {
                 result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), MultiCore.servicesTimeOut, service.authRetry);
             } else {
                 result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), MultiCore.servicesTimeOut, service.authRetry);
             }
-            if(ValueUtil.notIsEmpty(result)){
+            if (ValueUtil.notIsEmpty(result)) {
                 MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(username, service.name, service.path));
             } else {
                 MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(username, service.name, service.path));
@@ -41,7 +41,7 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
 
             T content = MultiCore.plugin.getAuthGson().fromJson(result, MultiCore.plugin.authResultType());
             authResult = new AuthResult<>(content, service);
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(username, service.name, service.path));
             authResult = new AuthResult<>(AuthFailedEnum.SERVER_DOWN, service);
             authResult.throwable = e;

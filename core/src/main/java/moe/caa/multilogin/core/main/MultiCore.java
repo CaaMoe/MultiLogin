@@ -28,12 +28,11 @@ import java.util.List;
 public class MultiCore {
     public static IPlugin plugin = null;
     public static YamlConfig config = null;
-    private static File configFile;
-
     public static List<String> safeId = new ArrayList<>();
     public static int servicesTimeOut = 10000;
     public static boolean whitelist = true;
     public static String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
+    private static File configFile;
 
     public static boolean init(IPlugin plugin) {
         configFile = new File(plugin.getDataFolder(), "config.yml");

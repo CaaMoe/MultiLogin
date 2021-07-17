@@ -62,7 +62,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             return result;
         } catch (AuthenticationUnavailableException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
         }

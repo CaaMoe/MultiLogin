@@ -24,7 +24,7 @@ public class AuthCore {
         List<List<YggdrasilService>> order = Verifier.getVeriOrder(name);
         boolean down = false;
 
-        for (List<YggdrasilService> entries : order){
+        for (List<YggdrasilService> entries : order) {
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
                 MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.name, result.service.path));
@@ -38,7 +38,7 @@ public class AuthCore {
         return new AuthResult<>(down ? AuthFailedEnum.SERVER_DOWN : AuthFailedEnum.VALIDATION_FAILED);
     }
 
-    private static <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip){
+    private static <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) {
         AuthResult<T> getResult = null;
         List<FutureTask<AuthResult<T>>> tasks = new ArrayList<>();
         long endTime = System.currentTimeMillis() + MultiCore.servicesTimeOut;

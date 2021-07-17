@@ -33,7 +33,7 @@
     <Loggers>
         <Root level="info">
             <AppenderRef ref="File"/>
-<!--            <AppenderRef ref="TerminalConsole" level="info"/>-->
+            <!--            <AppenderRef ref="TerminalConsole" level="info"/>-->
         </Root>
     </Loggers>
 </Configuration>
