@@ -80,7 +80,7 @@ public class Verifier {
             MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.redirectUuid.toString(), userData.currentName, yggdrasilService.name, yggdrasilService.path));
             return new VerificationResult(userData.redirectUuid);
         } catch (Exception e) {
-            e.printStackTrace();
+            MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.VERIFICATION_ERROR.getMessage());
             return new VerificationResult(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
         }
