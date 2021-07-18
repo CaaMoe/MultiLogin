@@ -47,6 +47,12 @@ public class Verifier {
             userData = !updUserEntry ? new User(onlineUuid, currentName, yggdrasilService.convUuid.getResultUuid(onlineUuid, currentName), yggdrasilService.path, false) : userData;
             userData.currentName = currentName;
 
+            if(!updUserEntry){
+                if(yggdrasilService.convRepeat){
+                    userData.redirectUuid = getRepeatUuid(userData, yggdrasilService);
+                }
+            }
+
             // 白名单检查
             if (!userData.whitelist && yggdrasilService.whitelist) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
@@ -87,6 +93,22 @@ public class Verifier {
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.VERIFICATION_ERROR.getMessage());
             return new VerificationResult(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
         }
+    }
+
+    private static UUID getRepeatUuid(User userData, YggdrasilService yggdrasilService) throws SQLException {
+        UUID ret = userData.redirectUuid;
+        if (UserDataHandler.getUserEntryByRedirectUuid(ret).size() == 0) {
+            return ret;
+        }
+        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_REPEAT_UUID.getMessage(
+                userData.currentName,
+                userData.onlineUuid,
+                userData.redirectUuid.toString(),
+                (userData.redirectUuid = UUID.randomUUID()).toString(),
+                yggdrasilService.name,
+                yggdrasilService.path
+        ));
+        return getRepeatUuid(userData, yggdrasilService);
     }
 
     /**

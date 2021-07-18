@@ -44,7 +44,8 @@ public enum LanguageKeys {
 
     DEBUG_VERIFICATION_NO_CHAE("debug_verification_no_chae", "", "", "", "", ""),
     DEBUG_VERIFICATION_RUSH_NAME("debug_verification_rush_name", "", "", "", "", ""),
-    DEBUG_VERIFICATION_NO_WHITELIST("debug_verification_no_whitelist", "", "");
+    DEBUG_VERIFICATION_NO_WHITELIST("debug_verification_no_whitelist", "", ""),
+    DEBUG_VERIFICATION_REPEAT_UUID("debug_verification_repeat_uuid", "", "", "", "", "", "");
 
     public final String key;
     public final Object[] args;
