@@ -19,7 +19,7 @@ public class YggdrasilServiceBody {
                 url + "/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : url;
         this.postMode = postMode;
         this.passIp = passIp;
-        this.passIpContent = passIpContent;
+        this.passIpContent = serverType != ServerTypeEnum.CUSTOM ? "ip={0}" : passIpContent;
         this.postContent = postContent;
         this.passIpContentByPost = passIpContentByPost;
     }
