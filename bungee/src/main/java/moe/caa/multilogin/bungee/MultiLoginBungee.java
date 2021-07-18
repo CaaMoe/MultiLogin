@@ -2,12 +2,13 @@ package moe.caa.multilogin.bungee;
 
 import com.google.gson.Gson;
 import gnu.trove.map.TIntObjectMap;
+import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
+import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static BungeeSchedule schedule;
+    public static MultiLoginBungee plugin;
 
     @Override
     public void initCoreService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
@@ -63,11 +65,12 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOtherService() {
-
+        getProxy().getPluginManager().registerListener(this, new BungeeListener());
     }
 
     @Override
     public void onEnable() {
+        plugin = this;
         schedule = new BungeeSchedule(this);
         if (!MultiCore.init(this)) {
             onDisable();

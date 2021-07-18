@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bungee;
+package moe.caa.multilogin.bungee.auth;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.auth.*;
