@@ -88,6 +88,10 @@ public interface IPlugin {
 
     void initCoreService() throws Throwable;
 
+    void initOtherService() throws Throwable;
+
+    void shutdown();
+
     default boolean onAsyncLoginSuccess(UUID uuid, String name) {
         return Verifier.CACHE_LOGIN.remove(uuid, name);
     }

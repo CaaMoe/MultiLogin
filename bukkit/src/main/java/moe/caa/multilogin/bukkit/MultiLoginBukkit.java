@@ -28,6 +28,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static Gson authGson;
     public static MultiLoginBukkit plugin;
 
+    @Override
     public void initCoreService() throws Exception {
         Class<?> craftServerClass = getServer().getClass();
         Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
@@ -48,12 +49,22 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onEnable() {
         schedule = new BukkitSchedule(this);
         plugin = this;
-        if (!MultiCore.init(this)) {
-            setEnabled(false);
-            return;
-        }
+        setEnabled(MultiCore.init(this));
+    }
 
+    @Override
+    public void initOtherService() throws Throwable {
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
+    }
+
+    @Override
+    public void onDisable() {
+        MultiCore.disable();
+    }
+
+    @Override
+    public void shutdown() {
+        getServer().shutdown();
     }
 
     @Override

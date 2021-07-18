@@ -111,7 +111,16 @@ public class MultiCore {
         FileUtil.saveResource(plugin.getJarResource("config.yml"), configFile, false);
     }
 
-    public static void reload() {
+    public static void reload() throws IOException {
+        genFile();
+        config = YamlConfig.fromInputStream(new FileInputStream(configFile));
+        readConfig();
+        YggdrasilServicesHandler.reload();
+    }
 
+    public static void disable(){
+
+
+        plugin.shutdown();
     }
 }
