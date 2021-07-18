@@ -1,4 +1,5 @@
 # MultiLogin
+[![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 
 让服务端同时支持多种外置登入共存
 
