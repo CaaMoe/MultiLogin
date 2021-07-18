@@ -1,6 +1,6 @@
 # MultiLogin
 
-让服务端支持多种外置登入共存
+让服务端同时支持多种外置登入共存
 
 ## 功能
 
@@ -52,7 +52,6 @@
         # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
         # 当 serverType 为 ‘CUSTOM’时，必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置内容。
         #       （比如：‘https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}’ ，若是POST请求，则需填写完整的请求链接即可）。
-        # 请求不传递 ip 地址信息，请勿额外添加不必要的属性信息。
         url: "https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}"
 
         # 以 post 请求方式验证账户身份
