@@ -94,7 +94,7 @@ public class MultiCore {
             }
 
             plugin.initOtherService();
-
+            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_LOADED.getMessage());
             return true;
         } catch (Throwable e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
@@ -129,5 +129,6 @@ public class MultiCore {
     public static void disable() {
         SQLHandler.close();
         plugin.shutdown();
+        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_UNLOADED.getMessage());
     }
 }

@@ -10,5 +10,7 @@ public enum AuthFailedEnum {
     /**
      * 身份验证失败
      */
-    VALIDATION_FAILED;
+    VALIDATION_FAILED,
+
+    NO_SERVICE;
 }

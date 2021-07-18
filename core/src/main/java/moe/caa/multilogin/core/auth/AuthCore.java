@@ -23,8 +23,10 @@ public class AuthCore {
 
         List<List<YggdrasilService>> order = Verifier.getVeriOrder(name);
         boolean down = false;
+        boolean haveService = false;
 
         for (List<YggdrasilService> entries : order) {
+            haveService = true;
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
                 MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.name, result.service.path));
@@ -34,8 +36,9 @@ public class AuthCore {
                 down = true;
             }
         }
-        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(name, (down ? AuthFailedEnum.SERVER_DOWN : AuthFailedEnum.VALIDATION_FAILED).name()));
-        return new AuthResult<>(down ? AuthFailedEnum.SERVER_DOWN : AuthFailedEnum.VALIDATION_FAILED);
+        AuthFailedEnum failedEnum = down ? AuthFailedEnum.SERVER_DOWN : haveService ? AuthFailedEnum.VALIDATION_FAILED : AuthFailedEnum.NO_SERVICE;
+        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(name, failedEnum.name()));
+        return new AuthResult<>(failedEnum);
     }
 
     private static <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) {
@@ -56,8 +59,7 @@ public class AuthCore {
                 if (!task.isDone()) continue;
                 try {
                     getResult = task.get();
-                } catch (Exception exception) {
-                    exception.printStackTrace();
+                } catch (Exception ignored) {
                 } finally {
                     itr.remove();
                 }
