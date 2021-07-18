@@ -84,6 +84,14 @@ public class MultiCore {
             return false;
         }
 
+        try {
+            plugin.initCoreService();
+        } catch (Throwable e) {
+            MultiLogger.log(LoggerLevel.ERROR, e);
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
+            return false;
+        }
+
         return true;
     }
 

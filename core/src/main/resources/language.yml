@@ -28,7 +28,7 @@ verification_rush_name: "§c您的 ID 已被注册，请重新设置您的 ID"
 verification_rush_name_Onl: "§c请重新设置您的 ID"
 verification_no_whitelist: "§c您没有登入到此服务器的白名单权限"
 verification_error: "验证发生异常"
-verification_allow: "玩家： {1}， UUID： {0}， 登入成功， UUID 重定向为： {2}， 账户验证服务器： {3}（{4}）"
+verification_allow: "UUID: {0} 玩家: {1} 登入成功, UUID 重定向为: {2}, 账户验证服务器: {3}（{4}）"
 
 not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
 

@@ -70,4 +70,9 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public Type authResultType() {
         return null;
     }
+
+    @Override
+    public void initCoreService() throws Throwable {
+
+    }
 }

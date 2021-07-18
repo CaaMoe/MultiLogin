@@ -6,13 +6,9 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
-import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
-import moe.caa.multilogin.core.language.LanguageKeys;
-import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import org.bukkit.entity.Player;
@@ -22,16 +18,17 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
-    public static final Map<UUID, Long> LOGIN_CACHE = new Hashtable<>();
-    public static final Map<UUID, User> USER_CACHE = new Hashtable<>();
     public static ISchedule schedule;
     public static Gson authGson;
+    public static MultiLoginBukkit plugin;
 
-    private void initCoreService() throws Exception {
+    public void initCoreService() throws Exception {
         Class<?> craftServerClass = getServer().getClass();
         Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
         Class<?> dedicatedPlayerListClass = craftServerGetHandle.getReturnType();
@@ -50,16 +47,8 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void onEnable() {
         schedule = new BukkitSchedule(this);
+        plugin = this;
         if (!MultiCore.init(this)) {
-            setEnabled(false);
-            return;
-        }
-
-        try {
-            initCoreService();
-        } catch (Exception e) {
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
             setEnabled(false);
             return;
         }

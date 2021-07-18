@@ -16,6 +16,8 @@ import java.util.*;
 import java.util.concurrent.FutureTask;
 
 public class Verifier {
+    public static final Set<User> CACHE_USER = new HashSet<>();
+    public static final Map<UUID, String> CACHE_LOGIN = new HashMap<>();
 
     public static VerificationResult getUserVerificationMessage(UUID onlineUuid, String currentName, YggdrasilService yggdrasilService) {
         try {
@@ -76,6 +78,8 @@ public class Verifier {
             MultiCore.plugin.getSchedule().runTask(task);
             task.get();
 
+            CACHE_LOGIN.put(userData.redirectUuid, currentName);
+            CACHE_USER.add(userData);
             MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.redirectUuid.toString(), userData.currentName, userData.onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path));
             return new VerificationResult(userData.redirectUuid, userData);
         } catch (Exception e) {

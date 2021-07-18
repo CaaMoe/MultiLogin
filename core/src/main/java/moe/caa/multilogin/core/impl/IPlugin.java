@@ -1,6 +1,8 @@
 package moe.caa.multilogin.core.impl;
 
 import com.google.gson.Gson;
+import moe.caa.multilogin.core.auth.Verifier;
+import moe.caa.multilogin.core.data.User;
 
 import java.io.File;
 import java.io.InputStream;
@@ -83,4 +85,30 @@ public interface IPlugin {
     Gson getAuthGson();
 
     Type authResultType();
+
+    void initCoreService() throws Throwable;
+
+    default boolean onAsyncLoginSuccess(UUID uuid, String name) {
+        return Verifier.CACHE_LOGIN.remove(uuid, name);
+    }
+
+    default void onLeave() {
+        getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null));
+    }
+
+    default void onJoin(ISender player) {
+        Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null);
+        if (player.isOp() || player.hasPermission("")) {
+            // TODO: 2021/7/18 发送更新信息
+        }
+    }
+
+    default User getCacheUserData(UUID redirectUuid) {
+        for (User user : Verifier.CACHE_USER) {
+            if (user.redirectUuid.equals(redirectUuid)) {
+                return user;
+            }
+        }
+        return null;
+    }
 }

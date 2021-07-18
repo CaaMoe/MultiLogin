@@ -1,16 +1,16 @@
 package moe.caa.multilogin.bukkit.listener;
 
+import moe.caa.multilogin.bukkit.BukkitSender;
 import moe.caa.multilogin.bukkit.MultiLoginBukkit;
 import moe.caa.multilogin.core.language.LanguageKeys;
-import moe.caa.multilogin.core.main.MultiCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.UUID;
 
 public class BukkitListener implements Listener {
     public static final Map<Thread, String> AUTH_CACHE = new Hashtable<>();
@@ -23,7 +23,7 @@ public class BukkitListener implements Listener {
             event.setKickMessage(msg);
             return;
         }
-        if (MultiLoginBukkit.LOGIN_CACHE.remove(event.getUniqueId()) == null) {
+        if (!MultiLoginBukkit.plugin.onAsyncLoginSuccess(event.getUniqueId(), event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
         }
@@ -31,11 +31,11 @@ public class BukkitListener implements Listener {
 
     @EventHandler
     private void onQuit(PlayerQuitEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        MultiCore.plugin.getSchedule().runTask(() -> {
-            if (MultiCore.plugin.getPlayer(uuid) == null) {
-                MultiLoginBukkit.USER_CACHE.remove(uuid);
-            }
-        });
+        MultiLoginBukkit.plugin.onLeave();
+    }
+
+    @EventHandler
+    private void onJoin(PlayerJoinEvent event) {
+        MultiLoginBukkit.plugin.onJoin(new BukkitSender(event.getPlayer()));
     }
 }
