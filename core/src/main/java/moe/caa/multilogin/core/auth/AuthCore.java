@@ -26,7 +26,7 @@ public class AuthCore {
         boolean haveService = false;
 
         for (List<YggdrasilService> entries : order) {
-            haveService = true;
+            if(entries.size() != 0) haveService = true;
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
                 MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.name, result.service.path));

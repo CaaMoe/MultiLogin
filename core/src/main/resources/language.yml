@@ -1,6 +1,6 @@
 plugin_load_error: '启动时遇到致命异常'
 plugin_loaded: '插件已加载'
-plugin_unloaded: '插件已加载'
+plugin_unloaded: '插件已卸载'
 use_inside_language: '使用内置语言'
 use_outside_language: '使用外置语言'
 repair_language_key: '语言节点 {0} 无效，将使用默认值代替它'
