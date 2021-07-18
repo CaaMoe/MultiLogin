@@ -2,7 +2,7 @@
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
-让服务端同时支持多种外置登入共存
+让服务端支持多种外置登入共存
 
 ## 功能
 
@@ -21,9 +21,7 @@
 
 ### 安装
 
-插件理论上支持 Spigot 1.8+ 和 大多数 Bungee 服务端，
-与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数，
-将适合的插件本体丢入 plugins 文件夹下即可使用。
+插件理论上支持 Spigot 1.8+ 和 大多数 Bungee 服务端， 与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数， 只需将适合的插件本体丢入 plugins 文件夹下即可。
 
 ### 添加一个 Yggdrasil 账户验证服务器
 
