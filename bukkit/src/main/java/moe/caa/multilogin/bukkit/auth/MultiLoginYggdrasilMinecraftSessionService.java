@@ -54,12 +54,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
                 return new GameProfile(response.getId(), user.getName());
             }
 
-            GameProfile result = new GameProfile(verificationResult.REDIRECT_UUID, user.getName());
-
-            MultiLoginBukkit.LOGIN_CACHE.remove(verificationResult.REDIRECT_UUID);
-            MultiLoginBukkit.LOGIN_CACHE.put(verificationResult.REDIRECT_UUID, System.currentTimeMillis());
-            MultiLoginBukkit.USER_CACHE.put(verificationResult.REDIRECT_UUID, verificationResult.USER);
-            return result;
+            return new GameProfile(verificationResult.REDIRECT_UUID, user.getName());
         } catch (AuthenticationUnavailableException e) {
             throw e;
         } catch (Exception e) {
