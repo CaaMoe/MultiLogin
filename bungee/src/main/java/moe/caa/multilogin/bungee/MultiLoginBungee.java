@@ -1,25 +1,82 @@
 package moe.caa.multilogin.bungee;
 
 import com.google.gson.Gson;
+import gnu.trove.map.TIntObjectMap;
+import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.util.ReflectUtil;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.connection.LoginResult;
+import net.md_5.bungee.protocol.DefinedPacket;
+import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
 
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MultiLoginBungee extends Plugin implements IPlugin {
+    public static BungeeSchedule schedule;
+
+    @Override
+    public void initCoreService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
+        MultiLoginEncryptionResponse.init();
+        BungeeAuthTask.init();
+
+        Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
+        Class<?> protocol_protocolDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
+
+        Field field_protocols = ReflectUtil.getField(protocol_directionDataClass, "protocols", true);
+        Field field_TO_SERVER = ReflectUtil.getField(Protocol.class, "TO_SERVER", true);
+        Field field_packetConstructors = ReflectUtil.getField(protocol_protocolDataClass, "packetConstructors", true);
+        Object to_server = field_TO_SERVER.get(Protocol.LOGIN);
+        TIntObjectMap<?> protocols = (TIntObjectMap<?>) field_protocols.get(to_server);
+        for (int protocol : ProtocolConstants.SUPPORTED_VERSION_IDS) {
+            if (protocol >= 47) {
+                Object data = protocols.get(protocol);
+                //2021/2/28 Fixed Supplier unsupported problem
+                Object[] constructors = (Object[]) field_packetConstructors.get(data);
+                if (constructors instanceof Supplier[]) {
+                    Supplier<? extends DefinedPacket>[] suppliers = (Supplier<? extends DefinedPacket>[]) constructors;
+                    suppliers[0x01] = MultiLoginEncryptionResponse::new;
+                } else if (constructors instanceof Constructor[]) {
+                    constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
+                } else {
+                    throw new UnsupportedOperationException(LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void initOtherService() {
+
+    }
 
     @Override
     public void onEnable() {
-        MultiCore.init(this);
+        schedule = new BungeeSchedule(this);
+        if (!MultiCore.init(this)) {
+            onDisable();
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        MultiCore.disable();
     }
 
     @Override
@@ -39,7 +96,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public ISchedule getSchedule() {
-        return null;
+        return schedule;
     }
 
     @Override
@@ -63,26 +120,16 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public Gson getAuthGson() {
-        return null;
+        return BungeeCord.getInstance().gson;
     }
 
     @Override
     public Type authResultType() {
-        return null;
-    }
-
-    @Override
-    public void initCoreService() throws Throwable {
-
-    }
-
-    @Override
-    public void initOtherService() {
-
+        return LoginResult.class;
     }
 
     @Override
     public void shutdown() {
-
+        BungeeCord.getInstance().stop();
     }
 }

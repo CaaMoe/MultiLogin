@@ -31,7 +31,6 @@ public class BungeeSender implements ISender {
 
     @Override
     public boolean isOp() {
-        // TODO: 2021/7/17 ???
         return false;
     }
 

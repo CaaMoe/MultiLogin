@@ -12,7 +12,7 @@ repositories {
 dependencies {
     compile project(':core')
     compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
-    compileOnly fileTree(dir: 'lib', include: ['*.jar'])
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
 }
 
 processResources {
