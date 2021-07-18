@@ -27,9 +27,7 @@ public class LibraryHandler {
         check();
         File libFolder = new File(MultiCore.plugin.getDataFolder(), "libraries");
         FileUtil.createNewFileOrFolder(libFolder, true);
-//        下载
         download(libFolder);
-//        下载完再加载 否则爆炸
         load(libFolder);
         check();
         String args = NEED_LIBRARIES.keySet().stream().map(LibraryHandler::genJarName).collect(Collectors.joining(", "));
@@ -43,8 +41,9 @@ public class LibraryHandler {
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
-            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
-            continue;
+            if(ReflectUtil.getClass(library.getValue()) != null){
+                MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
+            }
         }
     }
 
@@ -61,9 +60,6 @@ public class LibraryHandler {
                     String url = genUrl(library.getKey());
                     HttpUtil.downloadFile(url, file);
                     MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(file.getAbsolutePath()));
-                    if (ReflectUtil.getClass(library.getValue()) != null) {
-                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
-                    }
                 } catch (Throwable ignored) {
                 }
             });
