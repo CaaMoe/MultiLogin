@@ -88,7 +88,7 @@ public interface IPlugin {
 
     void initCoreService() throws Throwable;
 
-    void initOtherService() throws Throwable;
+    void initOtherService();
 
     void shutdown();
 

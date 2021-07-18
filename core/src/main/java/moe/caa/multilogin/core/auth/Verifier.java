@@ -59,8 +59,8 @@ public class Verifier {
             userData = !updUserEntry ? new User(onlineUuid, currentName, yggdrasilService.convUuid.getResultUuid(onlineUuid, currentName), yggdrasilService.path, false) : userData;
             userData.currentName = currentName;
 
-            if(!updUserEntry){
-                if(yggdrasilService.convRepeat){
+            if (!updUserEntry) {
+                if (yggdrasilService.convRepeat) {
                     userData.redirectUuid = getRepeatUuid(userData, yggdrasilService);
                 }
             }

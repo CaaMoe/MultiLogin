@@ -53,7 +53,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
-    public void initOtherService() throws Throwable {
+    public void initOtherService() {
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
     }
 

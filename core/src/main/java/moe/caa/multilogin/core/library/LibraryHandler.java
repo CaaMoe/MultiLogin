@@ -41,7 +41,7 @@ public class LibraryHandler {
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
-            if(ReflectUtil.getClass(library.getValue()) != null){
+            if (ReflectUtil.getClass(library.getValue()) != null) {
                 MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
             }
         }

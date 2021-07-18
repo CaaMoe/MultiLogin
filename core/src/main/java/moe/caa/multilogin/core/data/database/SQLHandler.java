@@ -60,8 +60,9 @@ public class SQLHandler {
     }
 
     public static void close() {
-        if (pool != null) {
+        try {
             pool.close();
+        } catch (Throwable ignored) {
         }
     }
 }

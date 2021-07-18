@@ -92,8 +92,11 @@ public class MultiCore {
                 MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
                 return false;
             }
+
+            plugin.initOtherService();
+
             return true;
-        } catch (Throwable e){
+        } catch (Throwable e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
             MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.PLUGIN_LOAD_ERROR.getMessage());
             return false;
@@ -123,9 +126,8 @@ public class MultiCore {
         YggdrasilServicesHandler.reload();
     }
 
-    public static void disable(){
-
-
+    public static void disable() {
+        SQLHandler.close();
         plugin.shutdown();
     }
 }
