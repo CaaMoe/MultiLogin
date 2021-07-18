@@ -1,9 +1,15 @@
 package moe.caa.multilogin.bungee.proxy;
 
 import com.google.common.base.Preconditions;
+import moe.caa.multilogin.bungee.MultiLoginBungee;
+import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.jni.cipher.BungeeCipher;
 import net.md_5.bungee.netty.ChannelWrapper;
@@ -47,6 +53,17 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             return;
         }
         initialHandler = (InitialHandler) handler;
+        try {
+            request = (EncryptionRequest) REQUEST.invoke(handler);
+            addEncrypt();
+            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp()));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            initialHandler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
+            MultiLogger.log(LoggerLevel.ERROR, e);
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
+        }
+
     }
 
     private void addEncrypt() throws Throwable {
