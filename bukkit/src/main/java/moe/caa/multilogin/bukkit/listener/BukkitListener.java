@@ -31,7 +31,7 @@ public class BukkitListener implements Listener {
 
     @EventHandler
     private void onQuit(PlayerQuitEvent event) {
-        MultiLoginBukkit.plugin.onLeave();
+        MultiLoginBukkit.plugin.onRefreshCacheUserData();
     }
 
     @EventHandler

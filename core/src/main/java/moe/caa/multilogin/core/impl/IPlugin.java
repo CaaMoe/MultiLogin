@@ -2,7 +2,10 @@ package moe.caa.multilogin.core.impl;
 
 import com.google.gson.Gson;
 import moe.caa.multilogin.core.auth.Verifier;
+import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.data.User;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.CheckUpdater;
 
 import java.io.File;
 import java.io.InputStream;
@@ -96,14 +99,16 @@ public interface IPlugin {
         return Verifier.CACHE_LOGIN.remove(uuid, name);
     }
 
-    default void onLeave() {
+    default void onRefreshCacheUserData() {
         getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null));
     }
 
     default void onJoin(ISender player) {
         Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null);
-        if (player.isOp() || player.hasPermission("")) {
-            // TODO: 2021/7/18 发送更新信息
+        if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
+            if(CheckUpdater.haveUpdate){
+                player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage());
+            }
         }
     }
 

@@ -51,3 +51,8 @@ debug_verification_rush_name: '拒绝登入，username: {0}, online uuid: {1}, �
 debug_verification_no_whitelist: '拒绝登入，username: {0}, online uuid: {1}, 没有白名单'
 debug_verification_no_pat_match: '拒绝登入，username: {0}, online uuid: {1}, 用户名未通过正则检查，当前正则: {2}'
 debug_verification_repeat_uuid: 'username: {0}, online uuid: {1}, 触发重复 UUID 定向机制，原定向 UUID: {2}, 现定向 UUID: {3}, 验证服务器: {4}({5})'
+
+update_sender: "§cMultiLogin §e有新的版本发布，请及时下载更新！"
+update_console: '插件有新版本发布，当前版本为: {0}，最新版本为: {1}'
+
+command_no_permission: '§c您没有足够的权限执行当前命令'
