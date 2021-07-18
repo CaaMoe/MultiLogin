@@ -12,6 +12,10 @@
 * 防止出现抢注服务器内 ID 的情况
 * 账户安全保护机制
 
+## BStats 数据
+![Bukkit BStats](https://bstats.org/signatures/bukkit/MultiLogin.svg)
+![Bungee BStats](https://bstats.org/signatures/bungeecord/MultiLogin.svg)
+
 ## 如何使用
 
 ### 安装
