@@ -22,12 +22,9 @@ import java.io.FileWriter;
 import java.io.InputStream;
 
 public class Log4JCore {
-    private LoggerContext context;
     private Logger logger;
 
     public void init() throws Exception {
-
-//        注册logger
         File tempFile = File.createTempFile("log4j2-temp", "multilogin");
         InputStream inputStream = MultiCore.plugin.getJarResource("multiloginLog4j2/log4j2.xml");
         byte[] bytes = new byte[inputStream.available()];
@@ -36,8 +33,7 @@ public class Log4JCore {
         FileWriter fw = new FileWriter(tempFile);
         fw.write(config.replace("multiloginLog", MultiCore.plugin.getDataFolder().getAbsolutePath()));
         fw.close();
-        //        获取context
-        context = new LoggerContext("MultiLogin");
+        LoggerContext context = new LoggerContext("MultiLogin");
         context.setConfigLocation(tempFile.toURI());
         context.reconfigure();
         logger = context.getLogger("MultiLogin");
@@ -55,7 +51,7 @@ public class Log4JCore {
                 logger.log(Level.WARN, message, throwable);
                 break;
             case DEBUG:
-                if (debug) logger.info("[DEBUG] " + message, throwable);
+                logger.debug(message, throwable);
                 break;
         }
     }
