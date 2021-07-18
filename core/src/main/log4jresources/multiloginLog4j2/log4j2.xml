@@ -19,7 +19,7 @@
         </RollingRandomAccessFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="File"/>
             <!--            <AppenderRef ref="TerminalConsole" level="info"/>-->
         </Root>
