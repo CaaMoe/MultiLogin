@@ -28,6 +28,7 @@ public enum LanguageKeys {
     VERIFICATION_RUSH_NAME("verification_rush_name"),
     VERIFICATION_RUSH_NAME_ONL("verification_rush_name_Onl"),
     VERIFICATION_NO_WHITELIST("verification_no_whitelist"),
+    VERIFICATION_NO_PAT_MATCH("verification_no_pat_match"),
     VERIFICATION_ERROR("verification_error"),
     VERIFICATION_ALLOW("verification_allow", "", "", "", "", ""),
     NIT_ONLINE("not_online"),
@@ -45,6 +46,7 @@ public enum LanguageKeys {
     DEBUG_VERIFICATION_NO_CHAE("debug_verification_no_chae", "", "", "", "", ""),
     DEBUG_VERIFICATION_RUSH_NAME("debug_verification_rush_name", "", "", "", "", ""),
     DEBUG_VERIFICATION_NO_WHITELIST("debug_verification_no_whitelist", "", ""),
+    DEBUG_VERIFICATION_NO_PAT_MATCH("debug_verification_no_pat_match", "", "", ""),
     DEBUG_VERIFICATION_REPEAT_UUID("debug_verification_repeat_uuid", "", "", "", "", "", "");
 
     public final String key;

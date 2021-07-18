@@ -26,9 +26,10 @@ verification_no_adapter: "§c验证未能通过，请重试"
 verification_no_chae: "§c您只能通过指定的验证方式登入游戏"
 verification_rush_name: "§c您的 ID 已被注册，请重新设置您的 ID"
 verification_rush_name_Onl: "§c请重新设置您的 ID"
+verification_no_pat_match: '§c您的 ID 不合法，请重新设置您的 ID'
 verification_no_whitelist: "§c您没有登入到此服务器的白名单权限"
 verification_error: "验证发生异常"
-verification_allow: "UUID: {0} 玩家: {1} 登入成功, UUID 重定向为: {2}, 账户验证服务器: {3}（{4}）"
+verification_allow: "UUID: {0}, name: {1} 登入成功, UUID 重定向为: {2}, 账户验证服务器: {3}（{4}）"
 
 not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
 
@@ -46,4 +47,5 @@ debug_login_end_disallow: '身份验证失败，username: {0}, type: {1}'
 debug_verification_no_chae: '拒绝登入，username: {0}, online uuid: {1}, 验证服务器不匹配。当前验证服务器: {2}({3}), 指定的验证服务器(path): {4}'
 debug_verification_rush_name: '拒绝登入，username: {0}, online uuid: {1}, 与用户(online uuid) {2} 重名，可能还有更多'
 debug_verification_no_whitelist: '拒绝登入，username: {0}, online uuid: {1}, 没有白名单'
+debug_verification_no_pat_match: '拒绝登入，username: {0}, online uuid: {1}, 用户名未通过正则检查，当前正则: {2}'
 debug_verification_repeat_uuid: 'username: {0}, online uuid: {1}, 触发重复 UUID 定向机制，原定向 UUID: {2}, 现定向 UUID: {3}, 验证服务器: {4}({5})'
