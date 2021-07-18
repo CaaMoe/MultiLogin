@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.language;
 
 public enum LanguageKeys {
+    PLUGIN_LOAD_ERROR("plugin_load_error"),
     PLUGIN_LOADED("plugin_loaded"),
     USE_INSIDE_LANGUAGE("use_inside_language"),
     USE_OUTSIDE_LANGUAGE("use_outside_language"),

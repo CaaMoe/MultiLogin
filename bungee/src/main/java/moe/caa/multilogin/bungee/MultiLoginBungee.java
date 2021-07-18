@@ -75,4 +75,14 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void initCoreService() throws Throwable {
 
     }
+
+    @Override
+    public void initOtherService() throws Throwable {
+
+    }
+
+    @Override
+    public void shutdown() {
+
+    }
 }
