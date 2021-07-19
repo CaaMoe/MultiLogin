@@ -37,6 +37,9 @@ public abstract class SubCommand extends Command {
         }
     }
 
+//    实际执行必须覆盖该方法
+    public abstract void subExecute(ISender sender, String[] args) throws Throwable;
+
     private class CommandTask implements Runnable {
         ISender sender;
         String[] args;
@@ -49,7 +52,7 @@ public abstract class SubCommand extends Command {
         @Override
         public void run() {
             try {
-                execute(sender, args);
+                subExecute(sender, args);
             } catch (Throwable throwable) {
                 throwable.printStackTrace();
             }

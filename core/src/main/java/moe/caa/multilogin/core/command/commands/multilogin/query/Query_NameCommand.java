@@ -17,7 +17,7 @@ public class Query_NameCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) throws Throwable {
+    public void subExecute(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
             List<User> users = UserDataHandler.getUserEntryByCurrentName(args[0]);
             if (users.size() == 0) {

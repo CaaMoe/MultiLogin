@@ -26,7 +26,7 @@ public class Whitelist_AddCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) throws Throwable {
+    public void subExecute(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
             boolean result = CacheWhitelistDataHandler.addCacheWhitelist(args[0]);
             if (result) {
