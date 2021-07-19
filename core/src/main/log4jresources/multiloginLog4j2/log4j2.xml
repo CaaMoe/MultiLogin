@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
+  ~ @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
+  ~ @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
+  ~ @github  https://github.com/CaaMoe/MultiLogin
+  ~
+  ~ G:/pluginDev/MultiLogin/core/src/main/log4jresources/multiloginLog4j2/log4j2.xml
+  ~
+  ~ Use of this source code is governed by the GPLv3 license that can be found via the following link.
+  ~ https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
+  -->
+
 <Configuration status="WARN">
     <properties>
         <property name="LOG_HOME">multiloginLog/log</property>
