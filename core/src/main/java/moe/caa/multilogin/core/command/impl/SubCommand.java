@@ -45,6 +45,7 @@ public abstract class SubCommand extends Command {
     public abstract void subExecute(ISender sender, String[] args) throws Throwable;
 
     private class CommandTask implements Runnable {
+//        执行中进行实例化的任务 方便异步执行
         ISender sender;
         String[] args;
 

@@ -18,7 +18,7 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.Collections;
 import java.util.List;
-
+//抽象命令父类
 public abstract class Command {
     private final Permission permission;
 

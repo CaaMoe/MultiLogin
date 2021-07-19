@@ -9,13 +9,12 @@
  * Use of this source code is governed by the GPLv3 license that can be found via the following link.
  * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
  */
-
 package moe.caa.multilogin.core.command.commands.multilogin;
 
 import moe.caa.multilogin.core.command.commands.multilogin.independent.ReloadCommand;
 import moe.caa.multilogin.core.command.commands.multilogin.query.QueryCommand;
 import moe.caa.multilogin.core.command.impl.RootCommand;
-
+//multilogin父节点
 public class MultiLoginCommand extends RootCommand {
     public MultiLoginCommand() {
         super(null);
