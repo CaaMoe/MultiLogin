@@ -4,6 +4,9 @@ import moe.caa.multilogin.core.impl.ISchedule;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 public class BungeeSchedule implements ISchedule {
@@ -53,5 +56,12 @@ public class BungeeSchedule implements ISchedule {
     @Override
     public void runTask(Runnable run) {
         PLUGIN.getProxy().getScheduler().schedule(PLUGIN, run, 0, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public <T> Future<T> callSync(Callable<T> callable) {
+        FutureTask<T> ret = new FutureTask<T>(callable);
+        runTask(ret);
+        return ret;
     }
 }

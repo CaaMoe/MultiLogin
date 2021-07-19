@@ -6,5 +6,6 @@ public class MainWhitelistCommand extends SubCommand {
     public MainWhitelistCommand() {
         super("whitelist", null);
         subCommands.add(new AddWhitelistCommand());
+        subCommands.add(new DelWhitelistCommand());
     }
 }

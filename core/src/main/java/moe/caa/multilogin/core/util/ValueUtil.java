@@ -5,6 +5,8 @@ import java.nio.ByteOrder;
 import java.util.Base64;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * 对数据进行处理的工具类
@@ -68,11 +70,19 @@ public class ValueUtil {
         return str.length() != 0;
     }
 
-    public static boolean startsWithIgnoreCase(String s1, String s2){
-        if(s1 == null || s2 == null)
+    public static boolean startsWithIgnoreCase(String s1, String s2) {
+        if (s1 == null || s2 == null)
             return false;
         s1 = s1.toLowerCase(Locale.ROOT);
         s2 = s2.toLowerCase(Locale.ROOT);
         return s1.startsWith(s2);
+    }
+
+    public static <R> R getOrDef(Future<R> future, R def) {
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException ignored) {
+            return def;
+        }
     }
 }

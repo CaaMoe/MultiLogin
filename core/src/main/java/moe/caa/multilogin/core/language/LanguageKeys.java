@@ -58,7 +58,12 @@ public enum LanguageKeys {
     COMMAND_UNKNOWN("command_unknown"),
     COMPILE_ERROR("compile_error"),
     COMMAND_ERROR("command_error"),
-    COMMAND_RELOADED("command_reloaded");
+    COMMAND_RELOADED("command_reloaded"),
+
+    COMMAND_WHITELIST_ADD("command_whitelist_add", ""),
+    COMMAND_WHITELIST_ADD_ALREADY("command_whitelist_add_already", ""),
+    COMMAND_WHITELIST_DEL("command_whitelist_del", ""),
+    COMMAND_WHITELIST_DEL_ALREADY("command_whitelist_del_already", "");
 
     public final String key;
     public final Object[] args;

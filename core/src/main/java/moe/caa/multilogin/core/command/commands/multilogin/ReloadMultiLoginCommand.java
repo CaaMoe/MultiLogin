@@ -13,12 +13,18 @@ public class ReloadMultiLoginCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) throws Throwable {
-        if(args.length == 0){
+    public void executeAsync(ISender sender, String[] args) throws Throwable {
+        if (args.length == 0) {
             MultiCore.reload();
-            sender.sendMessage(LanguageKeys.COMMAND_RELOADED.getMessage());
+            MultiCore.plugin.getSchedule().runTask(() -> {
+                sender.sendMessage(LanguageKeys.COMMAND_RELOADED.getMessage());
+            });
         } else {
             super.execute(sender, args);
         }
+    }
+
+    @Override
+    public void execute(ISender sender, String[] args) {
     }
 }

@@ -121,7 +121,7 @@ public class MultiCore {
         FileUtil.saveResource(plugin.getJarResource("config.yml"), configFile, false);
     }
 
-    public static void reload() throws IOException {
+    public synchronized static void reload() throws IOException {
         genFile();
         config = YamlConfig.fromInputStream(new FileInputStream(configFile));
         readConfig();

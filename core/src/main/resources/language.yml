@@ -60,5 +60,10 @@ command_unknown: '§c未知的指令'
 command_error: '§c执行指令时出现异常'
 compile_error: '§c执行补全命令时出现异常'
 
-
 command_reloaded: '§a配置已重新加载'
+
+command_whitelist_add: '§a已将 §e{0} §a添加到白名单中'
+command_whitelist_add_already: '§c请勿重复将 §e{0} §c添加至白名单'
+
+command_whitelist_del: '§a已移除 §e{0} §a的白名单'
+command_whitelist_del_already: '§e{0} §c没有白名单，请勿重复移除'

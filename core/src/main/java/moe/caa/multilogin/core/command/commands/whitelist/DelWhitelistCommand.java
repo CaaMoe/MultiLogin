@@ -7,28 +7,26 @@ import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
-public class AddWhitelistCommand extends SubCommand {
+public class DelWhitelistCommand extends SubCommand {
+    protected DelWhitelistCommand() {
+        super("remove", Permission.MULTI_LOGIN_WHITELIST_REMOVE);
+    }
 
-    protected AddWhitelistCommand() {
-        super("add", Permission.MULTI_LOGIN_WHITELIST_ADD);
+    @Override
+    public void execute(ISender sender, String[] args) {
     }
 
     @Override
     public void executeAsync(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
-            boolean result = CacheWhitelistDataHandler.addCacheWhitelist(args[0]);
+            boolean result = CacheWhitelistDataHandler.removeCacheWhitelist(args[0]);
             if (result) {
-                MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage(args[0])));
+                MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL.getMessage(args[0])));
             } else {
-                MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(args[0])));
+                MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage(args[0])));
             }
         } else {
             super.execute(sender, args);
         }
-    }
-
-    @Override
-    public void execute(ISender sender, String[] args) {
-
     }
 }

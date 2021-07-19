@@ -2,6 +2,9 @@ package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.util.*;
@@ -17,7 +20,7 @@ public abstract class SubCommand {
         this.permission = permission;
     }
 
-    public final void execute0(ISender sender, String[] args) throws Throwable {
+    protected final void execute0(ISender sender, String[] args) {
         if (permission != null && !permission.hasPermissionAndFeedback(sender)) return;
         if (args.length >= 1) {
             String name = args[0];
@@ -29,7 +32,24 @@ public abstract class SubCommand {
                 }
             }
         }
-        execute(sender, args);
+
+        try {
+            execute(sender, args);
+        } catch (Throwable throwable) {
+            sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
+            MultiLogger.log(LoggerLevel.ERROR, throwable);
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
+        }
+
+        MultiCore.plugin.getSchedule().runTaskAsync(() -> {
+            try {
+                executeAsync(sender, args);
+            } catch (Throwable throwable) {
+                sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
+                MultiLogger.log(LoggerLevel.ERROR, throwable);
+                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
+            }
+        });
     }
 
     public final List<String> tabCompile0(ISender sender, String[] args) throws Throwable {
@@ -48,6 +68,10 @@ public abstract class SubCommand {
 
     public void execute(ISender sender, String[] args) throws Throwable {
         sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
+    }
+
+    public void executeAsync(ISender sender, String[] args) throws Throwable {
+
     }
 
     public List<String> tabCompile(ISender sender, String[] args) throws Throwable {
