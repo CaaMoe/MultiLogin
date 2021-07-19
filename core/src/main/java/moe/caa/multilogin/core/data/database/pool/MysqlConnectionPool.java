@@ -2,7 +2,6 @@ package moe.caa.multilogin.core.data.database.pool;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import moe.caa.multilogin.core.impl.ISQLConnectionPool;
 
 import java.sql.Connection;
 import java.sql.SQLException;

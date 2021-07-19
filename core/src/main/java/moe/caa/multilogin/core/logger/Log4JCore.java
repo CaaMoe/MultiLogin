@@ -24,7 +24,9 @@ import java.io.InputStream;
 public class Log4JCore {
     private Logger logger;
 
-    public void init() throws Exception {
+    //禁止public 权限问题
+    void init() throws Exception {
+//        读取并替换配置文件
         File tempFile = File.createTempFile("log4j2-temp", "multilogin");
         InputStream inputStream = MultiCore.plugin.getJarResource("multiloginLog4j2/log4j2.xml");
         byte[] bytes = new byte[inputStream.available()];
@@ -33,13 +35,15 @@ public class Log4JCore {
         FileWriter fw = new FileWriter(tempFile);
         fw.write(config.replace("multiloginLog", MultiCore.plugin.getDataFolder().getAbsolutePath()));
         fw.close();
+//        配置Logger
         LoggerContext context = new LoggerContext("MultiLogin");
         context.setConfigLocation(tempFile.toURI());
         context.reconfigure();
         logger = context.getLogger("MultiLogin");
     }
 
-    public void log(LoggerLevel level, String message, Throwable throwable, boolean debug) {
+    //禁止public 权限问题
+    void log(LoggerLevel level, String message, Throwable throwable) {
         switch (level) {
             case INFO:
                 logger.info(message, throwable);

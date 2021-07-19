@@ -17,7 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static moe.caa.multilogin.core.data.database.SQLHandler.*;
+import static moe.caa.multilogin.core.data.database.SQLManager.*;
 
 public class CacheWhitelistDataHandler {
 
