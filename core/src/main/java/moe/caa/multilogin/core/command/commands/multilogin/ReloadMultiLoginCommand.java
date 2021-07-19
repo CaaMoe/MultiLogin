@@ -20,11 +20,7 @@ public class ReloadMultiLoginCommand extends SubCommand {
                 sender.sendMessage(LanguageKeys.COMMAND_RELOADED.getMessage());
             });
         } else {
-            super.execute(sender, args);
+            sendUnknownCommandMessage(sender);
         }
-    }
-
-    @Override
-    public void execute(ISender sender, String[] args) {
     }
 }

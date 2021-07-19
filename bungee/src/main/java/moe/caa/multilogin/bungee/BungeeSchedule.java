@@ -57,11 +57,4 @@ public class BungeeSchedule implements ISchedule {
     public void runTask(Runnable run) {
         PLUGIN.getProxy().getScheduler().schedule(PLUGIN, run, 0, TimeUnit.MILLISECONDS);
     }
-
-    @Override
-    public <T> Future<T> callSync(Callable<T> callable) {
-        FutureTask<T> ret = new FutureTask<T>(callable);
-        runTask(ret);
-        return ret;
-    }
 }

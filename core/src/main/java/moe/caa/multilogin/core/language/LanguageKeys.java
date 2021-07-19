@@ -63,7 +63,14 @@ public enum LanguageKeys {
     COMMAND_WHITELIST_ADD("command_whitelist_add", ""),
     COMMAND_WHITELIST_ADD_ALREADY("command_whitelist_add_already", ""),
     COMMAND_WHITELIST_DEL("command_whitelist_del", ""),
-    COMMAND_WHITELIST_DEL_ALREADY("command_whitelist_del_already", "");
+    COMMAND_WHITELIST_DEL_ALREADY("command_whitelist_del_already", ""),
+
+    COMMAND_NO_UUID("command_no_uuid", ""),
+    COMMAND_UNKNOWN_ONLINE_UUID("command_unknown_online_uuid", ""),
+    COMMAND_UNKNOWN_NAME("command_unknown_name", ""),
+    COMMAND_UNKNOWN_REDIRECT_UUID("command_unknown_redirect_uuid", ""),
+    COMMAND_QUERY_LIST("command_query_list", ""),
+    COMMAND_QUERY_ENTRY("command_query_entry", "", "", "", "", "", "");
 
     public final String key;
     public final Object[] args;
