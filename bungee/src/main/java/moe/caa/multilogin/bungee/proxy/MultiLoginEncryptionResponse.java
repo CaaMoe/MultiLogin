@@ -92,11 +92,11 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         return (new BigInteger(sha.digest())).toString(16);
     }
 
-    public String getUsername (){
+    public String getUsername() {
         return initialHandler.getName();
     }
 
-    public String getIp(){
+    public String getIp() {
         if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
             return initialHandler.getAddress().getAddress().getHostAddress();
         }

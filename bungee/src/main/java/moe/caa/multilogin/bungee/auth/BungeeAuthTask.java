@@ -46,7 +46,7 @@ public class BungeeAuthTask implements Runnable {
         try {
             AuthResult<LoginResult> result = AuthCore.yggAuth(USERNAME, SERVER_ID, IP);
             if (result.err != null) {
-                if (result.err== AuthFailedEnum.SERVER_DOWN) {
+                if (result.err == AuthFailedEnum.SERVER_DOWN) {
                     handler.disconnect(BungeeCord.getInstance().getTranslation("mojang_fail"));
                 } else {
                     handler.disconnect(BungeeCord.getInstance().getTranslation("offline_mode_player"));

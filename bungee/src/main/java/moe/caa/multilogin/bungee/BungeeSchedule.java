@@ -7,8 +7,8 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class BungeeSchedule implements ISchedule {
-    private final MultiLoginBungee PLUGIN;
     public final Timer TIMER = new Timer();
+    private final MultiLoginBungee PLUGIN;
 
     public BungeeSchedule(MultiLoginBungee plugin) {
         PLUGIN = plugin;

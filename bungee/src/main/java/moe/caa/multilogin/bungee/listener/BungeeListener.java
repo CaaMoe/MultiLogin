@@ -20,7 +20,7 @@ public class BungeeListener implements Listener {
             event.setCancelled(true);
             event.setCancelReason(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
         }
-        if(!MultiLoginBungee.plugin.onAsyncLoginSuccess(event.getConnection().getUniqueId(), event.getConnection().getName())){
+        if (!MultiLoginBungee.plugin.onAsyncLoginSuccess(event.getConnection().getUniqueId(), event.getConnection().getName())) {
             event.setCancelled(true);
             event.setCancelReason(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
         }
@@ -32,7 +32,7 @@ public class BungeeListener implements Listener {
     }
 
     @EventHandler
-    public void onQuit(PlayerDisconnectEvent event){
+    public void onQuit(PlayerDisconnectEvent event) {
         MultiLoginBungee.plugin.onRefreshCacheUserData();
     }
 }

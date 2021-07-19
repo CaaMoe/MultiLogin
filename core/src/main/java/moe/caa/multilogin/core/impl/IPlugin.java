@@ -105,7 +105,7 @@ public interface IPlugin {
 
     default void onJoin(ISender player) {
         if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
-            if(CheckUpdater.haveUpdate){
+            if (CheckUpdater.haveUpdate) {
                 player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage());
             }
         }

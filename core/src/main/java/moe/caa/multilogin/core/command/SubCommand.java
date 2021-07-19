@@ -3,7 +3,6 @@ package moe.caa.multilogin.core.command;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,8 +17,8 @@ public abstract class SubCommand {
     }
 
     public final void execute0(ISender sender, String[] args) throws Throwable {
-        if(permission != null && !permission.hasPermissionAndFeedback(sender)) return;
-        if(args.length >= 1){
+        if (permission != null && !permission.hasPermissionAndFeedback(sender)) return;
+        if (args.length >= 1) {
             String name = args[0];
             String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
             for (SubCommand command : subCommands) {
@@ -33,8 +32,8 @@ public abstract class SubCommand {
     }
 
     public final List<String> tabCompile0(ISender sender, String[] args) throws Throwable {
-        if(permission != null && !permission.hasPermission(sender)) return Collections.emptyList();
-        if(args.length > 1){
+        if (permission != null && !permission.hasPermission(sender)) return Collections.emptyList();
+        if (args.length > 1) {
             String name = args[0];
             String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
             for (SubCommand command : subCommands) {
@@ -50,8 +49,8 @@ public abstract class SubCommand {
         sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
     }
 
-    public List<String> tabCompile(ISender sender, String[] args) throws Throwable{
-        if(args.length == 1){
+    public List<String> tabCompile(ISender sender, String[] args) throws Throwable {
+        if (args.length == 1) {
             return subCommands.stream().map(subCommand -> subCommand.name).collect(Collectors.toList());
         }
         return Collections.emptyList();

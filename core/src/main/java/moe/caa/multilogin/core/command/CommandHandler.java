@@ -18,7 +18,7 @@ public class CommandHandler {
         rootCommand.add(new MainMultiLoginCommand());
     }
 
-    public static void execute(ISender sender, String command, String[] args){
+    public static void execute(ISender sender, String command, String[] args) {
         for (SubCommand subCommand : rootCommand) {
             if (subCommand.name.equalsIgnoreCase(command)) {
                 try {
@@ -32,7 +32,7 @@ public class CommandHandler {
         sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
     }
 
-    public static List<String> tabCompile(ISender sender, String command, String[] args){
+    public static List<String> tabCompile(ISender sender, String command, String[] args) {
         for (SubCommand subCommand : rootCommand) {
             if (subCommand.name.equalsIgnoreCase(command)) {
                 try {

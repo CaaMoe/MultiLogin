@@ -31,12 +31,12 @@ public class CheckUpdater {
         latestVersion = s.split("=")[1].trim();
     }
 
-    public static void check(){
+    public static void check() {
         try {
             check0();
         } catch (Exception ignored) {
         }
-        if(!haveUpdate){
+        if (!haveUpdate) {
             haveUpdate = true;
             MultiLogger.log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(MultiCore.plugin.getPluginVersion(), latestVersion));
         }

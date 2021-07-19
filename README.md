@@ -1,4 +1,5 @@
 # MultiLogin
+
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
@@ -14,6 +15,7 @@
 * 账户安全保护机制
 
 ## BStats 数据
+
 ![Bukkit BStats](https://bstats.org/signatures/bukkit/MultiLogin.svg)
 ![Bungee BStats](https://bstats.org/signatures/bungeecord/MultiLogin.svg)
 
@@ -109,6 +111,7 @@
       authRetry: 1
 
 #### 例子
+
 * 添加 Minecraft 原版验证服务器
 
       official:

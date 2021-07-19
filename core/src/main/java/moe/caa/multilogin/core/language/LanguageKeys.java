@@ -51,7 +51,7 @@ public enum LanguageKeys {
     DEBUG_VERIFICATION_NO_PAT_MATCH("debug_verification_no_pat_match", "", "", ""),
     DEBUG_VERIFICATION_REPEAT_UUID("debug_verification_repeat_uuid", "", "", "", "", "", ""),
 
-    UPDATE_SENDER("update_sender" ),
+    UPDATE_SENDER("update_sender"),
     UPDATE_CONSOLE("update_console", "", ""),
 
     COMMAND_NO_PERMISSION("command_no_permission"),
