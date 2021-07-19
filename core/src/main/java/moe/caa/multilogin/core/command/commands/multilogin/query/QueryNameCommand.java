@@ -18,14 +18,14 @@ public class QueryNameCommand extends SubCommand {
 
     @Override
     public void executeAsync(ISender sender, String[] args) throws Throwable {
-        if(args.length == 1){
+        if (args.length == 1) {
             List<User> users = UserDataHandler.getUserEntryByCurrentName(args[0]);
-            if(users.size() == 0){
+            if (users.size() == 0) {
                 sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN_NAME.getMessage(args[0]));
                 return;
             }
             MultiCore.plugin.getSchedule().runTask(() -> {
-               sender.sendMessage(LanguageKeys.COMMAND_QUERY_LIST.getMessage(users.size()));
+                sender.sendMessage(LanguageKeys.COMMAND_QUERY_LIST.getMessage(users.size()));
                 for (User user : users) {
                     sender.sendMessage(MainQueryCommand.toMessage(user));
                 }

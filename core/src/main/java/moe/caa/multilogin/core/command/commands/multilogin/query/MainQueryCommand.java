@@ -11,7 +11,7 @@ public class MainQueryCommand extends SubCommand {
         subCommands.add(new QueryNameCommand());
     }
 
-    protected static String toMessage(User user){
+    protected static String toMessage(User user) {
         return LanguageKeys.COMMAND_QUERY_ENTRY.getMessage(user.currentName, user.onlineUuid.toString(), user.redirectUuid.toString(), user.service.name, user.service.path, user.whitelist);
     }
 }

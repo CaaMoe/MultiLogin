@@ -94,9 +94,10 @@ public class YggdrasilService {
 
     /**
      * 构建 GET 请求 URL
+     *
      * @param username 用户名
      * @param serverId 服务器ID
-     * @param ip 地址
+     * @param ip       地址
      * @return URL
      */
     public String buildUrl(String username, String serverId, String ip) {
@@ -109,9 +110,10 @@ public class YggdrasilService {
 
     /**
      * 构建 POST 请求内容
+     *
      * @param username 用户名
      * @param serverId 服务器ID
-     * @param ip 地址
+     * @param ip       地址
      * @return 内容
      */
     public String buildPostContent(String username, String serverId, String ip) {

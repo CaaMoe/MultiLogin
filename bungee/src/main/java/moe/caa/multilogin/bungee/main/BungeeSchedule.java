@@ -21,10 +21,10 @@ public class BungeeSchedule extends Scheduler {
         PLUGIN = plugin;
     }
 
-//Bungeecord不需要同步任务
+    //Bungeecord不需要同步任务
     @Override
     public void runTask(Runnable run, long delay) {
-        runTaskAsync(run,delay);
+        runTaskAsync(run, delay);
 //        PLUGIN.getProxy().getScheduler().schedule(PLUGIN, run, delay, TimeUnit.MILLISECONDS);
     }
 

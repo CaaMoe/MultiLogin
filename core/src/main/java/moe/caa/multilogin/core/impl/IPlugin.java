@@ -128,6 +128,7 @@ public interface IPlugin {
 
     /**
      * 获得 User 缓存
+     *
      * @param redirectUuid 游戏内 UUID
      */
     default User getCacheUserData(UUID redirectUuid) {

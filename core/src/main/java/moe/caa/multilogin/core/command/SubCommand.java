@@ -81,6 +81,6 @@ public abstract class SubCommand {
     }
 
     protected final void sendUnknownCommandMessage(ISender sender) {
-        MultiCore.plugin.getSchedule().runTask(()->sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage()));
+        MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage()));
     }
 }
