@@ -2,9 +2,8 @@ package moe.caa.multilogin.core.command.commands.whitelist;
 
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.command.SubCommand;
+import moe.caa.multilogin.core.data.database.handler.CacheWhitelistDataHandler;
 import moe.caa.multilogin.core.impl.ISender;
-
-import java.util.Arrays;
 
 public class AddWhitelistCommand extends SubCommand {
 
@@ -13,7 +12,13 @@ public class AddWhitelistCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) {
-        sender.sendMessage(Arrays.toString(args));
+    public void execute(ISender sender, String[] args) throws Throwable {
+        if(args.length == 1){
+            boolean result = CacheWhitelistDataHandler.addCacheWhitelist(args[0]);
+
+        } else {
+            super.execute(sender, args);
+        }
+
     }
 }

@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.util;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Base64;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -65,5 +66,13 @@ public class ValueUtil {
     public static boolean notIsEmpty(String str) {
         if (str == null) return false;
         return str.length() != 0;
+    }
+
+    public static boolean startsWithIgnoreCase(String s1, String s2){
+        if(s1 == null || s2 == null)
+            return false;
+        s1 = s1.toLowerCase(Locale.ROOT);
+        s2 = s2.toLowerCase(Locale.ROOT);
+        return s1.startsWith(s2);
     }
 }

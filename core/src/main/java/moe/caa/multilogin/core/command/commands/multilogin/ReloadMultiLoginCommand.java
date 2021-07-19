@@ -3,9 +3,8 @@ package moe.caa.multilogin.core.command.commands.multilogin;
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.command.SubCommand;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
-
-import java.io.IOException;
 
 public class ReloadMultiLoginCommand extends SubCommand {
 
@@ -14,8 +13,12 @@ public class ReloadMultiLoginCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) throws IOException {
-        MultiCore.reload();
-        sender.sendMessage("已经成功重新加载");
+    public void execute(ISender sender, String[] args) throws Throwable {
+        if(args.length == 0){
+            MultiCore.reload();
+            sender.sendMessage(LanguageKeys.COMMAND_RELOADED.getMessage());
+        } else {
+            super.execute(sender, args);
+        }
     }
 }

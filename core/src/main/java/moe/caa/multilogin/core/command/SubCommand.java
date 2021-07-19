@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,9 +21,9 @@ public abstract class SubCommand {
         if (permission != null && !permission.hasPermissionAndFeedback(sender)) return;
         if (args.length >= 1) {
             String name = args[0];
-            String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
             for (SubCommand command : subCommands) {
                 if (command.name.equalsIgnoreCase(name)) {
+                    String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
                     command.execute0(sender, newArgs);
                     return;
                 }
@@ -33,7 +34,7 @@ public abstract class SubCommand {
 
     public final List<String> tabCompile0(ISender sender, String[] args) throws Throwable {
         if (permission != null && !permission.hasPermission(sender)) return Collections.emptyList();
-        if (args.length > 1) {
+        if (args.length >= 1) {
             String name = args[0];
             String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
             for (SubCommand command : subCommands) {
@@ -42,7 +43,7 @@ public abstract class SubCommand {
                 }
             }
         }
-        return tabCompile(sender, args);
+        return tabCompile(sender, args).stream().filter(s -> ValueUtil.startsWithIgnoreCase(s, args[args.length - 1])).collect(Collectors.toList());
     }
 
     public void execute(ISender sender, String[] args) throws Throwable {
@@ -51,7 +52,7 @@ public abstract class SubCommand {
 
     public List<String> tabCompile(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
-            return subCommands.stream().map(subCommand -> subCommand.name).collect(Collectors.toList());
+            return subCommands.stream().filter(subCommand -> subCommand.permission == null || subCommand.permission.hasPermission(sender)).map(subCommand -> subCommand.name).collect(Collectors.toList());
         }
         return Collections.emptyList();
     }
