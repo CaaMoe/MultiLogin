@@ -18,8 +18,8 @@ import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.impl.IPlugin;
-import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.impl.Scheduler;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -113,7 +113,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     }
 
     @Override
-    public ISchedule getSchedule() {
+    public Scheduler getSchedule() {
         return schedule;
     }
 

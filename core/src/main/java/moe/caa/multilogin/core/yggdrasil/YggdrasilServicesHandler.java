@@ -46,7 +46,8 @@ public class YggdrasilServicesHandler {
     }
 
     /**
-     * checkUrl 检查 Yggdrasil 活性
+     * checkUrl 检查 Yggdrasil
+     * 发送假请求识别是否配置正确
      */
     private static void check() {
     }

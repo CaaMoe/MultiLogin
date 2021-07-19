@@ -105,6 +105,9 @@ public class MultiCore {
         }
     }
 
+    /**
+     * 读取配置文件
+     */
     private static void readConfig() {
         servicesTimeOut = config.get("servicesTimeOut", Number.class, 10000).intValue();
         List<?> list = config.get("safeId", List.class, Collections.emptyList());
@@ -116,11 +119,17 @@ public class MultiCore {
         nameAllowedRegular = config.get("nameAllowedRegular", String.class, "");
     }
 
+    /**
+     * 生成配置文件
+     */
     private static void genFile() throws IOException {
         FileUtil.createNewFileOrFolder(plugin.getDataFolder(), true);
         FileUtil.saveResource(plugin.getJarResource("config.yml"), configFile, false);
     }
 
+    /**
+     * 重新加载配置文件
+     */
     public synchronized static void reload() throws IOException {
         genFile();
         config = YamlConfig.fromInputStream(new FileInputStream(configFile));
@@ -128,6 +137,9 @@ public class MultiCore {
         YggdrasilServicesHandler.reload();
     }
 
+    /**
+     * 注销插件
+     */
     public static void disable() {
         SQLManager.close();
         plugin.shutdown();
