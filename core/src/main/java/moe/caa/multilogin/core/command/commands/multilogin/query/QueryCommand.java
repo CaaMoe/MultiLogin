@@ -1,10 +1,10 @@
 package moe.caa.multilogin.core.command.commands.multilogin.query;
 
-import moe.caa.multilogin.core.command.impl.FatherCommand;
+import moe.caa.multilogin.core.command.impl.RootCommand;
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.language.LanguageKeys;
 
-public class QueryCommand extends FatherCommand {
+public class QueryCommand extends RootCommand {
 
     public QueryCommand() {
         super(null);

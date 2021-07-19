@@ -2,7 +2,7 @@ package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.command.commands.multilogin.MultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.whitelist.WhitelistCommand;
-import moe.caa.multilogin.core.command.impl.FatherCommand;
+import moe.caa.multilogin.core.command.impl.RootCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class CommandHandler {
     //    根命令
-    private static final Map<String, FatherCommand> fatherCommandMap = new HashMap<>();
+    private static final Map<String, RootCommand> fatherCommandMap = new HashMap<>();
 
     static {
 //        记录根命令
@@ -30,11 +30,11 @@ public class CommandHandler {
             sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
             return;
         }
-        FatherCommand fatherCommand = fatherCommandMap.get(command);
+        RootCommand rootCommand = fatherCommandMap.get(command);
 //                鉴权
-        if (!fatherCommand.canExecute(sender)) return;
+        if (!rootCommand.canExecute(sender)) return;
 //                执行
-        fatherCommand.execute(sender, args);
+        rootCommand.execute(sender, args);
     }
 
     //    tab补全
@@ -44,10 +44,10 @@ public class CommandHandler {
             sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
             return Collections.emptyList();
         }
-        FatherCommand fatherCommand = fatherCommandMap.get(command);
-        if (!fatherCommand.canExecute(sender)) return Collections.emptyList();
+        RootCommand rootCommand = fatherCommandMap.get(command);
+        if (!rootCommand.canExecute(sender)) return Collections.emptyList();
         try {
-            return fatherCommand.tabComplete(sender, args);
+            return rootCommand.tabComplete(sender, args);
         } catch (Throwable throwable) {
 //            补全出错提示
             sender.sendMessage(LanguageKeys.COMPILE_ERROR.getMessage());

@@ -14,9 +14,13 @@ package moe.caa.multilogin.core.command.impl;
 
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 
 //子节点 最底层的执行节点
 public abstract class SubCommand extends Command {
+    //    异步执行写true 同步执行false
     protected final boolean async;
 
     //    基础构造
@@ -28,7 +32,7 @@ public abstract class SubCommand extends Command {
 
     //执行
     @Override
-    public void execute(ISender sender, String[] args) throws Throwable {
+    public void execute(ISender sender, String[] args) {
         CommandTask task = new CommandTask(sender, args);
         if (async) {
             runTaskAsync(task);
@@ -37,7 +41,7 @@ public abstract class SubCommand extends Command {
         }
     }
 
-//    实际执行必须覆盖该方法
+    //    实际执行必须覆盖该方法
     public abstract void subExecute(ISender sender, String[] args) throws Throwable;
 
     private class CommandTask implements Runnable {
@@ -54,7 +58,9 @@ public abstract class SubCommand extends Command {
             try {
                 subExecute(sender, args);
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
+                MultiLogger.log(LoggerLevel.ERROR, throwable);
+                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
             }
         }
     }

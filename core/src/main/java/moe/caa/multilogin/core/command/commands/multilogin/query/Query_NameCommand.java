@@ -13,7 +13,7 @@ import java.util.List;
 public class Query_NameCommand extends SubCommand {
 
     protected Query_NameCommand() {
-        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY, false);
+        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY, true);
     }
 
     @Override

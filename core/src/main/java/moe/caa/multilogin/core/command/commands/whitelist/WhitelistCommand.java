@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.command.commands.whitelist;
 
-import moe.caa.multilogin.core.command.impl.FatherCommand;
+import moe.caa.multilogin.core.command.impl.RootCommand;
 
 //whitelist父节点
-public class WhitelistCommand extends FatherCommand {
+public class WhitelistCommand extends RootCommand {
     public WhitelistCommand() {
         super(null);
         subCommands.put("add", new Whitelist_AddCommand());

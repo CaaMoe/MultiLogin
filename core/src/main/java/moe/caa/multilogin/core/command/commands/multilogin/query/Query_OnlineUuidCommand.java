@@ -13,7 +13,7 @@ import java.util.List;
 public class Query_OnlineUuidCommand extends SubCommand {
 
     protected Query_OnlineUuidCommand() {
-        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY, false);
+        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY, true);
     }
 
     @Override
