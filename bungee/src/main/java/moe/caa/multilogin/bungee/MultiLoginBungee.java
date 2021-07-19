@@ -9,6 +9,8 @@ import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
@@ -61,6 +63,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 }
             }
         }
+        MultiLogger.log(LoggerLevel.INFO,"成功初始化bungeecord接口");
     }
 
     @Override
