@@ -15,6 +15,9 @@ public class YggdrasilServicesHandler {
         reload();
     }
 
+    /**
+     * 读取 Yggdrasil
+     */
     public static void reload() {
         SERVICES.clear();
         YamlConfig services = MultiCore.config.get("services", YamlConfig.class);
@@ -42,6 +45,9 @@ public class YggdrasilServicesHandler {
         check();
     }
 
+    /**
+     * checkUrl 检查 Yggdrasil 活性
+     */
     private static void check() {
     }
 

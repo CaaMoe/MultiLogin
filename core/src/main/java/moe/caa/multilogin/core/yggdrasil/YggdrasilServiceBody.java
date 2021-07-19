@@ -3,6 +3,9 @@ package moe.caa.multilogin.core.yggdrasil;
 import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.util.YamlConfig;
 
+/**
+ * 表示 Yggdrasil Body
+ */
 public class YggdrasilServiceBody {
     public final ServerTypeEnum serverType;
     public final String url;
