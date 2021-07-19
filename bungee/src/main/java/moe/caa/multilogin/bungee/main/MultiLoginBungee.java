@@ -25,9 +25,7 @@ import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.connection.LoginResult;
 import net.md_5.bungee.protocol.DefinedPacket;
@@ -85,27 +83,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 //        注册其他服务需要的监听
         getProxy().getPluginManager().registerListener(this, new BungeeListener());
 
-        commandHandler = new CommandHandler();
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("whitelist") {
-            @Override
-            public void execute(CommandSender commandSender, String[] strings) {
-                try {
-                    commandHandler.execute(new BungeeSender(commandSender), "whitelist", strings);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
-        });
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new Command("multilogin") {
-            @Override
-            public void execute(CommandSender commandSender, String[] strings) {
-                try {
-                    commandHandler.execute(new BungeeSender(commandSender), "multilogin", strings);
-                } catch (Throwable throwable) {
-                    throwable.printStackTrace();
-                }
-            }
-        });
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist"));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin"));
     }
 
     @Override
