@@ -72,7 +72,7 @@ public interface IPlugin {
      *
      * @return 调度器对象
      */
-    Scheduler getSchedule();
+    AbstractScheduler getSchedule();
 
     /**
      * 是否开启在线验证

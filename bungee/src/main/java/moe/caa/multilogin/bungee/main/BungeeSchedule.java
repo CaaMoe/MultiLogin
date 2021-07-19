@@ -12,9 +12,9 @@
 
 package moe.caa.multilogin.bungee.main;
 
-import moe.caa.multilogin.core.impl.Scheduler;
+import moe.caa.multilogin.core.impl.AbstractScheduler;
 
-public class BungeeSchedule extends Scheduler {
+public class BungeeSchedule extends AbstractScheduler {
     private final MultiLoginBungee PLUGIN;
 
     public BungeeSchedule(MultiLoginBungee plugin) {

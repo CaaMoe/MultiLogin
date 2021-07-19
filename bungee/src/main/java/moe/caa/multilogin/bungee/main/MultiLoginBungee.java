@@ -20,7 +20,7 @@ import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
-import moe.caa.multilogin.core.impl.Scheduler;
+import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -118,7 +118,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     }
 
     @Override
-    public Scheduler getSchedule() {
+    public AbstractScheduler getSchedule() {
         return schedule;
     }
 

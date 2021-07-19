@@ -13,9 +13,9 @@
 package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.impl.Scheduler;
+import moe.caa.multilogin.core.impl.AbstractScheduler;
 
-public class BukkitSchedule extends Scheduler {
+public class BukkitSchedule extends AbstractScheduler {
     private final MultiLoginBukkit PLUGIN;
 
     public BukkitSchedule(MultiLoginBukkit plugin) {

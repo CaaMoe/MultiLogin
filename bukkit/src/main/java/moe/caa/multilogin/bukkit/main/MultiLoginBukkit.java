@@ -23,7 +23,7 @@ import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
-import moe.caa.multilogin.core.impl.Scheduler;
+import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import org.bukkit.command.Command;
@@ -41,7 +41,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
-    public static Scheduler schedule;
+    public static AbstractScheduler schedule;
     public static Gson authGson;
     public static MultiLoginBukkit plugin;
     private CommandHandler commandHandler;
@@ -121,7 +121,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
-    public Scheduler getSchedule() {
+    public AbstractScheduler getSchedule() {
         return schedule;
     }
 

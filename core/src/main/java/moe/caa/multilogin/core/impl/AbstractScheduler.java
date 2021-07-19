@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 代表一个调度器对象
  */
-public abstract class Scheduler {
+public abstract class AbstractScheduler {
     ScheduledExecutorService timerExecutor = Executors.newScheduledThreadPool(5);
     ExecutorService asyncExecutor = Executors.newCachedThreadPool();
 
