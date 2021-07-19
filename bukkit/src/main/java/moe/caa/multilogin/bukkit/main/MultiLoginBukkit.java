@@ -87,11 +87,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        try {
-            commandHandler.execute(new BukkitSender(sender), command.getName(), args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        commandHandler.execute(new BukkitSender(sender), command.getName(), args);
         return true;
     }
 

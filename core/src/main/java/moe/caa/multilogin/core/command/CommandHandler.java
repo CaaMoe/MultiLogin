@@ -36,7 +36,7 @@ public class CommandHandler {
     }
 
     //    扫描根命令并执行
-    public void execute(ISender sender, String command, String[] args) throws Throwable {
+    public void execute(ISender sender, String command, String[] args) {
         if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
 //        提示未知
             sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
@@ -44,16 +44,26 @@ public class CommandHandler {
         }
         RootCommand rootCommand = fatherCommandMap.get(command);
 //                鉴权
-        if (!rootCommand.canExecute(sender)) return;
+        if (!rootCommand.canExecute(sender)) {
+            sender.sendMessage(LanguageKeys.COMMAND_NO_PERMISSION.getMessage());
+            return;
+        }
 //                执行
-        rootCommand.execute(sender, args);
+        try {
+            rootCommand.execute(sender, args);
+        } catch (Throwable throwable) {
+//            补全出错提示
+            sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
+            MultiLogger.log(LoggerLevel.ERROR, throwable);
+            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
+        }
     }
 
     //    tab补全
     public List<String> tabCompete(ISender sender, String command, String[] args) {
         if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
 //        提示未知
-            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
+//          sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
             return Collections.emptyList();
         }
         RootCommand rootCommand = fatherCommandMap.get(command);

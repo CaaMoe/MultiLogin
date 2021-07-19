@@ -33,10 +33,11 @@ public class Query_NameCommand extends SubCommand {
         if (args.length == 1) {
             List<User> users = UserDataHandler.getUserEntryByCurrentName(args[0]);
             if (users.size() == 0) {
-                sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN_NAME.getMessage(args[0]));
+                runTask(()-> sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN_NAME.getMessage(args[0])));
+
                 return;
             }
-            MultiCore.plugin.getSchedule().runTask(() -> {
+            runTask(() -> {
                 sender.sendMessage(LanguageKeys.COMMAND_QUERY_LIST.getMessage(users.size()));
                 for (User user : users) {
                     sender.sendMessage(QueryCommand.toMessage(user));

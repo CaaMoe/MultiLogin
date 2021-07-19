@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.command.impl;
 
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.util.*;
@@ -33,6 +34,10 @@ public class RootCommand extends Command {
         String name = args[0].toLowerCase();
         if (!subCommands.containsKey(name)) return;
         Command command = subCommands.get(name);
+        if (!command.canExecute(sender)) {
+            sender.sendMessage(LanguageKeys.COMMAND_NO_PERMISSION.getMessage());
+            return;
+        }
         String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
         command.execute(sender, newArgs);
     }

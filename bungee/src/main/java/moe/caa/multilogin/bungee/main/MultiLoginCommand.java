@@ -26,11 +26,7 @@ public class MultiLoginCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        try {
-            commandHandler.execute(new BungeeSender(sender), getName(), args);
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
+        commandHandler.execute(new BungeeSender(sender), getName(), args);
     }
 
     @Override
