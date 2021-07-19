@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.command;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 
+//命令及其子权限
 public enum Permission {
     MULTI_LOGIN_UPDATE("multilogin.update"),
     MULTI_LOGIN_MULTI_LOGIN_RELOAD("multilogin.multilogin.reload"),

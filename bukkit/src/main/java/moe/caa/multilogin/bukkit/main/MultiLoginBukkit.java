@@ -32,6 +32,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static Scheduler schedule;
     public static Gson authGson;
     public static MultiLoginBukkit plugin;
+    private CommandHandler commandHandler;
 
     @Override
     public void initCoreService() throws Exception {
@@ -54,6 +55,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onEnable() {
         schedule = new BukkitSchedule(this);
         plugin = this;
+        commandHandler = new CommandHandler();
         setEnabled(MultiCore.init(this));
     }
 
@@ -68,12 +70,16 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return CommandHandler.tabCompile(new BukkitSender(sender), command.getName(), args);
+        return commandHandler.tabCompete(new BukkitSender(sender), command.getName(), args);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        CommandHandler.execute(new BukkitSender(sender), command.getName(), args);
+        try {
+            commandHandler.execute(new BukkitSender(sender), command.getName(), args);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
         return true;
     }
 
