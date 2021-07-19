@@ -55,13 +55,13 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onEnable() {
         schedule = new BukkitSchedule(this);
         plugin = this;
-        commandHandler = new CommandHandler();
         setEnabled(MultiCore.init(this));
     }
 
     @Override
     public void initOtherService() {
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
+        commandHandler = new CommandHandler();
         getCommand("whitelist").setExecutor(this);
         getCommand("whitelist").setTabCompleter(this);
         getCommand("multilogin").setExecutor(this);

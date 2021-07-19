@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
+import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.event.EventHandler;
@@ -34,5 +35,10 @@ public class BungeeListener implements Listener {
     @EventHandler
     public void onQuit(PlayerDisconnectEvent event) {
         MultiLoginBungee.plugin.onRefreshCacheUserData();
+    }
+
+    @EventHandler
+    public void onTabComplete(TabCompleteEvent event){
+        //MultiLoginBungee.plugin.commandHandler.tabCompete(new BungeeSender(event.getSender()), event.get)
     }
 }
