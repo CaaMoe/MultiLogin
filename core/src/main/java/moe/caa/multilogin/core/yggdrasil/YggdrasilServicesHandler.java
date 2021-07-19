@@ -38,6 +38,11 @@ public class YggdrasilServicesHandler {
         if (SERVICES.stream().noneMatch(yggdrasilService -> yggdrasilService.enable)) {
             MultiLogger.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
         }
+
+        check();
+    }
+
+    private static void check() {
     }
 
     public static YggdrasilService getService(String path) {

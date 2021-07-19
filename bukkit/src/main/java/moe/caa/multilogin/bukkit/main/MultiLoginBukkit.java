@@ -1,16 +1,21 @@
-package moe.caa.multilogin.bukkit;
+package moe.caa.multilogin.bukkit.main;
 
 import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
+import moe.caa.multilogin.bukkit.impl.BukkitSchedule;
+import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
+import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISchedule;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -55,6 +60,21 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void initOtherService() {
         getServer().getPluginManager().registerEvents(new BukkitListener(), this);
+        getCommand("whitelist").setExecutor(this);
+        getCommand("whitelist").setTabCompleter(this);
+        getCommand("multilogin").setExecutor(this);
+        getCommand("multilogin").setTabCompleter(this);
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        return CommandHandler.tabCompile(new BukkitSender(sender), command.getName(), args);
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        CommandHandler.execute(new BukkitSender(sender), command.getName(), args);
+        return true;
     }
 
     @Override

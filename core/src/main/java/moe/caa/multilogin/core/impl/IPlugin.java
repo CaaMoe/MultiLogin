@@ -104,7 +104,6 @@ public interface IPlugin {
     }
 
     default void onJoin(ISender player) {
-        Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null);
         if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
             if(CheckUpdater.haveUpdate){
                 player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage());

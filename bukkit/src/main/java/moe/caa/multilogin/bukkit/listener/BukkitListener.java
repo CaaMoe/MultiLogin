@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bukkit.listener;
 
-import moe.caa.multilogin.bukkit.BukkitSender;
-import moe.caa.multilogin.bukkit.MultiLoginBukkit;
+import moe.caa.multilogin.bukkit.impl.BukkitSender;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

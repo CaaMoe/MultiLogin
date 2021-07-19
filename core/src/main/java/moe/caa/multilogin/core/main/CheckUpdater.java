@@ -23,7 +23,8 @@ public class CheckUpdater {
      * 检查更新
      */
     public static void check0() throws Exception {
-        JsonObject json = JsonParser.parseString(HttpUtil.httpGet(SOURCE, 10000, 3)).getAsJsonObject();
+        // JsonObject json = JsonParser.parseString(HttpUtil.httpGet(SOURCE, 10000, 3)).getAsJsonObject();
+        JsonObject json = new JsonParser().parse(HttpUtil.httpGet(SOURCE, 10000, 3)).getAsJsonObject();
         String sor = json.get("content").getAsString();
         sor = sor.substring(0, sor.length() - 1);
         String s = new String(ValueUtil.DECODER.decode(sor), StandardCharsets.UTF_8);

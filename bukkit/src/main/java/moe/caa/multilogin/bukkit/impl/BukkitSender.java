@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bukkit;
+package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.core.impl.ISender;
 import org.bukkit.command.CommandSender;

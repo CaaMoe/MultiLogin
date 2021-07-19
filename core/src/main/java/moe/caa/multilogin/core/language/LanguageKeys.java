@@ -54,7 +54,9 @@ public enum LanguageKeys {
     UPDATE_SENDER("update_sender" ),
     UPDATE_CONSOLE("update_console", "", ""),
 
-    COMMAND_NO_PERMISSION("command_no_permission");
+    COMMAND_NO_PERMISSION("command_no_permission"),
+    COMMAND_UNKNOWN("command_unknown"),
+    COMMAND_ERROR("command_error");
 
     public final String key;
     public final Object[] args;

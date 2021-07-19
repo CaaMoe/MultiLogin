@@ -1,5 +1,6 @@
-package moe.caa.multilogin.bukkit;
+package moe.caa.multilogin.bukkit.impl;
 
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.impl.ISchedule;
 
 public class BukkitSchedule implements ISchedule {
