@@ -69,7 +69,6 @@ public enum LanguageKeys {
 
     COMMAND_NO_PERMISSION("command_no_permission"),
     COMMAND_UNKNOWN("command_unknown"),
-    COMPILE_ERROR("compile_error"),
     COMMAND_ERROR("command_error"),
     COMMAND_RELOADED("command_reloaded"),
 

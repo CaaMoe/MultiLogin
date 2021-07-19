@@ -136,6 +136,10 @@ public class LibraryHandler {
         if (ReflectUtil.getClass("org.apache.logging.log4j.core.LoggerContext") == null) {
             NEED_LIBRARIES.put("org.apache.logging.log4j log4j-core 2.13.2", "org.apache.logging.log4j.core.LoggerContext");
         }
+
+        if (ReflectUtil.getClass("com.mojang.brigadier.CommandDispatcher") == null) {
+            NEED_LIBRARIES.put("com.mojang brigadier 1.0.18", "com.mojang.brigadier.CommandDispatcher");
+        }
     }
 
     //    下载线程

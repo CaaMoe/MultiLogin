@@ -12,71 +12,56 @@
 
 package moe.caa.multilogin.core.command;
 
-import moe.caa.multilogin.core.command.commands.multilogin.MultiLoginCommand;
-import moe.caa.multilogin.core.command.commands.whitelist.WhitelistCommand;
-import moe.caa.multilogin.core.command.impl.RootCommand;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.ParseResults;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import moe.caa.multilogin.core.command.commands.WhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
-import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class CommandHandler {
-    //    根命令
-    private static final Map<String, RootCommand> fatherCommandMap = new HashMap<>();
+
+    private static final CommandDispatcher<ISender> DISPATCHER = new CommandDispatcher<>();
 
     static {
-//        记录根命令
-        fatherCommandMap.put("whitelist", new WhitelistCommand());
-        fatherCommandMap.put("multilogin", new MultiLoginCommand());
+        WhitelistCommand.register(DISPATCHER);
     }
 
-    //    扫描根命令并执行
     public void execute(ISender sender, String command, String[] args) {
-        if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
-//        提示未知
-            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
-            return;
-        }
-        RootCommand rootCommand = fatherCommandMap.get(command);
-//                鉴权
-        if (!rootCommand.canExecute(sender)) {
-            sender.sendMessage(LanguageKeys.COMMAND_NO_PERMISSION.getMessage());
-            return;
-        }
-//                执行
+        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
         try {
-            rootCommand.execute(sender, args);
-        } catch (Throwable throwable) {
-//            补全出错提示
-            sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
-            MultiLogger.log(LoggerLevel.ERROR, throwable);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
+            DISPATCHER.execute(parse);
+        } catch (CommandSyntaxException e) {
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
         }
     }
 
     //    tab补全
     public List<String> tabCompete(ISender sender, String command, String[] args) {
-        if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
-//        提示未知
-//          sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
-            return Collections.emptyList();
-        }
-        RootCommand rootCommand = fatherCommandMap.get(command);
-        if (!rootCommand.canExecute(sender)) return Collections.emptyList();
+        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
+        CompletableFuture<Suggestions> suggestions = DISPATCHER.getCompletionSuggestions(parse);
         try {
-            return rootCommand.tabComplete(sender, args);
-        } catch (Throwable throwable) {
-//            补全出错提示
-            sender.sendMessage(LanguageKeys.COMPILE_ERROR.getMessage());
-            MultiLogger.log(LoggerLevel.ERROR, throwable);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.COMPILE_ERROR.getMessage());
+            return suggestions.get().getList().stream().map(Suggestion::getText).collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException ignored) {
         }
-//        无可补全
-        return Collections.emptyList();
+        return null;
+    }
+
+    public static LiteralArgumentBuilder<ISender> literal(String name) {
+        return LiteralArgumentBuilder.literal(name);
+    }
+
+    public static <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.argument(name, type);
     }
 }
