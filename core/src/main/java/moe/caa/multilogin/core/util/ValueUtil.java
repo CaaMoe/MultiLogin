@@ -86,10 +86,10 @@ public class ValueUtil {
         }
     }
 
-    public static UUID getUUIDOrNull(String uuid){
+    public static UUID getUUIDOrNull(String uuid) {
         try {
             return UUID.fromString(uuid);
-        } catch (Exception ignore){
+        } catch (Exception ignore) {
             return null;
         }
     }

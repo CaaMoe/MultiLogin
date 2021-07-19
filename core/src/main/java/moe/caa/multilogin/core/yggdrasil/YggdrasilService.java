@@ -52,6 +52,9 @@ public class YggdrasilService {
         );
     }
 
+    /**
+     * 验证配置完整性
+     */
     private void integrity() {
         switch (ValueUtil.getOrThrow(body.serverType, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
             case CUSTOM:
@@ -89,6 +92,14 @@ public class YggdrasilService {
         return Objects.hash(path);
     }
 
+    /**
+     * 构建 GET 请求 URL
+     *
+     * @param username 用户名
+     * @param serverId 服务器ID
+     * @param ip       地址
+     * @return URL
+     */
     public String buildUrl(String username, String serverId, String ip) {
         if (body.postMode) return body.url;
         if (body.passIp && ValueUtil.notIsEmpty(ip)) {
@@ -97,6 +108,14 @@ public class YggdrasilService {
         return MessageFormat.format(body.url, username, serverId, "");
     }
 
+    /**
+     * 构建 POST 请求内容
+     *
+     * @param username 用户名
+     * @param serverId 服务器ID
+     * @param ip       地址
+     * @return 内容
+     */
     public String buildPostContent(String username, String serverId, String ip) {
         if (!body.postMode) return null;
         if (body.passIp && ValueUtil.notIsEmpty(ip)) {

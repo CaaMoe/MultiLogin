@@ -24,6 +24,34 @@ public class LibraryHandler {
     //    使用一个线程池 防止少数服务端不给开线程造成无法启动
     private ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
+    private static String genUrl(String name) {
+//     例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
+        String[] split = name.split(" ");
+        StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
+        String[] packetSplit = split[0].split("\\.");
+        for (String get : packetSplit) {
+            sb.append(get);
+            sb.append('/');
+        }
+        sb.append(split[1]);
+        sb.append('/');
+        sb.append(split[2]);
+        sb.append('/');
+        sb.append(split[1]);
+        sb.append('-');
+        sb.append(split[2]);
+        sb.append(".jar");
+        return sb.toString();
+    }
+
+    private static String genJarName(String name) {
+        String[] split = name.split(" ");
+        return split[1] +
+                '-' +
+                split[2] +
+                ".jar";
+    }
+
     public void init() throws Throwable {
         check();
         File libFolder = new File(MultiCore.plugin.getDataFolder(), "libraries");
@@ -34,7 +62,7 @@ public class LibraryHandler {
         String args = NEED_LIBRARIES.keySet().stream().map(LibraryHandler::genJarName).collect(Collectors.joining(", "));
         if (args.length() == 0) return;
 //        回收对象
-        NEED_LIBRARIES=null;
+        NEED_LIBRARIES = null;
         throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(args));
     }
 
@@ -96,34 +124,6 @@ public class LibraryHandler {
         if (ReflectUtil.getClass("org.apache.logging.log4j.core.LoggerContext") == null) {
             NEED_LIBRARIES.put("org.apache.logging.log4j log4j-core 2.13.2", "org.apache.logging.log4j.core.LoggerContext");
         }
-    }
-
-    private static String genUrl(String name) {
-//     例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
-        String[] split = name.split(" ");
-        StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
-        String[] packetSplit = split[0].split("\\.");
-        for (String get : packetSplit) {
-            sb.append(get);
-            sb.append('/');
-        }
-        sb.append(split[1]);
-        sb.append('/');
-        sb.append(split[2]);
-        sb.append('/');
-        sb.append(split[1]);
-        sb.append('-');
-        sb.append(split[2]);
-        sb.append(".jar");
-        return sb.toString();
-    }
-
-    private static String genJarName(String name) {
-        String[] split = name.split(" ");
-        return split[1] +
-                '-' +
-                split[2] +
-                ".jar";
     }
 
     //    下载线程

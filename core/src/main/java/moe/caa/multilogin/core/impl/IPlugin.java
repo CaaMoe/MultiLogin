@@ -87,12 +87,24 @@ public interface IPlugin {
      */
     Gson getAuthGson();
 
+    /**
+     * 得到验证返回的 Type
+     */
     Type authResultType();
 
+    /**
+     * 加载反射核心服务
+     */
     void initCoreService() throws Throwable;
 
+    /**
+     * 加载其他服务
+     */
     void initOtherService();
 
+    /**
+     * 关闭服务端
+     */
     void shutdown();
 
     default boolean onAsyncLoginSuccess(UUID uuid, String name) {
@@ -103,6 +115,9 @@ public interface IPlugin {
         getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null));
     }
 
+    /**
+     * 发送更新信息
+     */
     default void onJoin(ISender player) {
         if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
             if (CheckUpdater.haveUpdate) {
@@ -111,6 +126,11 @@ public interface IPlugin {
         }
     }
 
+    /**
+     * 获得 User 缓存
+     *
+     * @param redirectUuid 游戏内 UUID
+     */
     default User getCacheUserData(UUID redirectUuid) {
         for (User user : Verifier.CACHE_USER) {
             if (user.redirectUuid.equals(redirectUuid)) {
