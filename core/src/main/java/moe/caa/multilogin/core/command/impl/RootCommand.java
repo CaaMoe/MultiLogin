@@ -19,8 +19,8 @@ import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-public class RootCommand extends Command {
+//节点命令 不进行实际操作
+public abstract class RootCommand extends Command {
     protected final Map<String, Command> subCommands = new HashMap<>();
 
     public RootCommand(Permission permission) {
