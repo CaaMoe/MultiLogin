@@ -93,7 +93,7 @@ public class MultiCore {
                 return false;
             }
 
-            plugin.getSchedule().runTaskAsyncTimer(CheckUpdater::check, 0, 20 * 60 * 60 * 24);
+            plugin.getSchedule().runTaskAsyncTimer(CheckUpdater::check, 0, 1000 * 60 * 60 * 24);
 
             plugin.initOtherService();
             MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_LOADED.getMessage());

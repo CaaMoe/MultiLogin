@@ -85,4 +85,12 @@ public class ValueUtil {
             return def;
         }
     }
+
+    public static UUID getUUIDOrNull(String uuid){
+        try {
+            return UUID.fromString(uuid);
+        } catch (Exception ignore){
+            return null;
+        }
+    }
 }

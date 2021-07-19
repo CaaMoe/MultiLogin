@@ -23,12 +23,7 @@ public class AddWhitelistCommand extends SubCommand {
                 MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(args[0])));
             }
         } else {
-            super.execute(sender, args);
+            sendUnknownCommandMessage(sender);
         }
-    }
-
-    @Override
-    public void execute(ISender sender, String[] args) {
-
     }
 }

@@ -67,3 +67,12 @@ command_whitelist_add_already: '§c请勿重复将 §e{0} §c添加至白名单'
 
 command_whitelist_del: '§a已移除 §e{0} §a的白名单'
 command_whitelist_del_already: '§e{0} §c没有白名单，请勿重复移除'
+
+command_no_uuid: '§c输入的值 §e{0} §c并不是一个有效的 UUID'
+
+command_unknown_online_uuid: '§c查询不到 online uuid 为 §e{0} §c的账户信息，请重试'
+command_unknown_name: '§c查询不到 name 为 §e{0} §c的账户信息，请重试'
+command_unknown_redirect_uuid: '§c查询不到 redirect uuid 为 §e{0} §c的账户信息，请重试'
+
+command_query_list: '§a查询到 §e{0} §a个账户信息:'
+command_query_entry: '§aname: §e{0} §aonline uuid: §e{1} §aredirect uuid: §e{2} §aserver: §e{3}§7(§e{4}§7) §awhitelist: §e{5}'

@@ -13,10 +13,6 @@ public class DelWhitelistCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) {
-    }
-
-    @Override
     public void executeAsync(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
             boolean result = CacheWhitelistDataHandler.removeCacheWhitelist(args[0]);
@@ -26,7 +22,7 @@ public class DelWhitelistCommand extends SubCommand {
                 MultiCore.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage(args[0])));
             }
         } else {
-            super.execute(sender, args);
+            sendUnknownCommandMessage(sender);
         }
     }
 }

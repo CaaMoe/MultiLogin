@@ -67,11 +67,10 @@ public abstract class SubCommand {
     }
 
     public void execute(ISender sender, String[] args) throws Throwable {
-        sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
     }
 
     public void executeAsync(ISender sender, String[] args) throws Throwable {
-
+        sendUnknownCommandMessage(sender);
     }
 
     public List<String> tabCompile(ISender sender, String[] args) throws Throwable {
@@ -79,5 +78,9 @@ public abstract class SubCommand {
             return subCommands.stream().filter(subCommand -> subCommand.permission == null || subCommand.permission.hasPermission(sender)).map(subCommand -> subCommand.name).collect(Collectors.toList());
         }
         return Collections.emptyList();
+    }
+
+    protected final void sendUnknownCommandMessage(ISender sender) {
+        MultiCore.plugin.getSchedule().runTask(()->sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage()));
     }
 }
