@@ -1,9 +1,9 @@
 package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.impl.ISchedule;
+import moe.caa.multilogin.core.impl.Scheduler;
 
-public class BukkitSchedule implements ISchedule {
+public class BukkitSchedule extends Scheduler {
     private final MultiLoginBukkit PLUGIN;
 
     public BukkitSchedule(MultiLoginBukkit plugin) {
@@ -11,27 +11,12 @@ public class BukkitSchedule implements ISchedule {
     }
 
     @Override
-    public void runTaskAsync(Runnable run) {
-        PLUGIN.getServer().getScheduler().runTaskAsynchronously(PLUGIN, run);
-    }
-
-    @Override
-    public void runTaskAsync(Runnable run, long delay) {
-        PLUGIN.getServer().getScheduler().runTaskLaterAsynchronously(PLUGIN, run, delay / 50);
-    }
-
-    @Override
-    public void runTaskAsyncTimer(Runnable run, long delay, long per) {
-        PLUGIN.getServer().getScheduler().runTaskTimerAsynchronously(PLUGIN, run, delay / 50, per / 50);
+    public void runTask(Runnable run) {
+        PLUGIN.getServer().getScheduler().runTask(PLUGIN, run);
     }
 
     @Override
     public void runTask(Runnable run, long delay) {
         PLUGIN.getServer().getScheduler().runTaskLater(PLUGIN, run, delay / 50);
-    }
-
-    @Override
-    public void runTask(Runnable run) {
-        PLUGIN.getServer().getScheduler().runTask(PLUGIN, run);
     }
 }

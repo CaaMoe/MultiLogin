@@ -60,7 +60,7 @@ public interface IPlugin {
      *
      * @return 调度器对象
      */
-    ISchedule getSchedule();
+    Scheduler getSchedule();
 
     /**
      * 是否开启在线验证
