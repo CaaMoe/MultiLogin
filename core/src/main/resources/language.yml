@@ -21,6 +21,7 @@ reflect_init_error: '反射组件异常，插件可能不兼容您的系统 {0}'
 library_init: '正在下载和加载依赖库文件，可能需要一点时间'
 library_downloading: '正在下载依赖文件： {0}'
 library_downloaded: '依赖文件下载成功： {0}'
+library_download_failed: '依赖文件下载失败： {0}'
 library_loaded: '已加载依赖： {0}'
 library_load_failed: '有一个或多个依赖加载失败： {0}'
 

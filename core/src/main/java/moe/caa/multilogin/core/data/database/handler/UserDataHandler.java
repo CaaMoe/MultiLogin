@@ -9,7 +9,7 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 import java.sql.*;
 import java.util.*;
 
-import static moe.caa.multilogin.core.data.database.SQLHandler.*;
+import static moe.caa.multilogin.core.data.database.SQLManager.*;
 
 
 public class UserDataHandler {

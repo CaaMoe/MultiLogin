@@ -49,6 +49,9 @@ public enum ConvUuidEnum {
         if (this == OFFLINE) {
             return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8));
         }
-        return UUID.randomUUID();
+        if (this == RANDOM) {
+            return UUID.randomUUID();
+        }
+        return null;
     }
 }

@@ -43,7 +43,7 @@ public class MultiLogger {
     public static void log(LoggerLevel level, String message, Throwable throwable) {
         logDefault(level, message, throwable);
         if (log4JCore != null)
-            log4JCore.log(level, message, throwable, debug);
+            log4JCore.log(level, message, throwable);
     }
 
     private static void logDefault(LoggerLevel level, String message, Throwable throwable) {

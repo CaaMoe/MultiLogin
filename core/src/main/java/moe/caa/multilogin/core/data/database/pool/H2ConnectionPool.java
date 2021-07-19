@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.data.database.pool;
 
-import moe.caa.multilogin.core.impl.ISQLConnectionPool;
 import org.h2.jdbcx.JdbcConnectionPool;
 
 import java.sql.Connection;

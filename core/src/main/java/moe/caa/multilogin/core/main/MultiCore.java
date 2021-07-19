@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.main;
 
-import moe.caa.multilogin.core.data.database.SQLHandler;
+import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.language.LanguageKeys;
@@ -62,7 +62,7 @@ public class MultiCore {
             }
 
             try {
-                LibraryHandler.init();
+                new LibraryHandler().init();
             } catch (Throwable e) {
                 MultiLogger.log(LoggerLevel.ERROR, e);
                 MultiLogger.log(LoggerLevel.ERROR, e.getMessage());
@@ -73,7 +73,7 @@ public class MultiCore {
             YggdrasilServicesHandler.init();
 
             try {
-                SQLHandler.init();
+                SQLManager.init();
             } catch (Exception e) {
                 MultiLogger.log(LoggerLevel.ERROR, e);
                 MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.DATABASE_CONNECT_ERROR.getMessage());
@@ -129,7 +129,7 @@ public class MultiCore {
     }
 
     public static void disable() {
-        SQLHandler.close();
+        SQLManager.close();
         plugin.shutdown();
         MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_UNLOADED.getMessage());
     }
