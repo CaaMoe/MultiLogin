@@ -25,7 +25,7 @@ public class Whitelist_RemoveCommand extends SubCommand {
     }
 
     @Override
-    public void execute(ISender sender, String[] args) throws Throwable {
+    public void subExecute(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
             boolean result = CacheWhitelistDataHandler.removeCacheWhitelist(args[0]);
             if (result) {
