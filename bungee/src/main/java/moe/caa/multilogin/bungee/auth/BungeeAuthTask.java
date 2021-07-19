@@ -15,6 +15,9 @@ import net.md_5.bungee.connection.LoginResult;
 import java.lang.invoke.MethodHandle;
 import java.util.UUID;
 
+/*
+捕获到登入包后主要进行登入处理的线程 核心部分
+ */
 public class BungeeAuthTask implements Runnable {
     private static MethodHandle LOGIN_PROFILE;
     private static MethodHandle NAME;
@@ -45,6 +48,7 @@ public class BungeeAuthTask implements Runnable {
     public void run() {
         try {
             AuthResult<LoginResult> result = AuthCore.yggAuth(USERNAME, SERVER_ID, IP);
+//            登入结果返回 服务器连接层面失败
             if (result.err != null) {
                 if (result.err == AuthFailedEnum.SERVER_DOWN) {
                     handler.disconnect(BungeeCord.getInstance().getTranslation("mojang_fail"));
@@ -53,14 +57,16 @@ public class BungeeAuthTask implements Runnable {
                 }
                 return;
             }
+//            成功连接且取得结果
             LoginResult loginResult = result.result;
             UUID onlineId = Util.getUUID(loginResult.getId());
             VerificationResult verificationResult = Verifier.getUserVerificationMessage(onlineId, handler.getName(), result.service);
+//            白名单 重名验证层面失败
             if (verificationResult.FAIL_MSG != null) {
                 handler.disconnect(new TextComponent(verificationResult.FAIL_MSG));
                 return;
             }
-
+//            将信息传回到handler
             LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));
             UNIQUE_ID.invoke(handler, verificationResult.REDIRECT_UUID);
             NAME.invoke(handler, loginResult.getName());

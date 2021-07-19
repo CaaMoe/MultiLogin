@@ -1,4 +1,16 @@
-package moe.caa.multilogin.bungee;
+/*
+ * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
+ * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
+ * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
+ * @github  https://github.com/CaaMoe/MultiLogin
+ *
+ * moe.caa.multilogin.bungee.main.MultiLoginBungee
+ *
+ * Use of this source code is governed by the GPLv3 license that can be found via the following link.
+ * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
+ */
+
+package moe.caa.multilogin.bungee.main;
 
 import com.google.gson.Gson;
 import gnu.trove.map.TIntObjectMap;
@@ -37,6 +49,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initCoreService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
+//        bungeecord核心初始化
         MultiLoginEncryptionResponse.init();
         BungeeAuthTask.init();
 
@@ -68,6 +81,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOtherService() {
+//        注册其他服务需要的监听
         getProxy().getPluginManager().registerListener(this, new BungeeListener());
     }
 
@@ -76,6 +90,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         plugin = this;
         schedule = new BungeeSchedule(this);
         if (!MultiCore.init(this)) {
+//            启动失败关闭
             onDisable();
         }
     }

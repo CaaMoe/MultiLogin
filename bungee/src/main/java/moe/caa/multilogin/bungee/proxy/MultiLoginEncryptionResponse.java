@@ -1,8 +1,8 @@
 package moe.caa.multilogin.bungee.proxy;
 
 import com.google.common.base.Preconditions;
-import moe.caa.multilogin.bungee.MultiLoginBungee;
 import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
+import moe.caa.multilogin.bungee.main.MultiLoginBungee;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -28,6 +28,9 @@ import java.net.InetSocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/*
+根据EncryptionResponse编写的认证拦截器
+ */
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
     public static Class<?> INITIAL_HANDLER_CLASS_STATE_CLASS;
     public static MethodHandle THIS_STATE;
@@ -48,6 +51,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
     @Override
     public void handle(AbstractPacketHandler handler) throws Exception {
+//        处理
         if (!(handler instanceof InitialHandler)) {
             handler.handle(this);
             return;
@@ -56,6 +60,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         try {
             request = (EncryptionRequest) REQUEST.invoke(handler);
             addEncrypt();
+//            交给登入任务处理
             BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp()));
         } catch (Throwable e) {
             e.printStackTrace();
@@ -66,6 +71,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
     }
 
+    //    添加正版加密
     private void addEncrypt() throws Throwable {
         ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.invoke(initialHandler);
         Preconditions.checkState(THIS_STATE.invoke(initialHandler) == ReflectUtil.getEnumIns((Class<? extends Enum<?>>) INITIAL_HANDLER_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
@@ -80,26 +86,30 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
     }
 
+    //    解密服务器ID
     public String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         return decode(request.getServerId().getBytes("ISO_8859_1"));
     }
 
+    //    获取玩家名
+    public String getUsername() {
+        return initialHandler.getName();
+    }
+
+    //    获取IP
+    public String getIp() {
+        if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
+            return initialHandler.getAddress().getAddress().getHostAddress();
+        }
+        return null;
+    }
+
+    //    解密数据
     private String decode(byte[] message) throws NoSuchAlgorithmException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
         for (byte[] bit : new byte[][]{message, sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()}) {
             sha.update(bit);
         }
         return (new BigInteger(sha.digest())).toString(16);
-    }
-
-    public String getUsername() {
-        return initialHandler.getName();
-    }
-
-    public String getIp() {
-        if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
-            return initialHandler.getAddress().getAddress().getHostAddress();
-        }
-        return null;
     }
 }
