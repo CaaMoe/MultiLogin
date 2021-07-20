@@ -21,10 +21,15 @@ public class MultiLoginCommand {
 
     public void register(CommandDispatcher<ISender> dispatcher) {
         dispatcher.register(
+                //根命令
                 CommandHandler.literal("multilogin")
+                        //二级命令
                         .then(CommandHandler.literal("query")
+                                //三级命令
                                 .then(CommandHandler.literal("name")
+                                        //需求字符串参数
                                         .then(CommandHandler.argument("target", StringArgumentType.string())
+                                                //执行
                                                 .executes(this::executeName)
                                         )
                                 ).then(CommandHandler.literal("onlineuuid")
@@ -36,6 +41,7 @@ public class MultiLoginCommand {
                                                 .executes(this::executeRedirectUuid)
                                         )
                                 )
+                                //权限
                         ).requires(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY::hasPermission)
                         .then(CommandHandler.literal("reload").requires(Permission.MULTI_LOGIN_MULTI_LOGIN_RELOAD::hasPermission)
                                 .executes(this::executeReload)

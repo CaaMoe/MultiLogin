@@ -16,9 +16,13 @@ public class WhitelistCommand {
 
     public void register(CommandDispatcher<ISender> dispatcher) {
         dispatcher.register(
+                //根命令和权限
                 CommandHandler.literal("whitelist").requires(Permission.MULTI_LOGIN_WHITELIST::hasPermission)
+                        //二级命令
                         .then(CommandHandler.literal("add")
+                                //需求字符串参数
                                 .then(CommandHandler.argument("target", StringArgumentType.string())
+                                        //执行
                                         .executes(this::executeAdd)
                                 )
                         )
