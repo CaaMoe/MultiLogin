@@ -18,14 +18,15 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven { url "https://maven.aliyun.com/repository/public" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    jcenter()
 }
 
 dependencies {
     compile project(':core')
-    compileOnly 'net.md-5:bungeecord-api:1.16-R0.5-SNAPSHOT'
-    compileOnly fileTree(dir: 'lib', include: ['*.jar'])
+//    compileOnly 'net.sf.trove4j:core:3.1.0'
+    compileOnly 'net.md-5:bungeecord-api:1.17-R0.1-SNAPSHOT'
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
 }
 
 processResources {
@@ -36,7 +37,6 @@ processResources {
 
 jar {
     archiveBaseName.set "MultiLogin-Bungee-" + project.plugin_version
-    outgoingVariants.name
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)

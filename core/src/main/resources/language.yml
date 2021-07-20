@@ -1,0 +1,86 @@
+plugin_load_error: '启动时遇到致命异常'
+bstats_load_fail: 'bStats加载失败'
+plugin_loaded: '插件已加载'
+plugin_unloaded: '插件已卸载'
+use_inside_language: '使用内置语言'
+use_outside_language: '使用外置语言'
+repair_language_key: '语言节点 {0} 无效，将使用默认值代替它'
+debug_enable: '已开启 DEBUG 模式'
+logger_file_error: '无法启用日志保存程序，将强制启动 DEBUG 模式'
+config_load_error: '无法存取配置文件，请检查文件权限'
+services_nothing: '尚未添加或启用任何 Yggdrasil 账户验证服务器，将会拒绝所有的登入请求'
+configuration_value_error: '节点 {0} 是空值或非法值'
+configuration_key_error: '节点 {0} 未设置'
+url_illegal_format: 'url 设置有误: {0}'
+yggdrasil_configuration_error: '无法读取配置文件节点 {0} 中的 Yggdrasil 账户验证服务器，因为 {1}'
+apply_yggdrasil_no_enable: '添加 Yggdrasil 账户验证服务器 {0}({1}) ，但未启用它'
+apply_yggdrasil: '添加 Yggdrasil 账户验证服务器 {0}({1})'
+database_connected: '数据库 {0} 已连接'
+database_connect_error: '连接数据库时出现异常'
+reflect_init_error: '反射组件异常，插件可能不兼容您的系统 {0}'
+
+library_init: '正在下载和加载依赖库文件，可能需要一点时间'
+library_downloading: '正在下载依赖文件： {0}'
+library_downloaded: '依赖文件下载成功： {0}'
+library_download_failed: '依赖文件下载失败： {0}'
+library_loaded: '已加载依赖： {0}'
+library_load_failed: '有一个或多个依赖加载失败： {0}'
+
+verification_no_adapter: "§c验证未能通过，请重试"
+verification_no_chae: "§c您只能通过指定的验证方式登入游戏"
+verification_rush_name: "§c您的 ID 已被注册，请重新设置您的 ID"
+verification_rush_name_Onl: "§c请重新设置您的 ID"
+verification_no_pat_match: '§c您的 ID 不合法，请重新设置您的 ID'
+verification_no_whitelist: "§c您没有登入到此服务器的白名单权限"
+verification_error: "验证发生异常"
+verification_allow: "UUID: {0}, name: {1} 登入成功, UUID 重定向为: {2}, 账户验证服务器: {3}（{4}）"
+
+verification_another_login_squeeze: "§c您已在服务器中了，不能重复登录"
+
+verification_self_login_squeeze: "§c您从其他位置登录"
+
+not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
+
+error_auth: '处理用户数据时出现异常'
+error_reflect_modify: '无法修改核心服务，插件可能不支持您的服务端'
+
+debug_login_start: '登入请求: username: {0}, serverId: {1}, ip: {2}'
+debug_login_auth_task_server_down: '验证请求，username: {0}, server: {1}({2}), 失败，服务器宕机'
+debug_login_auth_task_disallow: '验证请求，username: {0}, server: {1}({2}), 失败，身份验证失败'
+debug_login_auth_task_allow: '验证请求，username: {0}, server: {1}({2}), 成功'
+
+debug_login_end_allow: '身份验证成功，username: {0}, server: {1}({2})'
+debug_login_end_disallow: '身份验证失败，username: {0}, type: {1}'
+
+debug_verification_no_chae: '拒绝登入，username: {0}, online uuid: {1}, 验证服务器不匹配。当前验证服务器: {2}({3}), 指定的验证服务器(path): {4}'
+debug_verification_rush_name: '拒绝登入，username: {0}, online uuid: {1}, 与用户(online uuid) {2} 重名，可能还有更多'
+debug_verification_no_whitelist: '拒绝登入，username: {0}, online uuid: {1}, 没有白名单'
+debug_verification_no_pat_match: '拒绝登入，username: {0}, online uuid: {1}, 用户名未通过正则检查，当前正则: {2}'
+debug_verification_repeated_login: '拒绝登入，username: {0}, online uuid: {1}, 重复登入'
+debug_verification_repeat_uuid: 'username: {0}, online uuid: {1}, 触发重复 UUID 定向机制，原定向 UUID: {2}, 现定向 UUID: {3}, 验证服务器: {4}({5})'
+
+update_sender: "§cMultiLogin §e有新的版本发布，请及时下载更新！"
+update_console: '插件有新版本发布，当前版本为: {0}，最新版本为: {1}'
+
+command_unknown: '§c未知或无效的指令'
+command_error: '§c执行指令时出现异常'
+
+command_reloaded: '§a配置已重新加载'
+
+command_whitelist_add: '§a已将 §e{0} §a添加到白名单中'
+command_whitelist_add_already: '§c请勿重复将 §e{0} §c添加至白名单'
+
+command_whitelist_del: '§a已移除 §e{0} §a的白名单'
+command_whitelist_del_already: '§e{0} §c没有白名单，请勿重复移除'
+
+command_no_uuid: '§c输入的值 §e{0} §c并不是一个有效的 UUID'
+
+command_unknown_online_uuid: '§c查询不到 online uuid 为 §e{0} §c的账户信息，请重试'
+command_unknown_name: '§c查询不到 name 为 §e{0} §c的账户信息，请重试'
+command_unknown_redirect_uuid: '§c查询不到 redirect uuid 为 §e{0} §c的账户信息，请重试'
+
+command_query_list: '§a查询到 §e{0} §a个账户信息:'
+command_query_entry: '§aname: §e{0} §aonline uuid: §e{1} §aredirect uuid: §e{2} §aserver: §e{3}§7(§e{4}§7) §awhitelist: §e{5}'
+
+bukkit_loaded_placeholder: '已加载 PlaceholderAPI'
+bukkit_fail_load_placeholder: '已加载 PlaceholderAPI'

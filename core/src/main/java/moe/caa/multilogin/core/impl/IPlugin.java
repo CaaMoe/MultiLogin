@@ -12,14 +12,21 @@
 
 package moe.caa.multilogin.core.impl;
 
+import com.google.gson.Gson;
+import moe.caa.multilogin.core.command.Permission;
+import moe.caa.multilogin.core.data.User;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
+
 import java.io.File;
 import java.io.InputStream;
-import java.util.Map;
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 /**
- * 可被core识别的插件对象
+ * 代表一个插件对象
  */
 public interface IPlugin {
 
@@ -28,74 +35,126 @@ public interface IPlugin {
      *
      * @return 插件数据文件夹
      */
-    File getPluginDataFolder();
+    File getDataFolder();
 
     /**
-     * 获得jar包文件数据流
+     * 获得插件Jar包文件流
      *
-     * @param path 路径
-     * @return 文件数据流
+     * @param path Jar包文件路径
+     * @return 对应的文件流
      */
-    InputStream getPluginResource(String path);
+    InputStream getJarResource(String path);
 
     /**
-     * 将某名玩家踢出游戏
-     *
-     * @param uuid 玩家的uuid
-     * @param msg  玩家的名字
-     */
-    void kickPlayer(UUID uuid, String msg);
-
-    /**
-     * 获得插件的日志对象
-     *
-     * @return 插件日志对象
-     */
-    Logger getPluginLogger();
-
-    /**
-     * 获得插件当前版本
-     *
-     * @return 插件当前版本
-     */
-    String getVersion();
-
-    /**
-     * 延迟执行一个异步任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     */
-    void runTaskAsyncLater(Runnable run, long delay);
-
-    /**
-     * 执行一个异步延迟Timer任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     * @param per   循环
-     */
-    void runTaskAsyncTimer(Runnable run, long delay, long per);
-
-    /**
-     * 执行一个同步任务
-     *
-     * @param run   run
-     * @param delay 延迟
-     */
-    void runTask(Runnable run, long delay);
-
-    /**
-     * 执行一个同步任务
-     *
-     * @param run run
-     */
-    void runTask(Runnable run);
-
-    /**
-     * 获得在线玩家列表
+     * 获得当前所有在线的玩家列表
      *
      * @return 在线玩家列表
      */
-    Map<UUID, String> getOnlineList();
+    List<ISender> getOnlinePlayers();
+
+    /**
+     * 获得插件的日志记录器
+     *
+     * @return 日志记录器
+     */
+    Logger getLogger();
+
+    /**
+     * 获得插件版本号
+     *
+     * @return 插件版本号
+     */
+    String getPluginVersion();
+
+    /**
+     * 获得线程调度器对象
+     *
+     * @return 调度器对象
+     */
+    AbstractScheduler getSchedule();
+
+    /**
+     * 是否开启在线验证
+     *
+     * @return 在线验证模式
+     */
+    boolean isOnlineMode();
+
+    /**
+     * 获得在线玩家
+     *
+     * @param uuid uuid
+     * @return 玩家
+     */
+    ISender getPlayer(UUID uuid);
+
+    /**
+     * 获得在线玩家
+     */
+    List<ISender> getPlayer(String name);
+
+    /**
+     * 获得原版验证时的 GSON 对象
+     */
+    Gson getAuthGson();
+
+    /**
+     * 得到验证返回的 Type
+     */
+    Type authResultType();
+
+    /**
+     * 加载反射核心服务
+     */
+    void initCoreService() throws Throwable;
+
+    /**
+     * 加载其他服务
+     */
+    void initOtherService();
+
+    /**
+     * 关闭服务端
+     */
+    void shutdown();
+
+    MultiCore getMultiCore();
+
+    String getServerCoreName();
+
+    String getServerVersion();
+
+
+    default boolean onAsyncLoginSuccess(UUID uuid, String name) {
+        return getMultiCore().getVerifier().CACHE_LOGIN.remove(uuid, name);
+    }
+
+    default void onQuit(UUID redirectUuid) {
+        getMultiCore().getVerifier().CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null);
+    }
+
+    /**
+     * 发送更新信息
+     */
+    default void onJoin(ISender player) {
+        if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
+            if (getMultiCore().getUpdater().haveUpdate) {
+                player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage(getMultiCore()));
+            }
+        }
+    }
+
+    /**
+     * 获得 User 缓存
+     *
+     * @param redirectUuid 游戏内 UUID
+     */
+    default User getCacheUserData(UUID redirectUuid) {
+        for (User user : getMultiCore().getVerifier().CACHE_USER) {
+            if (user.getRedirectUuid().equals(redirectUuid)) {
+                return user;
+            }
+        }
+        return null;
+    }
 }

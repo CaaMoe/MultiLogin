@@ -1,4 +1,4 @@
 name: MultiLogin
-main: moe.caa.multilogin.bungee.impl.MultiLoginBungee
+main: moe.caa.multilogin.bungee.main.MultiLoginBungee
 version: @version@
 author: CaaMoe,ksqeib

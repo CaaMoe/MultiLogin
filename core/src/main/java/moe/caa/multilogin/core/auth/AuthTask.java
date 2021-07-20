@@ -12,62 +12,52 @@
 
 package moe.caa.multilogin.core.auth;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import moe.caa.multilogin.core.data.data.YggdrasilServiceEntry;
-import moe.caa.multilogin.core.http.HttpGetter;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.util.HttpUtil;
+import moe.caa.multilogin.core.util.ValueUtil;
+import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
-import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
-/**
- * Yggdrasil验证
- *
- * @param <T> 数据类型
- */
 public class AuthTask<T> implements Callable<AuthResult<T>> {
-    private static Type type;
-    private static Gson gson;
-    private final YggdrasilServiceEntry yggdrasilServiceEntry;
-    private final Map<String, String> arg;
+    private final YggdrasilService service;
+    private final String username;
+    private final String serverId;
+    private final String ip;
+    private final MultiCore core;
 
-    public AuthTask(YggdrasilServiceEntry yggdrasilServiceEntry, Map<String, String> arg) {
-        this.yggdrasilServiceEntry = yggdrasilServiceEntry;
-        this.arg = arg;
-    }
-
-    /**
-     * 启动必须调用的函数
-     *
-     * @param type 序列化后类型
-     * @param gson 反序列化用的gson
-     */
-    public static void setServicePair(Type type, Gson gson) {
-        AuthTask.type = type;
-        AuthTask.gson = gson;
+    public AuthTask(YggdrasilService service, String username, String serverId, String ip, MultiCore core) {
+        this.service = service;
+        this.username = username;
+        this.serverId = serverId;
+        this.ip = ip;
+        this.core = core;
     }
 
     @Override
     public AuthResult<T> call() {
         AuthResult<T> authResult;
         try {
-            String url = yggdrasilServiceEntry.buildUrlStr(arg);
             String result;
-            if (yggdrasilServiceEntry.isPostMode()) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("username", arg.get("username"));
-                jsonObject.addProperty("serverId", arg.get("serverId"));
-                String context = jsonObject.toString();
-                result = HttpGetter.httpPost(url, context, yggdrasilServiceEntry.getAuthRetry());
+            if (service.getBody().isPostMode()) {
+                result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), core.servicesTimeOut, service.getAuthRetry());
             } else {
-                result = HttpGetter.httpGet(url, yggdrasilServiceEntry.getAuthRetry());
+                result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), core.servicesTimeOut, service.getAuthRetry());
             }
-            T get = gson.fromJson(result, type);
-            authResult = new AuthResult<>(get, yggdrasilServiceEntry);
+            if (ValueUtil.notIsEmpty(result)) {
+                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(core, username, service.getName(), service.getPath()));
+            } else {
+                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(core, username, service.getName(), service.getPath()));
+            }
+
+            T content = core.plugin.getAuthGson().fromJson(result, core.plugin.authResultType());
+            authResult = new AuthResult<>(content, service);
         } catch (Exception e) {
-            authResult = new AuthResult<>(AuthErrorEnum.SERVER_DOWN, yggdrasilServiceEntry);
-            authResult.setThrowable(e);
+            core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(core, username, service.getName(), service.getPath()));
+            authResult = new AuthResult<>(AuthFailedEnum.SERVER_DOWN, service);
+            authResult.throwable = e;
         }
         return authResult;
     }

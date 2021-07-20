@@ -12,26 +12,27 @@
 
 package moe.caa.multilogin.bukkit.listener;
 
-import moe.caa.multilogin.bukkit.impl.MultiLoginBukkit;
-import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.data.databse.handler.UserDataHandler;
-import moe.caa.multilogin.core.util.I18n;
-import org.bukkit.Bukkit;
+import moe.caa.multilogin.bukkit.impl.BukkitSender;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.UUID;
-
-import static moe.caa.multilogin.core.data.data.PluginData.configurationConfig;
 
 public class BukkitListener implements Listener {
     public static final Map<Thread, String> AUTH_CACHE = new Hashtable<>();
+
+    private final MultiCore core;
+
+    public BukkitListener(MultiCore core) {
+        this.core = core;
+    }
 
     @EventHandler
     private void onLogin(AsyncPlayerPreLoginEvent event) {
@@ -41,36 +42,19 @@ public class BukkitListener implements Listener {
             event.setKickMessage(msg);
             return;
         }
-        if (MultiLoginBukkit.LOGIN_CACHE.remove(event.getUniqueId()) == null) {
+        if (!MultiLoginBukkit.plugin.onAsyncLoginSuccess(event.getUniqueId(), event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(configurationConfig.getString("msgNoAdopt").get());
-        }
-
-        try {
-            MultiLoginBukkit.USER_CACHE.put(event.getUniqueId(), UserDataHandler.getUserEntryByRedirectUuid(event.getUniqueId()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(configurationConfig.getString("msgNoAdopt").get());
+            event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core));
         }
     }
 
     @EventHandler
     private void onQuit(PlayerQuitEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-        MultiCore.getPlugin().runTask(() -> {
-            if (Bukkit.getPlayer(uuid) == null) {
-                MultiLoginBukkit.USER_CACHE.remove(uuid);
-            }
-        });
+        MultiLoginBukkit.plugin.onQuit(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     private void onJoin(PlayerJoinEvent event) {
-        if (MultiCore.isUpdate()) {
-            if (event.getPlayer().isOp() || event.getPlayer().hasPermission("multilogin.update")) {
-                event.getPlayer().sendMessage(I18n.getTransString("plugin_new_version_game"));
-            }
-        }
+        MultiLoginBukkit.plugin.onJoin(new BukkitSender(event.getPlayer()));
     }
 }

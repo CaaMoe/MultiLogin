@@ -3,203 +3,211 @@
 #              --config
 ###################################
 
-# �������е�Yggdrasil��֤������
+# 是否向控制台输出更多详细信息
+debug: true
+
+# 设置私有的 Yggdrasil 账户验证服务器。
 services:
 
-  # �ڵ�����Ϊ���������ƣ�һ������������޸ġ�
-  # �ñ����Ϊϵͳʶ���û���֤�����������ݡ����Ҹ��Ļᵼ��ϵͳ�޷���֤�û����ݶ����ܾ�������Ϸ��
-  # �����Է�д�˽ڵ����������µ�Yggdrasil��֤��������
-  # �ýڵ��ʾMinecraftԭ����֤������
+  # 节点名称作为插件内标记名称，一旦设置请谨慎修改它。
+  # 该标记名称作为系统识别 Yggdrasil 验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝用户登入游戏。
+  # 您可以仿写此节点用来添加新的 Yggdrasil 验证服务器。
+  # 该节点表示 Minecraft 原版验证服务器
   official:
 
-    # ���ø���֤������
-    # �رս��ܾ�����ʹ�ø���֤�������ҵ�����Ϸ
-    enable: false
+    # 启用该验证服务器。
+    # 关闭它将拒绝所有使用该 Yggdrasil 账户验证登入的玩家登入游戏。
+    enable: true
 
-    # Yggdrasil�������Ļ�����������
+    # 该验证服务器的别称，作为 Yggdrasil 账户验证服务器的 display
+    name: '正版'
+
+    # Yggdrasil 验证服务器的基本属性设置。
     body:
 
-      # ���������ͣ�ֻ��������ֵ
-      # BLESSING_SKIN                   // ��ʾBlessing skin��֤���ͷ�����
-      # MINECRAFT �����ܳ���һ�Σ�         // ��ʾ������֤���ͷ�����
-      # CUSTOM                          // �Զ�����֤���ͷ�����
+      # 服务器类型，
+      # 目前只支持以下值:
+      # BLESSING_SKIN                            // 表示 Blessing skin 的 Yggdrasil 验证服务器
+      # MINECRAFT （仅能出现一次）                  // 表示 Minecraft 原版验证类型服务器
+      # CUSTOM                                   // 其他类型验证服务器
       serverType: MINECRAFT
 
-      # ��֤�������ı�ơ�
-      # ���������Ϊ���ַ�����
-      name: "����"
-
-      # Yggdrasil��֤��������
-      # ��serverTypeΪ��MINECRAFT��ʱ���˽ڵ���������
-      # ��serverTypeΪ��BLESSING_SKIN��ʱ��ֻ��Ҫָ��Yggdrasil api��ַ���ɣ�����LittleSkin��URLΪ����https://mcskin.littleservice.cn/api/yggdrasil����
-      # ��serverTypeΪ��CUSTOM��ʱ������ָ���������������ӣ����磺��https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s���� ����POST����������д�������������ӣ�
-      # ���յ�GET���󲻴���ip��ַ������������Ӳ���Ҫ��������Ϣ
+      # Yggdrasil 验证服务器服务端 hasJoin 部分验证请求链接设置。
+      # 当 serverType 为 ‘MINECRAFT’ 时，此节点无需设置。
+      # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
+      # 当 serverType 为 ‘CUSTOM’时，必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置的内容。
+      #       （比如：‘https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}’ ，若是POST请求，则需填写完整的请求链接即可）。
       url: ""
 
-      # ��post����ʽ��֤�˻�����
-      # ��������£�Yggdrasil��������ʹ��GET����ʽ��֤�û����ݵģ�
-      # ����㲻�˽⵱ǰYggdrasil��֤���̵Ļ������������޸���
-      # ����serverType�ڵ�ֵΪ��CUSTOM��ʱ���˽ڵ����Ч
+      # 以 post 请求方式验证账户身份
+      # 绝大多数下， Yggdrasil 验证服务器都使用 GET 请求方式验证用户数据的，
+      # 如果你不了解当前 Yggdrasil 验证流程的话，请勿擅自修改它。
+      # 仅当 serverType 节点值为 ‘CUSTOM’ 时，此节点才有效。
       postMode: false
 
-      # ����post����������
-      # ����postMode�ڵ�ֵΪtrueʱ���˽ڵ����Ч
-      # ���յ�POST���󲻴���ip��ַ������������Ӳ���Ҫ��������Ϣ
-      postContent: '{"username":"{0}", "serverId":"{1}"}'
+      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
+      passIp: false
 
-    # ��������ʱ�Ƿ�ͨ�����ͼ�����ʶ��Yggdrasil�����Ƿ���ȷ.
-    checkUrl: false
+      # 设置 url 节点 {2} 变量内容，
+      # 其中，变量 {0} 为所获取到的 IP 信息。
+      # 仅当 passIp 节点为 true 时此节点有效。
+      passIpContent: "ip={0}"
 
-    # ��ĳ������״��ڴ˽ڵ������õ���֤����������֤ͨ������Ϸ�ڵ�UUID�ᰴ�մ˽ڵ�����д�Ĺ���������
-    # Ŀǰֻ֧������ֵ:
-    #   DEFAULT   -ʹ��Yggdrasil��֤�������ṩ��UUID
-    #   OFFLINE   -�Զ���������UUID������UUID��
-    # ��������ú��޸ĸýڵ㣬���������պ�ά�������Ǹ�����
-    # ���������Ϊ��Ч��ֵ��
-    # Ϊ���ⴥ��Paper�˵�ĳЩ���ƣ�ǿ�ҽ����ֵΪ DEFAULT
+      # 设置 post 的请求内容。
+      # 仅当 postMode 节点值为 true 时，此节点才有效。
+      # 其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置内容
+      postContent: '{"username":"{0}", "serverId":"{1}", {2}}'
+
+      # 设置 url 节点 {2} 变量内容，
+      # 仅当 passIp 节点为 true 时此节点有效
+      passIpContentByPost: '"ip":"{0}"'
+
+    # 当某名玩家第一次在此节点所设置的验证服务器中验证通过后，游戏内的 UUID 会按照此节点所填写的规则来生成：
+    # 目前只支持以下值:
+    #   DEFAULT   - 使用 Yggdrasil 验证服务器提供的UUID
+    #   OFFLINE   - 自动生成离线 UUID（盗版UUID）
+    #   RANDOM    - 随机 UUID
+    # 请谨慎设置和修改此节点，避免增加日后维护的心智负担。
+    # 为避免触发 Paper 端的某些机制，强烈建议此值为 DEFAULT
     convUuid: DEFAULT
 
-    # �Ƿ�Ϊ��ǰ��֤�������������ð�������
-    # ��ȫ�ְ�����Ϊtrueʱ���˽ڵ���Ч��
+    # 当某名玩家第一次登入成功后，若通过节点 ‘convUuid’ 所生成的 UUID 已被使用时，则自动修正为随机的 UUID 避免数据错乱。
+    # 请尽量保持此值为 true ，除非您了解后果是什么（虽然几率很小）。
+    convRepeat: true
+
+    # 玩家允许设置的用户名正则，不匹配将会拒绝登入请求。
+    nameAllowedRegular: '^[0-9a-zA-Z_]{2,10}$'
+
+    # 是否为当前验证服务器单独设置白名单。
+    # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # ���õ�ǰ��֤�������Ƿ�����Ƥ���޸�����
-    # ����serverType�ڵ�ֵ��Ϊ��MINECRAFT��ʱ���˽ڵ����Ч��
-    skinRepair: false
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
+    # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
+    # 若为 true 则拒绝当前登入请求
+    refuseRepeatedLogin: false
 
-    # ���õ�ǰ��֤������Ƥ���޸��������Դ���
-    # ����skinRepair�ڵ�ֵΪtrueʱ���˽ڵ����Ч
-    # Ƥ���޸����������� mineskin.org �����ڷ��ʻ����ϲ�
-    skinRepairRetry: 3
-
-    # ��֤�������Դ���
+    # 验证错误重试次数
     authRetry: 1
 
-  # �ڵ�����Ϊ���������ƣ�һ������������޸ġ�
-  # �ñ����Ϊϵͳʶ���û���֤�����������ݡ����Ҹ��Ļᵼ��ϵͳ�޷���֤�û����ݶ����ܾ�������Ϸ��
-  # �����Է�д�˽ڵ����������µ�Yggdrasil��֤��������
-  # �ýڵ��ʾLittleSkinƤ��վ��֤������
+  # 节点名称作为插件内标记名称，一旦设置请谨慎修改它。
+  # 该标记名称作为系统识别 Yggdrasil 验证服务器的依据。胡乱更改会导致系统无法验证用户身份而被拒绝用户登入游戏。
+  # 您可以仿写此节点用来添加新的 Yggdrasil 验证服务器。
+  # 该节点表示 LittleSkin 皮肤站账号验证服务器
   littleSkin:
 
-    # ���ø���֤������
-    # �رս��ܾ�����ʹ�ø���֤�������ҵ�����Ϸ
-    enable: false
+    # 启用该验证服务器。
+    # 关闭它将拒绝所有使用该 Yggdrasil 账户验证登入的玩家登入游戏。
+    enable: true
 
-    # Yggdrasil�������Ļ�����������
+    # 该验证服务器的别称，作为 Yggdrasil 账户验证服务器的 display
+    name: 'LS皮肤站'
+
+    # Yggdrasil 验证服务器的基本属性设置。
     body:
 
-      # ���������ͣ�ֻ��������ֵ
-      # BLESSING_SKIN                   // ��ʾBlessing skin��֤���ͷ�����
-      # MINECRAFT �����ܳ���һ�Σ�         // ��ʾ������֤���ͷ�����
-      # CUSTOM                          // �Զ�����֤���ͷ�����
+      # 服务器类型，
+      # 目前只支持以下值:
+      # BLESSING_SKIN                            // 表示 Blessing skin 的 Yggdrasil 验证服务器
+      # MINECRAFT （仅能出现一次）                  // 表示 Minecraft 原版验证类型服务器
+      # CUSTOM                                   // 其他类型验证服务器
       serverType: BLESSING_SKIN
 
-      # ��֤�������ı�ơ�
-      # ���������Ϊ���ַ�����
-      name: "LSƤ��վ"
-
-      # Yggdrasil��֤��������
-      # ��serverTypeΪ��MINECRAFT��ʱ���˽ڵ���������
-      # ��serverTypeΪ��BLESSING_SKIN��ʱ��ֻ��Ҫָ��Yggdrasil api��ַ���ɣ�����LittleSkin��URLΪ����https://mcskin.littleservice.cn/api/yggdrasil����
-      # ��serverTypeΪ��CUSTOM��ʱ������ָ���������������ӣ����磺��https://example.com/yggdrasil/session/hasJoined?username=%s&serverId=%s���� ����POST����������д�������������ӣ�
-      # ���յ�GET���󲻴���ip��ַ������������Ӳ���Ҫ��������Ϣ
+      # Yggdrasil 验证服务器服务端 hasJoin 部分验证请求链接设置。
+      # 当 serverType 为 ‘MINECRAFT’ 时，此节点无需设置。
+      # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
+      # 当 serverType 为 ‘CUSTOM’时，必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置内容。
+      #       （比如：‘https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}’ ，若是POST请求，则需填写完整的请求链接即可）。
+      # 请求不传递 ip 地址信息，请勿额外添加不必要的属性信息。
       url: "https://mcskin.littleservice.cn/api/yggdrasil"
 
-      # ��post����ʽ��֤�˻�����
-      # ��������£�Yggdrasil��������ʹ��GET����ʽ��֤�û����ݵģ�
-      # ����㲻�˽⵱ǰYggdrasil��֤���̵Ļ������������޸���
-      # ����serverType�ڵ�ֵΪ��CUSTOM��ʱ���˽ڵ����Ч
+      # 以 post 请求方式验证账户身份
+      # 绝大多数下， Yggdrasil 验证服务器都使用 GET 请求方式验证用户数据的，
+      # 如果你不了解当前 Yggdrasil 验证流程的话，请勿擅自修改它。
+      # 仅当 serverType 节点值为 ‘CUSTOM’ 时，此节点才有效。
       postMode: false
 
-      # ����post����������
-      # ����postMode�ڵ�ֵΪtrueʱ���˽ڵ����Ч
-      # ���յ�POST���󲻴���ip��ַ������������Ӳ���Ҫ��������Ϣ
-      postContent: '{"username":"{0}", "serverId":"{1}"}'
+      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
+      # 若不了解当前 Yggdrasil 验证流程的话，请勿擅自修改它。
+      passIp: false
 
-    # ��������ʱ�Ƿ�ͨ�����ͼ�����ʶ��Yggdrasil�����Ƿ���ȷ.
-    checkUrl: false
+      # 设置 url 节点 {2} 变量内容，
+      # 其中，变量 {0} 为所获取到的 IP 信息。
+      # 仅当 passIp 节点为 true 时此节点有效。
+      passIpContent: "ip={0}"
 
-    # ��ĳ������״��ڴ˽ڵ������õ���֤����������֤ͨ������Ϸ�ڵ�UUID�ᰴ�մ˽ڵ�����д�Ĺ���������
-    # Ŀǰֻ֧������ֵ:
-    #   DEFAULT   -ʹ��Yggdrasil��֤�������ṩ��UUID
-    #   OFFLINE   -�Զ���������UUID������UUID��
-    # ��������ú��޸ĸýڵ㣬���������պ�ά�������Ǹ�����
-    # ���������Ϊ��Ч��ֵ��
-    # Ϊ���ⴥ��Paper�˵�ĳЩ���ƣ�ǿ�ҽ����ֵΪ DEFAULT
+      # 设置 post 的请求内容。
+      # 仅当 postMode 节点值为 true 时，此节点才有效。
+      # 其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置内容
+      postContent: '{"username":"{0}", "serverId":"{1}", {2}}'
+
+      # 设置 url 节点 {2} 变量内容，
+      # 仅当 passIp 节点为 true 时此节点有效
+      passIpContentByPost: '"ip":"{0}"'
+
+    # 当某名玩家第一次在此节点所设置的验证服务器中验证通过后，游戏内的 UUID 会按照此节点所填写的规则来生成：
+    # 目前只支持以下值:
+    #   DEFAULT   - 使用 Yggdrasil 验证服务器提供的UUID
+    #   OFFLINE   - 自动生成离线 UUID（盗版UUID）
+    #   RANDOM    - 随机 UUID
+    # 请谨慎设置和修改此节点，避免增加日后维护的心智负担。
+    # 为避免触发 Paper 端的某些机制，强烈建议此值为 DEFAULT
     convUuid: DEFAULT
 
-    # �Ƿ�Ϊ��ǰ��֤�������������ð�������
-    # ��ȫ�ְ�����Ϊtrueʱ���˽ڵ���Ч��
+    # 当某名玩家第一次登入成功后，若通过节点 ‘convUuid’ 所生成的 UUID 已被使用时，则自动修正为随机的 UUID 避免数据错乱。
+    # 请尽量保持此值为 true ，除非您了解后果是什么（虽然几率很小）。
+    convRepeat: true
+
+    # 玩家允许设置的用户名正则，不匹配将会拒绝登入请求。
+    nameAllowedRegular: '^[0-9a-zA-Z_]{2,10}$'
+
+    # 是否为当前验证服务器单独设置白名单。
+    # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # ���õ�ǰ��֤�������Ƿ�����Ƥ���޸�����
-    # ����serverType�ڵ�ֵ��Ϊ��MINECRAFT��ʱ���˽ڵ����Ч��
-    skinRepair: false
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
+    # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
+    # 若为 true 则拒绝当前登入请求
+    refuseRepeatedLogin: false
 
-    # ���õ�ǰ��֤������Ƥ���޸��������Դ���
-    # ����skinRepair�ڵ�ֵΪtrueʱ���˽ڵ����Ч
-    # Ƥ���޸����������� mineskin.org �����ڷ��ʻ����ϲ�
-    skinRepairRetry: 3
-
-    # ��֤�������Դ���
+    # 验证错误重试次数
     authRetry: 1
 
-# ͨ���˽ڵ��¶������֤��������֤����Ҷ��������˻�������飬
-# ����ǿ���������ߵ�ͬ���˻���
-# �벻Ҫ�����޸Ĵ˽ڵ㣬���ܻᵼ��һЩĪ������Ĵ���
-safeId: ""
+# 通过此节点下定义的 Yggdrasil 账户验证服务器验证登入的玩家都将跳过账户的重名检查，并且强制下线在线的同名账户。
+# 此功能是为了防止抢注 ID 而设计。
+safeId:
+  - 'official'
 
-# ������������ʱʱ��
-servicesTimeOut: 7000
+# 设置 Yggdrasil hasJoined 请求超时时间
+servicesTimeOut: 10000
 
-# ȫ�ְ���������
+# 全局白名单开关
 whitelist: true
 
-# ������ݵĴ�ŷ�ʽ
+# 玩家允许设置的用户名正则，不匹配将会拒绝登入请求。
+# 当当前 Yggdrasil 账户验证服务器设置中对应设置节点存在值时，此节点对于该验证服务器无效。
+nameAllowedRegular: '^[0-9a-zA-Z_]{1,16}$'
+
+# 插件数据的存放方式
 sql:
 
-  # ���ݿ�����: H2(Ĭ��), MYSQL
-  backend: 'H2'
+  # 数据库类型:
+  # 目前至支持以下值：
+  # H2                // 推荐
+  # MYSQL
+  backend: H2
 
-  # ���ݿ��ַ
+  # 数据库地址
   ip: '127.0.0.1'
 
-  # ���ݿ�˿�
+  # 数据库端口
   port: '3306'
 
-  # ���ݿ��û���
+  # 数据库用户名
   username: 'root'
 
-  # ���ݿ�����
+  # 数据库密码
   password: '12345'
 
-  # ���ݿ�����
+  # 数据库名称
   database: 'multilogin'
-
-##############
-#   Message
-##############
-
-msgNoAdopt: "��c��֤δ��ͨ����������"
-msgNoChae: "��c��ֻ��ͨ��ָ������֤��ʽ������Ϸ"
-msgRushName: "��c����ID�ѱ���ע����������������ID"
-msgRushNameOnl: "��c��������������ID��"
-
-msgNoWhitelist: "��c��û�е��뵽�˷������İ�����Ȩ��"
-msgNoPermission: "��c��û��Ȩ��ʹ������ָ��"
-msgInvCmd: "��c��Ч������"
-msgAddWhitelist: "��a�ѽ�%s������������"
-msgAddWhitelistAlready: "��c�����ظ���%s������������"
-msgDelWhitelistInGame: "��c����Ա���Ƴ����İ�����Ȩ��"
-msgDelWhitelist: "��a���Ƴ�%s�İ�����"
-msgDelWhitelistAlready: "��c%s�����ڰ�������"
-msgOpenWhitelist: "��a�ѿ���������"
-msgOpenWhitelistAlready: "��c�����ظ�����������"
-msgCloseWhitelist: "��a�ѹرհ�����"
-msgCloseWhitelistAlready: "��c�����ظ��رհ�����"
-
-msgYDQuery: "��f��� ��e%s ��fʹ�õĵ��뷽ʽΪ ��e%s"
-msgYDQueryNoRel: "��cû�в�ѯ����¼: %s"
-
-msgReload: "��a�����¼��������ļ�"
-msgNoPlayer: "��c�㲻��һ��ʵ�����"

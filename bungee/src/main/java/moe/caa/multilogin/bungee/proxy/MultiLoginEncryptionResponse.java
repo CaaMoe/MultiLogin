@@ -13,11 +13,11 @@
 package moe.caa.multilogin.bungee.proxy;
 
 import com.google.common.base.Preconditions;
-import moe.caa.multilogin.bungee.impl.MultiLoginBungee;
-import moe.caa.multilogin.bungee.task.BungeeAuthTask;
-import moe.caa.multilogin.core.MultiCore;
-import moe.caa.multilogin.core.data.data.PluginData;
-import moe.caa.multilogin.core.util.I18n;
+import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
+import moe.caa.multilogin.bungee.main.MultiLoginBungee;
+import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
@@ -39,27 +39,37 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
 
+/*
+根据EncryptionResponse编写的认证拦截器
+ */
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
-    private static Class<?> INITIAL_HANDLE_CLASS_STATE_CLASS;
-    private static MethodHandle THIS_STATE;
-    private static MethodHandle REQUEST;
-    private static MethodHandle CHANNEL_WRAPPER;
-    InitialHandler initialHandler;
-    SecretKey sharedKey;
-    EncryptionRequest request;
+    public static Class<?> INITIAL_HANDLER_CLASS_STATE_CLASS;
+    public static MethodHandle THIS_STATE;
+    public static MethodHandle REQUEST;
+    public static MethodHandle CHANNEL_WRAPPER;
+    public static InitialHandler initialHandler;
+    public static SecretKey sharedKey;
+    public static EncryptionRequest request;
+    private final MultiCore core;
 
-    public static void init() throws ClassNotFoundException, IllegalAccessException {
-        Class<InitialHandler> INITIAL_HANDLE_CLASS = InitialHandler.class;
-        INITIAL_HANDLE_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
-        THIS_STATE = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, INITIAL_HANDLE_CLASS_STATE_CLASS);
-        REQUEST = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, EncryptionRequest.class);
-        CHANNEL_WRAPPER = ReflectUtil.getFieldUnReflectGetter(INITIAL_HANDLE_CLASS, ChannelWrapper.class);
+    public MultiLoginEncryptionResponse(MultiCore core) {
+        this.core = core;
     }
 
+
+    public void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
+        Class<InitialHandler> INITIAL_HANDLER_CLASS = InitialHandler.class;
+        INITIAL_HANDLER_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
+        THIS_STATE = ReflectUtil.super_lookup.unreflectGetter(ReflectUtil.getField(INITIAL_HANDLER_CLASS, INITIAL_HANDLER_CLASS_STATE_CLASS, false));
+        REQUEST = ReflectUtil.super_lookup.unreflectGetter(ReflectUtil.getField(INITIAL_HANDLER_CLASS, EncryptionRequest.class, false));
+        CHANNEL_WRAPPER = ReflectUtil.super_lookup.unreflectGetter(ReflectUtil.getField(INITIAL_HANDLER_CLASS, ChannelWrapper.class, false));
+    }
+
+
+    @Override
     public void handle(AbstractPacketHandler handler) throws Exception {
+//        处理
         if (!(handler instanceof InitialHandler)) {
             handler.handle(this);
             return;
@@ -68,17 +78,21 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         try {
             request = (EncryptionRequest) REQUEST.invoke(handler);
             addEncrypt();
-            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.INSTANCE, new BungeeAuthTask(initialHandler, genAuthMap()));
+//            交给登入任务处理
+            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp(), core));
         } catch (Throwable e) {
             e.printStackTrace();
-            initialHandler.disconnect(new TextComponent(PluginData.configurationConfig.getString("msgNoAdopt").get()));
-            MultiCore.getPlugin().getPluginLogger().severe(I18n.getTransString("plugin_severe_io_user"));
+            initialHandler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));
+            core.getLogger().log(LoggerLevel.ERROR, e);
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
         }
+
     }
 
+    //    添加正版加密
     private void addEncrypt() throws Throwable {
         ChannelWrapper ch = (ChannelWrapper) CHANNEL_WRAPPER.invoke(initialHandler);
-        Preconditions.checkState(THIS_STATE.invoke(initialHandler) == ReflectUtil.getEnumIns(INITIAL_HANDLE_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
+        Preconditions.checkState(THIS_STATE.invoke(initialHandler) == ReflectUtil.getEnumIns((Class<? extends Enum<?>>) INITIAL_HANDLER_CLASS_STATE_CLASS, "ENCRYPT"), "Not expecting ENCRYPT");
         sharedKey = EncryptionUtil.getSecret(this, request);
         if (sharedKey instanceof SecretKeySpec && sharedKey.getEncoded().length != 16) {
             ch.close();
@@ -90,25 +104,30 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
     }
 
-    private String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    //    解密服务器ID
+    public String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         return decode(request.getServerId().getBytes("ISO_8859_1"));
     }
 
+    //    获取玩家名
+    public String getUsername() {
+        return initialHandler.getName();
+    }
+
+    //    获取IP
+    public String getIp() {
+        if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
+            return initialHandler.getAddress().getAddress().getHostAddress();
+        }
+        return null;
+    }
+
+    //    解密数据
     private String decode(byte[] message) throws NoSuchAlgorithmException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
         for (byte[] bit : new byte[][]{message, sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()}) {
             sha.update(bit);
         }
         return (new BigInteger(sha.digest())).toString(16);
-    }
-
-    private Map<String, String> genAuthMap() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        Map<String, String> map = new HashMap<>();
-        map.put("username", initialHandler.getName());
-        map.put("serverId", getServerId());
-        if (BungeeCord.getInstance().config.isPreventProxyConnections() && initialHandler.getSocketAddress() instanceof InetSocketAddress) {
-            map.put("ip", initialHandler.getAddress().getAddress().getHostAddress());
-        }
-        return map;
     }
 }
