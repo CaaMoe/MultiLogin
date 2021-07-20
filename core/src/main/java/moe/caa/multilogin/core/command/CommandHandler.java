@@ -39,6 +39,14 @@ public class CommandHandler {
         MultiLoginCommand.register(DISPATCHER);
     }
 
+    public static LiteralArgumentBuilder<ISender> literal(String name) {
+        return LiteralArgumentBuilder.literal(name);
+    }
+
+    public static <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
+        return RequiredArgumentBuilder.argument(name, type);
+    }
+
     public void execute(ISender sender, String command, String[] args) {
         ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
         try {
@@ -57,13 +65,5 @@ public class CommandHandler {
         } catch (InterruptedException | ExecutionException ignored) {
         }
         return null;
-    }
-
-    public static LiteralArgumentBuilder<ISender> literal(String name) {
-        return LiteralArgumentBuilder.literal(name);
-    }
-
-    public static <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
-        return RequiredArgumentBuilder.argument(name, type);
     }
 }
