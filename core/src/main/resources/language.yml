@@ -56,7 +56,6 @@ debug_verification_repeat_uuid: 'username: {0}, online uuid: {1}, 触发重复 U
 update_sender: "§cMultiLogin §e有新的版本发布，请及时下载更新！"
 update_console: '插件有新版本发布，当前版本为: {0}，最新版本为: {1}'
 
-command_no_permission: '§c您没有足够的权限执行当前命令'
 command_unknown: '§c未知或无效的指令'
 command_error: '§c执行指令时出现异常'
 

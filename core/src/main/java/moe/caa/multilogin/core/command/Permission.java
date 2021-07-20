@@ -31,10 +31,4 @@ public enum Permission {
     public boolean hasPermission(ISender sender) {
         return sender.hasPermission(permission) || sender.isOp();
     }
-
-    public boolean hasPermissionAndFeedback(ISender sender) {
-        boolean ret = hasPermission(sender);
-        if (!ret) sender.sendMessage(LanguageKeys.COMMAND_NO_PERMISSION.getMessage());
-        return ret;
-    }
 }
