@@ -84,9 +84,6 @@
         # 仅当 passIp 节点为 true 时此节点有效
         passIpContentByPost: '"ip":"{0}"'
 
-      # 是否通过发送假请求识别插件内 Yggdrasil 账户验证服务器配置是否正确.
-      checkUrl: true
-
       # 当某名玩家第一次在此节点所设置的验证服务器中验证通过后，游戏内的 UUID 会按照此节点所填写的规则来生成：
       # 目前只支持以下值:
       #   DEFAULT   - 使用 Yggdrasil 验证服务器提供的UUID
