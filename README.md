@@ -16,7 +16,7 @@
 
 ## BStats 数据
 
-正在修复...
+![BStats](https://bstats.org/signatures/bukkit/MultiLoginR.svg)
 
 ## 如何使用
 

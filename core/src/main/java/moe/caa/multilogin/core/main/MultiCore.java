@@ -48,7 +48,7 @@ public class MultiCore {
     private final SQLManager sqlManager = new SQLManager(this);
     private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
     private final MultiLogger logger = new MultiLogger(this);
-    private final LanguageHandler languageHandler = new LanguageHandler();
+    private final LanguageHandler languageHandler = new LanguageHandler(this);
     private final AuthCore authCore = new AuthCore(this);
     public IPlugin plugin = null;
     public YamlConfig config = null;
@@ -62,7 +62,7 @@ public class MultiCore {
         try {
             configFile = new File(plugin.getDataFolder(), "config.yml");
             this.plugin = plugin;
-            languageHandler.init(this);
+            languageHandler.init();
 
             try {
                 genFile();

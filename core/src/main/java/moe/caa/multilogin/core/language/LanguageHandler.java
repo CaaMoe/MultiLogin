@@ -28,8 +28,14 @@ public class LanguageHandler {
     private YamlConfig languageYamlConfig;
     private boolean outside = false;
 
+    private final MultiCore core;
 
-    public void init(MultiCore core) {
+    public LanguageHandler(MultiCore core) {
+        this.core = core;
+    }
+
+
+    public void init() {
         defaultLanguageYamlConfig = YamlConfig.fromInputStream(core.plugin.getJarResource("language.yml"));
         File languageFile = new File(core.plugin.getDataFolder(), "language.yml");
         if (languageFile.exists()) {
