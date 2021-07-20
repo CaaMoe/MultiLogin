@@ -4,7 +4,7 @@
  * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
  * @github  https://github.com/CaaMoe/MultiLogin
  *
- * moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService
+ * moe.caa.multilogin.fabric.auth.MultiLoginYggdrasilMinecraftSessionService
  *
  * Use of this source code is governed by the GPLv3 license that can be found via the following link.
  * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
