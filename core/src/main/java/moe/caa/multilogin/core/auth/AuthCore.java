@@ -41,6 +41,8 @@ public class AuthCore {
         List<List<YggdrasilService>> order = core.getVerifier().getVeriOrder(name);
         boolean down = false;
         boolean haveService = false;
+//        异常 必须保留
+        Throwable throwable = null;
 
         for (List<YggdrasilService> entries : order) {
             if (entries.size() != 0) haveService = true;
@@ -52,10 +54,11 @@ public class AuthCore {
             if (result != null && result.err == AuthFailedEnum.SERVER_DOWN) {
                 down = true;
             }
+            if (result.throwable != null) throwable = result.throwable;
         }
         AuthFailedEnum failedEnum = down ? AuthFailedEnum.SERVER_DOWN : haveService ? AuthFailedEnum.VALIDATION_FAILED : AuthFailedEnum.NO_SERVICE;
         core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(core, name, failedEnum.name()));
-        return new AuthResult<>(failedEnum);
+        return new AuthResult<>(failedEnum, throwable);
     }
 
     private <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) {

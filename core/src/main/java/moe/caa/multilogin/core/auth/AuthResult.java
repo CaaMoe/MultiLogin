@@ -35,11 +35,12 @@ public class AuthResult<T> {
     }
 
 
-    protected AuthResult(AuthFailedEnum err) {
+//    强制要求加异常 不加不行！
+    protected AuthResult(AuthFailedEnum err,Throwable throwable) {
         this.err = err;
         this.result = null;
         this.service = null;
-        throwable = null;
+        this.throwable = throwable;
     }
 
     public boolean isSuccess() {

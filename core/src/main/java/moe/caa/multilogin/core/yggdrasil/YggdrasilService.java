@@ -134,9 +134,9 @@ public class YggdrasilService {
     public String buildPostContent(String username, String serverId, String ip) {
         if (!body.isPostMode()) return null;
         if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
-            return body.getPostContent().replace("{0}",username).replace("{1}",serverId).replace("{2}",MessageFormat.format(body.getPassIpContentByPost(), ip));
+            return body.getPostContent().replace("{0}", username).replace("{1}", serverId).replace("{2}", MessageFormat.format(body.getPassIpContentByPost(), ip));
         }
-        return body.getPostContent().replace("{0}",username).replace("{1}",serverId).replace("{2}","");
+        return body.getPostContent().replace("{0}", username).replace("{1}", serverId).replace("{2}", "");
     }
 
     public String getPath() {
