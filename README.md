@@ -180,4 +180,28 @@
   	      # 所以此值应为 ‘ip={0}’ ，其中，变量 {0} 表示 ip 
           passIpContent: "ip={0}"
 
-如果你在使用这个插件时有任何的疑问或建议，欢迎加入 QQ 群讨论：832210691
+## 命令和权限
+
+| 命令 | 权限 | 简介 |
+| :-----| :----- | :----- |
+| /whitelist add <target> | multilogin.whitelist | 将 target 添加到白名单中 |
+| /whitelist remove <target> | multilogin.whitelist | 移除 target 的白名单 |
+| /multilogin reload | multilogin.multilogin.reload | 重新加载配置文件 |
+| /multilogin query name <target> | multilogin.multilogin.query | 以 name 查询玩家数据 |
+| /multilogin query redirectuuid <target> | multilogin.multilogin.query | 以 redirectuuid 查询玩家数据 |
+| /multilogin query onlineuuid <target> | multilogin.multilogin.query | 以 onlineuuid 查询玩家数据 |
+|  | multilogin.update | 接收新版本通知 |
+
+## PlaceholderAPI 变量 (Bukkit Only)
+
+| 变量 | 简介 |
+| :-----| :----- |
+| %multilogin_currentname% | 玩家当前的游戏 ID |
+| %multilogin_onlineuuid% | 玩家在线的 UUID |
+| %multilogin_redirecteduuid% | 玩家在游戏内的 UUID |
+| %multilogin_whitelist% | 玩家是否具有白名单 | 
+| %multilogin_yggdrasilname% | 玩家所在的 Yggdrasil 账户验证服务器的名字 |
+| %multilogin_yggdrasilpath% | 玩家所在的 Yggdrasil 账户验证服务器的路径 |
+
+如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
+群互相讨论 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
