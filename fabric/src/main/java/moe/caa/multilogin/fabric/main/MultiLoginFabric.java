@@ -49,9 +49,8 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public Logger getLogger() {
-
-        // TODO: 2021/7/20 ???
-        return null;
+        //Logger.getGlobal();
+        return Logger.getGlobal();
     }
 
     @Override
