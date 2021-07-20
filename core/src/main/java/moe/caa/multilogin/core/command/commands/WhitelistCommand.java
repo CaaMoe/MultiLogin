@@ -16,13 +16,13 @@ public class WhitelistCommand {
 
     public static void register(CommandDispatcher<ISender> dispatcher) {
         dispatcher.register(
-                CommandHandler.literal("whitelist")
-                        .then(CommandHandler.literal("add").requires(Permission.MULTI_LOGIN_WHITELIST_ADD::hasPermission)
+                CommandHandler.literal("whitelist").requires(Permission.MULTI_LOGIN_WHITELIST::hasPermission)
+                        .then(CommandHandler.literal("add")
                                 .then(CommandHandler.argument("target", StringArgumentType.string())
                                         .executes(WhitelistCommand::executeAdd)
                                 )
                         )
-                        .then(CommandHandler.literal("remove").requires(Permission.MULTI_LOGIN_WHITELIST_REMOVE::hasPermission)
+                        .then(CommandHandler.literal("remove")
                                 .then(CommandHandler.argument("target", StringArgumentType.string())
                                         .executes(WhitelistCommand::executeRemove)
                                 )
@@ -36,9 +36,9 @@ public class WhitelistCommand {
                 String arg = StringArgumentType.getString(context, "target");
                 boolean b = CacheWhitelistDataHandler.addCacheWhitelist(arg);
                 if (b) {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage(arg)));
                 } else {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(arg)));
                 }
             } catch (Throwable throwable) {
                 MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_ERROR.getMessage()));
@@ -55,9 +55,9 @@ public class WhitelistCommand {
                 String arg = StringArgumentType.getString(context, "target");
                 boolean b = CacheWhitelistDataHandler.removeCacheWhitelist(arg);
                 if (b) {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL.getMessage(arg)));
                 } else {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage(arg)));
                 }
             } catch (Throwable throwable) {
                 MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_ERROR.getMessage()));

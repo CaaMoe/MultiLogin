@@ -19,8 +19,7 @@ import moe.caa.multilogin.core.language.LanguageKeys;
 public enum Permission {
     MULTI_LOGIN_UPDATE("multilogin.update"),
     MULTI_LOGIN_MULTI_LOGIN_RELOAD("multilogin.multilogin.reload"),
-    MULTI_LOGIN_WHITELIST_ADD("multilogin.whitelist.add"),
-    MULTI_LOGIN_WHITELIST_REMOVE("multilogin.whitelist.remove"),
+    MULTI_LOGIN_WHITELIST("multilogin.whitelist"),
     MULTI_LOGIN_MULTI_LOGIN_QUERY("multilogin.multilogin.query");
 
     public final String permission;

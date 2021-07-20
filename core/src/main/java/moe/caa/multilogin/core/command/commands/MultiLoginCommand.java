@@ -65,7 +65,7 @@ public class MultiLoginCommand {
                 String uuidString = StringArgumentType.getString(context, "target");
                 UUID uuid = ValueUtil.getUUIDOrNull(uuidString);
                 if (uuid == null) {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_NO_UUID.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_NO_UUID.getMessage(uuidString)));
                     return;
                 }
                 List<User> users = UserDataHandler.getUserEntryByRedirectUuid(uuid);
@@ -95,7 +95,7 @@ public class MultiLoginCommand {
                 String uuidString = StringArgumentType.getString(context, "target");
                 UUID uuid = ValueUtil.getUUIDOrNull(uuidString);
                 if (uuid == null) {
-                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_NO_UUID.getMessage()));
+                    MultiCore.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_NO_UUID.getMessage(uuidString)));
                     return;
                 }
                 User user = UserDataHandler.getUserEntryByOnlineUuid(uuid);
