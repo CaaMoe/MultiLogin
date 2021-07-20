@@ -82,7 +82,9 @@ services:
     # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
+    # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
+    # 若为 true 则拒绝当前登入请求
     refuseRepeatedLogin: false
 
     # 验证错误重试次数
@@ -163,7 +165,9 @@ services:
     # 当全局白名单为true时，此节点无效。
     whitelist: true
 
-    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
+    # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
+    # 若为 true 则拒绝当前登入请求
     refuseRepeatedLogin: false
 
     # 验证错误重试次数

@@ -104,6 +104,11 @@
       # 当全局白名单为true时，此节点无效。
       whitelist: true
 
+      # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
+      # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
+      # 若为 true 则拒绝当前登入请求
+      refuseRepeatedLogin: false
+
       # 验证错误重试次数
       authRetry: 1
 
@@ -201,4 +206,4 @@
 | %multilogin_yggdrasilpath% | 玩家所在的 Yggdrasil 账户验证服务器的路径 |
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
-群互相讨论 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
