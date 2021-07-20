@@ -70,14 +70,14 @@ public class YggdrasilService {
     private void integrity() {
         switch (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
             case CUSTOM:
-                ValueUtil.getOrThrow(body.getPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
-                if (body.getPostMode())
+                ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
+                if (body.isPostMode())
                     ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
             case BLESSING_SKIN:
                 ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
             default:
-                if (ValueUtil.getOrThrow(body.getPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
-                    if (body.getPostMode()) {
+                if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
+                    if (body.isPostMode()) {
                         ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
                     } else {
                         ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
@@ -113,8 +113,8 @@ public class YggdrasilService {
      * @return URL
      */
     public String buildUrl(String username, String serverId, String ip) {
-        if (body.getPostMode()) return body.getUrl();
-        if (body.getPassIp() && ValueUtil.notIsEmpty(ip)) {
+        if (body.isPostMode()) return body.getUrl();
+        if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
             return MessageFormat.format(body.getUrl(), username, serverId, MessageFormat.format(body.getPassIpContent(), ip));
         }
         return MessageFormat.format(body.getUrl(), username, serverId, "");
@@ -129,8 +129,8 @@ public class YggdrasilService {
      * @return 内容
      */
     public String buildPostContent(String username, String serverId, String ip) {
-        if (!body.getPostMode()) return null;
-        if (body.getPassIp() && ValueUtil.notIsEmpty(ip)) {
+        if (!body.isPostMode()) return null;
+        if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
             return MessageFormat.format(body.getPostContent(), username, serverId, MessageFormat.format(body.getPassIpContentByPost(), ip));
         }
         return MessageFormat.format(body.getPostContent(), username, serverId, "");
@@ -140,7 +140,7 @@ public class YggdrasilService {
         return path;
     }
 
-    public Boolean getEnable() {
+    public boolean isEnable() {
         return enable;
     }
 
@@ -152,7 +152,7 @@ public class YggdrasilService {
         return convUuid;
     }
 
-    public Boolean getConvRepeat() {
+    public boolean isConvRepeat() {
         return convRepeat;
     }
 
@@ -160,7 +160,7 @@ public class YggdrasilService {
         return nameAllowedRegular;
     }
 
-    public Boolean getWhitelist() {
+    public boolean isWhitelist() {
         return whitelist;
     }
 
@@ -172,7 +172,7 @@ public class YggdrasilService {
         return body;
     }
 
-    public Boolean getRefuseRepeatedLogin() {
+    public boolean isRefuseRepeatedLogin() {
         return refuseRepeatedLogin;
     }
 }

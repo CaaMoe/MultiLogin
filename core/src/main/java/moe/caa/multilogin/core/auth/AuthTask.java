@@ -40,7 +40,7 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
         AuthResult<T> authResult;
         try {
             String result;
-            if (service.getBody().getPostMode()) {
+            if (service.getBody().isPostMode()) {
                 result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), MultiCore.servicesTimeOut, service.getAuthRetry());
             } else {
                 result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), MultiCore.servicesTimeOut, service.getAuthRetry());

@@ -60,11 +60,11 @@ public class YggdrasilServiceBody {
         return url;
     }
 
-    public Boolean getPostMode() {
+    public boolean isPostMode() {
         return postMode;
     }
 
-    public Boolean getPassIp() {
+    public boolean isPassIp() {
         return passIp;
     }
 

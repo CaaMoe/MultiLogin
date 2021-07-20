@@ -72,13 +72,13 @@ public class Verifier {
             userData.setCurrentName(currentName);
 
             if (!updUserEntry) {
-                if (yggdrasilService.getConvRepeat()) {
+                if (yggdrasilService.isConvRepeat()) {
                     userData.setRedirectUuid(getRepeatUuid(userData, yggdrasilService));
                 }
             }
 
             // 白名单检查
-            if (!userData.isWhitelist() && yggdrasilService.getWhitelist()) {
+            if (!userData.isWhitelist() && yggdrasilService.isWhitelist()) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_NO_WHITELIST.getMessage(currentName, onlineUuid.toString()));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_WHITELIST.getMessage());
@@ -111,7 +111,7 @@ public class Verifier {
 
             // 重复登入验证
             if (sender != null) {
-                if (yggdrasilService.getRefuseRepeatedLogin()) {
+                if (yggdrasilService.isRefuseRepeatedLogin()) {
                     MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_REPEATED_LOGIN.getMessage(userData.getCurrentName(), userData.getOnlineUuid().toString()));
                     return new VerificationResult(LanguageKeys.VERIFICATION_ANOTHER_LOGIN_SQUEEZE.getMessage());
                 } else {
@@ -162,10 +162,10 @@ public class Verifier {
     public static List<List<YggdrasilService>> getVeriOrder(String name) throws SQLException {
         List<List<YggdrasilService>> ret = new ArrayList<>();
         Set<YggdrasilService> one = UserDataHandler.getYggdrasilServiceByCurrentName(name);
-        one.removeIf(yggdrasilService -> !yggdrasilService.getEnable());
+        one.removeIf(yggdrasilService -> !yggdrasilService.isEnable());
         List<YggdrasilService> two = new ArrayList<>();
         for (YggdrasilService serviceEntry : YggdrasilServicesHandler.getServices()) {
-            if (!serviceEntry.getEnable()) continue;
+            if (!serviceEntry.isEnable()) continue;
             if (!one.isEmpty() && one.contains(serviceEntry)) continue;
             two.add(serviceEntry);
         }
