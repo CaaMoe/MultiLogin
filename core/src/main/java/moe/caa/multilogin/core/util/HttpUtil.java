@@ -117,6 +117,13 @@ public class HttpUtil {
 
     public static boolean downloadFile(String url, File out) throws IOException {
         FileUtil.clearFile(out);
+        //            文件检测 这里是防止下载一半断掉 别动！艹！动了砍死你
+        File downloadingFile = new File(out.getParent(), out.getName() + ".downloading");
+        if (downloadingFile.exists()) {
+            downloadingFile.delete();
+        }
+        downloadingFile.createNewFile();
+
         HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(urlEncode(url)).openConnection();
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(false);
@@ -126,13 +133,14 @@ public class HttpUtil {
 
         if (repCode == 200) {
             try (InputStream inputStream = httpURLConnection.getInputStream();
-                 FileOutputStream fileOutputStream = new FileOutputStream(out)) {
+                 FileOutputStream fileOutputStream = new FileOutputStream(downloadingFile)) {
                 byte[] b = new byte[1024];
                 int n;
                 while ((n = inputStream.read(b)) != -1) {
                     fileOutputStream.write(b, 0, n);// 写入数据
                 }
                 fileOutputStream.flush();
+                downloadingFile.renameTo(out);
                 return true;
             }
         }

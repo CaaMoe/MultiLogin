@@ -44,13 +44,16 @@ import java.util.stream.Collectors;
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static BungeeSchedule schedule;
     public static MultiLoginBungee plugin;
-    private final MultiCore core = new MultiCore(this);
-    private final MultiLoginEncryptionResponse response = new MultiLoginEncryptionResponse(core);
+    private MultiCore core = new MultiCore(this);
+
+    public static MultiCore getCore() {
+        return plugin.core;
+    }
 
     @Override
     public void initCoreService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
 //        bungeecord核心初始化
-        response.init();
+        MultiLoginEncryptionResponse.init();
         BungeeAuthTask.init();
 
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
@@ -68,7 +71,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 Object[] constructors = (Object[]) field_packetConstructors.get(data);
                 if (constructors instanceof Supplier[]) {
                     Supplier<? extends DefinedPacket>[] suppliers = (Supplier<? extends DefinedPacket>[]) constructors;
-                    suppliers[0x01] = (Supplier<DefinedPacket>) () -> new MultiLoginEncryptionResponse(core);
+                    suppliers[0x01] = (Supplier<DefinedPacket>) MultiLoginEncryptionResponse::new;
                 } else if (constructors instanceof Constructor[]) {
                     constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {

@@ -44,21 +44,16 @@ import java.security.NoSuchAlgorithmException;
 根据EncryptionResponse编写的认证拦截器
  */
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
-    public static Class<?> INITIAL_HANDLER_CLASS_STATE_CLASS;
-    public static MethodHandle THIS_STATE;
-    public static MethodHandle REQUEST;
-    public static MethodHandle CHANNEL_WRAPPER;
-    public static InitialHandler initialHandler;
-    public static SecretKey sharedKey;
-    public static EncryptionRequest request;
-    private final MultiCore core;
+    private static Class<?> INITIAL_HANDLER_CLASS_STATE_CLASS;
+    private static MethodHandle THIS_STATE;
+    private static MethodHandle REQUEST;
+    private static MethodHandle CHANNEL_WRAPPER;
+    private static InitialHandler initialHandler;
+    private static SecretKey sharedKey;
+    private static EncryptionRequest request;
+    MultiCore core = MultiLoginBungee.getCore();
 
-    public MultiLoginEncryptionResponse(MultiCore core) {
-        this.core = core;
-    }
-
-
-    public void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
+    public static void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
         Class<InitialHandler> INITIAL_HANDLER_CLASS = InitialHandler.class;
         INITIAL_HANDLER_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
         THIS_STATE = ReflectUtil.super_lookup.unreflectGetter(ReflectUtil.getField(INITIAL_HANDLER_CLASS, INITIAL_HANDLER_CLASS_STATE_CLASS, false));

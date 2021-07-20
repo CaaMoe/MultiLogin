@@ -93,4 +93,7 @@ public class MultiLogger {
         }
     }
 
+    public boolean isDebug() {
+        return debug;
+    }
 }

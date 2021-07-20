@@ -65,6 +65,9 @@ public class BungeeAuthTask implements Runnable {
         try {
             AuthResult<LoginResult> result = core.getAuthCore().yggAuth(USERNAME, SERVER_ID, IP);
 //            登入结果返回 服务器连接层面失败
+            if (core.getLogger().isDebug()) {
+                core.getLogger().log(LoggerLevel.ERROR, result.throwable);
+            }
             if (result.err != null) {
                 if (result.err == AuthFailedEnum.SERVER_DOWN) {
                     handler.disconnect(BungeeCord.getInstance().getTranslation("mojang_fail"));
