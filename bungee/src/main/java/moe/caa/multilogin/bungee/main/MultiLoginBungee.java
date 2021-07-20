@@ -160,4 +160,14 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public MultiCore getMultiCore() {
         return core;
     }
+
+    @Override
+    public String getServerCoreName() {
+        return getProxy().getName();
+    }
+
+    @Override
+    public String getServerVersion() {
+        return getProxy().getVersion();
+    }
 }

@@ -119,6 +119,16 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
+    public String getServerCoreName() {
+        return getServer().getName();
+    }
+
+    @Override
+    public String getServerVersion() {
+        return getServer().getVersion();
+    }
+
+    @Override
     public InputStream getJarResource(String path) {
         return getResource(path);
     }

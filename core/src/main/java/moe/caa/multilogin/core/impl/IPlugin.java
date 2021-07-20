@@ -120,6 +120,11 @@ public interface IPlugin {
 
     MultiCore getMultiCore();
 
+    String getServerCoreName();
+
+    String getServerVersion();
+
+
     default boolean onAsyncLoginSuccess(UUID uuid, String name) {
         return getMultiCore().getVerifier().CACHE_LOGIN.remove(uuid, name);
     }
