@@ -4,10 +4,6 @@ version: @version@
 author: CaaMoe,ksqeib
 api-version: 1.13
 softdepend: [ PlaceholderAPI ]
-libraries:
-  - 'mysql:mysql-connector-java:8.0.11'
-  - 'com.zaxxer:HikariCP:4.0.3'
-  - 'com.h2database:h2:1.4.200'
 commands:
   whitelist:
 

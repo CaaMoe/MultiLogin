@@ -75,3 +75,6 @@ command_unknown_redirect_uuid: '§c查询不到 redirect uuid 为 §e{0} §c的�
 
 command_query_list: '§a查询到 §e{0} §a个账户信息:'
 command_query_entry: '§aname: §e{0} §aonline uuid: §e{1} §aredirect uuid: §e{2} §aserver: §e{3}§7(§e{4}§7) §awhitelist: §e{5}'
+
+bukkit_loaded_placeholder: '已加载 PlaceholderAPI'
+bukkit_fail_load_placeholder: '已加载 PlaceholderAPI'

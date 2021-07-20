@@ -81,7 +81,10 @@ public enum LanguageKeys {
     COMMAND_UNKNOWN_NAME("command_unknown_name", ""),
     COMMAND_UNKNOWN_REDIRECT_UUID("command_unknown_redirect_uuid", ""),
     COMMAND_QUERY_LIST("command_query_list", ""),
-    COMMAND_QUERY_ENTRY("command_query_entry", "", "", "", "", "", "");
+    COMMAND_QUERY_ENTRY("command_query_entry", "", "", "", "", "", ""),
+
+    BUKKIT_LOADED_PLACEHOLDER("bukkit_loaded_placeholder"),
+    BUKKIT_FAIL_LOAD_PLACEHOLDER("bukkit_fail_load_placeholder");
 
     public final String key;
     public final Object[] args;
