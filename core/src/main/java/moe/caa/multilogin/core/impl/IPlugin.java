@@ -13,11 +13,10 @@
 package moe.caa.multilogin.core.impl;
 
 import com.google.gson.Gson;
-import moe.caa.multilogin.core.auth.Verifier;
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.language.LanguageKeys;
-import moe.caa.multilogin.core.main.CheckUpdater;
+import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.File;
 import java.io.InputStream;
@@ -119,12 +118,14 @@ public interface IPlugin {
      */
     void shutdown();
 
+    MultiCore getMultiCore();
+
     default boolean onAsyncLoginSuccess(UUID uuid, String name) {
-        return Verifier.CACHE_LOGIN.remove(uuid, name);
+        return getMultiCore().getVerifier().CACHE_LOGIN.remove(uuid, name);
     }
 
     default void onQuit(UUID redirectUuid) {
-        Verifier.CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null);
+        getMultiCore().getVerifier().CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null);
     }
 
     /**
@@ -132,8 +133,8 @@ public interface IPlugin {
      */
     default void onJoin(ISender player) {
         if (Permission.MULTI_LOGIN_UPDATE.hasPermission(player)) {
-            if (CheckUpdater.haveUpdate) {
-                player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage());
+            if (getMultiCore().getUpdater().haveUpdate) {
+                player.sendMessage(LanguageKeys.UPDATE_SENDER.getMessage(getMultiCore()));
             }
         }
     }
@@ -144,7 +145,7 @@ public interface IPlugin {
      * @param redirectUuid 游戏内 UUID
      */
     default User getCacheUserData(UUID redirectUuid) {
-        for (User user : Verifier.CACHE_USER) {
+        for (User user : getMultiCore().getVerifier().CACHE_USER) {
             if (user.getRedirectUuid().equals(redirectUuid)) {
                 return user;
             }

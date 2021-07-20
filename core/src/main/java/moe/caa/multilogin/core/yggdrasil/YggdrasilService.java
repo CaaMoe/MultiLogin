@@ -14,6 +14,7 @@ package moe.caa.multilogin.core.yggdrasil;
 
 import moe.caa.multilogin.core.data.ConvUuidEnum;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 
@@ -34,22 +35,24 @@ public class YggdrasilService {
     private final boolean whitelist;
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
+    private final MultiCore core;
 
-    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Boolean refuseRepeatedLogin, Integer authRetry) {
-        this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
-        this.enable = ValueUtil.getOrThrow(enable, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("enable"));
-        this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
-        this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("body"));
-        this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convUuid"));
-        this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convRepeat"));
-        this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
-        this.whitelist = ValueUtil.getOrThrow(whitelist, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("whitelist"));
-        this.refuseRepeatedLogin = ValueUtil.getOrThrow(refuseRepeatedLogin, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("refuseRepeatedLogin"));
-        this.authRetry = ValueUtil.getOrThrow(authRetry, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("authRetry"));
+    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Boolean refuseRepeatedLogin, Integer authRetry, MultiCore core) {
+        this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "path"));
+        this.enable = ValueUtil.getOrThrow(enable, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "enable"));
+        this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "name"));
+        this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "body"));
+        this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "convUuid"));
+        this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "convRepeat"));
+        this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "nameAllowedRegular"));
+        this.whitelist = ValueUtil.getOrThrow(whitelist, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "whitelist"));
+        this.refuseRepeatedLogin = ValueUtil.getOrThrow(refuseRepeatedLogin, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "refuseRepeatedLogin"));
+        this.authRetry = ValueUtil.getOrThrow(authRetry, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "authRetry"));
+        this.core = core;
         integrity();
     }
 
-    public static YggdrasilService fromYamlConfig(String path, YamlConfig config) {
+    public static YggdrasilService fromYamlConfig(String path, YamlConfig config, MultiCore core) {
         return new YggdrasilService(
                 path,
                 config.get("enable", Boolean.class),
@@ -60,7 +63,7 @@ public class YggdrasilService {
                 config.get("nameAllowedRegular", String.class),
                 config.get("whitelist", Boolean.class),
                 config.get("refuseRepeatedLogin", Boolean.class),
-                config.get("authRetry", Integer.class)
+                config.get("authRetry", Integer.class), core
         );
     }
 
@@ -68,26 +71,26 @@ public class YggdrasilService {
      * 验证配置完整性
      */
     private void integrity() {
-        switch (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
+        switch (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "serverType"))) {
             case CUSTOM:
-                ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
+                ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "postMode"));
                 if (body.isPostMode())
-                    ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
+                    ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "postContent"));
             case BLESSING_SKIN:
-                ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
+                ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "url"));
             default:
-                if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
+                if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "passIp"))) {
                     if (body.isPostMode()) {
-                        ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
+                        ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "passIpContentByPost"));
                     } else {
-                        ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
+                        ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "passIpContent"));
                     }
                 }
         }
         try {
             MessageFormat.format(body.getUrl(), "", "", "");
         } catch (Exception exception) {
-            throw new IllegalArgumentException(LanguageKeys.URL_ILLEGAL_FORMAT.getMessage(exception.getMessage()));
+            throw new IllegalArgumentException(LanguageKeys.URL_ILLEGAL_FORMAT.getMessage(core, exception.getMessage()));
         }
     }
 

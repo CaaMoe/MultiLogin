@@ -12,6 +12,8 @@
 
 package moe.caa.multilogin.core.language;
 
+import moe.caa.multilogin.core.main.MultiCore;
+
 public enum LanguageKeys {
     PLUGIN_LOAD_ERROR("plugin_load_error"),
     PLUGIN_LOADED("plugin_loaded"),
@@ -101,7 +103,7 @@ public enum LanguageKeys {
         this.args = args;
     }
 
-    public String getMessage(Object... args) {
-        return LanguageHandler.getMessage(this, args);
+    public String getMessage(MultiCore core, Object... args) {
+        return core.getLanguageHandler().getMessage(this, args);
     }
 }

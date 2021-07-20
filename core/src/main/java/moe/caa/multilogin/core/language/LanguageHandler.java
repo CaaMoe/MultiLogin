@@ -13,7 +13,6 @@
 package moe.caa.multilogin.core.language;
 
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.YamlConfig;
 
@@ -25,16 +24,14 @@ import java.text.MessageFormat;
  * 可读消息处理程序
  */
 public class LanguageHandler {
-    private static final YamlConfig defaultLanguageYamlConfig;
-    private static YamlConfig languageYamlConfig;
-    private static boolean outside = false;
+    private YamlConfig defaultLanguageYamlConfig = null;
+    private YamlConfig languageYamlConfig;
+    private boolean outside = false;
 
-    static {
-        defaultLanguageYamlConfig = YamlConfig.fromInputStream(MultiCore.plugin.getJarResource("language.yml"));
-    }
 
-    public static void init() {
-        File languageFile = new File(MultiCore.plugin.getDataFolder(), "language.yml");
+    public void init(MultiCore core) {
+        defaultLanguageYamlConfig = YamlConfig.fromInputStream(core.plugin.getJarResource("language.yml"));
+        File languageFile = new File(core.plugin.getDataFolder(), "language.yml");
         if (languageFile.exists()) {
             try {
                 languageYamlConfig = YamlConfig.fromInputStream(new FileInputStream(languageFile));
@@ -43,11 +40,11 @@ public class LanguageHandler {
                 languageYamlConfig = null;
             }
         }
-        MultiLogger.log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage() : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage());
+        core.getLogger().log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage(core) : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage(core));
         if (outside) testLanguage();
     }
 
-    private static void testLanguage() {
+    private void testLanguage() {
         for (LanguageKeys value : LanguageKeys.values()) {
             String msg = languageYamlConfig.get(value.key, String.class);
             if (msg != null) {
@@ -58,15 +55,15 @@ public class LanguageHandler {
                 }
             }
             repairLanguagePath(value.key);
-            MultiLogger.log(LoggerLevel.WARN, LanguageKeys.REPAIR_LANGUAGE_KEY.getMessage(value.key));
+            //MultiLogger.log(LoggerLevel.WARN, LanguageKeys.REPAIR_LANGUAGE_KEY.getMessage(value.key));
         }
     }
 
-    private static void repairLanguagePath(String path) {
+    private void repairLanguagePath(String path) {
         languageYamlConfig.set(path, defaultLanguageYamlConfig.get(path, String.class));
     }
 
-    protected static String getMessage(LanguageKeys keys, Object... args) {
+    protected String getMessage(LanguageKeys keys, Object... args) {
         return MessageFormat.format(outside ? languageYamlConfig.get(keys.key, String.class) : defaultLanguageYamlConfig.get(keys.key, String.class), args);
     }
 }

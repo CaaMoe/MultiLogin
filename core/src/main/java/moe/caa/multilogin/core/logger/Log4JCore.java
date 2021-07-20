@@ -22,18 +22,23 @@ import java.io.FileWriter;
 import java.io.InputStream;
 
 public class Log4JCore {
+    private final MultiCore core;
     private Logger logger;
+
+    public Log4JCore(MultiCore core) {
+        this.core = core;
+    }
 
     //禁止public 权限问题
     void init() throws Exception {
 //        读取并替换配置文件
         File tempFile = File.createTempFile("log4j2-temp", "multilogin");
-        InputStream inputStream = MultiCore.plugin.getJarResource("multiloginLog4j2/log4j2.xml");
+        InputStream inputStream = core.plugin.getJarResource("multiloginLog4j2/log4j2.xml");
         byte[] bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
         String config = new String(bytes);
         FileWriter fw = new FileWriter(tempFile);
-        fw.write(config.replace("multiloginLog", MultiCore.plugin.getDataFolder().getAbsolutePath()));
+        fw.write(config.replace("multiloginLog", core.plugin.getDataFolder().getAbsolutePath()));
         fw.close();
 //        配置Logger
         LoggerContext context = new LoggerContext("MultiLogin");

@@ -14,7 +14,6 @@ package moe.caa.multilogin.core.yggdrasil;
 
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.YamlConfig;
 
@@ -22,40 +21,45 @@ import java.util.ArrayList;
 
 public class YggdrasilServicesHandler {
     private static final ArrayList<YggdrasilService> SERVICES = new ArrayList<>();
+    private final MultiCore core;
 
-    public static void init() {
+    public YggdrasilServicesHandler(MultiCore core) {
+        this.core = core;
+    }
+
+    public void init() {
         reload();
     }
 
     /**
      * 读取 Yggdrasil
      */
-    public static void reload() {
+    public void reload() {
         SERVICES.clear();
-        YamlConfig services = MultiCore.config.get("services", YamlConfig.class);
+        YamlConfig services = core.config.get("services", YamlConfig.class);
         if (services != null) {
             for (String path : services.getKeys()) {
                 YamlConfig section = services.get(path, YamlConfig.class);
                 if (section == null) continue;
                 try {
-                    YggdrasilService service = YggdrasilService.fromYamlConfig(path, section);
+                    YggdrasilService service = YggdrasilService.fromYamlConfig(path, section, core);
                     SERVICES.add(service);
                     if (service.isEnable()) {
-                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(service.getName(), service.getPath()));
+                        core.getLogger().log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(core, service.getName(), service.getPath()));
                     } else {
-                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(service.getName(), service.getPath()));
+                        core.getLogger().log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(core, service.getName(), service.getPath()));
                     }
                 } catch (Exception e) {
-                    MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(path, e.getMessage()));
+                    core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(core, path, e.getMessage()));
                 }
             }
         }
         if (SERVICES.stream().noneMatch(YggdrasilService::isEnable)) {
-            MultiLogger.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
+            core.getLogger().log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage(core));
         }
     }
 
-    public static YggdrasilService getService(String path) {
+    public YggdrasilService getService(String path) {
         for (YggdrasilService service : SERVICES) {
             if (service.getPath().equals(path)) {
                 return service;
@@ -64,7 +68,7 @@ public class YggdrasilServicesHandler {
         return null;
     }
 
-    public static ArrayList<YggdrasilService> getServices() {
+    public ArrayList<YggdrasilService> getServices() {
         return SERVICES;
     }
 }

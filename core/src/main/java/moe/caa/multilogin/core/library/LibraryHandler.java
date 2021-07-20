@@ -15,7 +15,6 @@ package moe.caa.multilogin.core.library;
 import moe.caa.multilogin.core.exception.LoadLibraryFailedException;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FileUtil;
 import moe.caa.multilogin.core.util.HttpUtil;
@@ -32,11 +31,16 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 public class LibraryHandler {
+    private final MultiCore core;
     private Map<String, String> NEED_LIBRARIES = new LinkedHashMap<>();
     //    使用一个线程池 防止少数服务端不给开线程造成无法启动
     private ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
-    private static String genUrl(String name) {
+    public LibraryHandler(MultiCore core) {
+        this.core = core;
+    }
+
+    private String genUrl(String name) {
 //     例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
         String[] split = name.split(" ");
         StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
@@ -56,7 +60,7 @@ public class LibraryHandler {
         return sb.toString();
     }
 
-    private static String genJarName(String name) {
+    private String genJarName(String name) {
         String[] split = name.split(" ");
         return split[1] +
                 '-' +
@@ -66,26 +70,26 @@ public class LibraryHandler {
 
     public void init() throws Throwable {
         check();
-        File libFolder = new File(MultiCore.plugin.getDataFolder(), "libraries");
+        File libFolder = new File(core.plugin.getDataFolder(), "libraries");
         FileUtil.createNewFileOrFolder(libFolder, true);
         download(libFolder);
         load(libFolder);
         check();
-        String args = NEED_LIBRARIES.keySet().stream().map(LibraryHandler::genJarName).collect(Collectors.joining(", "));
+        String args = NEED_LIBRARIES.keySet().stream().map(this::genJarName).collect(Collectors.joining(", "));
         if (args.length() == 0) return;
 //        回收对象
         NEED_LIBRARIES = null;
-        throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(args));
+        throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(core, args));
     }
 
     private void load(File libFolder) throws Throwable {
-        URLClassLoader classLoader = (URLClassLoader) MultiCore.plugin.getClass().getClassLoader();
+        URLClassLoader classLoader = (URLClassLoader) core.plugin.getClass().getClassLoader();
         MethodHandle handle = ReflectUtil.super_lookup.unreflect(URLClassLoader.class.getDeclaredMethod("addURL", URL.class));
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
             if (ReflectUtil.getClass(library.getValue()) != null) {
-                MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(jarName));
+                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(core, jarName));
             }
         }
     }
@@ -143,7 +147,7 @@ public class LibraryHandler {
     }
 
     //    下载线程
-    private static class DownloadThread implements Runnable {
+    private class DownloadThread implements Runnable {
         private final String url;
         private final File file;
         private final String jarName;
@@ -157,11 +161,11 @@ public class LibraryHandler {
         @Override
         public void run() {
             try {
-                MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADING.getMessage(jarName));
+                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADING.getMessage(core, jarName));
                 HttpUtil.downloadFile(url, file);
-                MultiLogger.log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(file.getAbsolutePath()));
+                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(core, file.getAbsolutePath()));
             } catch (Exception exception) {
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.LIBRARY_DOWNLOAD_FAILED.getMessage(file.getAbsolutePath()), exception);
+                core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.LIBRARY_DOWNLOAD_FAILED.getMessage(core, file.getAbsolutePath()), exception);
 
             }
         }

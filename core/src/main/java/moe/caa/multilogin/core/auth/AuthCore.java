@@ -14,7 +14,6 @@ package moe.caa.multilogin.core.auth;
 
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -26,14 +25,20 @@ import java.util.concurrent.FutureTask;
 
 public class AuthCore {
 
-    public static <T> Object yggAuth(String name, String serverId) throws SQLException {
+    public final MultiCore core;
+
+    public AuthCore(MultiCore core) {
+        this.core = core;
+    }
+
+    public <T> Object yggAuth(String name, String serverId) throws SQLException {
         return yggAuth(name, serverId, null);
     }
 
-    public static <T> AuthResult<T> yggAuth(String name, String serverId, String ip) throws SQLException {
-        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_START.getMessage(name, serverId, ip));
+    public <T> AuthResult<T> yggAuth(String name, String serverId, String ip) throws SQLException {
+        core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_START.getMessage(core, name, serverId, ip));
 
-        List<List<YggdrasilService>> order = Verifier.getVeriOrder(name);
+        List<List<YggdrasilService>> order = core.getVerifier().getVeriOrder(name);
         boolean down = false;
         boolean haveService = false;
 
@@ -41,7 +46,7 @@ public class AuthCore {
             if (entries.size() != 0) haveService = true;
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
-                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.getName(), result.service.getPath()));
+                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(core, name, result.service.getName(), result.service.getPath()));
                 return result;
             }
             if (result != null && result.err == AuthFailedEnum.SERVER_DOWN) {
@@ -49,18 +54,18 @@ public class AuthCore {
             }
         }
         AuthFailedEnum failedEnum = down ? AuthFailedEnum.SERVER_DOWN : haveService ? AuthFailedEnum.VALIDATION_FAILED : AuthFailedEnum.NO_SERVICE;
-        MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(name, failedEnum.name()));
+        core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(core, name, failedEnum.name()));
         return new AuthResult<>(failedEnum);
     }
 
-    private static <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) {
+    private <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) {
         AuthResult<T> getResult = null;
         List<FutureTask<AuthResult<T>>> tasks = new ArrayList<>();
-        long endTime = System.currentTimeMillis() + MultiCore.servicesTimeOut;
+        long endTime = System.currentTimeMillis() + core.servicesTimeOut;
         for (YggdrasilService entry : services) {
             if (entry == null) continue;
-            FutureTask<AuthResult<T>> task = new FutureTask<>(new AuthTask<>(entry, name, serverId, ip));
-            MultiCore.plugin.getSchedule().runTaskAsync(task);
+            FutureTask<AuthResult<T>> task = new FutureTask<>(new AuthTask<>(entry, name, serverId, ip, core));
+            core.plugin.getSchedule().runTaskAsync(task);
             tasks.add(task);
         }
 

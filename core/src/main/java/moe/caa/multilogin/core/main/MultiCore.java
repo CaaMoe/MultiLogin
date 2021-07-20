@@ -12,6 +12,8 @@
 
 package moe.caa.multilogin.core.main;
 
+import moe.caa.multilogin.core.auth.Verifier;
+import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
@@ -38,26 +40,33 @@ import java.util.List;
  * 核心类
  */
 public class MultiCore {
-    public static IPlugin plugin = null;
-    public static YamlConfig config = null;
-    public static List<String> safeId = new ArrayList<>();
-    public static int servicesTimeOut = 10000;
-    public static boolean whitelist = true;
-    public static String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
-    private static File configFile;
+    private final Verifier verifier = new Verifier(this);
+    private final CheckUpdater updater = new CheckUpdater(this);
+    private final CommandHandler commandHandler = new CommandHandler(this);
+    private final SQLManager sqlManager = new SQLManager(this);
+    private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
+    private final MultiLogger logger = new MultiLogger(this);
+    private final LanguageHandler languageHandler = new LanguageHandler();
+    public IPlugin plugin = null;
+    public YamlConfig config = null;
+    public List<String> safeId = new ArrayList<>();
+    public int servicesTimeOut = 10000;
+    public boolean whitelist = true;
+    public String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
+    private File configFile;
 
-    public static boolean init(IPlugin plugin) {
+    public boolean init(IPlugin plugin) {
         try {
             configFile = new File(plugin.getDataFolder(), "config.yml");
-            MultiCore.plugin = plugin;
-            LanguageHandler.init();
+            this.plugin = plugin;
+            languageHandler.init(this);
 
             try {
                 genFile();
                 config = YamlConfig.fromInputStream(new FileInputStream(configFile));
             } catch (IOException e) {
-                MultiLogger.log(LoggerLevel.ERROR, e);
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.CONFIG_LOAD_ERROR.getMessage());
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, LanguageKeys.CONFIG_LOAD_ERROR.getMessage(this));
                 return false;
             }
 
@@ -66,53 +75,55 @@ public class MultiCore {
             try {
                 ReflectUtil.init();
             } catch (Exception e) {
-                MultiLogger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, e);
                 RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
                 String java = runtime == null ? "unknown" : MessageFormat.format("Java {0} ({1} {2})", runtime.getSpecVersion(), runtime.getVmName(), runtime.getVmVersion());
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.REFLECT_INIT_ERROR.getMessage(java));
+                logger.log(LoggerLevel.ERROR, LanguageKeys.REFLECT_INIT_ERROR.getMessage(this, java));
                 return false;
             }
 
             try {
-                new LibraryHandler().init();
+                new LibraryHandler(this).init();
             } catch (Throwable e) {
-                MultiLogger.log(LoggerLevel.ERROR, e);
-                MultiLogger.log(LoggerLevel.ERROR, e.getMessage());
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, e.getMessage());
                 return false;
             }
 
-            MultiLogger.init();
-            YggdrasilServicesHandler.init();
+            logger.init();
+
+            yggdrasilServicesHandler.init();
 
             try {
-                SQLManager.init();
+                sqlManager.init();
             } catch (Exception e) {
-                MultiLogger.log(LoggerLevel.ERROR, e);
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.DATABASE_CONNECT_ERROR.getMessage());
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, LanguageKeys.DATABASE_CONNECT_ERROR.getMessage(this));
                 return false;
             }
 
             if (!plugin.isOnlineMode()) {
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.NIT_ONLINE.getMessage());
+                logger.log(LoggerLevel.ERROR, LanguageKeys.NIT_ONLINE.getMessage(this));
                 return false;
             }
 
             try {
                 plugin.initCoreService();
             } catch (Throwable e) {
-                MultiLogger.log(LoggerLevel.ERROR, e);
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage(this));
                 return false;
             }
 
-            plugin.getSchedule().runTaskAsyncTimer(CheckUpdater::check, 0, 1000 * 60 * 60 * 24);
+
+            plugin.getSchedule().runTaskAsyncTimer(updater::check, 0, 1000 * 60 * 60 * 24);
 
             plugin.initOtherService();
-            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_LOADED.getMessage());
+            logger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_LOADED.getMessage(this));
             return true;
         } catch (Throwable e) {
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.PLUGIN_LOAD_ERROR.getMessage());
+            logger.log(LoggerLevel.ERROR, e);
+            logger.log(LoggerLevel.ERROR, LanguageKeys.PLUGIN_LOAD_ERROR.getMessage(this));
             return false;
         }
     }
@@ -120,7 +131,7 @@ public class MultiCore {
     /**
      * 读取配置文件
      */
-    private static void readConfig() {
+    private void readConfig() {
         servicesTimeOut = config.get("servicesTimeOut", Number.class, 10000).intValue();
         List<?> list = config.get("safeId", List.class, Collections.emptyList());
         safeId.clear();
@@ -134,7 +145,7 @@ public class MultiCore {
     /**
      * 生成配置文件
      */
-    private static void genFile() throws IOException {
+    private void genFile() throws IOException {
         FileUtil.createNewFileOrFolder(plugin.getDataFolder(), true);
         FileUtil.saveResource(plugin.getJarResource("config.yml"), configFile, false);
     }
@@ -142,19 +153,47 @@ public class MultiCore {
     /**
      * 重新加载配置文件
      */
-    public synchronized static void reload() throws IOException {
+    public synchronized void reload() throws IOException {
         genFile();
         config = YamlConfig.fromInputStream(new FileInputStream(configFile));
         readConfig();
-        YggdrasilServicesHandler.reload();
+        yggdrasilServicesHandler.reload();
     }
 
     /**
      * 注销插件
      */
-    public static void disable() {
-        SQLManager.close();
+    public void disable() {
+        sqlManager.close();
         plugin.shutdown();
-        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_UNLOADED.getMessage());
+        logger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_UNLOADED.getMessage(this));
+    }
+
+    public Verifier getVerifier() {
+        return verifier;
+    }
+
+    public CheckUpdater getUpdater() {
+        return updater;
+    }
+
+    public CommandHandler getCommandHandler() {
+        return commandHandler;
+    }
+
+    public SQLManager getSqlManager() {
+        return sqlManager;
+    }
+
+    public YggdrasilServicesHandler getYggdrasilServicesHandler() {
+        return yggdrasilServicesHandler;
+    }
+
+    public MultiLogger getLogger() {
+        return logger;
+    }
+
+    public LanguageHandler getLanguageHandler() {
+        return languageHandler;
     }
 }

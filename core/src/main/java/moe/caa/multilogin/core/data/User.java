@@ -12,11 +12,9 @@
 
 package moe.caa.multilogin.core.data;
 
-import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 
-import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -28,13 +26,13 @@ public class User {
     private String yggdrasilService;
     private boolean whitelist;
 
-    public User(UUID onlineUuid, String currentName, UUID redirectUuid, String yggdrasilService, boolean whitelist) {
+    public User(UUID onlineUuid, String currentName, UUID redirectUuid, String yggdrasilService, boolean whitelist, YggdrasilServicesHandler servicesHandler) {
         this.onlineUuid = onlineUuid;
         this.currentName = currentName;
         this.redirectUuid = redirectUuid;
         this.yggdrasilService = yggdrasilService;
         this.whitelist = whitelist;
-        this.service = YggdrasilServicesHandler.getService(yggdrasilService);
+        this.service = servicesHandler.getService(yggdrasilService);
     }
 
     @Override
@@ -88,9 +86,5 @@ public class User {
 
     public void setWhitelist(boolean whitelist) {
         this.whitelist = whitelist;
-    }
-
-    public void save() throws SQLException {
-        UserDataHandler.updateUserEntry(this);
     }
 }

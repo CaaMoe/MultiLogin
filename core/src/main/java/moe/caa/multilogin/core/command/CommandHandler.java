@@ -24,6 +24,7 @@ import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.WhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -32,12 +33,16 @@ import java.util.stream.Collectors;
 
 public class CommandHandler {
 
-    private static final CommandDispatcher<ISender> DISPATCHER = new CommandDispatcher<>();
+    private final CommandDispatcher<ISender> DISPATCHER = new CommandDispatcher<>();
 
-    static {
-        new WhitelistCommand().register(DISPATCHER);
-        new MultiLoginCommand().register(DISPATCHER);
+    private final MultiCore core;
+
+    public CommandHandler(MultiCore core) {
+        this.core = core;
+        new WhitelistCommand(core).register(DISPATCHER);
+        new MultiLoginCommand(core).register(DISPATCHER);
     }
+
 
     public static LiteralArgumentBuilder<ISender> literal(String name) {
         return LiteralArgumentBuilder.literal(name);
@@ -53,7 +58,7 @@ public class CommandHandler {
         try {
             DISPATCHER.execute(parse);
         } catch (CommandSyntaxException e) {
-            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage(core));
         }
     }
 

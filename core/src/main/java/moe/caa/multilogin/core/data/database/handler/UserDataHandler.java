@@ -14,9 +14,9 @@ package moe.caa.multilogin.core.data.database.handler;
 
 
 import moe.caa.multilogin.core.data.User;
+import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
-import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 
 import java.sql.*;
 import java.util.*;
@@ -26,7 +26,13 @@ import static moe.caa.multilogin.core.data.database.SQLManager.*;
 
 public class UserDataHandler {
 
-    public static void init(Statement statement) throws SQLException {
+    private final SQLManager sqlManager;
+
+    public UserDataHandler(SQLManager sqlManager) {
+        this.sqlManager = sqlManager;
+    }
+
+    public void init(Statement statement) throws SQLException {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
                 ONLINE_UUID + "  binary(16) PRIMARY KEY NOT NULL, " +
@@ -36,8 +42,8 @@ public class UserDataHandler {
                 WHITELIST + "  INTEGER)");
     }
 
-    public static User getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
+    public User getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, ONLINE_UUID
         ))) {
             ps.setBytes(1, ValueUtil.uuidToByte(uuid));
@@ -49,8 +55,8 @@ public class UserDataHandler {
         }
     }
 
-    public static List<User> getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
+    public List<User> getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, REDIRECT_UUID
         ))) {
             ps.setBytes(1, ValueUtil.uuidToByte(uuid));
@@ -64,8 +70,8 @@ public class UserDataHandler {
         }
     }
 
-    public static List<User> getUserEntryByCurrentName(String name) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
+    public List<User> getUserEntryByCurrentName(String name) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
                 USER_DATA_TABLE_NAME, CURRENT_NAME
         ))) {
             ps.setString(1, name);
@@ -79,31 +85,32 @@ public class UserDataHandler {
         }
     }
 
-    private static User fromSQLResultSet(ResultSet resultSet) throws SQLException {
+    private User fromSQLResultSet(ResultSet resultSet) throws SQLException {
         return new User(
                 ValueUtil.byteToUuid(resultSet.getBytes(1)),
                 resultSet.getString(2),
                 ValueUtil.byteToUuid(resultSet.getBytes(3)),
                 resultSet.getString(4),
-                resultSet.getInt(5) != 0);
+                resultSet.getInt(5) != 0,
+                sqlManager.getCore().getYggdrasilServicesHandler());
     }
 
-    public static Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
+    public Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
                 YGGDRASIL_SERVICE, USER_DATA_TABLE_NAME, CURRENT_NAME
         ))) {
             ps.setString(1, name);
             ResultSet resultSet = ps.executeQuery();
             Set<YggdrasilService> ret = new HashSet<>();
             while (resultSet.next()) {
-                ret.add(YggdrasilServicesHandler.getService(resultSet.getString(1)));
+                ret.add(sqlManager.getCore().getYggdrasilServicesHandler().getService(resultSet.getString(1)));
             }
             return ret;
         }
     }
 
-    public static void writeNewUserEntry(User entry) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
+    public void writeNewUserEntry(User entry) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
         ))) {
             ps.setBytes(1, ValueUtil.uuidToByte(entry.getOnlineUuid()));
@@ -115,8 +122,8 @@ public class UserDataHandler {
         }
     }
 
-    public static void updateUserEntry(User entry) throws SQLException {
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
+    public void updateUserEntry(User entry) throws SQLException {
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
         ))) {
             ps.setString(1, entry.getCurrentName());

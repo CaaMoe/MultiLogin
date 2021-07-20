@@ -16,7 +16,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.HttpUtil;
 import moe.caa.multilogin.core.util.ValueUtil;
 
@@ -28,13 +27,18 @@ import java.nio.charset.StandardCharsets;
  */
 public class CheckUpdater {
     private static final URL SOURCE = HttpUtil.getUrlFromString("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
-    public static String latestVersion = null;
-    public static boolean haveUpdate = false;
+    public final MultiCore core;
+    public String latestVersion = null;
+    public boolean haveUpdate = false;
+
+    public CheckUpdater(MultiCore core) {
+        this.core = core;
+    }
 
     /**
      * 检查更新
      */
-    private static void check0() throws Exception {
+    private void check0() throws Exception {
         // JsonObject json = JsonParser.parseString(HttpUtil.httpGet(SOURCE, 10000, 3)).getAsJsonObject();
         JsonObject json = new JsonParser().parse(HttpUtil.httpGet(SOURCE, 10000, 3)).getAsJsonObject();
         String sor = json.get("content").getAsString();
@@ -43,14 +47,14 @@ public class CheckUpdater {
         latestVersion = s.split("=")[1].trim();
     }
 
-    public static void check() {
+    public void check() {
         try {
             check0();
         } catch (Exception ignored) {
         }
         if (!haveUpdate) {
             haveUpdate = true;
-            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(MultiCore.plugin.getPluginVersion(), latestVersion));
+            core.getLogger().log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(core, core.plugin.getPluginVersion(), latestVersion));
         }
     }
 }
