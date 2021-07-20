@@ -83,8 +83,8 @@ public class LibraryHandler {
     }
 
     private void load(File libFolder) throws Throwable {
-        URLClassLoader classLoader = (URLClassLoader) core.plugin.getClass().getClassLoader();
-        MethodHandle handle = ReflectUtil.super_lookup.unreflect(URLClassLoader.class.getDeclaredMethod("addURL", URL.class));
+        ClassLoader classLoader = core.plugin.getClass().getClassLoader();
+        MethodHandle handle = ReflectUtil.super_lookup.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(),"addURL",true,URL.class));
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());

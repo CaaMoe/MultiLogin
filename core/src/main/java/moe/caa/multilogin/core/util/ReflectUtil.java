@@ -95,6 +95,18 @@ public class ReflectUtil {
         throw new NoSuchMethodException(name + " method in " + clazz.getName());
     }
 
+    public static Method getMethodWithParent(Class<?> clazz, String name, boolean handleAccessible, Class<?>... args) throws NoSuchMethodException {
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (!method.getName().equalsIgnoreCase(name)) continue;
+            if (!Arrays.equals(method.getParameterTypes(), args)) continue;
+            if (handleAccessible) method.setAccessible(true);
+            return method;
+        }
+        if (clazz != Object.class)
+            return getMethodWithParent(clazz.getSuperclass(), name, handleAccessible, args);
+        throw new NoSuchMethodException(name + " method in " + clazz.getName());
+    }
+
     /**
      * 通过 enum name检索指定的 Class（enum）中的实例
      *
