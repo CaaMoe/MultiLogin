@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Locale;
 
-public class MultiLoginPlaceholder  extends PlaceholderExpansion {
+public class MultiLoginPlaceholder extends PlaceholderExpansion {
     private final MultiLoginBukkit PLUGIN;
 
     public MultiLoginPlaceholder(MultiLoginBukkit plugin) {
@@ -36,7 +36,7 @@ public class MultiLoginPlaceholder  extends PlaceholderExpansion {
         if (player == null || !ValueUtil.notIsEmpty(params)) return ret;
         try {
             User entry = PLUGIN.getCacheUserData(player.getUniqueId());
-            if(entry == null) return "";
+            if (entry == null) return "";
             if (params.equalsIgnoreCase("currentname")) {
                 ret = entry.currentName;
             } else if (params.equalsIgnoreCase("onlineuuid")) {
