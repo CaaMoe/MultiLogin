@@ -16,8 +16,7 @@
 
 ## BStats 数据
 
-![Bukkit BStats](https://bstats.org/signatures/bukkit/MultiLogin.svg)
-![Bungee BStats](https://bstats.org/signatures/bungeecord/MultiLogin.svg)
+正在修复...
 
 ## 如何使用
 
