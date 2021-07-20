@@ -53,15 +53,6 @@ public class YggdrasilServicesHandler {
         if (SERVICES.stream().noneMatch(yggdrasilService -> yggdrasilService.enable)) {
             MultiLogger.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
         }
-
-        check();
-    }
-
-    /**
-     * checkUrl 检查 Yggdrasil
-     * 发送假请求识别是否配置正确
-     */
-    private static void check() {
     }
 
     public static YggdrasilService getService(String path) {

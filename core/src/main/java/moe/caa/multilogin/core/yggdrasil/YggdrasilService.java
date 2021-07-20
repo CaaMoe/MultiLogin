@@ -28,19 +28,17 @@ public class YggdrasilService {
     public final Boolean enable;
     public final String name;
     public final YggdrasilServiceBody body;
-    public final Boolean checkUrl;
     public final ConvUuidEnum convUuid;
     public final Boolean convRepeat;
     public final String nameAllowedRegular;
     public final Boolean whitelist;
     public final Integer authRetry;
 
-    public YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, Boolean checkUrl, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Integer authRetry) {
+    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Integer authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
         this.enable = ValueUtil.getOrThrow(enable, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("enable"));
         this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
         this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("body"));
-        this.checkUrl = ValueUtil.getOrThrow(checkUrl, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("checkUrl"));
         this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convUuid"));
         this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convRepeat"));
         this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
@@ -55,7 +53,6 @@ public class YggdrasilService {
                 config.get("enable", Boolean.class),
                 config.get("name", String.class),
                 YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
-                config.get("checkUrl", Boolean.class),
                 config.get("convUuid", ConvUuidEnum.class),
                 config.get("convRepeat", Boolean.class),
                 config.get("nameAllowedRegular", String.class),
