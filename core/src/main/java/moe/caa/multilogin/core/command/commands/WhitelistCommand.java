@@ -14,23 +14,23 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 public class WhitelistCommand {
 
-    public static void register(CommandDispatcher<ISender> dispatcher) {
+    public void register(CommandDispatcher<ISender> dispatcher) {
         dispatcher.register(
                 CommandHandler.literal("whitelist").requires(Permission.MULTI_LOGIN_WHITELIST::hasPermission)
                         .then(CommandHandler.literal("add")
                                 .then(CommandHandler.argument("target", StringArgumentType.string())
-                                        .executes(WhitelistCommand::executeAdd)
+                                        .executes(this::executeAdd)
                                 )
                         )
                         .then(CommandHandler.literal("remove")
                                 .then(CommandHandler.argument("target", StringArgumentType.string())
-                                        .executes(WhitelistCommand::executeRemove)
+                                        .executes(this::executeRemove)
                                 )
                         )
         );
     }
 
-    private static int executeAdd(CommandContext<ISender> context) {
+    private int executeAdd(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 String arg = StringArgumentType.getString(context, "target");
@@ -49,7 +49,7 @@ public class WhitelistCommand {
         return 0;
     }
 
-    private static int executeRemove(CommandContext<ISender> context) {
+    private int executeRemove(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 String arg = StringArgumentType.getString(context, "target");

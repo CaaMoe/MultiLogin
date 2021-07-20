@@ -19,33 +19,33 @@ import java.util.UUID;
 
 public class MultiLoginCommand {
 
-    public static void register(CommandDispatcher<ISender> dispatcher) {
+    public void register(CommandDispatcher<ISender> dispatcher) {
         dispatcher.register(
                 CommandHandler.literal("multilogin")
                         .then(CommandHandler.literal("query")
                                 .then(CommandHandler.literal("name")
                                         .then(CommandHandler.argument("target", StringArgumentType.string())
-                                                .executes(MultiLoginCommand::executeName)
+                                                .executes(this::executeName)
                                         )
                                 ).then(CommandHandler.literal("onlineuuid")
                                         .then(CommandHandler.argument("target", StringArgumentType.string())
-                                                .executes(MultiLoginCommand::executeOnlineUuid)
+                                                .executes(this::executeOnlineUuid)
                                         )
                                 ).then(CommandHandler.literal("redirectuuid")
                                         .then(CommandHandler.argument("target", StringArgumentType.string())
-                                                .executes(MultiLoginCommand::executeRedirectUuid)
+                                                .executes(this::executeRedirectUuid)
                                         )
                                 )
                         ).requires(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY::hasPermission)
                         .then(CommandHandler.literal("reload").requires(Permission.MULTI_LOGIN_MULTI_LOGIN_RELOAD::hasPermission)
-                                .executes(MultiLoginCommand::executeReload)
+                                .executes(this::executeReload)
                         )
 
         );
 
     }
 
-    private static int executeReload(CommandContext<ISender> context) {
+    private int executeReload(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 MultiCore.reload();
@@ -59,7 +59,7 @@ public class MultiLoginCommand {
         return 0;
     }
 
-    private static int executeRedirectUuid(CommandContext<ISender> context) {
+    private int executeRedirectUuid(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 String uuidString = StringArgumentType.getString(context, "target");
@@ -89,7 +89,7 @@ public class MultiLoginCommand {
         return 0;
     }
 
-    private static int executeOnlineUuid(CommandContext<ISender> context) {
+    private int executeOnlineUuid(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 String uuidString = StringArgumentType.getString(context, "target");
@@ -115,7 +115,7 @@ public class MultiLoginCommand {
         return 0;
     }
 
-    private static int executeName(CommandContext<ISender> context) {
+    private int executeName(CommandContext<ISender> context) {
         MultiCore.plugin.getSchedule().runTaskAsync(() -> {
             try {
                 String s = StringArgumentType.getString(context, "target");
@@ -140,7 +140,7 @@ public class MultiLoginCommand {
         return 0;
     }
 
-    protected static String toMessage(User user) {
+    protected String toMessage(User user) {
         return LanguageKeys.COMMAND_QUERY_ENTRY.getMessage(user.getCurrentName(), user.getOnlineUuid().toString(), user.getRedirectUuid().toString(), user.getService().getName(), user.getService().getPath(), user.isWhitelist());
     }
 }

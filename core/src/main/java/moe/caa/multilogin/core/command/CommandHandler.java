@@ -35,8 +35,8 @@ public class CommandHandler {
     private static final CommandDispatcher<ISender> DISPATCHER = new CommandDispatcher<>();
 
     static {
-        WhitelistCommand.register(DISPATCHER);
-        MultiLoginCommand.register(DISPATCHER);
+        new WhitelistCommand().register(DISPATCHER);
+        new MultiLoginCommand().register(DISPATCHER);
     }
 
     public static LiteralArgumentBuilder<ISender> literal(String name) {
@@ -47,6 +47,7 @@ public class CommandHandler {
         return RequiredArgumentBuilder.argument(name, type);
     }
 
+    //  执行命令
     public void execute(ISender sender, String command, String[] args) {
         ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
         try {
