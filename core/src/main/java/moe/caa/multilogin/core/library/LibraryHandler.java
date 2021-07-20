@@ -23,18 +23,17 @@ import moe.caa.multilogin.core.util.ReflectUtil;
 import java.io.File;
 import java.lang.invoke.MethodHandle;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class LibraryHandler {
+    private boolean preLoaded = false;
     private final MultiCore core;
     private Map<String, String> NEED_LIBRARIES = new LinkedHashMap<>();
-    //    使用一个线程池 防止少数服务端不给开线程造成无法启动
-    private ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    //    多线程并发同步器 不懂不许动！
+    CountDownLatch countDownLatch;
 
     public LibraryHandler(MultiCore core) {
         this.core = core;
@@ -68,46 +67,78 @@ public class LibraryHandler {
                 ".jar";
     }
 
+    public void preInit() throws Throwable {
+        preCheck();
+        doDownload();
+        preLoaded = true;
+    }
+
     public void init() throws Throwable {
         check();
+        doDownload();
+//        回收对象
+        NEED_LIBRARIES = null;
+    }
+
+    private void doDownload() throws Throwable {
         File libFolder = new File(core.plugin.getDataFolder(), "libraries");
         FileUtil.createNewFileOrFolder(libFolder, true);
         download(libFolder);
         load(libFolder);
-        check();
+        if (preLoaded) {
+            check();
+        } else {
+//            NEED_LIBRARIES.clear();
+            preCheck();
+        }
         String args = NEED_LIBRARIES.keySet().stream().map(this::genJarName).collect(Collectors.joining(", "));
         if (args.length() == 0) return;
-//        回收对象
-        NEED_LIBRARIES = null;
-        throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(core, args));
+        if (preLoaded) {
+            throw new LoadLibraryFailedException(LanguageKeys.LIBRARY_LOAD_FAILED.getMessage(core, args));
+        } else {
+            throw new LoadLibraryFailedException("Preload library load error " + args);
+        }
     }
 
     private void load(File libFolder) throws Throwable {
-        ClassLoader classLoader = core.plugin.getClass().getClassLoader();
-        MethodHandle handle = ReflectUtil.super_lookup.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(),"addURL",true,URL.class));
+//        ClassLoader classLoader = core.plugin.getClass().getClassLoader();
+        //fabric需要我们原地起跳
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        MethodHandle handle = ReflectUtil.super_lookup.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(), "addURL", true, URL.class));
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             handle.invoke(classLoader, new File(libFolder, jarName).toURI().toURL());
             if (ReflectUtil.getClass(library.getValue()) != null) {
-                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(core, jarName));
+                if (preLoaded) {
+                    core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_LOADED.getMessage(core, jarName));
+                } else {
+                    core.getLogger().log(LoggerLevel.INFO, "Library loaded " + jarName);
+                }
+            } else {
+                core.getLogger().log(LoggerLevel.INFO, "Library load fail " + jarName);
+                throw new LoadLibraryFailedException();
             }
         }
     }
 
-    private void download(File libFolder) {
+    private void download(File libFolder) throws InterruptedException {
+        countDownLatch = new CountDownLatch(NEED_LIBRARIES.size());
         for (Map.Entry<String, String> library : NEED_LIBRARIES.entrySet()) {
             String jarName = genJarName(library.getKey());
             File file = new File(libFolder, jarName);
             if (file.exists()) {
-                continue;
+                if (file.length() != 0) {
+//                    排除0大小空文件
+                    countDownLatch.countDown();
+                    continue;
+                } else {
+                    file.delete();
+                }
             }
             String url = genUrl(library.getKey());
-            EXECUTOR_SERVICE.submit(new DownloadThread(url, file, jarName));
+            core.plugin.getSchedule().runTaskAsync(new DownloadThread(url, file, jarName));
         }
-        EXECUTOR_SERVICE.shutdown();
-        while (!EXECUTOR_SERVICE.isTerminated()) ;
-//        回收对象
-        EXECUTOR_SERVICE = null;
+        countDownLatch.await();
     }
 
     private void check() {
@@ -146,6 +177,13 @@ public class LibraryHandler {
         }
     }
 
+    private void preCheck() {
+        NEED_LIBRARIES.clear();
+        if (ReflectUtil.getClass("org.yaml.snakeyaml.DumperOptions") == null) {
+            NEED_LIBRARIES.put("org.yaml snakeyaml 1.29", "org.yaml.snakeyaml.DumperOptions");
+        }
+    }
+
     //    下载线程
     private class DownloadThread implements Runnable {
         private final String url;
@@ -161,12 +199,25 @@ public class LibraryHandler {
         @Override
         public void run() {
             try {
-                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADING.getMessage(core, jarName));
+                if (preLoaded) {
+                    core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADING.getMessage(core, jarName));
+                } else {
+                    core.getLogger().log(LoggerLevel.INFO, "Library downloading " + jarName);
+                }
                 HttpUtil.downloadFile(url, file);
-                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(core, file.getAbsolutePath()));
+                if (preLoaded) {
+                    core.getLogger().log(LoggerLevel.INFO, LanguageKeys.LIBRARY_DOWNLOADED.getMessage(core, file.getAbsolutePath()));
+                } else {
+                    core.getLogger().log(LoggerLevel.INFO, "Library downloaded:" + file.getAbsolutePath());
+                }
             } catch (Exception exception) {
-                core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.LIBRARY_DOWNLOAD_FAILED.getMessage(core, file.getAbsolutePath()), exception);
-
+                if (preLoaded) {
+                    core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.LIBRARY_DOWNLOAD_FAILED.getMessage(core, file.getAbsolutePath()), exception);
+                } else {
+                    core.getLogger().log(LoggerLevel.INFO, "Library downloaded:" + file.getAbsolutePath(), exception);
+                }
+            } finally {
+                countDownLatch.countDown();
             }
         }
     }

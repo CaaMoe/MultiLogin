@@ -64,7 +64,27 @@ public class MultiCore {
 
     public boolean init() {
         try {
+            LibraryHandler libraryHandler = new LibraryHandler(this);
             configFile = new File(plugin.getDataFolder(), "config.yml");
+
+            try {
+                ReflectUtil.init();
+            } catch (Exception e) {
+                logger.log(LoggerLevel.ERROR, e);
+                RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+                String java = runtime == null ? "unknown" : MessageFormat.format("Java {0} ({1} {2})", runtime.getSpecVersion(), runtime.getVmName(), runtime.getVmVersion());
+//                logger.log(LoggerLevel.ERROR, LanguageKeys.REFLECT_INIT_ERROR.getMessage(this, java));
+                logger.log(LoggerLevel.ERROR, "ReflectUtil init error:"+java);
+                return false;
+            }
+
+            try {
+                libraryHandler.preInit();
+            } catch (Exception e) {
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, e.getMessage());
+                return false;
+            }
             languageHandler.init();
 
             try {
@@ -79,17 +99,7 @@ public class MultiCore {
             readConfig();
 
             try {
-                ReflectUtil.init();
-            } catch (Exception e) {
-                logger.log(LoggerLevel.ERROR, e);
-                RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
-                String java = runtime == null ? "unknown" : MessageFormat.format("Java {0} ({1} {2})", runtime.getSpecVersion(), runtime.getVmName(), runtime.getVmVersion());
-                logger.log(LoggerLevel.ERROR, LanguageKeys.REFLECT_INIT_ERROR.getMessage(this, java));
-                return false;
-            }
-
-            try {
-                new LibraryHandler(this).init();
+                libraryHandler.init();
             } catch (Throwable e) {
                 logger.log(LoggerLevel.ERROR, e);
                 logger.log(LoggerLevel.ERROR, e.getMessage());

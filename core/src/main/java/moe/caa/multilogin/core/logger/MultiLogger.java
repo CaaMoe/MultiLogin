@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MultiLogger {
     private final MultiCore core;
@@ -69,19 +70,25 @@ public class MultiLogger {
     }
 
     private void logDefault(LoggerLevel level, String message, Throwable throwable) {
+        Logger coreLogger = core.plugin.getLogger();
+        if (coreLogger == null) {
+            if (throwable != null) throwable.printStackTrace();
+            System.out.println(level + " " + message);
+            return;
+        }
         switch (level) {
             case INFO:
-                core.plugin.getLogger().log(Level.INFO, message, throwable);
+                coreLogger.log(Level.INFO, message, throwable);
                 break;
             case ERROR:
-                core.plugin.getLogger().log(Level.SEVERE, message, throwable);
+                coreLogger.log(Level.SEVERE, message, throwable);
                 break;
             case WARN:
-                core.plugin.getLogger().log(Level.WARNING, message, throwable);
+                coreLogger.log(Level.WARNING, message, throwable);
                 break;
             case DEBUG:
                 if (debug)
-                    core.plugin.getLogger().log(Level.INFO, "[DEBUG] " + message, throwable);
+                    coreLogger.log(Level.INFO, "[DEBUG] " + message, throwable);
                 break;
         }
     }
