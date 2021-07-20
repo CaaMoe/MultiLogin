@@ -20,6 +20,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
+import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.WhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
@@ -35,6 +36,7 @@ public class CommandHandler {
 
     static {
         WhitelistCommand.register(DISPATCHER);
+        MultiLoginCommand.register(DISPATCHER);
     }
 
     public void execute(ISender sender, String command, String[] args) {
