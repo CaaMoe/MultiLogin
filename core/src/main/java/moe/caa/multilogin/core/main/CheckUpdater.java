@@ -52,6 +52,7 @@ public class CheckUpdater {
             check0();
         } catch (Exception ignored) {
         }
+        haveUpdate = !core.plugin.getPluginVersion().equalsIgnoreCase(latestVersion);
         if (!haveUpdate) {
             haveUpdate = true;
             core.getLogger().log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(core, core.plugin.getPluginVersion(), latestVersion));
