@@ -17,7 +17,6 @@ import gnu.trove.map.TIntObjectMap;
 import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
 import moe.caa.multilogin.bungee.listener.BungeeListener;
 import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
-import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
@@ -45,12 +44,13 @@ import java.util.stream.Collectors;
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static BungeeSchedule schedule;
     public static MultiLoginBungee plugin;
-    public CommandHandler commandHandler;
+    private final MultiCore core = new MultiCore();
+    private final MultiLoginEncryptionResponse response = new MultiLoginEncryptionResponse(core);
 
     @Override
     public void initCoreService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
 //        bungeecord核心初始化
-        MultiLoginEncryptionResponse.init();
+        response.init();
         BungeeAuthTask.init();
 
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
@@ -68,11 +68,11 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 Object[] constructors = (Object[]) field_packetConstructors.get(data);
                 if (constructors instanceof Supplier[]) {
                     Supplier<? extends DefinedPacket>[] suppliers = (Supplier<? extends DefinedPacket>[]) constructors;
-                    suppliers[0x01] = MultiLoginEncryptionResponse::new;
+                    suppliers[0x01] = (Supplier<DefinedPacket>) () -> new MultiLoginEncryptionResponse(core);
                 } else if (constructors instanceof Constructor[]) {
                     constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-                    throw new UnsupportedOperationException(LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
+                    throw new UnsupportedOperationException(LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage(core));
                 }
             }
         }
@@ -81,17 +81,17 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void initOtherService() {
 //        注册其他服务需要的监听
-        getProxy().getPluginManager().registerListener(this, new BungeeListener());
+        getProxy().getPluginManager().registerListener(this, new BungeeListener(core));
 
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist"));
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin"));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist", core));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin", core));
     }
 
     @Override
     public void onEnable() {
         plugin = this;
         schedule = new BungeeSchedule(this);
-        if (!MultiCore.init(this)) {
+        if (!core.init(this)) {
 //            启动失败关闭
             onDisable();
         }
@@ -99,7 +99,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void onDisable() {
-        MultiCore.disable();
+        core.disable();
     }
 
     @Override
@@ -154,5 +154,10 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void shutdown() {
         BungeeCord.getInstance().stop();
+    }
+
+    @Override
+    public MultiCore getMultiCore() {
+        return core;
     }
 }

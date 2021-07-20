@@ -13,10 +13,12 @@
 package moe.caa.multilogin.bungee.auth;
 
 import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
-import moe.caa.multilogin.core.auth.*;
+import moe.caa.multilogin.core.auth.AuthFailedEnum;
+import moe.caa.multilogin.core.auth.AuthResult;
+import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.Util;
@@ -39,12 +41,14 @@ public class BungeeAuthTask implements Runnable {
     private final String USERNAME;
     private final String SERVER_ID;
     private final String IP;
+    private final MultiCore core;
 
-    public BungeeAuthTask(InitialHandler handler, String username, String serverId, String ip) {
+    public BungeeAuthTask(InitialHandler handler, String username, String serverId, String ip, MultiCore core) {
         this.handler = handler;
         USERNAME = username;
         SERVER_ID = serverId;
         IP = ip;
+        this.core = core;
     }
 
     public static void init() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
@@ -59,7 +63,7 @@ public class BungeeAuthTask implements Runnable {
     @Override
     public void run() {
         try {
-            AuthResult<LoginResult> result = AuthCore.yggAuth(USERNAME, SERVER_ID, IP);
+            AuthResult<LoginResult> result = core.getAuthCore().yggAuth(USERNAME, SERVER_ID, IP);
 //            登入结果返回 服务器连接层面失败
             if (result.err != null) {
                 if (result.err == AuthFailedEnum.SERVER_DOWN) {
@@ -72,7 +76,7 @@ public class BungeeAuthTask implements Runnable {
 //            成功连接且取得结果
             LoginResult loginResult = result.result;
             UUID onlineId = Util.getUUID(loginResult.getId());
-            VerificationResult verificationResult = Verifier.getUserVerificationMessage(onlineId, handler.getName(), result.service);
+            VerificationResult verificationResult = core.getVerifier().getUserVerificationMessage(onlineId, handler.getName(), result.service);
 //            白名单 重名验证层面失败
             if (verificationResult.FAIL_MSG != null) {
                 handler.disconnect(new TextComponent(verificationResult.FAIL_MSG));
@@ -84,9 +88,9 @@ public class BungeeAuthTask implements Runnable {
             NAME.invoke(handler, loginResult.getName());
             FINISH.invoke(handler);
         } catch (Throwable e) {
-            handler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
+            handler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));
+            core.getLogger().log(LoggerLevel.ERROR, e);
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
         }
     }
 }

@@ -17,7 +17,7 @@ import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
 import moe.caa.multilogin.bungee.main.MultiLoginBungee;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
@@ -51,8 +51,14 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     public static InitialHandler initialHandler;
     public static SecretKey sharedKey;
     public static EncryptionRequest request;
+    private final MultiCore core;
 
-    public static void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
+    public MultiLoginEncryptionResponse(MultiCore core) {
+        this.core = core;
+    }
+
+
+    public void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
         Class<InitialHandler> INITIAL_HANDLER_CLASS = InitialHandler.class;
         INITIAL_HANDLER_CLASS_STATE_CLASS = Class.forName("net.md_5.bungee.connection.InitialHandler$State");
         THIS_STATE = ReflectUtil.super_lookup.unreflectGetter(ReflectUtil.getField(INITIAL_HANDLER_CLASS, INITIAL_HANDLER_CLASS_STATE_CLASS, false));
@@ -73,12 +79,12 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             request = (EncryptionRequest) REQUEST.invoke(handler);
             addEncrypt();
 //            交给登入任务处理
-            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp()));
+            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp(), core));
         } catch (Throwable e) {
             e.printStackTrace();
-            initialHandler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
+            initialHandler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));
+            core.getLogger().log(LoggerLevel.ERROR, e);
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
         }
 
     }

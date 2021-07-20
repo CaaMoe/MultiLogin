@@ -15,6 +15,7 @@ package moe.caa.multilogin.bukkit.listener;
 import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.main.MultiCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -27,6 +28,12 @@ import java.util.Map;
 public class BukkitListener implements Listener {
     public static final Map<Thread, String> AUTH_CACHE = new Hashtable<>();
 
+    private final MultiCore core;
+
+    public BukkitListener(MultiCore core) {
+        this.core = core;
+    }
+
     @EventHandler
     private void onLogin(AsyncPlayerPreLoginEvent event) {
         String msg = AUTH_CACHE.remove(Thread.currentThread());
@@ -37,7 +44,7 @@ public class BukkitListener implements Listener {
         }
         if (!MultiLoginBukkit.plugin.onAsyncLoginSuccess(event.getUniqueId(), event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
+            event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core));
         }
     }
 

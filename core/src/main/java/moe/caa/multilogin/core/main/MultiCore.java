@@ -12,6 +12,7 @@
 
 package moe.caa.multilogin.core.main;
 
+import moe.caa.multilogin.core.auth.AuthCore;
 import moe.caa.multilogin.core.auth.Verifier;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.data.database.SQLManager;
@@ -47,6 +48,7 @@ public class MultiCore {
     private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
     private final MultiLogger logger = new MultiLogger(this);
     private final LanguageHandler languageHandler = new LanguageHandler();
+    private final AuthCore authCore = new AuthCore(this);
     public IPlugin plugin = null;
     public YamlConfig config = null;
     public List<String> safeId = new ArrayList<>();
@@ -195,5 +197,9 @@ public class MultiCore {
 
     public LanguageHandler getLanguageHandler() {
         return languageHandler;
+    }
+
+    public AuthCore getAuthCore() {
+        return authCore;
     }
 }

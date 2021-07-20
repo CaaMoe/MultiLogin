@@ -12,25 +12,26 @@
 
 package moe.caa.multilogin.bungee.main;
 
-import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.main.MultiCore;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 public class MultiLoginCommand extends Command implements TabExecutor {
-    private static CommandHandler commandHandler = new CommandHandler();
+    private final MultiCore core;
 
-    public MultiLoginCommand(String name) {
+    public MultiLoginCommand(String name, MultiCore core) {
         super(name);
+        this.core = core;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        commandHandler.execute(new BungeeSender(sender), getName(), args);
+        core.getCommandHandler().execute(new BungeeSender(sender), getName(), args);
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return commandHandler.tabCompete(new BungeeSender(sender), getName(), args);
+        return core.getCommandHandler().tabCompete(new BungeeSender(sender), getName(), args);
     }
 }

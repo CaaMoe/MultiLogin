@@ -21,13 +21,11 @@ import moe.caa.multilogin.bukkit.impl.BukkitSchedule;
 import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.bukkit.support.expansions.MultiLoginPlaceholder;
-import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import org.bukkit.command.Command;
@@ -48,7 +46,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static AbstractScheduler schedule;
     public static Gson authGson;
     public static MultiLoginBukkit plugin;
-    private CommandHandler commandHandler;
+    private final MultiCore core = new MultiCore();
 
     @Override
     public void initCoreService() throws Exception {
@@ -62,7 +60,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         Object obj = dedicatedPlayerListGetHandler.invoke(craftServerGetHandle.invoke(getServer()));
 
         HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
-        MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
+        MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService(), core);
         mlymss.setVanService(vanServer);
         field.set(obj, mlymss);
     }
@@ -71,13 +69,12 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onEnable() {
         schedule = new BukkitSchedule(this);
         plugin = this;
-        setEnabled(MultiCore.init(this));
+        setEnabled(core.init(this));
     }
 
     @Override
     public void initOtherService() {
-        getServer().getPluginManager().registerEvents(new BukkitListener(), this);
-        commandHandler = new CommandHandler();
+        getServer().getPluginManager().registerEvents(new BukkitListener(core), this);
         getCommand("whitelist").setExecutor(this);
         getCommand("whitelist").setTabCompleter(this);
         getCommand("multilogin").setExecutor(this);
@@ -86,34 +83,39 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             try {
                 new MultiLoginPlaceholder(this).register();
-                MultiLogger.log(LoggerLevel.INFO, LanguageKeys.BUKKIT_LOADED_PLACEHOLDER.getMessage());
+                core.getLogger().log(LoggerLevel.INFO, LanguageKeys.BUKKIT_LOADED_PLACEHOLDER.getMessage(core));
             } catch (Throwable t) {
                 t.printStackTrace();
-                MultiLogger.log(LoggerLevel.ERROR, t);
-                MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.BUKKIT_FAIL_LOAD_PLACEHOLDER.getMessage());
+                core.getLogger().log(LoggerLevel.ERROR, t);
+                core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.BUKKIT_FAIL_LOAD_PLACEHOLDER.getMessage(core));
             }
         }
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return commandHandler.tabCompete(new BukkitSender(sender), command.getName(), args);
+        return core.getCommandHandler().tabCompete(new BukkitSender(sender), command.getName(), args);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        commandHandler.execute(new BukkitSender(sender), command.getName(), args);
+        core.getCommandHandler().execute(new BukkitSender(sender), command.getName(), args);
         return true;
     }
 
     @Override
     public void onDisable() {
-        MultiCore.disable();
+        core.disable();
     }
 
     @Override
     public void shutdown() {
         getServer().shutdown();
+    }
+
+    @Override
+    public MultiCore getMultiCore() {
+        return core;
     }
 
     @Override

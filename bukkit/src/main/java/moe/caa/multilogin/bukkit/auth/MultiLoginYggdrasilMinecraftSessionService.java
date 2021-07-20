@@ -24,10 +24,12 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.auth.*;
+import moe.caa.multilogin.core.auth.AuthFailedEnum;
+import moe.caa.multilogin.core.auth.AuthResult;
+import moe.caa.multilogin.core.auth.VerificationResult;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 
 import java.lang.reflect.Field;
@@ -36,10 +38,12 @@ import java.util.Map;
 
 public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
     private final Field yggdrasilAuthenticationServiceGson = ReflectUtil.getField(YggdrasilAuthenticationService.class, Gson.class, true);
+    private final MultiCore core;
     private MinecraftSessionService vanService;
 
-    public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) throws NoSuchFieldException {
+    public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService, MultiCore core) throws NoSuchFieldException {
         super(authenticationService);
+        this.core = core;
     }
 
     @Override
@@ -54,13 +58,13 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) throws AuthenticationUnavailableException {
         String ip = address == null ? null : address.getHostAddress();
         try {
-            AuthResult<HasJoinedMinecraftServerResponse> authResult = AuthCore.yggAuth(user.getName(), serverId, ip);
+            AuthResult<HasJoinedMinecraftServerResponse> authResult = core.getAuthCore().yggAuth(user.getName(), serverId, ip);
             HasJoinedMinecraftServerResponse response = authResult.result;
             if (authResult.err == AuthFailedEnum.SERVER_DOWN) {
                 throw new AuthenticationUnavailableException();
             }
             if (response == null || response.getId() == null) return null;
-            VerificationResult verificationResult = Verifier.getUserVerificationMessage(response.getId(), user.getName(), authResult.service);
+            VerificationResult verificationResult = core.getVerifier().getUserVerificationMessage(response.getId(), user.getName(), authResult.service);
             if (verificationResult.FAIL_MSG != null) {
                 BukkitListener.AUTH_CACHE.put(Thread.currentThread(), verificationResult.FAIL_MSG);
                 return new GameProfile(response.getId(), user.getName());
@@ -70,8 +74,8 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
         } catch (AuthenticationUnavailableException e) {
             throw e;
         } catch (Exception e) {
-            MultiLogger.log(LoggerLevel.ERROR, e);
-            MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
+            core.getLogger().log(LoggerLevel.ERROR, e);
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
         }
         return null;
     }
