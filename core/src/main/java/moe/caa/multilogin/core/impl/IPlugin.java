@@ -124,7 +124,7 @@ public interface IPlugin {
     }
 
     default void onRefreshCacheUserData() {
-        getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.redirectUuid) == null));
+        getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null));
     }
 
     /**
@@ -145,7 +145,7 @@ public interface IPlugin {
      */
     default User getCacheUserData(UUID redirectUuid) {
         for (User user : Verifier.CACHE_USER) {
-            if (user.redirectUuid.equals(redirectUuid)) {
+            if (user.getRedirectUuid().equals(redirectUuid)) {
                 return user;
             }
         }

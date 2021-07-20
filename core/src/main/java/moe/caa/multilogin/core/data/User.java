@@ -12,19 +12,21 @@
 
 package moe.caa.multilogin.core.data;
 
+import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.UUID;
 
 public class User {
-    public final UUID onlineUuid;
-    public final transient YggdrasilService service;
-    public String currentName;
-    public UUID redirectUuid;
-    public String yggdrasilService;
-    public boolean whitelist;
+    private final UUID onlineUuid;
+    private final transient YggdrasilService service;
+    private String currentName;
+    private UUID redirectUuid;
+    private String yggdrasilService;
+    private boolean whitelist;
 
     public User(UUID onlineUuid, String currentName, UUID redirectUuid, String yggdrasilService, boolean whitelist) {
         this.onlineUuid = onlineUuid;
@@ -46,5 +48,49 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(onlineUuid);
+    }
+
+    public UUID getOnlineUuid() {
+        return onlineUuid;
+    }
+
+    public YggdrasilService getService() {
+        return service;
+    }
+
+    public String getCurrentName() {
+        return currentName;
+    }
+
+    public void setCurrentName(String currentName) {
+        this.currentName = currentName;
+    }
+
+    public UUID getRedirectUuid() {
+        return redirectUuid;
+    }
+
+    public void setRedirectUuid(UUID redirectUuid) {
+        this.redirectUuid = redirectUuid;
+    }
+
+    public String getYggdrasilService() {
+        return yggdrasilService;
+    }
+
+    public void setYggdrasilService(String yggdrasilService) {
+        this.yggdrasilService = yggdrasilService;
+    }
+
+    public boolean isWhitelist() {
+        return whitelist;
+    }
+
+    public void setWhitelist(boolean whitelist) {
+        this.whitelist = whitelist;
+    }
+
+    public void save() throws SQLException {
+        UserDataHandler.updateUserEntry(this);
     }
 }

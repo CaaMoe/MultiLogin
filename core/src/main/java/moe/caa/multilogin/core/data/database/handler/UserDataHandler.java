@@ -106,11 +106,11 @@ public class UserDataHandler {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
         ))) {
-            ps.setBytes(1, ValueUtil.uuidToByte(entry.onlineUuid));
-            ps.setString(2, entry.currentName);
-            ps.setBytes(3, ValueUtil.uuidToByte(entry.redirectUuid));
-            ps.setString(4, entry.yggdrasilService);
-            ps.setInt(5, entry.whitelist ? 1 : 0);
+            ps.setBytes(1, ValueUtil.uuidToByte(entry.getOnlineUuid()));
+            ps.setString(2, entry.getCurrentName());
+            ps.setBytes(3, ValueUtil.uuidToByte(entry.getRedirectUuid()));
+            ps.setString(4, entry.getYggdrasilService());
+            ps.setInt(5, entry.isWhitelist() ? 1 : 0);
             ps.executeUpdate();
         }
     }
@@ -119,11 +119,11 @@ public class UserDataHandler {
         try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
         ))) {
-            ps.setString(1, entry.currentName);
-            ps.setBytes(2, ValueUtil.uuidToByte(entry.redirectUuid));
-            ps.setString(3, entry.yggdrasilService);
-            ps.setInt(4, entry.whitelist ? 1 : 0);
-            ps.setBytes(5, ValueUtil.uuidToByte(entry.onlineUuid));
+            ps.setString(1, entry.getCurrentName());
+            ps.setBytes(2, ValueUtil.uuidToByte(entry.getRedirectUuid()));
+            ps.setString(3, entry.getYggdrasilService());
+            ps.setInt(4, entry.isWhitelist() ? 1 : 0);
+            ps.setBytes(5, ValueUtil.uuidToByte(entry.getOnlineUuid()));
             ps.executeUpdate();
         }
     }

@@ -38,17 +38,17 @@ public class MultiLoginPlaceholder extends PlaceholderExpansion {
             User entry = PLUGIN.getCacheUserData(player.getUniqueId());
             if (entry == null) return "";
             if (params.equalsIgnoreCase("currentname")) {
-                ret = entry.currentName;
+                ret = entry.getCurrentName();
             } else if (params.equalsIgnoreCase("onlineuuid")) {
-                ret = entry.onlineUuid.toString();
+                ret = entry.getOnlineUuid().toString();
             } else if (params.equalsIgnoreCase("redirecteduuid")) {
-                ret = entry.redirectUuid.toString();
+                ret = entry.getRedirectUuid().toString();
             } else if (params.equalsIgnoreCase("whitelist")) {
-                ret = String.valueOf(entry.whitelist);
+                ret = String.valueOf(entry.isWhitelist());
             } else if (params.equalsIgnoreCase("yggdrasilname")) {
-                ret = entry.service.getName();
+                ret = entry.getService().getName();
             } else if (params.equalsIgnoreCase("yggdrasilpath")) {
-                ret = entry.service.getPath();
+                ret = entry.getService().getPath();
             }
         } catch (Exception ignored) {
         }

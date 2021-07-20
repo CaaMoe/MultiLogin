@@ -141,6 +141,6 @@ public class MultiLoginCommand {
     }
 
     protected static String toMessage(User user) {
-        return LanguageKeys.COMMAND_QUERY_ENTRY.getMessage(user.currentName, user.onlineUuid.toString(), user.redirectUuid.toString(), user.service.getName(), user.service.getPath(), user.whitelist);
+        return LanguageKeys.COMMAND_QUERY_ENTRY.getMessage(user.getCurrentName(), user.getOnlineUuid().toString(), user.getRedirectUuid().toString(), user.getService().getName(), user.getService().getPath(), user.isWhitelist());
     }
 }
