@@ -40,24 +40,24 @@ public class YggdrasilServicesHandler {
                 try {
                     YggdrasilService service = YggdrasilService.fromYamlConfig(path, section);
                     SERVICES.add(service);
-                    if (service.enable) {
-                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(service.name, service.path));
+                    if (service.getEnable()) {
+                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(service.getName(), service.getPath()));
                     } else {
-                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(service.name, service.path));
+                        MultiLogger.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(service.getName(), service.getPath()));
                     }
                 } catch (Exception e) {
                     MultiLogger.log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(path, e.getMessage()));
                 }
             }
         }
-        if (SERVICES.stream().noneMatch(yggdrasilService -> yggdrasilService.enable)) {
+        if (SERVICES.stream().noneMatch(YggdrasilService::getEnable)) {
             MultiLogger.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
         }
     }
 
     public static YggdrasilService getService(String path) {
         for (YggdrasilService service : SERVICES) {
-            if (service.path.equals(path)) {
+            if (service.getPath().equals(path)) {
                 return service;
             }
         }

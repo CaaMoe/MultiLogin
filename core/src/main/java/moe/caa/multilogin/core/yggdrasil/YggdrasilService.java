@@ -24,15 +24,15 @@ import java.util.Objects;
  * 表示 Yggdrasil 验证服务器对象
  */
 public class YggdrasilService {
-    public final String path;
-    public final Boolean enable;
-    public final String name;
-    public final YggdrasilServiceBody body;
-    public final ConvUuidEnum convUuid;
-    public final Boolean convRepeat;
-    public final String nameAllowedRegular;
-    public final Boolean whitelist;
-    public final Integer authRetry;
+    private final String path;
+    private final Boolean enable;
+    private final String name;
+    private final YggdrasilServiceBody body;
+    private final ConvUuidEnum convUuid;
+    private final Boolean convRepeat;
+    private final String nameAllowedRegular;
+    private final Boolean whitelist;
+    private final Integer authRetry;
 
     private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Integer authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
@@ -65,24 +65,24 @@ public class YggdrasilService {
      * 验证配置完整性
      */
     private void integrity() {
-        switch (ValueUtil.getOrThrow(body.serverType, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
+        switch (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
             case CUSTOM:
-                ValueUtil.getOrThrow(body.postMode, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
-                if (body.postMode)
-                    ValueUtil.getOrThrow(body.postContent, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
+                ValueUtil.getOrThrow(body.getPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
+                if (body.getPostMode())
+                    ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
             case BLESSING_SKIN:
-                ValueUtil.getOrThrow(body.url, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
+                ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
             default:
-                if (ValueUtil.getOrThrow(body.passIp, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
-                    if (body.postMode) {
-                        ValueUtil.getOrThrow(body.passIpContentByPost, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
+                if (ValueUtil.getOrThrow(body.getPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
+                    if (body.getPostMode()) {
+                        ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
                     } else {
-                        ValueUtil.getOrThrow(body.passIpContent, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
+                        ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
                     }
                 }
         }
         try {
-            MessageFormat.format(body.url, "", "", "");
+            MessageFormat.format(body.getUrl(), "", "", "");
         } catch (Exception exception) {
             throw new IllegalArgumentException(LanguageKeys.URL_ILLEGAL_FORMAT.getMessage(exception.getMessage()));
         }
@@ -110,11 +110,11 @@ public class YggdrasilService {
      * @return URL
      */
     public String buildUrl(String username, String serverId, String ip) {
-        if (body.postMode) return body.url;
-        if (body.passIp && ValueUtil.notIsEmpty(ip)) {
-            return MessageFormat.format(body.url, username, serverId, MessageFormat.format(body.passIpContent, ip));
+        if (body.getPostMode()) return body.getUrl();
+        if (body.getPassIp() && ValueUtil.notIsEmpty(ip)) {
+            return MessageFormat.format(body.getUrl(), username, serverId, MessageFormat.format(body.getPassIpContent(), ip));
         }
-        return MessageFormat.format(body.url, username, serverId, "");
+        return MessageFormat.format(body.getUrl(), username, serverId, "");
     }
 
     /**
@@ -126,10 +126,46 @@ public class YggdrasilService {
      * @return 内容
      */
     public String buildPostContent(String username, String serverId, String ip) {
-        if (!body.postMode) return null;
-        if (body.passIp && ValueUtil.notIsEmpty(ip)) {
-            return MessageFormat.format(body.postContent, username, serverId, MessageFormat.format(body.passIpContentByPost, ip));
+        if (!body.getPostMode()) return null;
+        if (body.getPassIp() && ValueUtil.notIsEmpty(ip)) {
+            return MessageFormat.format(body.getPostContent(), username, serverId, MessageFormat.format(body.getPassIpContentByPost(), ip));
         }
-        return MessageFormat.format(body.postContent, username, serverId, "");
+        return MessageFormat.format(body.getPostContent(), username, serverId, "");
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ConvUuidEnum getConvUuid() {
+        return convUuid;
+    }
+
+    public Boolean getConvRepeat() {
+        return convRepeat;
+    }
+
+    public String getNameAllowedRegular() {
+        return nameAllowedRegular;
+    }
+
+    public Boolean getWhitelist() {
+        return whitelist;
+    }
+
+    public Integer getAuthRetry() {
+        return authRetry;
+    }
+
+    public YggdrasilServiceBody getBody() {
+        return body;
     }
 }

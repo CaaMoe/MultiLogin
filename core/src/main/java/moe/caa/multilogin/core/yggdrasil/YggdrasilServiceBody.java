@@ -19,13 +19,13 @@ import moe.caa.multilogin.core.util.YamlConfig;
  * 表示 Yggdrasil Body
  */
 public class YggdrasilServiceBody {
-    public final ServerTypeEnum serverType;
-    public final String url;
-    public final Boolean postMode;
-    public final Boolean passIp;
-    public final String passIpContent;
-    public final String postContent;
-    public final String passIpContentByPost;
+    private final ServerTypeEnum serverType;
+    private final String url;
+    private final Boolean postMode;
+    private final Boolean passIp;
+    private final String passIpContent;
+    private final String postContent;
+    private final String passIpContentByPost;
 
     private YggdrasilServiceBody(ServerTypeEnum serverType, String url, Boolean postMode, Boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
         this.serverType = serverType;
@@ -39,7 +39,7 @@ public class YggdrasilServiceBody {
         this.passIpContentByPost = passIpContentByPost;
     }
 
-    public static YggdrasilServiceBody fromYaml(YamlConfig config) {
+    protected static YggdrasilServiceBody fromYaml(YamlConfig config) {
         if (config == null) return null;
         return new YggdrasilServiceBody(
                 config.get("serverType", ServerTypeEnum.class),
@@ -50,5 +50,33 @@ public class YggdrasilServiceBody {
                 config.get("postContent", String.class),
                 config.get("passIpContentByPost", String.class)
         );
+    }
+
+    public ServerTypeEnum getServerType() {
+        return serverType;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public Boolean getPostMode() {
+        return postMode;
+    }
+
+    public Boolean getPassIp() {
+        return passIp;
+    }
+
+    public String getPassIpContent() {
+        return passIpContent;
+    }
+
+    public String getPostContent() {
+        return postContent;
+    }
+
+    public String getPassIpContentByPost() {
+        return passIpContentByPost;
     }
 }

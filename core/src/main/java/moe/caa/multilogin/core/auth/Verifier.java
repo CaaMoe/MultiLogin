@@ -41,15 +41,15 @@ public class Verifier {
 
             // 验证服务器不符
             if (updUserEntry) {
-                if (!Objects.equals(userData.yggdrasilService, yggdrasilService.path)) {
-                    MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.VERIFICATION_NO_CHAE.getMessage(currentName, onlineUuid.toString(), yggdrasilService.name, yggdrasilService.path, userData.yggdrasilService));
+                if (!Objects.equals(userData.yggdrasilService, yggdrasilService.getPath())) {
+                    MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.VERIFICATION_NO_CHAE.getMessage(currentName, onlineUuid.toString(), yggdrasilService.getName(), yggdrasilService.getPath(), userData.yggdrasilService));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_CHAE.getMessage());
                 }
             }
 
             //名称规范检查
-            String reg = ValueUtil.notIsEmpty(yggdrasilService.nameAllowedRegular) ?
-                    yggdrasilService.nameAllowedRegular : ValueUtil.notIsEmpty(MultiCore.nameAllowedRegular) ?
+            String reg = ValueUtil.notIsEmpty(yggdrasilService.getNameAllowedRegular()) ?
+                    yggdrasilService.getNameAllowedRegular() : ValueUtil.notIsEmpty(MultiCore.nameAllowedRegular) ?
                     "" : MultiCore.nameAllowedRegular;
 
             if (!reg.isEmpty() && !Pattern.matches(reg, currentName)) {
@@ -58,7 +58,7 @@ public class Verifier {
             }
 
             //重名检查
-            if (!MultiCore.safeId.contains(yggdrasilService.path)) {
+            if (!MultiCore.safeId.contains(yggdrasilService.getPath())) {
                 List<User> repeatedNameUserEntries = UserDataHandler.getUserEntryByCurrentName(currentName);
                 for (User repeatedNameUserEntry : repeatedNameUserEntries) {
                     if (!repeatedNameUserEntry.equals(userData)) {
@@ -68,17 +68,17 @@ public class Verifier {
                 }
             }
 
-            userData = !updUserEntry ? new User(onlineUuid, currentName, yggdrasilService.convUuid.getResultUuid(onlineUuid, currentName), yggdrasilService.path, false) : userData;
+            userData = !updUserEntry ? new User(onlineUuid, currentName, yggdrasilService.getConvUuid().getResultUuid(onlineUuid, currentName), yggdrasilService.getPath(), false) : userData;
             userData.currentName = currentName;
 
             if (!updUserEntry) {
-                if (yggdrasilService.convRepeat) {
+                if (yggdrasilService.getConvRepeat()) {
                     userData.redirectUuid = getRepeatUuid(userData, yggdrasilService);
                 }
             }
 
             // 白名单检查
-            if (!userData.whitelist && yggdrasilService.whitelist) {
+            if (!userData.whitelist && yggdrasilService.getWhitelist()) {
                 if (!(CacheWhitelistDataHandler.removeCacheWhitelist(currentName) | CacheWhitelistDataHandler.removeCacheWhitelist(onlineUuid.toString()))) {
                     MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_NO_WHITELIST.getMessage(currentName, onlineUuid.toString()));
                     return new VerificationResult(LanguageKeys.VERIFICATION_NO_WHITELIST.getMessage());
@@ -108,7 +108,7 @@ public class Verifier {
 
             CACHE_LOGIN.put(userData.redirectUuid, currentName);
             CACHE_USER.add(userData);
-            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.onlineUuid.toString(), userData.currentName, userData.redirectUuid.toString(), yggdrasilService.name, yggdrasilService.path));
+            MultiLogger.log(LoggerLevel.INFO, LanguageKeys.VERIFICATION_ALLOW.getMessage(userData.onlineUuid.toString(), userData.currentName, userData.redirectUuid.toString(), yggdrasilService.getName(), yggdrasilService.getPath()));
             return new VerificationResult(userData.redirectUuid, userData);
         } catch (Exception e) {
             MultiLogger.log(LoggerLevel.ERROR, e);
@@ -127,8 +127,8 @@ public class Verifier {
                 userData.onlineUuid,
                 userData.redirectUuid.toString(),
                 (userData.redirectUuid = UUID.randomUUID()).toString(),
-                yggdrasilService.name,
-                yggdrasilService.path
+                yggdrasilService.getName(),
+                yggdrasilService.getPath()
         ));
         return getRepeatUuid(userData, yggdrasilService);
     }
@@ -142,10 +142,10 @@ public class Verifier {
     public static List<List<YggdrasilService>> getVeriOrder(String name) throws SQLException {
         List<List<YggdrasilService>> ret = new ArrayList<>();
         Set<YggdrasilService> one = UserDataHandler.getYggdrasilServiceByCurrentName(name);
-        one.removeIf(yggdrasilService -> !yggdrasilService.enable);
+        one.removeIf(yggdrasilService -> !yggdrasilService.getEnable());
         List<YggdrasilService> two = new ArrayList<>();
         for (YggdrasilService serviceEntry : YggdrasilServicesHandler.getServices()) {
-            if (!serviceEntry.enable) continue;
+            if (!serviceEntry.getEnable()) continue;
             if (!one.isEmpty() && one.contains(serviceEntry)) continue;
             two.add(serviceEntry);
         }

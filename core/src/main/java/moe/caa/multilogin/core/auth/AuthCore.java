@@ -41,7 +41,7 @@ public class AuthCore {
             if (entries.size() != 0) haveService = true;
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
-                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.name, result.service.path));
+                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.getName(), result.service.getPath()));
                 return result;
             }
             if (result != null && result.err == AuthFailedEnum.SERVER_DOWN) {

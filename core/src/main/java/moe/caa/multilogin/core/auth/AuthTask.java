@@ -40,21 +40,21 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
         AuthResult<T> authResult;
         try {
             String result;
-            if (service.body.postMode) {
-                result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), MultiCore.servicesTimeOut, service.authRetry);
+            if (service.getBody().getPostMode()) {
+                result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), MultiCore.servicesTimeOut, service.getAuthRetry());
             } else {
-                result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), MultiCore.servicesTimeOut, service.authRetry);
+                result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), MultiCore.servicesTimeOut, service.getAuthRetry());
             }
             if (ValueUtil.notIsEmpty(result)) {
-                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(username, service.name, service.path));
+                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(username, service.getName(), service.getPath()));
             } else {
-                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(username, service.name, service.path));
+                MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(username, service.getName(), service.getPath()));
             }
 
             T content = MultiCore.plugin.getAuthGson().fromJson(result, MultiCore.plugin.authResultType());
             authResult = new AuthResult<>(content, service);
         } catch (Exception e) {
-            MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(username, service.name, service.path));
+            MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(username, service.getName(), service.getPath()));
             authResult = new AuthResult<>(AuthFailedEnum.SERVER_DOWN, service);
             authResult.throwable = e;
         }

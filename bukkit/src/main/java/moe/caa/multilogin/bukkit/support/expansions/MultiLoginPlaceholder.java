@@ -46,9 +46,9 @@ public class MultiLoginPlaceholder extends PlaceholderExpansion {
             } else if (params.equalsIgnoreCase("whitelist")) {
                 ret = String.valueOf(entry.whitelist);
             } else if (params.equalsIgnoreCase("yggdrasilname")) {
-                ret = entry.service.name;
+                ret = entry.service.getName();
             } else if (params.equalsIgnoreCase("yggdrasilpath")) {
-                ret = entry.service.path;
+                ret = entry.service.getPath();
             }
         } catch (Exception ignored) {
         }
