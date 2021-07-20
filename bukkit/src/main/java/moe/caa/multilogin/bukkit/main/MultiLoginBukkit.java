@@ -46,7 +46,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public static AbstractScheduler schedule;
     public static Gson authGson;
     public static MultiLoginBukkit plugin;
-    private final MultiCore core = new MultiCore();
+    private final MultiCore core = new MultiCore(this);
 
     @Override
     public void initCoreService() throws Exception {
@@ -69,7 +69,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onEnable() {
         schedule = new BukkitSchedule(this);
         plugin = this;
-        setEnabled(core.init(this));
+        setEnabled(core.init());
     }
 
     @Override

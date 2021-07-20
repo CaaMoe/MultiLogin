@@ -19,8 +19,11 @@ import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
@@ -43,7 +46,18 @@ public interface IPlugin {
      * @param path Jar包文件路径
      * @return 对应的文件流
      */
-    InputStream getJarResource(String path);
+    default InputStream getJarResource(String path){
+        try {
+            URL url = getClass().getClassLoader().getResource(path);
+            if(url != null){
+                URLConnection connection = url.openConnection();
+                connection.setUseCaches(false);
+                return connection.getInputStream();
+            }
+        } catch (IOException ignored) {
+        }
+        return null;
+    }
 
     /**
      * 获得当前所有在线的玩家列表

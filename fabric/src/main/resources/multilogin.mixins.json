@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "moe.caa.multilogin.fabric.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "server": ["MixinMinecraftServer"],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

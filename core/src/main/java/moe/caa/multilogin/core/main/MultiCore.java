@@ -50,7 +50,7 @@ public class MultiCore {
     private final MultiLogger logger = new MultiLogger(this);
     private final LanguageHandler languageHandler = new LanguageHandler(this);
     private final AuthCore authCore = new AuthCore(this);
-    public IPlugin plugin = null;
+    public final IPlugin plugin;
     public YamlConfig config = null;
     public List<String> safeId = new ArrayList<>();
     public int servicesTimeOut = 10000;
@@ -58,10 +58,13 @@ public class MultiCore {
     public String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
     private File configFile;
 
-    public boolean init(IPlugin plugin) {
+    public MultiCore(IPlugin plugin) {
+        this.plugin = plugin;
+    }
+
+    public boolean init() {
         try {
             configFile = new File(plugin.getDataFolder(), "config.yml");
-            this.plugin = plugin;
             languageHandler.init();
 
             try {

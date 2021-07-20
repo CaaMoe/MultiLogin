@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class MultiLoginBungee extends Plugin implements IPlugin {
     public static BungeeSchedule schedule;
     public static MultiLoginBungee plugin;
-    private final MultiCore core = new MultiCore();
+    private final MultiCore core = new MultiCore(this);
     private final MultiLoginEncryptionResponse response = new MultiLoginEncryptionResponse(core);
 
     @Override
@@ -91,7 +91,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public void onEnable() {
         plugin = this;
         schedule = new BungeeSchedule(this);
-        if (!core.init(this)) {
+        if (!core.init()) {
 //            启动失败关闭
             onDisable();
         }

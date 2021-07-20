@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "multilogin",
+  "version": "@version@",
+  "name": "MultiLogin",
+  "license": "GPL-3.0",
+  "environment": "server",
+  "mixins": [
+    "multilogin.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.11.3",
+    "fabric": "*",
+    "minecraft": "*"
+  }
+}
