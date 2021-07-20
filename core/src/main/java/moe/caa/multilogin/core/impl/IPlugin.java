@@ -16,7 +16,6 @@ import com.google.gson.Gson;
 import moe.caa.multilogin.core.auth.Verifier;
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.data.User;
-import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.CheckUpdater;
 

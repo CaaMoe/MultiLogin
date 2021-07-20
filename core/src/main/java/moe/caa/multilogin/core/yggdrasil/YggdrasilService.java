@@ -32,9 +32,10 @@ public class YggdrasilService {
     private final Boolean convRepeat;
     private final String nameAllowedRegular;
     private final Boolean whitelist;
+    private final Boolean refuseRepeatedLogin;
     private final Integer authRetry;
 
-    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Integer authRetry) {
+    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Boolean refuseRepeatedLogin, Integer authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
         this.enable = ValueUtil.getOrThrow(enable, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("enable"));
         this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
@@ -43,6 +44,7 @@ public class YggdrasilService {
         this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convRepeat"));
         this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
         this.whitelist = ValueUtil.getOrThrow(whitelist, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("whitelist"));
+        this.refuseRepeatedLogin = ValueUtil.getOrThrow(refuseRepeatedLogin, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("refuseRepeatedLogin"));
         this.authRetry = ValueUtil.getOrThrow(authRetry, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("authRetry"));
         integrity();
     }
@@ -57,6 +59,7 @@ public class YggdrasilService {
                 config.get("convRepeat", Boolean.class),
                 config.get("nameAllowedRegular", String.class),
                 config.get("whitelist", Boolean.class),
+                config.get("refuseRepeatedLogin", Boolean.class),
                 config.get("authRetry", Integer.class)
         );
     }
@@ -167,5 +170,9 @@ public class YggdrasilService {
 
     public YggdrasilServiceBody getBody() {
         return body;
+    }
+
+    public Boolean getRefuseRepeatedLogin() {
+        return refuseRepeatedLogin;
     }
 }

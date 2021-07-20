@@ -82,6 +82,9 @@ services:
     # 当全局白名单为true时，此节点无效。
     whitelist: true
 
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入
+    refuseRepeatedLogin: false
+
     # 验证错误重试次数
     authRetry: 1
 
@@ -159,6 +162,9 @@ services:
     # 是否为当前验证服务器单独设置白名单。
     # 当全局白名单为true时，此节点无效。
     whitelist: true
+
+    # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入
+    refuseRepeatedLogin: false
 
     # 验证错误重试次数
     authRetry: 1

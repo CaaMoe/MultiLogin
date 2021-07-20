@@ -34,6 +34,10 @@ verification_no_whitelist: "§c您没有登入到此服务器的白名单权限"
 verification_error: "验证发生异常"
 verification_allow: "UUID: {0}, name: {1} 登入成功, UUID 重定向为: {2}, 账户验证服务器: {3}（{4}）"
 
+verification_another_login_squeeze: "§c您已在服务器中了，不能重复登录"
+
+verification_self_login_squeeze: "§c您从其他位置登录"
+
 not_online: "启动失败，插件只能在 online_mode=true 模式下运行"
 
 error_auth: '处理用户数据时出现异常'
@@ -51,6 +55,7 @@ debug_verification_no_chae: '拒绝登入，username: {0}, online uuid: {1}, 验
 debug_verification_rush_name: '拒绝登入，username: {0}, online uuid: {1}, 与用户(online uuid) {2} 重名，可能还有更多'
 debug_verification_no_whitelist: '拒绝登入，username: {0}, online uuid: {1}, 没有白名单'
 debug_verification_no_pat_match: '拒绝登入，username: {0}, online uuid: {1}, 用户名未通过正则检查，当前正则: {2}'
+debug_verification_repeated_login: '拒绝登入，username: {0}, online uuid: {1}, 重复登入'
 debug_verification_repeat_uuid: 'username: {0}, online uuid: {1}, 触发重复 UUID 定向机制，原定向 UUID: {2}, 现定向 UUID: {3}, 验证服务器: {4}({5})'
 
 update_sender: "§cMultiLogin §e有新的版本发布，请及时下载更新！"

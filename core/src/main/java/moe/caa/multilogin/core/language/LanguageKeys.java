@@ -46,6 +46,12 @@ public enum LanguageKeys {
     VERIFICATION_NO_PAT_MATCH("verification_no_pat_match"),
     VERIFICATION_ERROR("verification_error"),
     VERIFICATION_ALLOW("verification_allow", "", "", "", "", ""),
+
+
+    VERIFICATION_SELF_LOGIN_SQUEEZE("verification_self_login_squeeze"),
+    VERIFICATION_ANOTHER_LOGIN_SQUEEZE("verification_another_login_squeeze"),
+
+
     NIT_ONLINE("not_online"),
     ERROR_AUTH("error_auth"),
     ERROR_REDIRECT_MODIFY("error_reflect_modify"),
@@ -61,6 +67,7 @@ public enum LanguageKeys {
     DEBUG_VERIFICATION_NO_CHAE("debug_verification_no_chae", "", "", "", "", ""),
     DEBUG_VERIFICATION_RUSH_NAME("debug_verification_rush_name", "", "", "", "", ""),
     DEBUG_VERIFICATION_NO_WHITELIST("debug_verification_no_whitelist", "", ""),
+    DEBUG_VERIFICATION_REPEATED_LOGIN("debug_verification_repeated_login", "", ""),
     DEBUG_VERIFICATION_NO_PAT_MATCH("debug_verification_no_pat_match", "", "", ""),
     DEBUG_VERIFICATION_REPEAT_UUID("debug_verification_repeat_uuid", "", "", "", "", "", ""),
 

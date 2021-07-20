@@ -92,27 +92,37 @@ public class Verifier {
                 UserDataHandler.writeNewUserEntry(userData);
             }
 
-            // 重名踢出
+            // 重名踢出，返回重复 Redirect uuid 的 Sender 对象
             User finalUserData = userData;
-            FutureTask<String> task = new FutureTask<>(() -> {
+            FutureTask<ISender> task = new FutureTask<>(() -> {
                 for (ISender sender : MultiCore.plugin.getPlayer(currentName)) {
                     if (!sender.getPlayerUniqueIdentifier().equals(onlineUuid)) {
                         sender.kickPlayer(LanguageKeys.VERIFICATION_RUSH_NAME_ONL.getMessage());
                     }
                 }
 
-                ISender sender = MultiCore.plugin.getPlayer(finalUserData.getRedirectUuid());
-                if(sender != null){
-                    sender.kickPlayer("爬");
-                }
-                return null;
+                return MultiCore.plugin.getPlayer(finalUserData.getRedirectUuid());
             });
-
 
 
             // 等待主线程任务
             MultiCore.plugin.getSchedule().runTask(task);
-            task.get();
+            ISender sender = task.get();
+
+            // 重复登入验证
+            if (sender != null) {
+                if (yggdrasilService.getRefuseRepeatedLogin()) {
+                    MultiLogger.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_VERIFICATION_REPEATED_LOGIN.getMessage(userData.getCurrentName(), userData.getOnlineUuid().toString()));
+                    return new VerificationResult(LanguageKeys.VERIFICATION_ANOTHER_LOGIN_SQUEEZE.getMessage());
+                } else {
+                    FutureTask<ISender> kick = new FutureTask<>(() -> {
+                        sender.kickPlayer(LanguageKeys.VERIFICATION_SELF_LOGIN_SQUEEZE.getMessage());
+                        return null;
+                    });
+                    MultiCore.plugin.getSchedule().runTask(kick);
+                    kick.get();
+                }
+            }
 
             CACHE_LOGIN.put(userData.getRedirectUuid(), currentName);
             CACHE_USER.add(userData);
