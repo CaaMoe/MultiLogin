@@ -25,15 +25,15 @@ import java.util.Objects;
  */
 public class YggdrasilService {
     private final String path;
-    private final Boolean enable;
+    private final boolean enable;
     private final String name;
     private final YggdrasilServiceBody body;
     private final ConvUuidEnum convUuid;
-    private final Boolean convRepeat;
+    private final boolean convRepeat;
     private final String nameAllowedRegular;
-    private final Boolean whitelist;
-    private final Boolean refuseRepeatedLogin;
-    private final Integer authRetry;
+    private final boolean whitelist;
+    private final boolean refuseRepeatedLogin;
+    private final int authRetry;
 
     private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Boolean refuseRepeatedLogin, Integer authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
