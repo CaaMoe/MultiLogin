@@ -45,6 +45,6 @@ public class BungeeListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerDisconnectEvent event) {
-        MultiLoginBungee.plugin.onRefreshCacheUserData();
+        MultiLoginBungee.plugin.onQuit(event.getPlayer().getUniqueId());
     }
 }

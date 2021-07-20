@@ -93,14 +93,22 @@ public class Verifier {
             }
 
             // 重名踢出
+            User finalUserData = userData;
             FutureTask<String> task = new FutureTask<>(() -> {
                 for (ISender sender : MultiCore.plugin.getPlayer(currentName)) {
                     if (!sender.getPlayerUniqueIdentifier().equals(onlineUuid)) {
                         sender.kickPlayer(LanguageKeys.VERIFICATION_RUSH_NAME_ONL.getMessage());
                     }
                 }
+
+                ISender sender = MultiCore.plugin.getPlayer(finalUserData.getRedirectUuid());
+                if(sender != null){
+                    sender.kickPlayer("爬");
+                }
                 return null;
             });
+
+
 
             // 等待主线程任务
             MultiCore.plugin.getSchedule().runTask(task);

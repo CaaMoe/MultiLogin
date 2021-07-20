@@ -43,7 +43,7 @@ public class BukkitListener implements Listener {
 
     @EventHandler
     private void onQuit(PlayerQuitEvent event) {
-        MultiLoginBukkit.plugin.onRefreshCacheUserData();
+        MultiLoginBukkit.plugin.onQuit(event.getPlayer().getUniqueId());
     }
 
     @EventHandler

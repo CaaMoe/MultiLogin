@@ -16,6 +16,7 @@ import com.google.gson.Gson;
 import moe.caa.multilogin.core.auth.Verifier;
 import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.data.User;
+import moe.caa.multilogin.core.data.database.handler.UserDataHandler;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.CheckUpdater;
 
@@ -123,8 +124,8 @@ public interface IPlugin {
         return Verifier.CACHE_LOGIN.remove(uuid, name);
     }
 
-    default void onRefreshCacheUserData() {
-        getSchedule().runTask(() -> Verifier.CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null));
+    default void onQuit(UUID redirectUuid) {
+        Verifier.CACHE_USER.removeIf(user -> getPlayer(user.getRedirectUuid()) == null);
     }
 
     /**
