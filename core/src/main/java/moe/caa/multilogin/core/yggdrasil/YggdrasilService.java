@@ -164,7 +164,7 @@ public class YggdrasilService {
         return whitelist;
     }
 
-    public Integer getAuthRetry() {
+    public int getAuthRetry() {
         return authRetry;
     }
 
