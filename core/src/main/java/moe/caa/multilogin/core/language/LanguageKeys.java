@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 public enum LanguageKeys {
     PLUGIN_LOAD_ERROR("plugin_load_error"),
+    BSTATS_LOAD_FAIL("bstats_load_fail"),
     PLUGIN_LOADED("plugin_loaded"),
     PLUGIN_UNLOADED("plugin_unloaded"),
     USE_INSIDE_LANGUAGE("use_inside_language"),

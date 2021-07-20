@@ -1,4 +1,5 @@
 plugin_load_error: '启动时遇到致命异常'
+bstats_load_fail: 'bStats加载失败'
 plugin_loaded: '插件已加载'
 plugin_unloaded: '插件已卸载'
 use_inside_language: '使用内置语言'

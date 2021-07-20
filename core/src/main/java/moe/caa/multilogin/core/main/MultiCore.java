@@ -43,6 +43,7 @@ import java.util.List;
 public class MultiCore {
     private final Verifier verifier = new Verifier(this);
     private final CheckUpdater updater = new CheckUpdater(this);
+    private MetricsLite metricsLite;
     private final CommandHandler commandHandler = new CommandHandler(this);
     private final SQLManager sqlManager = new SQLManager(this);
     private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
@@ -121,6 +122,15 @@ public class MultiCore {
             plugin.getSchedule().runTaskAsyncTimer(updater::check, 0, 1000 * 60 * 60 * 24);
 
             plugin.initOtherService();
+
+            try {
+//                最后加载bstats
+                metricsLite = new MetricsLite(plugin);
+            } catch (Exception e) {
+                logger.log(LoggerLevel.ERROR, e);
+                logger.log(LoggerLevel.ERROR, LanguageKeys.BSTATS_LOAD_FAIL.getMessage(this));
+            }
+
             logger.log(LoggerLevel.INFO, LanguageKeys.PLUGIN_LOADED.getMessage(this));
             return true;
         } catch (Throwable e) {

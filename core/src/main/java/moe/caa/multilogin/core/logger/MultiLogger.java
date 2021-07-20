@@ -63,6 +63,11 @@ public class MultiLogger {
             log4JCore.log(level, message, throwable);
     }
 
+    public void logDirect(LoggerLevel level, String message, Throwable throwable) {
+        if (log4JCore != null)
+            log4JCore.log(level, message, throwable);
+    }
+
     private void logDefault(LoggerLevel level, String message, Throwable throwable) {
         switch (level) {
             case INFO:
