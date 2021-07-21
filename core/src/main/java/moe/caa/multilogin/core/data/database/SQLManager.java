@@ -29,13 +29,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLManager {
-    public static final String USER_DATA_TABLE_NAME = "user_data";
+    public static String USER_DATA_TABLE_NAME = "user_data";
+    public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     public static final String ONLINE_UUID = "online_uuid";
     public static final String CURRENT_NAME = "current_name";
     public static final String REDIRECT_UUID = "redirect_name";
     public static final String YGGDRASIL_SERVICE = "yggdrasil_service";
     public static final String WHITELIST = "whitelist";
-    public static final String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private final MultiCore core;
     private final CacheWhitelistDataHandler cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
     private final UserDataHandler userDataHandler = new UserDataHandler(this);
@@ -49,6 +49,11 @@ public class SQLManager {
         YamlConfig config = ValueUtil.getOrThrow(core.config.get("sql", YamlConfig.class), LanguageKeys.CONFIGURATION_KEY_ERROR.getMessage(core, "sql"));
         String username = ValueUtil.getOrThrow(config.get("username", String.class), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "username"));
         String password = ValueUtil.getOrThrow(config.get("password", String.class), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "password"));
+        String prefix = ValueUtil.getOrThrow(config.get("prefix", String.class), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage(core, "prefix"));
+        if (prefix.length() != 0) {
+            USER_DATA_TABLE_NAME = prefix + "_user_data";
+            CACHE_WHITELIST_TABLE_NAME = prefix + "_whitelist";
+        }
         String ip;
         int port;
         String database;
@@ -65,7 +70,6 @@ public class SQLManager {
             url = String.format(url, core.plugin.getDataFolder().getAbsolutePath(), "/multilogin");
             pool = new H2ConnectionPool(url, username, password);
         } else {
-            url = null;
             pool = null;
             throw new UnsupportDatabaseException();
         }

@@ -190,24 +190,20 @@ nameAllowedRegular: '^[0-9a-zA-Z_]{1,16}$'
 
 # 插件数据的存放方式
 sql:
-
   # 数据库类型:
   # 目前至支持以下值：
   # H2                // 推荐
   # MYSQL
   backend: H2
-
   # 数据库地址
   ip: '127.0.0.1'
-
   # 数据库端口
-  port: '3306'
-
+  port: 3306
   # 数据库用户名
   username: 'root'
-
   # 数据库密码
   password: '12345'
-
   # 数据库名称
   database: 'multilogin'
+  #  前缀
+  prefix: 'multilogin'
