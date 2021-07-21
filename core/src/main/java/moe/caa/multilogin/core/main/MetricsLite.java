@@ -142,7 +142,7 @@ public class MetricsLite {
     private void submitData() {
         try {
             // 发送数据
-            sendData();
+            senDataWithRetry();
             plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats submit success", null);
         } catch (Exception e) {
             //出错记录
@@ -150,8 +150,21 @@ public class MetricsLite {
         }
     }
 
+    //    五次重试
+    private void senDataWithRetry() throws Exception {
+        Exception thr = null;
+        for (int i = 0; i < 5; i++) {
+            try {
+                if (sendData()) return;
+            } catch (Exception e) {
+                thr = e;
+            }
+        }
+        throw thr == null ? new IOException("unknown") : thr;
+    }
+
     //发信
-    private void sendData() throws Exception {
+    private boolean sendData() throws Exception {
         final JsonObject data = getServerData();
 
         JsonArray pluginData = new JsonArray();
@@ -177,6 +190,7 @@ public class MetricsLite {
         try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
             outputStream.write(compressedData);
         }
+        return true;
     }
 
     //gzip压缩 数据传输需要
