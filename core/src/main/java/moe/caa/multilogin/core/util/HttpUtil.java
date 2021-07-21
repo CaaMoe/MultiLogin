@@ -116,7 +116,7 @@ public class HttpUtil {
     }
 
     public static boolean downloadFile(String url, File out) throws IOException {
-        FileUtil.clearFile(out);
+        if(out.exists()) out.delete();
         //            文件检测 这里是防止下载一半断掉 别动！艹！动了砍死你
         File downloadingFile = new File(out.getParent(), out.getName() + ".downloading");
         if (downloadingFile.exists()) {
@@ -140,9 +140,8 @@ public class HttpUtil {
                     fileOutputStream.write(b, 0, n);// 写入数据
                 }
                 fileOutputStream.flush();
-                downloadingFile.renameTo(out);
-                return true;
             }
+            return downloadingFile.renameTo(out);
         }
         return false;
     }
