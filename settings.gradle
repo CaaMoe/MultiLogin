@@ -1,18 +1,5 @@
-pluginManagement {
-    repositories {
-        jcenter()
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        gradlePluginPortal()
-    }
-}
-
-
 rootProject.name = 'MultiLogin'
 include 'core'
 include 'bukkit'
 include 'bungee'
-include 'fabric'
 
