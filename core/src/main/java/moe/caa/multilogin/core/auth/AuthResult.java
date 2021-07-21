@@ -35,8 +35,8 @@ public class AuthResult<T> {
     }
 
 
-//    强制要求加异常 不加不行！
-    protected AuthResult(AuthFailedEnum err,Throwable throwable) {
+    //    强制要求加异常 不加不行！
+    protected AuthResult(AuthFailedEnum err, Throwable throwable) {
         this.err = err;
         this.result = null;
         this.service = null;

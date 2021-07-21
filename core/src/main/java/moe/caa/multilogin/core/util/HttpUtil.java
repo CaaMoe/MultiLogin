@@ -116,7 +116,7 @@ public class HttpUtil {
     }
 
     public static boolean downloadFile(String url, File out) throws IOException {
-        if(out.exists()) out.delete();
+        if (out.exists()) out.delete();
         //            文件检测 这里是防止下载一半断掉 别动！艹！动了砍死你
         File downloadingFile = new File(out.getParent(), out.getName() + ".downloading");
         if (downloadingFile.exists()) {

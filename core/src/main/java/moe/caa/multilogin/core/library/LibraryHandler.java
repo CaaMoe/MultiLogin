@@ -29,11 +29,11 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class LibraryHandler {
-    private boolean preLoaded = false;
     private final MultiCore core;
-    private Map<String, String> NEED_LIBRARIES = new LinkedHashMap<>();
     //    多线程并发同步器 不懂不许动！
     CountDownLatch countDownLatch;
+    private boolean preLoaded = false;
+    private Map<String, String> NEED_LIBRARIES = new LinkedHashMap<>();
 
     public LibraryHandler(MultiCore core) {
         this.core = core;

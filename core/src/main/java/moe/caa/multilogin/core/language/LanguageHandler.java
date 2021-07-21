@@ -24,11 +24,10 @@ import java.text.MessageFormat;
  * 可读消息处理程序
  */
 public class LanguageHandler {
+    private final MultiCore core;
     private YamlConfig defaultLanguageYamlConfig = null;
     private YamlConfig languageYamlConfig;
     private boolean outside = false;
-
-    private final MultiCore core;
 
     public LanguageHandler(MultiCore core) {
         this.core = core;

@@ -46,15 +46,11 @@ public class CacheWhitelistDataHandler {
     }
 
     public boolean addCacheWhitelist(String nameOrUuid) throws SQLException {
-        try {
-            try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s) VALUES(?)",
-                    CACHE_WHITELIST_TABLE_NAME, WHITELIST
-            ))) {
-                ps.setString(1, nameOrUuid);
-                return ps.executeUpdate() != 0;
-            }
-        } catch (SQLException ignore) {
-            return false;
+        try (Connection conn = sqlManager.getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s) VALUES(?)",
+                CACHE_WHITELIST_TABLE_NAME, WHITELIST
+        ))) {
+            ps.setString(1, nameOrUuid);
+            return ps.executeUpdate() != 0;
         }
     }
 }

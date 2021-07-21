@@ -41,21 +41,21 @@ import java.util.List;
  * 核心类
  */
 public class MultiCore {
+    public final IPlugin plugin;
     private final Verifier verifier = new Verifier(this);
     private final CheckUpdater updater = new CheckUpdater(this);
-    private MetricsLite metricsLite;
     private final CommandHandler commandHandler = new CommandHandler(this);
     private final SQLManager sqlManager = new SQLManager(this);
     private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
     private final MultiLogger logger = new MultiLogger(this);
     private final LanguageHandler languageHandler = new LanguageHandler(this);
     private final AuthCore authCore = new AuthCore(this);
-    public final IPlugin plugin;
     public YamlConfig config = null;
     public List<String> safeId = new ArrayList<>();
     public int servicesTimeOut = 10000;
     public boolean whitelist = true;
     public String nameAllowedRegular = "^[0-9a-zA-Z_]{1,16}$";
+    private MetricsLite metricsLite;
     private File configFile;
 
     public MultiCore(IPlugin plugin) {
@@ -74,7 +74,7 @@ public class MultiCore {
                 RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
                 String java = runtime == null ? "unknown" : MessageFormat.format("Java {0} ({1} {2})", runtime.getSpecVersion(), runtime.getVmName(), runtime.getVmVersion());
 //                logger.log(LoggerLevel.ERROR, LanguageKeys.REFLECT_INIT_ERROR.getMessage(this, java));
-                logger.log(LoggerLevel.ERROR, "ReflectUtil init error:"+java);
+                logger.log(LoggerLevel.ERROR, "ReflectUtil init error:" + java);
                 return false;
             }
 

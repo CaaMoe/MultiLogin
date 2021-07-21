@@ -30,14 +30,12 @@ import java.util.zip.GZIPOutputStream;
  */
 public class MetricsLite {
 
-    //bStats是否启用
-    private boolean enabled;
-
-    //服务器uuid
-    private String serverUUID;
-
     //插件
     private final IPlugin plugin;
+    //bStats是否启用
+    private boolean enabled;
+    //服务器uuid
+    private String serverUUID;
 
 
     public MetricsLite(IPlugin plugin) throws IOException {
@@ -145,7 +143,7 @@ public class MetricsLite {
         try {
             // 发送数据
             sendData();
-            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats submit success",null);
+            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats submit success", null);
         } catch (Exception e) {
             //出错记录
             plugin.getMultiCore().getLogger().logDirect(LoggerLevel.WARN, "bStats submit error", e);

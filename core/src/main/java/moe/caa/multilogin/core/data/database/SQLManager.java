@@ -29,13 +29,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class SQLManager {
-    public static String USER_DATA_TABLE_NAME = "user_data";
-    public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     public static final String ONLINE_UUID = "online_uuid";
     public static final String CURRENT_NAME = "current_name";
     public static final String REDIRECT_UUID = "redirect_name";
     public static final String YGGDRASIL_SERVICE = "yggdrasil_service";
     public static final String WHITELIST = "whitelist";
+    public static String USER_DATA_TABLE_NAME = "user_data";
+    public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private final MultiCore core;
     private final CacheWhitelistDataHandler cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
     private final UserDataHandler userDataHandler = new UserDataHandler(this);

@@ -46,10 +46,10 @@ public interface IPlugin {
      * @param path Jar包文件路径
      * @return 对应的文件流
      */
-    default InputStream getJarResource(String path){
+    default InputStream getJarResource(String path) {
         try {
             URL url = getClass().getClassLoader().getResource(path);
-            if(url != null){
+            if (url != null) {
                 URLConnection connection = url.openConnection();
                 connection.setUseCaches(false);
                 return connection.getInputStream();
