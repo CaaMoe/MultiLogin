@@ -103,7 +103,9 @@ public class UserDataHandler {
             ResultSet resultSet = ps.executeQuery();
             Set<YggdrasilService> ret = new HashSet<>();
             while (resultSet.next()) {
-                ret.add(sqlManager.getCore().getYggdrasilServicesHandler().getService(resultSet.getString(1)));
+                YggdrasilService yggdrasilService = sqlManager.getCore().getYggdrasilServicesHandler().getService(resultSet.getString(1));
+                if (yggdrasilService != null)
+                    ret.add(yggdrasilService);
             }
             return ret;
         }
