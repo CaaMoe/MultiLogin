@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = {"net.minecraft.server.network.ServerLoginNetworkHandler$1"})
-public abstract class MixinServerLoginNetworkHandler {
+public abstract class MixinServerLoginNetworkHandler_Authenticator_Thread {
 
 
     @Inject(method = "run()V", at = @At(value = "HEAD"), cancellable = true)

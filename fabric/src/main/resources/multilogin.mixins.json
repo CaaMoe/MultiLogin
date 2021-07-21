@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "server": [
     "MixinMinecraftServer",
-    "MixinServerLoginNetworkHandler"
+    "MixinServerLoginNetworkHandler_Authenticator_Thread"
   ],
   "injectors": {
     "defaultRequire": 1
