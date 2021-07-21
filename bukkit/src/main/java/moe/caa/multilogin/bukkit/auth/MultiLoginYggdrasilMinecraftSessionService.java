@@ -60,6 +60,11 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
         try {
             AuthResult<HasJoinedMinecraftServerResponse> authResult = core.getAuthCore().yggAuth(user.getName(), serverId, ip);
             HasJoinedMinecraftServerResponse response = authResult.result;
+
+            if (core.getLogger().isDebug() && authResult.throwable != null) {
+//                异常打印
+                core.getLogger().log(LoggerLevel.ERROR, authResult.throwable);
+            }
             if (authResult.err == AuthFailedEnum.SERVER_DOWN) {
                 throw new AuthenticationUnavailableException();
             }
