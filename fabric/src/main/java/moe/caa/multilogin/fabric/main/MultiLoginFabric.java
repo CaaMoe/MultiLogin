@@ -11,6 +11,8 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.fabric.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.fabric.schedule.ScheduleManager;
+import net.fabricmc.api.DedicatedServerModInitializer;
+import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -26,7 +28,7 @@ public class MultiLoginFabric implements IPlugin {
     public static Gson authGson;
     public static Map<Thread, String> AUTH_CACHE = new Hashtable<>();
     private final MultiCore core = new MultiCore(this);
-    private final MinecraftServer server;
+    private MinecraftServer server;
 
     public MultiLoginFabric(MinecraftServer server) {
         this.server = server;
@@ -49,8 +51,7 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public Logger getLogger() {
-        //Logger.getGlobal();
-        return Logger.getGlobal();
+        return null;
     }
 
     @Override
