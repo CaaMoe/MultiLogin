@@ -5,6 +5,8 @@ plugins {
     id 'maven-publish'
 }
 
+archivesBaseName =  "MultiLogin-Fabric-" + project.plugin_version
+
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -35,7 +37,7 @@ processResources {
 }
 
 jar {
-    archiveBaseName.set "MultiLogin-Fabric-" + project.plugin_version
+
     from {
         configurations.compile.collect {
             it.isDirectory() ? it : zipTree(it)
