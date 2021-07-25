@@ -25,13 +25,13 @@ public class WhitelistCommand {
                         //二级命令
                         .then(CommandHandler.literal("add")
                                 //需求字符串参数
-                                .then(CommandHandler.argument("target", StringArgumentType.string())
+                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
                                         //执行
                                         .executes(this::executeAdd)
                                 )
                         )
                         .then(CommandHandler.literal("remove")
-                                .then(CommandHandler.argument("target", StringArgumentType.string())
+                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
                                         .executes(this::executeRemove)
                                 )
                         )
