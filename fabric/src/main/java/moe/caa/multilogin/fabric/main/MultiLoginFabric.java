@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 public class MultiLoginFabric implements IPlugin {
     public static final Map<Thread,String> AUTH_CACHE = new Hashtable<>();
     public static Gson authGson;
+    public static MultiLoginFabric plugin;
     private final MinecraftDedicatedServer server;
     private final MultiCore core;
     private final ScheduleManager schedule = new ScheduleManager();
@@ -34,6 +35,7 @@ public class MultiLoginFabric implements IPlugin {
     public MultiLoginFabric(MinecraftDedicatedServer server) {
         this.server = server;
         core = new MultiCore(this);
+        MultiLoginFabric.plugin = this;
     }
 
     public boolean init(){
