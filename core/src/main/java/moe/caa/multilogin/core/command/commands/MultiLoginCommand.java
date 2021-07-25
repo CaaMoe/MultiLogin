@@ -31,16 +31,16 @@ public class MultiLoginCommand {
                                         //三级命令
                                         .then(CommandHandler.literal("name")
                                                 //需求字符串参数
-                                                .then(CommandHandler.argument("target", StringArgumentType.string())
+                                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
                                                         //执行
                                                         .executes(this::executeName)
                                                 )
                                         ).then(CommandHandler.literal("onlineuuid")
-                                                .then(CommandHandler.argument("target", StringArgumentType.string())
+                                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
                                                         .executes(this::executeOnlineUuid)
                                                 )
                                         ).then(CommandHandler.literal("redirectuuid")
-                                                .then(CommandHandler.argument("target", StringArgumentType.string())
+                                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
                                                         .executes(this::executeRedirectUuid)
                                                 )
                                         )
