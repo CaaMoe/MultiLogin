@@ -59,6 +59,7 @@ public class CommandHandler {
 
     public void execute(ISender sender, String command, String args) {
         ParseResults<ISender> parse = DISPATCHER.parse(command + " " + args, sender);
+        System.out.println(command + " " + args);
         try {
             DISPATCHER.execute(parse);
         } catch (CommandSyntaxException e) {
@@ -68,7 +69,11 @@ public class CommandHandler {
 
     //    tab补全
     public List<String> tabCompete(ISender sender, String command, String[] args) {
-        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
+        return tabCompete(sender, command, String.join(" ", args));
+    }
+
+    public List<String> tabCompete(ISender sender, String command, String args) {
+        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + args, sender);
         CompletableFuture<Suggestions> suggestions = DISPATCHER.getCompletionSuggestions(parse);
         try {
             return suggestions.get().getList().stream().map(Suggestion::getText).collect(Collectors.toList());
