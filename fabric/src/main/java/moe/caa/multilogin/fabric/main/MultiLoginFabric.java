@@ -58,7 +58,7 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public String getPluginVersion() {
-        return "@version@";
+        return "1.0-RC.2";
     }
 
     @Override
