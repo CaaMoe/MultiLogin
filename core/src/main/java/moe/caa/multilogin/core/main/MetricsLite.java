@@ -37,7 +37,6 @@ public class MetricsLite {
     //服务器uuid
     private String serverUUID;
 
-
     public MetricsLite(IPlugin plugin) throws IOException {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
@@ -45,8 +44,10 @@ public class MetricsLite {
         this.plugin = plugin;
 
         loadConfig();
-        if (enabled)
+        if (enabled) {
+            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats enabled", null);
             startSubmitting();
+        }
     }
 
     private void loadConfig() throws IOException {
@@ -85,8 +86,8 @@ public class MetricsLite {
 
     private void startSubmitting() {
         //周期什么的不要动 会被封禁
-        long initialDelay = (long) (1000 * 60 * (3 + Math.random() * 3));
-        long secondDelay = (long) (1000 * 60 * (Math.random() * 30));
+        long initialDelay = 1000 * 60 * 4;
+        long secondDelay = 1000 * 60 * 10;
         plugin.getSchedule().runTaskAsync(this::submitData, initialDelay);
         plugin.getSchedule().runTaskAsyncTimer(this::submitData, initialDelay + secondDelay, 1000 * 60 * 30);
     }
@@ -187,8 +188,16 @@ public class MetricsLite {
 
         // 发送数据
         connection.setDoOutput(true);
+        connection.setDoInput(true);
         try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
             outputStream.write(compressedData);
+        }
+//        这里似乎必须这样
+        Thread.sleep(1000);
+        try (DataInputStream inputStream = new DataInputStream(connection.getInputStream())) {
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "receive:" + new String(bytes), null);
         }
         return true;
     }
