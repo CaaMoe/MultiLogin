@@ -54,7 +54,11 @@ public class CommandHandler {
 
     //  执行命令
     public void execute(ISender sender, String command, String[] args) {
-        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + String.join(" ", args), sender);
+        execute(sender, command, String.join(" ", args));
+    }
+
+    public void execute(ISender sender, String command, String args) {
+        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + args, sender);
         try {
             DISPATCHER.execute(parse);
         } catch (CommandSyntaxException e) {

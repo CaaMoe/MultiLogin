@@ -12,6 +12,7 @@
   },
   "mixins": [
     "MixinPlayerManager",
-    "MixinServerLoginNetworkHandler"
+    "MixinServerLoginNetworkHandler",
+    "MixinWhitelistCommand"
   ]
 }
