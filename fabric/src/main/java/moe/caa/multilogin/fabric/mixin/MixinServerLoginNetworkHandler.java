@@ -9,7 +9,8 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ServerLoginNetworkHandler.class)
 public class MixinServerLoginNetworkHandler implements IServerLoginNetworkHandler {
 
-    @Shadow private GameProfile profile;
+    @Shadow
+    private GameProfile profile;
 
     @Override
     public GameProfile getProfile() {

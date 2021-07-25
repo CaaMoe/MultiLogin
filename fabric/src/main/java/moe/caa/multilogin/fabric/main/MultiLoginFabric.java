@@ -1,6 +1,5 @@
 package moe.caa.multilogin.fabric.main;
 
-import com.google.common.cache.AbstractCache;
 import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
@@ -25,7 +24,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MultiLoginFabric implements IPlugin {
-    public static final Map<Thread,String> AUTH_CACHE = new Hashtable<>();
+    public static final Map<Thread, String> AUTH_CACHE = new Hashtable<>();
     public static Gson authGson;
     public static MultiLoginFabric plugin;
     private final MinecraftDedicatedServer server;
@@ -38,7 +37,7 @@ public class MultiLoginFabric implements IPlugin {
         MultiLoginFabric.plugin = this;
     }
 
-    public boolean init(){
+    public boolean init() {
         return core.init();
     }
 
@@ -49,7 +48,7 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public List<ISender> getOnlinePlayers() {
-        return server.getPlayerManager().getPlayerList().stream().map(p-> new FabricSender(p.getCommandSource())).collect(Collectors.toList());
+        return server.getPlayerManager().getPlayerList().stream().map(p -> new FabricSender(p.getCommandSource())).collect(Collectors.toList());
     }
 
     @Override
@@ -75,7 +74,7 @@ public class MultiLoginFabric implements IPlugin {
     @Override
     public ISender getPlayer(UUID uuid) {
         ServerPlayerEntity entity = server.getPlayerManager().getPlayer(uuid);
-        if(entity == null) return null;
+        if (entity == null) return null;
         return new FabricSender(entity.getCommandSource());
     }
 
@@ -83,7 +82,7 @@ public class MultiLoginFabric implements IPlugin {
     public List<ISender> getPlayer(String name) {
         List<ISender> ret = new ArrayList<>();
         for (ServerPlayerEntity entity : server.getPlayerManager().getPlayerList()) {
-            if(entity.getGameProfile().getName().equalsIgnoreCase(name)){
+            if (entity.getGameProfile().getName().equalsIgnoreCase(name)) {
                 ret.add(new FabricSender(entity.getCommandSource()));
             }
         }

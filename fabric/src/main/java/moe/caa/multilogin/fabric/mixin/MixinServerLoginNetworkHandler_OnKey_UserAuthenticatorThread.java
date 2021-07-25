@@ -1,6 +1,5 @@
 package moe.caa.multilogin.fabric.mixin;
 
-import com.mojang.authlib.GameProfile;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.fabric.inject.IServerLoginNetworkHandler;
 import moe.caa.multilogin.fabric.main.MultiLoginFabric;
@@ -24,8 +23,8 @@ public class MixinServerLoginNetworkHandler_OnKey_UserAuthenticatorThread {
                             "(Lcom/mojang/authlib/GameProfile;Ljava/lang/String;Ljava/net/InetAddress;)Lcom/mojang/authlib/GameProfile;",
                     remap = false, shift = At.Shift.AFTER),
             cancellable = true)
-    private void onAsyncPreLogin(CallbackInfo ci){
-        if(((IServerLoginNetworkHandler)handler).getProfile() != null){
+    private void onAsyncPreLogin(CallbackInfo ci) {
+        if (((IServerLoginNetworkHandler) handler).getProfile() != null) {
             String msg = MultiLoginFabric.AUTH_CACHE.remove(Thread.currentThread());
             if (msg != null) {
                 handler.disconnect(new LiteralText(msg));
@@ -33,7 +32,7 @@ public class MixinServerLoginNetworkHandler_OnKey_UserAuthenticatorThread {
                 return;
             }
 
-            if (!MultiLoginFabric.plugin.onAsyncLoginSuccess(((IServerLoginNetworkHandler)handler).getProfile().getId(), ((IServerLoginNetworkHandler)handler).getProfile().getName())) {
+            if (!MultiLoginFabric.plugin.onAsyncLoginSuccess(((IServerLoginNetworkHandler) handler).getProfile().getId(), ((IServerLoginNetworkHandler) handler).getProfile().getName())) {
                 handler.disconnect(new LiteralText(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(MultiLoginFabric.plugin.getMultiCore())));
                 ci.cancel();
             }

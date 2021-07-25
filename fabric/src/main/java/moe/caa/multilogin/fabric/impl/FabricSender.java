@@ -38,7 +38,7 @@ public class FabricSender implements ISender {
     @Override
     public boolean isPlayer() {
         Entity entity = source.getEntity();
-        if(entity != null){
+        if (entity != null) {
             return entity instanceof ServerPlayerEntity;
         }
         return false;

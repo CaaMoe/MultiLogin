@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinPlayerManager {
 
     @Inject(method = "onPlayerConnect", at = @At("RETURN"))
-    private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci){
+    private void onPlayerJoin(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
         MultiLoginFabric.plugin.onJoin(new FabricSender(player.getCommandSource()));
     }
 
     @Inject(method = "remove", at = @At("RETURN"))
-    private void onQuit(ServerPlayerEntity player, CallbackInfo ci){
+    private void onQuit(ServerPlayerEntity player, CallbackInfo ci) {
         MultiLoginFabric.plugin.onQuit(player.getGameProfile().getId());
     }
 }
