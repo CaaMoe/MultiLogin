@@ -37,7 +37,6 @@ public class MetricsLite {
     //服务器uuid
     private String serverUUID;
 
-
     public MetricsLite(IPlugin plugin) throws IOException {
         if (plugin == null) {
             throw new IllegalArgumentException("Plugin cannot be null!");
@@ -45,8 +44,10 @@ public class MetricsLite {
         this.plugin = plugin;
 
         loadConfig();
-        if (enabled)
+        if (enabled) {
+            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats enabled", null);
             startSubmitting();
+        }
     }
 
     private void loadConfig() throws IOException {
@@ -85,8 +86,8 @@ public class MetricsLite {
 
     private void startSubmitting() {
         //周期什么的不要动 会被封禁
-        long initialDelay = (long) (1000 * 60 * (3 + Math.random() * 3));
-        long secondDelay = (long) (1000 * 60 * (Math.random() * 30));
+        long initialDelay = 1000 * 60 * 4;
+        long secondDelay = 1000 * 60 * 10;
         plugin.getSchedule().runTaskAsync(this::submitData, initialDelay);
         plugin.getSchedule().runTaskAsyncTimer(this::submitData, initialDelay + secondDelay, 1000 * 60 * 30);
     }
@@ -142,7 +143,7 @@ public class MetricsLite {
     private void submitData() {
         try {
             // 发送数据
-            sendData();
+            senDataWithRetry();
             plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "bStats submit success", null);
         } catch (Exception e) {
             //出错记录
@@ -150,8 +151,21 @@ public class MetricsLite {
         }
     }
 
+    //    五次重试
+    private void senDataWithRetry() throws Exception {
+        Exception thr = null;
+        for (int i = 0; i < 5; i++) {
+            try {
+                if (sendData()) return;
+            } catch (Exception e) {
+                thr = e;
+            }
+        }
+        throw thr == null ? new IOException("unknown") : thr;
+    }
+
     //发信
-    private void sendData() throws Exception {
+    private boolean sendData() throws Exception {
         final JsonObject data = getServerData();
 
         JsonArray pluginData = new JsonArray();
@@ -174,9 +188,18 @@ public class MetricsLite {
 
         // 发送数据
         connection.setDoOutput(true);
+        connection.setDoInput(true);
         try (DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream())) {
             outputStream.write(compressedData);
         }
+//        这里似乎必须这样
+        Thread.sleep(1000);
+        try (DataInputStream inputStream = new DataInputStream(connection.getInputStream())) {
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            plugin.getMultiCore().getLogger().logDirect(LoggerLevel.INFO, "receive:" + new String(bytes), null);
+        }
+        return true;
     }
 
     //gzip压缩 数据传输需要
