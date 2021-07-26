@@ -27,12 +27,10 @@ import java.nio.charset.StandardCharsets;
  */
 public class CheckUpdater {
     private static final URL SOURCE = HttpUtil.getUrlFromString("https://api.github.com/repos/CaaMoe/MultiLogin/contents/gradle.properties?ref=master");
-    public final MultiCore core;
     public String latestVersion = null;
     public boolean haveUpdate = false;
 
-    public CheckUpdater(MultiCore core) {
-        this.core = core;
+    public CheckUpdater() {
     }
 
     /**
@@ -52,9 +50,10 @@ public class CheckUpdater {
             check0();
         } catch (Exception ignored) {
         }
-        haveUpdate = !core.plugin.getPluginVersion().equalsIgnoreCase(latestVersion);
+        String pluginVersion = MultiCore.getPlugin().getPluginVersion();
+        haveUpdate = !pluginVersion.equalsIgnoreCase(latestVersion);
         if (haveUpdate) {
-            core.getLogger().log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(core, core.plugin.getPluginVersion(), latestVersion));
+            MultiCore.log(LoggerLevel.INFO, LanguageKeys.UPDATE_CONSOLE.getMessage(pluginVersion, latestVersion));
         }
     }
 }

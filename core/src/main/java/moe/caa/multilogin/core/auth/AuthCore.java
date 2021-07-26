@@ -26,10 +26,7 @@ public class AuthCore {
     //    单开一个验证服务用的池子 区分
     ExecutorService authExecutor = Executors.newCachedThreadPool();
 
-    public final MultiCore core;
-
-    public AuthCore(MultiCore core) {
-        this.core = core;
+    public AuthCore() {
     }
 
     public <T> Object yggAuth(String name, String serverId) throws SQLException, InterruptedException {
@@ -37,9 +34,9 @@ public class AuthCore {
     }
 
     public <T> AuthResult<T> yggAuth(String name, String serverId, String ip) throws SQLException, InterruptedException {
-        core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_START.getMessage(core, name, serverId, ip));
+        MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_START.getMessage(name, serverId, ip));
 //        顺序获取
-        List<List<YggdrasilService>> order = core.getVerifier().getVeriOrder(name);
+        List<List<YggdrasilService>> order = MultiCore.getInstance().getVerifier().getVeriOrder(name);
 //        服务器关闭
         boolean down = false;
         boolean haveService = false;
@@ -57,7 +54,7 @@ public class AuthCore {
 //            获取验证结果
             AuthResult<T> result = authWithTasks(entries, name, serverId, ip);
             if (result != null && result.isSuccess()) {
-                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(core, name, result.service.getName(), result.service.getPath()));
+                MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_ALLOW.getMessage(name, result.service.getName(), result.service.getPath()));
                 return result;
             }
             if (result != null && result.err == AuthFailedEnum.SERVER_DOWN) {
@@ -68,7 +65,7 @@ public class AuthCore {
         }
 //        重构结果信息
         AuthFailedEnum failedEnum = down ? AuthFailedEnum.SERVER_DOWN : haveService ? AuthFailedEnum.VALIDATION_FAILED : AuthFailedEnum.NO_SERVICE;
-        core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(core, name, failedEnum.name()));
+        MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_END_DISALLOW.getMessage(name, failedEnum.name()));
         return new AuthResult<>(failedEnum, throwable);
     }
 
@@ -83,13 +80,13 @@ public class AuthCore {
         for (YggdrasilService entry : services) {
             if (entry == null) continue;
 //            创建进程
-            AuthTask<T> task = new AuthTask<>(entry, name, serverId, ip, core, countDownLatch);
+            AuthTask<T> task = new AuthTask<>(entry, name, serverId, ip, countDownLatch);
             Future<?> thread = authExecutor.submit(task);
             tasks.add(task);
             threads.add(thread);
         }
 //        等待 不使用循环 减少cpu消耗
-        countDownLatch.await(core.servicesTimeOut, TimeUnit.MILLISECONDS);
+        countDownLatch.await(MultiCore.getInstance().servicesTimeOut, TimeUnit.MILLISECONDS);
 //        全部关闭
         threads.parallelStream().forEach(t -> t.cancel(true));
         for (AuthTask<T> task : tasks) {

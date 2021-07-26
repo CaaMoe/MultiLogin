@@ -81,7 +81,7 @@ public class LibraryHandler {
     }
 
     private void doDownload() throws Throwable {
-        File libFolder = new File(core.plugin.getDataFolder(), "libraries");
+        File libFolder = new File(MultiCore.getPlugin().getDataFolder(), "libraries");
         FileUtil.createNewFileOrFolder(libFolder, true);
         download(libFolder);
         load(libFolder);
@@ -137,7 +137,7 @@ public class LibraryHandler {
                 }
             }
             String url = genUrl(library.getKey());
-            core.plugin.getSchedule().runTaskAsync(new DownloadThread(url, file, jarName));
+            MultiCore.getPlugin().getSchedule().runTaskAsync(new DownloadThread(url, file, jarName));
         }
         countDownLatch.await();
     }

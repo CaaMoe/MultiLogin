@@ -21,10 +21,8 @@ import java.util.ArrayList;
 
 public class YggdrasilServicesHandler {
     private static final ArrayList<YggdrasilService> SERVICES = new ArrayList<>();
-    private final MultiCore core;
 
-    public YggdrasilServicesHandler(MultiCore core) {
-        this.core = core;
+    public YggdrasilServicesHandler() {
     }
 
     public void init() {
@@ -36,26 +34,26 @@ public class YggdrasilServicesHandler {
      */
     public void reload() {
         SERVICES.clear();
-        YamlConfig services = core.config.get("services", YamlConfig.class);
+        YamlConfig services = MultiCore.getConfig().get("services", YamlConfig.class);
         if (services != null) {
             for (String path : services.getKeys()) {
                 YamlConfig section = services.get(path, YamlConfig.class);
                 if (section == null) continue;
                 try {
-                    YggdrasilService service = YggdrasilService.fromYamlConfig(path, section, core);
+                    YggdrasilService service = YggdrasilService.fromYamlConfig(path, section);
                     SERVICES.add(service);
                     if (service.isEnable()) {
-                        core.getLogger().log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(core, service.getName(), service.getPath()));
+                        MultiCore.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(service.getName(), service.getPath()));
                     } else {
-                        core.getLogger().log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(core, service.getName(), service.getPath()));
+                        MultiCore.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(service.getName(), service.getPath()));
                     }
                 } catch (Exception e) {
-                    core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(core, path, e.getMessage()));
+                    MultiCore.log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(path, e.getMessage()));
                 }
             }
         }
         if (SERVICES.stream().noneMatch(YggdrasilService::isEnable)) {
-            core.getLogger().log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage(core));
+            MultiCore.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
         }
     }
 

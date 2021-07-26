@@ -24,19 +24,17 @@ import java.text.MessageFormat;
  * 可读消息处理程序
  */
 public class LanguageHandler {
-    private final MultiCore core;
     private YamlConfig defaultLanguageYamlConfig = null;
     private YamlConfig languageYamlConfig;
     private boolean outside = false;
 
-    public LanguageHandler(MultiCore core) {
-        this.core = core;
+    public LanguageHandler() {
     }
 
 
     public void init() {
-        defaultLanguageYamlConfig = YamlConfig.fromInputStream(core.plugin.getJarResource("language.yml"));
-        File languageFile = new File(core.plugin.getDataFolder(), "language.yml");
+        defaultLanguageYamlConfig = YamlConfig.fromInputStream(MultiCore.getPlugin().getJarResource("language.yml"));
+        File languageFile = new File(MultiCore.getPlugin().getDataFolder(), "language.yml");
         if (languageFile.exists()) {
             try {
                 languageYamlConfig = YamlConfig.fromInputStream(new FileInputStream(languageFile));
@@ -45,7 +43,7 @@ public class LanguageHandler {
                 languageYamlConfig = null;
             }
         }
-        core.getLogger().log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage(core) : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage(core));
+        MultiCore.log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage() : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage());
         if (outside) testLanguage();
     }
 

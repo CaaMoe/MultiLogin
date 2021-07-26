@@ -19,7 +19,6 @@ import moe.caa.multilogin.core.util.HttpUtil;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
 public class AuthTask<T> implements Runnable {
@@ -27,16 +26,14 @@ public class AuthTask<T> implements Runnable {
     private final String username;
     private final String serverId;
     private final String ip;
-    private final MultiCore core;
     private final CountDownLatch countDownLatch;
     private AuthResult<T> authResult;
 
-    public AuthTask(YggdrasilService service, String username, String serverId, String ip, MultiCore core, CountDownLatch countDownLatch) {
+    public AuthTask(YggdrasilService service, String username, String serverId, String ip, CountDownLatch countDownLatch) {
         this.service = service;
         this.username = username;
         this.serverId = serverId;
         this.ip = ip;
-        this.core = core;
         this.countDownLatch = countDownLatch;
     }
 
@@ -45,20 +42,20 @@ public class AuthTask<T> implements Runnable {
         try {
             String result;
             if (service.getBody().isPostMode()) {
-                result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), core.servicesTimeOut, service.getAuthRetry());
+                result = HttpUtil.httpPostJson(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), service.buildPostContent(username, serverId, ip), MultiCore.getInstance().servicesTimeOut, service.getAuthRetry());
             } else {
-                result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), core.servicesTimeOut, service.getAuthRetry());
+                result = HttpUtil.httpGet(HttpUtil.getUrlFromString(service.buildUrl(username, serverId, ip)), MultiCore.getInstance().servicesTimeOut, service.getAuthRetry());
             }
             if (ValueUtil.notIsEmpty(result)) {
-                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(core, username, service.getName(), service.getPath()));
+                MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_ALLOW.getMessage(username, service.getName(), service.getPath()));
             } else {
-                core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(core, username, service.getName(), service.getPath()));
+                MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_DISALLOW.getMessage(username, service.getName(), service.getPath()));
             }
 
-            T content = core.plugin.getAuthGson().fromJson(result, core.plugin.authResultType());
+            T content = MultiCore.getPlugin().getAuthGson().fromJson(result, MultiCore.getPlugin().authResultType());
             authResult = new AuthResult<>(content, service);
         } catch (Exception e) {
-            core.getLogger().log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(core, username, service.getName(), service.getPath()));
+            MultiCore.log(LoggerLevel.DEBUG, LanguageKeys.DEBUG_LOGIN_AUTH_TASK_SERVER_DOWN.getMessage(username, service.getName(), service.getPath()));
             authResult = new AuthResult<>(AuthFailedEnum.SERVER_DOWN, service);
             authResult.throwable = e;
         } finally {

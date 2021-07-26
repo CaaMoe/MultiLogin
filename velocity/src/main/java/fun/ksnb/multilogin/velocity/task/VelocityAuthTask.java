@@ -89,9 +89,9 @@ public class VelocityAuthTask implements Runnable {
 //            成功
             INITPLAYER.invoke(loginSessionHandler, gameProfile, true);
         } catch (Throwable e) {
-            inbound.disconnect(Component.text(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));
+            inbound.disconnect(Component.text(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
             core.getLogger().log(LoggerLevel.ERROR, e);
-            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
         }
     }
 }

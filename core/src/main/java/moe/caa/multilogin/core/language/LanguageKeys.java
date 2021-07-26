@@ -104,7 +104,7 @@ public enum LanguageKeys {
         this.args = args;
     }
 
-    public String getMessage(MultiCore core, Object... args) {
-        return core.getLanguageHandler().getMessage(this, args);
+    public String getMessage(Object... args) {
+        return MultiCore.getInstance().getLanguageHandler().getMessage(this, args);
     }
 }

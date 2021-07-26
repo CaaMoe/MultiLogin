@@ -19,32 +19,30 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MultiLogger {
-    private final MultiCore core;
     private boolean debug = true;
     private Log4JCore log4JCore;
     private boolean log4jMode = false;
 
-    public MultiLogger(MultiCore core) {
-        this.core = core;
+    public MultiLogger() {
     }
 
     public void init() {
 
         try {
-            debug = core.config.get("debug", Boolean.class, true);
-            Log4JCore l4c = new Log4JCore(core);
+            debug = MultiCore.getConfig().get("debug", Boolean.class, true);
+            Log4JCore l4c = new Log4JCore();
             l4c.init();
 //            防止提前赋值造成不可用
             log4JCore = l4c;
-            if (core.plugin.getLogger() == null) {
-                if (core.plugin.getLogger4J() != null) log4jMode = true;
+            if (MultiCore.getPlugin().getLogger() == null) {
+                if (MultiCore.getPlugin().getLogger4J() != null) log4jMode = true;
             }
         } catch (Exception e) {
             log(LoggerLevel.ERROR, e);
-            log(LoggerLevel.ERROR, LanguageKeys.LOGGER_FILE_ERROR.getMessage(core));
+            log(LoggerLevel.ERROR, LanguageKeys.LOGGER_FILE_ERROR.getMessage());
             debug = true;
         }
-        if (debug) log(LoggerLevel.INFO, LanguageKeys.DEBUG_ENABLE.getMessage(core));
+        if (debug) log(LoggerLevel.INFO, LanguageKeys.DEBUG_ENABLE.getMessage());
     }
 
 
@@ -82,7 +80,7 @@ public class MultiLogger {
     }
 
     private void _logDefault(LoggerLevel level, String message, Throwable throwable) {
-        Logger coreLogger = core.plugin.getLogger();
+        Logger coreLogger = MultiCore.getPlugin().getLogger();
         if (coreLogger == null) {
             if (throwable != null) throwable.printStackTrace();
             System.out.println(level + " " + message);
@@ -106,7 +104,7 @@ public class MultiLogger {
     }
 
     private void _logDefault4J(LoggerLevel level, String message, Throwable throwable) {
-        org.slf4j.Logger coreLogger = core.plugin.getLogger4J();
+        org.slf4j.Logger coreLogger = MultiCore.getPlugin().getLogger4J();
         if (coreLogger == null) {
             if (throwable != null) throwable.printStackTrace();
             System.out.println(level + " " + message);

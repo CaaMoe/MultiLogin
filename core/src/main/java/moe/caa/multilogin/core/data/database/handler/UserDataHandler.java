@@ -15,6 +15,7 @@ package moe.caa.multilogin.core.data.database.handler;
 
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.data.database.SQLManager;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -92,7 +93,7 @@ public class UserDataHandler {
                 ValueUtil.byteToUuid(resultSet.getBytes(3)),
                 resultSet.getString(4),
                 resultSet.getInt(5) != 0,
-                sqlManager.getCore().getYggdrasilServicesHandler());
+                MultiCore.getInstance().getYggdrasilServicesHandler());
     }
 
     public Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
@@ -103,7 +104,7 @@ public class UserDataHandler {
             ResultSet resultSet = ps.executeQuery();
             Set<YggdrasilService> ret = new HashSet<>();
             while (resultSet.next()) {
-                YggdrasilService yggdrasilService = sqlManager.getCore().getYggdrasilServicesHandler().getService(resultSet.getString(1));
+                YggdrasilService yggdrasilService = MultiCore.getInstance().getYggdrasilServicesHandler().getService(resultSet.getString(1));
                 if (yggdrasilService != null)
                     ret.add(yggdrasilService);
             }

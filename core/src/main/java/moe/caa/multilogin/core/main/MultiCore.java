@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.auth.AuthCore;
 import moe.caa.multilogin.core.auth.Verifier;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.data.database.SQLManager;
+import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.language.LanguageKeys;
@@ -41,15 +42,18 @@ import java.util.List;
  * 核心类
  */
 public class MultiCore {
-    public final IPlugin plugin;
-    private final Verifier verifier = new Verifier(this);
-    private final CheckUpdater updater = new CheckUpdater(this);
-    private final CommandHandler commandHandler = new CommandHandler(this);
-    private final SQLManager sqlManager = new SQLManager(this);
-    private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler(this);
-    private final MultiLogger logger = new MultiLogger(this);
-    private final LanguageHandler languageHandler = new LanguageHandler(this);
-    private final AuthCore authCore = new AuthCore(this);
+    //    ksqeib
+    private static MultiCore instance;
+
+    private final IPlugin plugin;
+    private final Verifier verifier = new Verifier();
+    private final CheckUpdater updater = new CheckUpdater();
+    private final CommandHandler commandHandler = new CommandHandler();
+    private final SQLManager sqlManager = new SQLManager();
+    private final YggdrasilServicesHandler yggdrasilServicesHandler = new YggdrasilServicesHandler();
+    private final MultiLogger logger = new MultiLogger();
+    private final LanguageHandler languageHandler = new LanguageHandler();
+    private final AuthCore authCore = new AuthCore();
     public YamlConfig config = null;
     public List<String> safeId = new ArrayList<>();
     public int servicesTimeOut = 10000;
@@ -60,6 +64,36 @@ public class MultiCore {
 
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
+        instance = this;
+    }
+
+    //    ksqeib 2021-7-26
+    public static MultiCore getInstance() {
+        return instance;
+    }
+
+    public static AbstractScheduler getScheduler() {
+        return getInstance().plugin.getSchedule();
+    }
+
+    public static void log(LoggerLevel info, Throwable throwable) {
+        log(info, null, throwable);
+    }
+
+    public static void log(LoggerLevel info, String message) {
+        log(info, message, null);
+    }
+
+    public static void log(LoggerLevel level, String message, Throwable throwable) {
+        getInstance().getLogger().log(level, message, throwable);
+    }
+
+    public static YamlConfig getConfig() {
+        return getInstance().config;
+    }
+
+    public static IPlugin getPlugin() {
+        return getInstance().plugin;
     }
 
     public boolean init() {

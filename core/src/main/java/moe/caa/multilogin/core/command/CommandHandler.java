@@ -12,65 +12,71 @@
 
 package moe.caa.multilogin.core.command;
 
-import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
-import moe.caa.multilogin.core.command.commands.WhitelistCommand;
+import moe.caa.multilogin.core.command.commands.multilogin.MultiLoginCommand;
+import moe.caa.multilogin.core.command.commands.whitelist.WhitelistCommand;
+import moe.caa.multilogin.core.command.impl.RootCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-/**
- * 命令解析器程序
- */
 public class CommandHandler {
+    //    根命令
+    private static final Map<String, RootCommand> fatherCommandMap = new HashMap<>();
 
-    public final Map<String, SubCommand> rootCommand = new Hashtable<>();
-
-    private final MultiCore core;
-
-    public CommandHandler(MultiCore core) {
-        this.core = core;
-        rootCommand.put("whitelist", new WhitelistCommand(core).registerSub());
-        rootCommand.put("multilogin", new MultiLoginCommand(core).registerSub());
+    static {
+//        记录根命令
+        fatherCommandMap.put("whitelist", new WhitelistCommand());
+        fatherCommandMap.put("multilogin", new MultiLoginCommand());
     }
 
-    /**
-     * 提交执行一个命令
-     *
-     * @param sender  命令执行者
-     * @param command 命令根名称
-     * @param args    命令参数
-     */
+    //    扫描根命令并执行
     public void execute(ISender sender, String command, String[] args) {
-        SubCommand sub = rootCommand.get(command.toLowerCase(Locale.ROOT));
-        if (sub != null) {
-            if (sub.hasPermission(sender)) {
-                if (sub.execute(sender, args)) {
-                    return;
-                }
-            }
+        if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
+//        提示未知
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
+            return;
         }
-        // 不知道命令
-        sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage(core));
+        RootCommand rootCommand = fatherCommandMap.get(command);
+//                鉴权
+        if (!rootCommand.canExecute(sender)) {
+//            sender.sendMessage(LanguageKeys.COMMAND_NO_PERMISSION.getMessage());
+            return;
+        }
+//                执行
+        try {
+            rootCommand.execute(sender, args);
+        } catch (Throwable throwable) {
+//            补全出错提示
+            sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage());
+            MultiCore.getInstance().getLogger().log(LoggerLevel.ERROR, throwable);
+            MultiCore.getInstance().getLogger().log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage());
+        }
     }
 
-    /**
-     * 获得命令补全建议
-     *
-     * @param sender  命令执行者
-     * @param command 命令根名称
-     * @param args    命令参数
-     * @return 建议
-     */
+    //    tab补全
     public List<String> tabCompete(ISender sender, String command, String[] args) {
-        SubCommand sub = rootCommand.get(command.toLowerCase(Locale.ROOT));
-        if (sub == null) return Collections.emptyList();
-
-        // 判断有没有对应的权限补全参数
-        if (sub.hasPermission(sender)) {
-            return sub.tabCompete(sender, args);
+        if (!fatherCommandMap.containsKey(command = command.toLowerCase())) {
+//        提示未知
+//          sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
+            return Collections.emptyList();
         }
+        RootCommand rootCommand = fatherCommandMap.get(command);
+        if (!rootCommand.canExecute(sender)) return Collections.emptyList();
+        try {
+            return rootCommand.tabComplete(sender, args);
+        } catch (Throwable throwable) {
+//            补全出错提示
+//            sender.sendMessage(LanguageKeys.COMPILE_ERROR.getMessage());
+            MultiCore.getInstance().getLogger().log(LoggerLevel.ERROR, throwable);
+//            MultiCore.getInstance().getLogger().log(LoggerLevel.ERROR, LanguageKeys.COMPILE_ERROR.getMessage());
+        }
+//        无可补全
         return Collections.emptyList();
     }
 }
