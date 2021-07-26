@@ -23,6 +23,7 @@ public class QueryCommand extends RootCommand {
         super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY);
         subCommands.put("name", new Query_NameCommand());
         subCommands.put("onlineuuid", new Query_OnlineUuidCommand());
+        subCommands.put("redirectuuid", new Query_RedirectUuidCommand());
     }
 
     protected static String toMessage(User user) {
