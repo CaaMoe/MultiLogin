@@ -26,7 +26,7 @@ public class ReloadCommand extends SubCommand {
 
     @Override
     public void subExecute(ISender sender, String[] args) throws Throwable {
-        if(args.length == 1){
+        if(args.length == 0){
             MultiCore.getInstance().reload();
             runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_RELOADED.getMessage()));
         } else {
