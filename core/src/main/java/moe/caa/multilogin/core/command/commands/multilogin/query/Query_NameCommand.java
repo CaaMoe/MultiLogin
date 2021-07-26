@@ -43,7 +43,7 @@ public class Query_NameCommand extends SubCommand {
                 }
             });
         } else {
-
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
         }
     }
 }

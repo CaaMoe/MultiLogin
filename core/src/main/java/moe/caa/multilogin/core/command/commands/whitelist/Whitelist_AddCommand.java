@@ -16,7 +16,10 @@ import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.command.impl.SubCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
+import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 public class Whitelist_AddCommand extends SubCommand {
 
@@ -27,14 +30,19 @@ public class Whitelist_AddCommand extends SubCommand {
     @Override
     public void subExecute(ISender sender, String[] args) throws Throwable {
         if (args.length == 1) {
-            boolean result = MultiCore.getInstance().getSqlManager().getCacheWhitelistDataHandler().addCacheWhitelist(args[0]);
+            boolean result = false;
+            try {
+                result = MultiCore.getInstance().getSqlManager().getCacheWhitelistDataHandler().addCacheWhitelist(args[0]);
+            } catch (SQLIntegrityConstraintViolationException e){
+                MultiCore.getInstance().getLogger().log(LoggerLevel.DEBUG, e);
+            }
             if (result) {
                 runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage(args[0])));
             } else {
                 runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(args[0])));
             }
         } else {
-
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
         }
     }
 

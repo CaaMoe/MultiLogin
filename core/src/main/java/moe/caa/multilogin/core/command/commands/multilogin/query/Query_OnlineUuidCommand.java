@@ -45,7 +45,7 @@ public class Query_OnlineUuidCommand extends SubCommand {
                 sender.sendMessage(QueryCommand.toMessage(user));
             });
         } else {
-
+            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage());
         }
     }
 }
