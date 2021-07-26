@@ -19,28 +19,36 @@ import com.velocitypowered.api.command.CommandMeta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
-import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.VelocityServer;
+import com.velocitypowered.proxy.protocol.MinecraftPacket;
+import com.velocitypowered.proxy.protocol.StateRegistry;
 import fun.ksnb.multilogin.velocity.listener.VelocityListener;
+import fun.ksnb.multilogin.velocity.proxy.MultiLoginEncryptionResponse;
+import fun.ksnb.multilogin.velocity.task.VelocityAuthTask;
+import io.netty.util.collection.IntObjectMap;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.util.ReflectUtil;
+import org.slf4j.Logger;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Logger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@Plugin(id = "multilogin", name = "MultiLogin", version = "@version@", authors = {"ksqeib", "CaaMoe"})
 public class MultiLoginVelocity implements IPlugin {
     private static ProxyServer server;
     private static Logger logger;
@@ -51,7 +59,26 @@ public class MultiLoginVelocity implements IPlugin {
 
     @Override
     public void initCoreService() throws Throwable {
+//        替换掉包
+//        要替换的方向
+        StateRegistry.PacketRegistry toReplace = StateRegistry.LOGIN.serverbound;
 
+        Field field_versions = ReflectUtil.getField(StateRegistry.PacketRegistry.class, "versions", true);
+//        获取注册Map
+        Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry> map = (Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) field_versions.get(toReplace);
+        for (StateRegistry.PacketRegistry.ProtocolRegistry protocolRegistry : map.values()) {
+//            获取packetIdToSupplier Map
+            Field field_packetIdToSupplier = ReflectUtil.getField(StateRegistry.PacketRegistry.ProtocolRegistry.class, "packetIdToSupplier", true);
+            IntObjectMap<Supplier<? extends MinecraftPacket>> packetIdToSupplier = (IntObjectMap<Supplier<? extends MinecraftPacket>>) field_packetIdToSupplier.get(protocolRegistry);
+//            至此 替换完成
+            packetIdToSupplier.put(0x01, MultiLoginEncryptionResponse::new);
+        }
+        MultiLoginEncryptionResponse.init();
+        VelocityAuthTask.init();
+    }
+
+    public static ProxyServer getServer() {
+        return server;
     }
 
     @Override
@@ -70,6 +97,7 @@ public class MultiLoginVelocity implements IPlugin {
     public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.server = server;
         this.logger = logger;
+
         this.dataDirectory = dataDirectory.toFile();
         instance = this;
     }
@@ -92,10 +120,6 @@ public class MultiLoginVelocity implements IPlugin {
         core.disable();
     }
 
-    public static void log(String log) {
-        logger.info(log);
-    }
-
     @Override
     public File getDataFolder() {
         return dataDirectory;
@@ -107,7 +131,7 @@ public class MultiLoginVelocity implements IPlugin {
     }
 
     @Override
-    public Logger getLogger() {
+    public Logger getLogger4J() {
         return logger;
     }
 

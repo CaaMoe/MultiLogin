@@ -71,7 +71,18 @@ public interface IPlugin {
      *
      * @return 日志记录器
      */
-    Logger getLogger();
+    default Logger getLogger() {
+        return null;
+    }
+
+    /**
+     * 获得插件的log4J日志记录器
+     *
+     * @return 日志记录器
+     */
+    default org.slf4j.Logger getLogger4J() {
+        return null;
+    }
 
     /**
      * 获得插件版本号
