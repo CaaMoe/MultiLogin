@@ -74,7 +74,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             request = (EncryptionRequest) REQUEST.invoke(handler);
             addEncrypt();
 //            交给登入任务处理
-            BungeeCord.getInstance().getScheduler().runAsync(MultiLoginBungee.plugin, new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp(), core));
+            MultiLoginBungee.plugin.getSchedule().runTaskAsync(new BungeeAuthTask(initialHandler, getUsername(), getServerId(), getIp(), core));
         } catch (Throwable e) {
             e.printStackTrace();
             initialHandler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));

@@ -12,7 +12,6 @@
 
 package moe.caa.multilogin.bungee.auth;
 
-import moe.caa.multilogin.bungee.proxy.MultiLoginSignLoginResult;
 import moe.caa.multilogin.core.auth.AuthFailedEnum;
 import moe.caa.multilogin.core.auth.AuthResult;
 import moe.caa.multilogin.core.auth.VerificationResult;
@@ -87,7 +86,7 @@ public class BungeeAuthTask implements Runnable {
                 return;
             }
 //            将信息传回到handler
-            LOGIN_PROFILE.invoke(handler, new MultiLoginSignLoginResult(loginResult));
+            LOGIN_PROFILE.invoke(handler, loginResult);
             UNIQUE_ID.invoke(handler, verificationResult.REDIRECT_UUID);
             NAME.invoke(handler, loginResult.getName());
             FINISH.invoke(handler);

@@ -65,7 +65,7 @@ public class AuthCore {
                 down = true;
             }
 //            异常传出 必须留
-            if (result.throwable != null) throwable = result.throwable;
+            if (result != null && result.throwable != null) throwable = result.throwable;
         }
 //        重构结果信息
         AuthFailedEnum failedEnum = down ? AuthFailedEnum.SERVER_DOWN : haveService ? AuthFailedEnum.VALIDATION_FAILED : AuthFailedEnum.NO_SERVICE;

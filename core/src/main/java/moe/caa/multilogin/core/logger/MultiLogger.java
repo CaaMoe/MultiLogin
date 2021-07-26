@@ -22,6 +22,7 @@ public class MultiLogger {
     private final MultiCore core;
     private boolean debug = true;
     private Log4JCore log4JCore;
+    private boolean log4jMode = false;
 
     public MultiLogger(MultiCore core) {
         this.core = core;
@@ -35,6 +36,9 @@ public class MultiLogger {
             l4c.init();
 //            防止提前赋值造成不可用
             log4JCore = l4c;
+            if (core.plugin.getLogger() == null) {
+                if (core.plugin.getLogger4J() != null) log4jMode = true;
+            }
         } catch (Exception e) {
             log(LoggerLevel.ERROR, e);
             log(LoggerLevel.ERROR, LanguageKeys.LOGGER_FILE_ERROR.getMessage(core));
@@ -70,6 +74,14 @@ public class MultiLogger {
     }
 
     private void logDefault(LoggerLevel level, String message, Throwable throwable) {
+        if (log4jMode) {
+            _logDefault4J(level, message, throwable);
+        } else {
+            _logDefault(level, message, throwable);
+        }
+    }
+
+    private void _logDefault(LoggerLevel level, String message, Throwable throwable) {
         Logger coreLogger = core.plugin.getLogger();
         if (coreLogger == null) {
             if (throwable != null) throwable.printStackTrace();
@@ -89,6 +101,30 @@ public class MultiLogger {
             case DEBUG:
                 if (debug)
                     coreLogger.log(Level.INFO, "[DEBUG] " + message, throwable);
+                break;
+        }
+    }
+
+    private void _logDefault4J(LoggerLevel level, String message, Throwable throwable) {
+        org.slf4j.Logger coreLogger = core.plugin.getLogger4J();
+        if (coreLogger == null) {
+            if (throwable != null) throwable.printStackTrace();
+            System.out.println(level + " " + message);
+            return;
+        }
+        switch (level) {
+            case INFO:
+                coreLogger.info(message, throwable);
+                break;
+            case ERROR:
+                coreLogger.error(message, throwable);
+                break;
+            case WARN:
+                coreLogger.warn(message, throwable);
+                break;
+            case DEBUG:
+                if (debug)
+                    coreLogger.info("[DEBUG] " + message, throwable);
                 break;
         }
     }
