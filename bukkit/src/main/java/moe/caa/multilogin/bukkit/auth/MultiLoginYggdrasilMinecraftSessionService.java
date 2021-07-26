@@ -80,7 +80,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
             throw e;
         } catch (Exception e) {
             core.getLogger().log(LoggerLevel.ERROR, e);
-            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
         }
         return null;
     }

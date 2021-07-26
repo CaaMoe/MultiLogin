@@ -98,7 +98,7 @@ public class MultiCore {
 
     public boolean init() {
         try {
-            LibraryHandler libraryHandler = new LibraryHandler(this);
+            LibraryHandler libraryHandler = new LibraryHandler();
             configFile = new File(plugin.getDataFolder(), "config.yml");
 
             try {

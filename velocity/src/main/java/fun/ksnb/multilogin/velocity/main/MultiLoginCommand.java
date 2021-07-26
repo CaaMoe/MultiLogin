@@ -19,23 +19,21 @@ import moe.caa.multilogin.core.main.MultiCore;
 import java.util.List;
 
 public class MultiLoginCommand implements SimpleCommand {
-    private final MultiCore core;
 
-    public MultiLoginCommand(MultiCore core) {
-        this.core = core;
+    public MultiLoginCommand() {
     }
 
     @Override
     public void execute(final Invocation invocation) {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
-        core.getCommandHandler().execute(new VelocitySender(source), invocation.alias(), args);
+        MultiCore.getInstance().getCommandHandler().execute(new VelocitySender(source), invocation.alias(), args);
     }
 
     @Override
     public List<String> suggest(Invocation invocation) {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
-        return core.getCommandHandler().tabCompete(new VelocitySender(source), invocation.alias(), args);
+        return MultiCore.getInstance().getCommandHandler().tabCompete(new VelocitySender(source), invocation.alias(), args);
     }
 }

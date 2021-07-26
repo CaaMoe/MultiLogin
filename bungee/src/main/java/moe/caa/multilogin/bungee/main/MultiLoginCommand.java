@@ -18,20 +18,18 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 public class MultiLoginCommand extends Command implements TabExecutor {
-    private final MultiCore core;
 
-    public MultiLoginCommand(MultiCore core) {
+    public MultiLoginCommand() {
         super("multilogin", null, "whitelist");
-        this.core = core;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        core.getCommandHandler().execute(new BungeeSender(sender), getName(), args);
+        MultiCore.getInstance().getCommandHandler().execute(new BungeeSender(sender), getName(), args);
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return core.getCommandHandler().tabCompete(new BungeeSender(sender), getName(), args);
+        return MultiCore.getInstance().getCommandHandler().tabCompete(new BungeeSender(sender), getName(), args);
     }
 }

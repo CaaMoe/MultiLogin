@@ -100,7 +100,7 @@ public class MultiLoginVelocity implements IPlugin {
         CommandMeta meta = commandManager.metaBuilder("multilogin")
                 .aliases("whitelist")
                 .build();
-        commandManager.register(meta, new MultiLoginCommand(core));
+        commandManager.register(meta, new MultiLoginCommand());
     }
 
     @Subscribe

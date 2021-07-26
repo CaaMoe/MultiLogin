@@ -44,7 +44,7 @@ public class BukkitListener implements Listener {
         }
         if (!MultiLoginBukkit.plugin.onAsyncLoginSuccess(event.getUniqueId(), event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core));
+            event.setKickMessage(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage());
         }
     }
 

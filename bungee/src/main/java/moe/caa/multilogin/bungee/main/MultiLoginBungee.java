@@ -74,7 +74,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 } else if (constructors instanceof Constructor[]) {
                     constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-                    throw new UnsupportedOperationException(LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage(core));
+                    throw new UnsupportedOperationException(LanguageKeys.ERROR_REDIRECT_MODIFY.getMessage());
                 }
             }
         }
@@ -82,7 +82,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOtherService() {
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand(core));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand());
     }
 
     @Override

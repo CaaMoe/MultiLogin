@@ -91,9 +91,9 @@ public class BungeeAuthTask implements Runnable {
             NAME.invoke(handler, loginResult.getName());
             FINISH.invoke(handler);
         } catch (Throwable e) {
-            handler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage(core)));
+            handler.disconnect(new TextComponent(LanguageKeys.VERIFICATION_NO_ADAPTER.getMessage()));
             core.getLogger().log(LoggerLevel.ERROR, e);
-            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage(core));
+            core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.ERROR_AUTH.getMessage());
         }
     }
 }
