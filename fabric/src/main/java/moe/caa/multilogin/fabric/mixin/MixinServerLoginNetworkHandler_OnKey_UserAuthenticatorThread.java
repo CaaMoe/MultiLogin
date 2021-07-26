@@ -18,7 +18,7 @@ public class MixinServerLoginNetworkHandler_OnKey_UserAuthenticatorThread {
     private ServerLoginNetworkHandler handler;
 
     @Inject(method = "run()V",
-            at = @At(value = "INVOKE",
+            at = @At(value = "INVOKE_ASSIGN",
                     target = "Lcom/mojang/authlib/minecraft/MinecraftSessionService;hasJoinedServer" +
                             "(Lcom/mojang/authlib/GameProfile;Ljava/lang/String;Ljava/net/InetAddress;)Lcom/mojang/authlib/GameProfile;",
                     remap = false, shift = At.Shift.AFTER),

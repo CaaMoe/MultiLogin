@@ -1,6 +1,7 @@
 package moe.caa.multilogin.fabric.main;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.response.HasJoinedMinecraftServerResponse;
@@ -17,6 +18,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -30,6 +32,7 @@ public class MultiLoginFabric implements IPlugin {
     private final MinecraftDedicatedServer server;
     private final MultiCore core;
     private final ScheduleManager schedule = new ScheduleManager();
+    private final String PLUGIN_VERSION = new JsonParser().parse(new InputStreamReader(getJarResource("fabric.mod.json"))).getAsJsonObject().get("version").getAsString();
 
     public MultiLoginFabric(MinecraftDedicatedServer server) {
         this.server = server;
@@ -58,7 +61,7 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public String getPluginVersion() {
-        return "1.0-RC.2";
+        return PLUGIN_VERSION;
     }
 
     @Override
@@ -110,7 +113,7 @@ public class MultiLoginFabric implements IPlugin {
 
     @Override
     public void initOtherService() {
-
+        server.getPlayerManager().setWhitelistEnabled(false);
     }
 
     @Override

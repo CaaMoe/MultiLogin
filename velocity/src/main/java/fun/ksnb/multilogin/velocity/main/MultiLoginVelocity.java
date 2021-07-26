@@ -51,10 +51,27 @@ import java.util.stream.Collectors;
 public class MultiLoginVelocity implements IPlugin {
     private static ProxyServer server;
     private static Logger logger;
-    private final File dataDirectory;
     private static MultiLoginVelocity instance;
+    private final File dataDirectory;
     private MultiCore core = new MultiCore(this);
     private VelocitySchedule velocitySchedule = new VelocitySchedule();
+
+    @Inject
+    public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+        this.server = server;
+        this.logger = logger;
+
+        this.dataDirectory = dataDirectory.toFile();
+        instance = this;
+    }
+
+    public static ProxyServer getServer() {
+        return server;
+    }
+
+    public static MultiLoginVelocity getInstance() {
+        return instance;
+    }
 
     @Override
     public void initCoreService() throws Throwable {
@@ -76,10 +93,6 @@ public class MultiLoginVelocity implements IPlugin {
         VelocityAuthTask.init();
     }
 
-    public static ProxyServer getServer() {
-        return server;
-    }
-
     @Override
     public void initOtherService() {
 //        注册命令
@@ -88,19 +101,6 @@ public class MultiLoginVelocity implements IPlugin {
                 .aliases("whitelist")
                 .build();
         commandManager.register(meta, new MultiLoginCommand(core));
-    }
-
-    @Inject
-    public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
-        this.server = server;
-        this.logger = logger;
-
-        this.dataDirectory = dataDirectory.toFile();
-        instance = this;
-    }
-
-    public static MultiLoginVelocity getInstance() {
-        return instance;
     }
 
     @Subscribe

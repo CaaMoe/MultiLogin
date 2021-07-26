@@ -41,16 +41,16 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private static MethodHandle INBOUND;
 
     private final VelocityServer server;
-    private MultiCore core;
     //    原有
     ServerLogin login = null;
     byte[] verify = EMPTY_BYTE_ARRAY;
     LoginSessionHandler loginSessionHandler;
-    private MinecraftConnection mcConnection;
-    private InitialInboundConnection inbound;
     //    运行种产生
     byte[] decryptedSharedSecret = EMPTY_BYTE_ARRAY;
     KeyPair serverKeyPair;
+    private MultiCore core;
+    private MinecraftConnection mcConnection;
+    private InitialInboundConnection inbound;
 
     public MultiLoginEncryptionResponse() {
         server = (VelocityServer) MultiLoginVelocity.getServer();
@@ -79,7 +79,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         if (verify.length == 0) {
             throw new IllegalStateException("尚未发送EncryptionRequest数据包。");
         }
-        if(!enableEncrypt()){
+        if (!enableEncrypt()) {
 //            无法启用加密的情况
             mcConnection.close(true);
             return true;
@@ -119,7 +119,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         return true;
     }
 
-//    对数值进行初始化
+    //    对数值进行初始化
     private void getValues() {
         try {
             login = (ServerLogin) SERVERLOGIN.invoke(loginSessionHandler);
