@@ -93,7 +93,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     @Override
     public void onEnable() {
         plugin = this;
-        schedule = new BungeeSchedule(this);
+        schedule = new BungeeSchedule();
         if (!core.init()) {
 //            启动失败关闭
             onDisable();
