@@ -1,0 +1,46 @@
+name: Java CI
+
+on:
+  push:
+  watch:
+    types: [started]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+      - name: 'Setup JDK 8'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '8'
+          architecture: x64
+      - name: 'Setup JDK 11'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
+          targets: 'JDK_11'
+      - name: Setup gradle 6
+        run: |
+          wget https://downloads.gradle-dn.com/distributions/gradle-6.9-bin.zip -P /tmp
+          unzip -d /usr/share/tools /tmp/gradle-6.9-bin.zip
+          ln -s /usr/share/tools/gradle-6.9/ /usr/share/gradle
+      - name: Build
+        run: |
+          export GRADLE_HOME=/usr/share/gradle
+          export PATH=${GRADLE_HOME}/bin:${PATH}
+          gradle build
+          mkdir builds
+          mv bukkit/build/libs/*.jar builds
+          mv bungee/build/libs/*.jar builds
+          mv core/build/libs/*.jar builds
+          mv fabric/build/libs/*.jar builds
+          mv velocity/build/libs/*.jar builds
+      - name: Upload to Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Package
+          path: builds
+          retention-days: 1
