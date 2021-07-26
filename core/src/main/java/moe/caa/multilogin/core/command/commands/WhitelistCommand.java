@@ -1,74 +1,79 @@
 package moe.caa.multilogin.core.command.commands;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
-import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permission;
+import moe.caa.multilogin.core.command.SubCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 
-public class WhitelistCommand {
+import java.util.Collections;
+import java.util.List;
 
-    private final MultiCore core;
+public class WhitelistCommand extends SubCommand {
 
     public WhitelistCommand(MultiCore core) {
-        this.core = core;
+        super(core, null);
     }
 
-    public void register(CommandDispatcher<ISender> dispatcher) {
-        dispatcher.register(
-                //根命令和权限
-                CommandHandler.literal("whitelist").requires(Permission.MULTI_LOGIN_WHITELIST::hasPermission)
-                        //二级命令
-                        .then(CommandHandler.literal("add")
-                                //需求字符串参数
-                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
-                                        //执行
-                                        .executes(this::executeAdd)
-                                )
-                        )
-                        .then(CommandHandler.literal("remove")
-                                .then(CommandHandler.argument("target", StringArgumentType.greedyString())
-                                        .executes(this::executeRemove)
-                                )
-                        )
-        );
+    public SubCommand registerSub() {
+        subCommandMap.put("add", new SubCommand(core, Permission.MULTI_LOGIN_WHITELIST) {
+            @Override
+            protected boolean execute(ISender sender, String[] args) {
+                if (args.length != 1) return false;
+                executeAdd(sender, args[0]);
+                return true;
+            }
+
+            @Override
+            protected List<String> tabCompete(ISender sender, String[] args) {
+                return Collections.emptyList();
+            }
+        });
+        subCommandMap.put("remove", new SubCommand(core, Permission.MULTI_LOGIN_WHITELIST) {
+            @Override
+            protected boolean execute(ISender sender, String[] args) {
+                if (args.length != 1) return false;
+                executeRemove(sender, args[0]);
+                return true;
+            }
+
+            @Override
+            protected List<String> tabCompete(ISender sender, String[] args) {
+                return Collections.emptyList();
+            }
+        });
+        return this;
     }
 
-    private int executeAdd(CommandContext<ISender> context) {
+    private void executeAdd(ISender sender, String name) {
         core.plugin.getSchedule().runTaskAsync(() -> {
             try {
-                String arg = StringArgumentType.getString(context, "target");
-                boolean b = core.getSqlManager().getCacheWhitelistDataHandler().addCacheWhitelist(arg);
+                boolean b = core.getSqlManager().getCacheWhitelistDataHandler().addCacheWhitelist(name);
                 if (b) {
-                    core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage(core, arg)));
+                    core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD.getMessage(core, name)));
                 } else {
-                    core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(core, arg)));
+                    core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_ADD_ALREADY.getMessage(core, name)));
                 }
             } catch (Throwable throwable) {
-                core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_ERROR.getMessage(core)));
+                core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage(core)));
                 core.getLogger().log(LoggerLevel.ERROR, throwable);
                 core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage(core));
             }
         });
-        return 0;
     }
 
-    private int executeRemove(CommandContext<ISender> context) {
+    private int executeRemove(ISender sender, String name) {
         core.plugin.getSchedule().runTaskAsync(() -> {
             try {
-                String arg = StringArgumentType.getString(context, "target");
-                boolean b = core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(arg);
+                boolean b = core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(name);
                 if (b) {
-                    core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL.getMessage(core, arg)));
+                    core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL.getMessage(core, name)));
                 } else {
-                    core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage(core, arg)));
+                    core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_WHITELIST_DEL_ALREADY.getMessage(core, name)));
                 }
             } catch (Throwable throwable) {
-                core.plugin.getSchedule().runTask(() -> context.getSource().sendMessage(LanguageKeys.COMMAND_ERROR.getMessage(core)));
+                core.plugin.getSchedule().runTask(() -> sender.sendMessage(LanguageKeys.COMMAND_ERROR.getMessage(core)));
                 core.getLogger().log(LoggerLevel.ERROR, throwable);
                 core.getLogger().log(LoggerLevel.ERROR, LanguageKeys.COMMAND_ERROR.getMessage(core));
             }

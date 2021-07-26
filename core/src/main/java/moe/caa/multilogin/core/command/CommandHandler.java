@@ -12,73 +12,64 @@
 
 package moe.caa.multilogin.core.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestion;
-import com.mojang.brigadier.suggestion.Suggestions;
 import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.WhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
-import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
+import java.util.*;
 
+/**
+ * 命令解析器程序
+ */
 public class CommandHandler {
 
-    private final CommandDispatcher<ISender> DISPATCHER = new CommandDispatcher<>();
+    public final Map<String, SubCommand> rootCommand = new Hashtable<>();
 
     private final MultiCore core;
 
     public CommandHandler(MultiCore core) {
         this.core = core;
-        new WhitelistCommand(core).register(DISPATCHER);
-        new MultiLoginCommand(core).register(DISPATCHER);
+        rootCommand.put("whitelist", new WhitelistCommand(core).registerSub());
+        rootCommand.put("multilogin", new MultiLoginCommand(core).registerSub());
     }
 
-
-    public static LiteralArgumentBuilder<ISender> literal(String name) {
-        return LiteralArgumentBuilder.literal(name);
-    }
-
-    public static <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
-        return RequiredArgumentBuilder.argument(name, type);
-    }
-
-    //  执行命令
+    /**
+     * 提交执行一个命令
+     *
+     * @param sender  命令执行者
+     * @param command 命令根名称
+     * @param args    命令参数
+     */
     public void execute(ISender sender, String command, String[] args) {
-        execute(sender, command, String.join(" ", args));
-    }
-
-    public void execute(ISender sender, String command, String args) {
-        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + args, sender);
-        System.out.println(command + " " + args);
-        try {
-            DISPATCHER.execute(parse);
-        } catch (CommandSyntaxException e) {
-            sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage(core));
+        SubCommand sub = rootCommand.get(command.toLowerCase(Locale.ROOT));
+        if (sub != null) {
+            if (sub.hasPermission(sender)) {
+                if (sub.execute(sender, args)) {
+                    return;
+                }
+            }
         }
+        // 不知道命令
+        sender.sendMessage("未知的命令");
     }
 
-    //    tab补全
+    /**
+     * 获得命令补全建议
+     *
+     * @param sender  命令执行者
+     * @param command 命令根名称
+     * @param args    命令参数
+     * @return 建议
+     */
     public List<String> tabCompete(ISender sender, String command, String[] args) {
-        return tabCompete(sender, command, String.join(" ", args));
-    }
+        SubCommand sub = rootCommand.get(command.toLowerCase(Locale.ROOT));
+        if (sub == null) return Collections.emptyList();
 
-    public List<String> tabCompete(ISender sender, String command, String args) {
-        ParseResults<ISender> parse = DISPATCHER.parse(command + " " + args, sender);
-        CompletableFuture<Suggestions> suggestions = DISPATCHER.getCompletionSuggestions(parse);
-        try {
-            return suggestions.get().getList().stream().map(Suggestion::getText).collect(Collectors.toList());
-        } catch (InterruptedException | ExecutionException ignored) {
+        // 判断有没有对应的权限补全参数
+        if (sub.hasPermission(sender)) {
+            return sub.tabCompete(sender, args);
         }
-        return null;
+        return Collections.emptyList();
     }
 }
