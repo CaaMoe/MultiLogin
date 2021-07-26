@@ -14,9 +14,8 @@ package moe.caa.multilogin.bungee.main;
 
 import com.google.gson.Gson;
 import gnu.trove.map.TIntObjectMap;
-import moe.caa.multilogin.bungee.auth.BungeeAuthTask;
-import moe.caa.multilogin.bungee.listener.BungeeListener;
-import moe.caa.multilogin.bungee.proxy.MultiLoginEncryptionResponse;
+import moe.caa.multilogin.bungee.task.BungeeAuthTask;
+import moe.caa.multilogin.bungee.packet.MultiLoginEncryptionResponse;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;
@@ -83,11 +82,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOtherService() {
-//        注册其他服务需要的监听
-        getProxy().getPluginManager().registerListener(this, new BungeeListener(core));
-
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist", core));
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin", core));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand(core));
     }
 
     @Override

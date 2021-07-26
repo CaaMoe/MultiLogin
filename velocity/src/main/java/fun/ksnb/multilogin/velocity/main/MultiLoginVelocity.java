@@ -27,8 +27,7 @@ import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
-import fun.ksnb.multilogin.velocity.listener.VelocityListener;
-import fun.ksnb.multilogin.velocity.proxy.MultiLoginEncryptionResponse;
+import fun.ksnb.multilogin.velocity.packet.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.velocity.task.VelocityAuthTask;
 import io.netty.util.collection.IntObjectMap;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
@@ -96,8 +95,6 @@ public class MultiLoginVelocity implements IPlugin {
 
     @Override
     public void initOtherService() {
-//        基础监听
-        server.getEventManager().register(this, new VelocityListener(core));
 //        注册命令
         CommandManager commandManager = server.getCommandManager();
         CommandMeta meta = commandManager.metaBuilder("multilogin")
