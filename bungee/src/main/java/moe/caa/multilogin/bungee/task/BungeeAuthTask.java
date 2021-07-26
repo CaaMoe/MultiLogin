@@ -10,7 +10,7 @@
  * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
  */
 
-package moe.caa.multilogin.bungee.auth;
+package moe.caa.multilogin.bungee.task;
 
 import moe.caa.multilogin.core.auth.AuthFailedEnum;
 import moe.caa.multilogin.core.auth.AuthResult;

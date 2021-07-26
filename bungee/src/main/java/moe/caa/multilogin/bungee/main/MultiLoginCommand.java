@@ -20,8 +20,8 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 public class MultiLoginCommand extends Command implements TabExecutor {
     private final MultiCore core;
 
-    public MultiLoginCommand(String name, MultiCore core) {
-        super(name);
+    public MultiLoginCommand(MultiCore core) {
+        super("multilogin", null, "whitelist");
         this.core = core;
     }
 

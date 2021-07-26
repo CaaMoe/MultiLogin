@@ -10,7 +10,7 @@
  * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
  */
 
-package fun.ksnb.multilogin.velocity.proxy;
+package fun.ksnb.multilogin.velocity.packet;
 
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.MinecraftConnection;
