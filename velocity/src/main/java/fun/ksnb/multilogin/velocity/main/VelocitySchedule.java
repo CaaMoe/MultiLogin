@@ -15,7 +15,7 @@ package fun.ksnb.multilogin.velocity.main;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 
 public class VelocitySchedule extends AbstractScheduler {
-//    Velocity也不需要同步
+    //    Velocity也不需要同步
     @Override
     public void runTask(Runnable run, long delay) {
         runTaskAsync(run, delay);
