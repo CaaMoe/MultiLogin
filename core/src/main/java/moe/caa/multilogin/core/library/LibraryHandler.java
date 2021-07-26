@@ -151,8 +151,8 @@ public class LibraryHandler {
             NEED_LIBRARIES.put("com.zaxxer HikariCP 4.0.3", "com.zaxxer.hikari.HikariDataSource");
         }
 
-        if (ReflectUtil.getClass("com.mysql.cj.jdbc.MysqlDataSource") == null) {
-            NEED_LIBRARIES.put("mysql mysql-connector-java 8.0.16", "com.mysql.cj.jdbc.MysqlDataSource");
+        if (ReflectUtil.getClass("com.mysql.cj.jdbc.Driver") == null) {
+            NEED_LIBRARIES.put("mysql mysql-connector-java 8.0.25", "com.mysql.cj.jdbc.Driver");
         }
 
         if (ReflectUtil.getClass("org.h2.jdbcx.JdbcConnectionPool") == null) {
