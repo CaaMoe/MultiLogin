@@ -18,7 +18,7 @@ sourceSets {
 }
 
 dependencies {
-    compileOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.11'
+    compileOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
     compileOnly group: 'com.zaxxer', name: 'HikariCP', version: '4.0.3'
     compileOnly group: 'com.h2database', name: 'h2', version: '1.4.200'
     compileOnly group: 'org.yaml', name: 'snakeyaml', version: '1.29'
