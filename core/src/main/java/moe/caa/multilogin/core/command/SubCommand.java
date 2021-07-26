@@ -48,7 +48,7 @@ public abstract class SubCommand {
      */
     protected List<String> tabCompete(ISender sender, String[] args) {
         List<String> ret = new ArrayList<>();
-        if (args.length != 1) return Collections.emptyList();
+        if (args.length <= 0) return Collections.emptyList();
         SubCommand sub = subCommandMap.get(args[0].toLowerCase(Locale.ROOT));
 
         // 补全子命令提供的补全
@@ -58,6 +58,7 @@ public abstract class SubCommand {
             ret.addAll(sub.tabCompete(sender, newArgs));
         }
 
+        if (args.length != 1) return ret;
         // 补全子命令全称
         for (Map.Entry<String, SubCommand> entry : subCommandMap.entrySet()) {
             if (entry.getKey().startsWith(args[0].toLowerCase(Locale.ROOT))) {
