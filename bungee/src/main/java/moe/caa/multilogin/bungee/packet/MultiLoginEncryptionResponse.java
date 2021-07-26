@@ -13,8 +13,8 @@
 package moe.caa.multilogin.bungee.packet;
 
 import com.google.common.base.Preconditions;
-import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.bungee.main.MultiLoginBungee;
+import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;

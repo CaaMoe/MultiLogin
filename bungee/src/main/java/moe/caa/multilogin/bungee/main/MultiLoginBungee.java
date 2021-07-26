@@ -14,8 +14,8 @@ package moe.caa.multilogin.bungee.main;
 
 import com.google.gson.Gson;
 import gnu.trove.map.TIntObjectMap;
-import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.bungee.packet.MultiLoginEncryptionResponse;
+import moe.caa.multilogin.bungee.task.BungeeAuthTask;
 import moe.caa.multilogin.core.impl.AbstractScheduler;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.ISender;

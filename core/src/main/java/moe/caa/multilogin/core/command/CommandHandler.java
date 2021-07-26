@@ -15,6 +15,7 @@ package moe.caa.multilogin.core.command;
 import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.WhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.*;
@@ -51,7 +52,7 @@ public class CommandHandler {
             }
         }
         // 不知道命令
-        sender.sendMessage("未知的命令");
+        sender.sendMessage(LanguageKeys.COMMAND_UNKNOWN.getMessage(core));
     }
 
     /**
