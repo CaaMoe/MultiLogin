@@ -22,13 +22,14 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 
-public class AuthTask<T> implements Callable<AuthResult<T>> {
+public class AuthTask<T> implements Runnable {
     private final YggdrasilService service;
     private final String username;
     private final String serverId;
     private final String ip;
     private final MultiCore core;
     private final CountDownLatch countDownLatch;
+    private AuthResult<T> authResult;
 
     public AuthTask(YggdrasilService service, String username, String serverId, String ip, MultiCore core, CountDownLatch countDownLatch) {
         this.service = service;
@@ -40,8 +41,7 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
     }
 
     @Override
-    public AuthResult<T> call() {
-        AuthResult<T> authResult;
+    public void run() {
         try {
             String result;
             if (service.getBody().isPostMode()) {
@@ -71,6 +71,9 @@ public class AuthTask<T> implements Callable<AuthResult<T>> {
                 countDownLatch.countDown();
             }
         }
+    }
+
+    public AuthResult<T> getAuthResult() {
         return authResult;
     }
 }

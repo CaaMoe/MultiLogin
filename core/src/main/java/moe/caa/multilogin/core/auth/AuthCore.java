@@ -19,13 +19,12 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class AuthCore {
+    //    单开一个验证服务用的池子 区分
+    ExecutorService authExecutor = Executors.newCachedThreadPool();
 
     public final MultiCore core;
 
@@ -75,38 +74,36 @@ public class AuthCore {
 
     private <T> AuthResult<T> authWithTasks(List<YggdrasilService> services, String name, String serverId, String ip) throws InterruptedException {
         AuthResult<T> getResult = null;
-        List<FutureTask<AuthResult<T>>> tasks = new ArrayList<>();
+//        放线程的
+        List<Future<?>> threads = new ArrayList<>();
+//        放结果的
+        List<AuthTask<T>> tasks = new ArrayList<>();
+//        同步用的
         CountDownLatch countDownLatch = new CountDownLatch(services.size());
         for (YggdrasilService entry : services) {
             if (entry == null) continue;
 //            创建进程
-            FutureTask<AuthResult<T>> task = new FutureTask<>(new AuthTask<>(entry, name, serverId, ip, core, countDownLatch));
-            core.plugin.getSchedule().runTaskAsync(task);
+            AuthTask<T> task = new AuthTask<>(entry, name, serverId, ip, core, countDownLatch);
+            Future<?> thread = authExecutor.submit(task);
             tasks.add(task);
+            threads.add(thread);
         }
 //        等待 不使用循环 减少cpu消耗
         countDownLatch.await(core.servicesTimeOut, TimeUnit.MILLISECONDS);
-        Iterator<FutureTask<AuthResult<T>>> itr = tasks.iterator();
-        while (itr.hasNext()) {
-            FutureTask<AuthResult<T>> task = itr.next();
+//        全部关闭
+        threads.parallelStream().forEach(t -> t.cancel(true));
+        for (AuthTask<T> task : tasks) {
 //            由于强制终结的存在 还是会有没完成的
-            if (!task.isDone()) continue;
-            AuthResult<T> wResult = null;
-            try {
-                wResult = task.get();
-            } catch (Exception ignored) {
-            } finally {
-                itr.remove();
-            }
+//            没结果
+            AuthResult<T> wResult = task.getAuthResult();
+            if (wResult == null) continue;
+//            有结果 但是当前没结果 放进去
             if (getResult == null) getResult = wResult;
-            if (wResult != null && wResult.isSuccess()) {
+            if (wResult.isSuccess()) {
+//                结果成功放进去
                 getResult = wResult;
                 break;
             }
-        }
-        for (FutureTask<AuthResult<T>> future : tasks) {
-//            统一终结
-            future.cancel(true);
         }
         return getResult;
     }
