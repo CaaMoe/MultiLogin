@@ -19,8 +19,8 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 
 public class MultiLoginCommand extends Command implements TabExecutor {
 
-    public MultiLoginCommand() {
-        super("multilogin", null, "whitelist");
+    public MultiLoginCommand(String name) {
+        super(name, null);
     }
 
     @Override

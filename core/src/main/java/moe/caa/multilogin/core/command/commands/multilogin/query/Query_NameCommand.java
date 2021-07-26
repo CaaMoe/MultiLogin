@@ -12,7 +12,6 @@
 
 package moe.caa.multilogin.core.command.commands.multilogin.query;
 
-import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.command.impl.SubCommand;
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.impl.ISender;
@@ -24,7 +23,7 @@ import java.util.List;
 public class Query_NameCommand extends SubCommand {
 
     protected Query_NameCommand() {
-        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY, true);
+        super(null, true);
     }
 
     @Override

@@ -82,7 +82,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOtherService() {
-        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand());
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin"));
+        BungeeCord.getInstance().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist"));
     }
 
     @Override

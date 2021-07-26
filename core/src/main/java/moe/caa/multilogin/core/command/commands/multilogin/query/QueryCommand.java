@@ -12,6 +12,7 @@
 
 package moe.caa.multilogin.core.command.commands.multilogin.query;
 
+import moe.caa.multilogin.core.command.Permission;
 import moe.caa.multilogin.core.command.impl.RootCommand;
 import moe.caa.multilogin.core.data.User;
 import moe.caa.multilogin.core.language.LanguageKeys;
@@ -19,7 +20,7 @@ import moe.caa.multilogin.core.language.LanguageKeys;
 public class QueryCommand extends RootCommand {
 
     public QueryCommand() {
-        super(null);
+        super(Permission.MULTI_LOGIN_MULTI_LOGIN_QUERY);
         subCommands.put("name", new Query_NameCommand());
         subCommands.put("onlineuuid", new Query_OnlineUuidCommand());
     }

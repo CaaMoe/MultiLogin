@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.impl.ISender;
 
 //命令及其子权限
 public enum Permission {
+    MULTI_LOGIN("multilogin"),
     MULTI_LOGIN_UPDATE("multilogin.update"),
     MULTI_LOGIN_MULTI_LOGIN_RELOAD("multilogin.multilogin.reload"),
     MULTI_LOGIN_WHITELIST_ADD("multilogin.whitelist.add"),

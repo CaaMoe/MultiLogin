@@ -46,11 +46,14 @@ public abstract class RootCommand extends Command {
     public List<String> tabComplete(ISender sender, String[] args) throws Throwable {
         if (args.length < 1) return Collections.emptyList();
         if (args.length > 1) {
+//            鉴权
 //            向下一层补全
             String name = args[0].toLowerCase();
             String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
             if (subCommands.containsKey(name)) {
-                return subCommands.get(name).tabComplete(sender, newArgs);
+                Command subCommand = subCommands.get(name);
+                if (!subCommand.canExecute(sender)) return Collections.emptyList();
+                return subCommand.tabComplete(sender, newArgs);
             }
         }
 //            补全子命令名称
