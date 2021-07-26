@@ -152,7 +152,7 @@ public class LibraryHandler {
         }
 
         if (ReflectUtil.getClass("com.mysql.cj.jdbc.MysqlDataSource") == null) {
-            NEED_LIBRARIES.put("mysql mysql-connector-java 8.0.11", "com.mysql.cj.jdbc.MysqlDataSource");
+            NEED_LIBRARIES.put("mysql mysql-connector-java 8.0.16", "com.mysql.cj.jdbc.MysqlDataSource");
         }
 
         if (ReflectUtil.getClass("org.h2.jdbcx.JdbcConnectionPool") == null) {
