@@ -40,7 +40,7 @@ public class LibraryHandler {
     private String genUrl(String name) {
 //     例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
         String[] split = name.split(" ");
-        StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
+        StringBuilder sb = new StringBuilder("https://maven.aliyun.com/repository/public/");
         String[] packetSplit = split[0].split("\\.");
         for (String get : packetSplit) {
             sb.append(get);
