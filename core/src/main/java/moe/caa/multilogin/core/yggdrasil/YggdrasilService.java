@@ -72,9 +72,7 @@ public class YggdrasilService {
             ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
         ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
         if (body.isPassIp()) {
-            if (body.isPostMode()) {
-                ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
-            } else {
+            if (!body.isPostMode()) {
                 ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
             }
         }
@@ -125,9 +123,9 @@ public class YggdrasilService {
     public String buildPostContent(String username, String serverId, String ip) {
         if (!body.isPostMode()) return null;
         if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
-            return body.getPostContent().replace("{0}", username).replace("{1}", serverId).replace("{2}", MessageFormat.format(body.getPassIpContentByPost(), ip));
+            return body.getPostContent().replace("{0}", username).replace("{1}", serverId);
         }
-        return body.getPostContent().replace("{0}", username).replace("{1}", serverId).replace("{2}", "");
+        return body.getPostContent().replace("{0}", username).replace("{1}", serverId);
     }
 
     public String getPath() {

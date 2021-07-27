@@ -23,15 +23,13 @@ public class YggdrasilServiceBody {
     private final boolean passIp;
     private final String passIpContent;
     private final String postContent;
-    private final String passIpContentByPost;
 
-    private YggdrasilServiceBody(String url, boolean postMode, boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
+    private YggdrasilServiceBody(String url, boolean postMode, boolean passIp, String passIpContent, String postContent) {
         this.url = url;
         this.postMode = postMode;
         this.passIp = passIp;
         this.passIpContent = passIpContent;
         this.postContent = postContent;
-        this.passIpContentByPost = passIpContentByPost;
     }
 
     protected static YggdrasilServiceBody fromYaml(YamlConfig config) {
@@ -41,8 +39,7 @@ public class YggdrasilServiceBody {
                 config.get("postMode", Boolean.class, false),
                 config.get("passIp", Boolean.class, false),
                 config.get("passIpContent", String.class),
-                config.get("postContent", String.class),
-                config.get("passIpContentByPost", String.class)
+                config.get("postContent", String.class)
         );
     }
 
@@ -65,9 +62,5 @@ public class YggdrasilServiceBody {
 
     public String getPostContent() {
         return postContent;
-    }
-
-    public String getPassIpContentByPost() {
-        return passIpContentByPost;
     }
 }
