@@ -30,7 +30,7 @@ public abstract class AbstractScheduler {
      * @param run 任务
      */
     public void runTaskAsync(Runnable run) {
-        asyncExecutor.submit(run);
+        asyncExecutor.execute(run);
     }
 
     /**
