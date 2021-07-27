@@ -36,16 +36,16 @@ public class YggdrasilService {
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
 
-    private YggdrasilService(String path, Boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, Boolean whitelist, Boolean refuseRepeatedLogin, Integer authRetry) {
+    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, Integer authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
-        this.enable = ValueUtil.getOrThrow(enable, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("enable"));
+        this.enable = enable;
         this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
         this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("body"));
         this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convUuid"));
         this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convRepeat"));
         this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
-        this.whitelist = ValueUtil.getOrThrow(whitelist, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("whitelist"));
-        this.refuseRepeatedLogin = ValueUtil.getOrThrow(refuseRepeatedLogin, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("refuseRepeatedLogin"));
+        this.whitelist = whitelist;
+        this.refuseRepeatedLogin =refuseRepeatedLogin;
         this.authRetry = ValueUtil.getOrThrow(authRetry, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("authRetry"));
         integrity();
     }
@@ -53,14 +53,14 @@ public class YggdrasilService {
     public static YggdrasilService fromYamlConfig(String path, YamlConfig config) {
         return new YggdrasilService(
                 path,
-                config.get("enable", Boolean.class),
+                config.get("enable", Boolean.class, false),
                 config.get("name", String.class),
                 YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
                 config.get("convUuid", ConvUuidEnum.class),
                 config.get("convRepeat", Boolean.class),
                 config.get("nameAllowedRegular", String.class),
-                config.get("whitelist", Boolean.class),
-                config.get("refuseRepeatedLogin", Boolean.class),
+                config.get("whitelist", Boolean.class, true),
+                config.get("refuseRepeatedLogin", Boolean.class, false),
                 config.get("authRetry", Integer.class)
         );
     }

@@ -21,13 +21,13 @@ import moe.caa.multilogin.core.util.YamlConfig;
 public class YggdrasilServiceBody {
     private final ServerTypeEnum serverType;
     private final String url;
-    private final Boolean postMode;
-    private final Boolean passIp;
+    private final boolean postMode;
+    private final boolean passIp;
     private final String passIpContent;
     private final String postContent;
     private final String passIpContentByPost;
 
-    private YggdrasilServiceBody(ServerTypeEnum serverType, String url, Boolean postMode, Boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
+    private YggdrasilServiceBody(ServerTypeEnum serverType, String url, boolean postMode, boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
         this.serverType = serverType;
         this.url = serverType == ServerTypeEnum.MINECRAFT ?
                 "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : url;
@@ -43,8 +43,8 @@ public class YggdrasilServiceBody {
         return new YggdrasilServiceBody(
                 config.get("serverType", ServerTypeEnum.class),
                 config.get("url", String.class),
-                config.get("postMode", Boolean.class),
-                config.get("passIp", Boolean.class),
+                config.get("postMode", Boolean.class, false),
+                config.get("passIp", Boolean.class, false),
                 config.get("passIpContent", String.class),
                 config.get("postContent", String.class),
                 config.get("passIpContentByPost", String.class)
