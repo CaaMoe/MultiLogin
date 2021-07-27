@@ -124,17 +124,6 @@
   	      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
   	      passIp: false
 
-* 添加 Blessing Skin 类型验证服务器
-
-      blessingSkin:
-        body:
-  	
-  	      # 这里需填写 BLESSING_SKIN 类型
-          serverType: BLESSING_SKIN
-  	
-  	      # 这里需要填写的是 Blessing Skin 提供的 Yggdrasil api 地址
-  	      url: "https://example.com/api/yggdrasil"
-
 * 以特殊的方式添加 Minecraft 原版验证服务器
 
       officialCustom:
@@ -158,7 +147,7 @@
   	      # 所以此值应为 ‘ip={0}’ ，其中，变量 {0} 表示 ip 
           passIpContent: "ip={0}"
 
-* 以特殊的方式添加 Blessing Skin 类型验证服务器
+* 添加 Blessing Skin 类型验证服务器
 
       blessingSkinCustom:
         body:

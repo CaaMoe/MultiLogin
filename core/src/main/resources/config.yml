@@ -94,8 +94,8 @@ services:
     enable: true
     name: 'LS皮肤站'
     body:
-      serverType: BLESSING_SKIN
-      url: "https://mcskin.littleservice.cn/api/yggdrasil"
+      serverType: CUSTOM
+      url: "https://mcskin.littleservice.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
       postMode: false
       passIp: false
       passIpContent: "ip={0}"

@@ -13,6 +13,7 @@
 package moe.caa.multilogin.core.yggdrasil;
 
 import moe.caa.multilogin.core.data.ConvUuidEnum;
+import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
@@ -68,21 +69,18 @@ public class YggdrasilService {
      * 验证配置完整性
      */
     private void integrity() {
-        switch (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType"))) {
-            case CUSTOM:
-                ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
-                if (body.isPostMode())
-                    ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
-            case BLESSING_SKIN:
-                ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
-            default:
-                if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
-                    if (body.isPostMode()) {
-                        ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
-                    } else {
-                        ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
-                    }
-                }
+        if (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType")) == ServerTypeEnum.CUSTOM) {
+            ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
+            if (body.isPostMode())
+                ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
+        }
+        ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
+        if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
+            if (body.isPostMode()) {
+                ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
+            } else {
+                ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
+            }
         }
         try {
             MessageFormat.format(body.getUrl(), "", "", "");
