@@ -25,19 +25,12 @@ services:
     # Yggdrasil 验证服务器的基本属性设置。
     body:
 
-      # 服务器类型，
-      # 目前只支持以下值:
-      # BLESSING_SKIN                            // 表示 Blessing skin 的 Yggdrasil 验证服务器
-      # MINECRAFT （仅能出现一次）                  // 表示 Minecraft 原版验证类型服务器
-      # CUSTOM                                   // 其他类型验证服务器
-      serverType: MINECRAFT
-
       # Yggdrasil 验证服务器服务端 hasJoin 部分验证请求链接设置。
       # 当 serverType 为 ‘MINECRAFT’ 时，此节点无需设置。
       # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
       # 当 serverType 为 ‘CUSTOM’时，必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置的内容。
       #       （比如：‘https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}’ ，若是POST请求，则需填写完整的请求链接即可）。
-      url: ""
+      url: "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
 
       # 以 post 请求方式验证账户身份
       # 绝大多数下， Yggdrasil 验证服务器都使用 GET 请求方式验证用户数据的，
@@ -90,23 +83,12 @@ services:
     # 验证错误重试次数
     authRetry: 1
 
+  # LittleSkin 皮肤站
   littleSkin:
-    enable: true
+    enable: false
     name: 'LS皮肤站'
     body:
-      serverType: CUSTOM
       url: "https://mcskin.littleservice.cn/api/yggdrasil/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
-      postMode: false
-      passIp: false
-      passIpContent: "ip={0}"
-      postContent: '{"username":"{0}", "serverId":"{1}", {2}}'
-      passIpContentByPost: '"ip":"{0}"'
-    convUuid: DEFAULT
-    convRepeat: true
-    nameAllowedRegular: '^[0-9a-zA-Z_]{2,10}$'
-    whitelist: true
-    refuseRepeatedLogin: false
-    authRetry: 1
 
 # 通过此节点下定义的 Yggdrasil 账户验证服务器验证登入的玩家都将跳过账户的重名检查，并且强制下线在线的同名账户。
 # 此功能是为了防止抢注 ID 而设计。

@@ -13,7 +13,6 @@
 package moe.caa.multilogin.core.yggdrasil;
 
 import moe.caa.multilogin.core.data.ConvUuidEnum;
-import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
@@ -56,7 +55,7 @@ public class YggdrasilService {
                 config.get("enable", Boolean.class, false),
                 config.get("name", String.class),
                 YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
-                config.get("convUuid", ConvUuidEnum.class),
+                config.get("convUuid", ConvUuidEnum.class, ConvUuidEnum.DEFAULT),
                 config.get("convRepeat", Boolean.class, true),
                 config.get("nameAllowedRegular", String.class, "^[0-9a-zA-Z_]{2,10}$"),
                 config.get("whitelist", Boolean.class, true),
@@ -69,10 +68,8 @@ public class YggdrasilService {
      * 验证配置完整性
      */
     private void integrity() {
-        if (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType")) == ServerTypeEnum.CUSTOM) {
-            if (body.isPostMode())
-                ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
-        }
+        if (body.isPostMode())
+            ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
         ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
         if (body.isPassIp()) {
             if (body.isPostMode()) {

@@ -12,14 +12,12 @@
 
 package moe.caa.multilogin.core.yggdrasil;
 
-import moe.caa.multilogin.core.data.ServerTypeEnum;
 import moe.caa.multilogin.core.util.YamlConfig;
 
 /**
  * 表示 Yggdrasil Body
  */
 public class YggdrasilServiceBody {
-    private final ServerTypeEnum serverType;
     private final String url;
     private final boolean postMode;
     private final boolean passIp;
@@ -27,13 +25,11 @@ public class YggdrasilServiceBody {
     private final String postContent;
     private final String passIpContentByPost;
 
-    private YggdrasilServiceBody(ServerTypeEnum serverType, String url, boolean postMode, boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
-        this.serverType = serverType;
-        this.url = serverType == ServerTypeEnum.MINECRAFT ?
-                "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}" : url;
+    private YggdrasilServiceBody(String url, boolean postMode, boolean passIp, String passIpContent, String postContent, String passIpContentByPost) {
+        this.url = url;
         this.postMode = postMode;
         this.passIp = passIp;
-        this.passIpContent = serverType != ServerTypeEnum.CUSTOM ? "ip={0}" : passIpContent;
+        this.passIpContent = passIpContent;
         this.postContent = postContent;
         this.passIpContentByPost = passIpContentByPost;
     }
@@ -41,7 +37,6 @@ public class YggdrasilServiceBody {
     protected static YggdrasilServiceBody fromYaml(YamlConfig config) {
         if (config == null) return null;
         return new YggdrasilServiceBody(
-                config.get("serverType", ServerTypeEnum.class),
                 config.get("url", String.class),
                 config.get("postMode", Boolean.class, false),
                 config.get("passIp", Boolean.class, false),
@@ -51,9 +46,6 @@ public class YggdrasilServiceBody {
         );
     }
 
-    public ServerTypeEnum getServerType() {
-        return serverType;
-    }
 
     public String getUrl() {
         return url;
