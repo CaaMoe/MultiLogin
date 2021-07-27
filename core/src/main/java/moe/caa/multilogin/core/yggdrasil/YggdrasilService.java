@@ -36,7 +36,7 @@ public class YggdrasilService {
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
 
-    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, Integer authRetry) {
+    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, int authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
         this.enable = enable;
         this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
@@ -46,7 +46,7 @@ public class YggdrasilService {
         this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
         this.whitelist = whitelist;
         this.refuseRepeatedLogin =refuseRepeatedLogin;
-        this.authRetry = ValueUtil.getOrThrow(authRetry, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("authRetry"));
+        this.authRetry = authRetry;
         integrity();
     }
 
@@ -57,11 +57,11 @@ public class YggdrasilService {
                 config.get("name", String.class),
                 YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
                 config.get("convUuid", ConvUuidEnum.class),
-                config.get("convRepeat", Boolean.class),
-                config.get("nameAllowedRegular", String.class),
+                config.get("convRepeat", Boolean.class, true),
+                config.get("nameAllowedRegular", String.class, "^[0-9a-zA-Z_]{2,10}$"),
                 config.get("whitelist", Boolean.class, true),
                 config.get("refuseRepeatedLogin", Boolean.class, false),
-                config.get("authRetry", Integer.class)
+                config.get("authRetry", Integer.class, 1)
         );
     }
 
@@ -70,12 +70,11 @@ public class YggdrasilService {
      */
     private void integrity() {
         if (ValueUtil.getOrThrow(body.getServerType(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("serverType")) == ServerTypeEnum.CUSTOM) {
-            ValueUtil.getOrThrow(body.isPostMode(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postMode"));
             if (body.isPostMode())
                 ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
         }
         ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
-        if (ValueUtil.getOrThrow(body.isPassIp(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIp"))) {
+        if (body.isPassIp()) {
             if (body.isPostMode()) {
                 ValueUtil.getOrThrow(body.getPassIpContentByPost(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContentByPost"));
             } else {
