@@ -36,10 +36,12 @@ services:
       # 绝大多数下， Yggdrasil 验证服务器都使用 GET 请求方式验证用户数据的，
       # 如果你不了解当前 Yggdrasil 验证流程的话，请勿擅自修改它。
       # 仅当 serverType 节点值为 ‘CUSTOM’ 时，此节点才有效。
+      # 默认值: false
       postMode: false
 
       # hasJoin 阶段是否传递用户 IP 信息，如果存在。
       # 仅 GET 请求有效
+      # 默认值: false
       passIp: false
 
       # 设置 url 节点 {2} 变量内容，
@@ -60,25 +62,31 @@ services:
     #   RANDOM    - 随机 UUID
     # 请谨慎设置和修改此节点，避免增加日后维护的心智负担。
     # 为避免触发 Paper 端的某些机制，强烈建议此值为 DEFAULT
+    # 默认值: DEFAULT
     convUuid: DEFAULT
 
     # 当某名玩家第一次登入成功后，若通过节点 ‘convUuid’ 所生成的 UUID 已被使用时，则自动修正为随机的 UUID 避免数据错乱。
     # 请尽量保持此值为 true ，除非您了解后果是什么（虽然几率很小）。
+    # 默认值: true
     convRepeat: true
 
     # 玩家允许设置的用户名正则，不匹配将会拒绝登入请求。
+    # 默认值: ^[0-9a-zA-Z_]{2,10}$
     nameAllowedRegular: '^[0-9a-zA-Z_]{2,10}$'
 
     # 是否为当前验证服务器单独设置白名单。
     # 当全局白名单为true时，此节点无效。
+    # 默认值: true
     whitelist: true
 
     # 当服务器中有相同 Redirect UUID 的玩家是否拒绝登入，
     # 若为 false 将把游戏内玩家踢出，验证中玩家成功登入（原版机制）
     # 若为 true 则拒绝当前登入请求
+    # 默认值: false
     refuseRepeatedLogin: false
 
     # 验证错误重试次数
+    # 默认值: 1
     authRetry: 1
 
   # LittleSkin 皮肤站

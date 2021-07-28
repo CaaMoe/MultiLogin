@@ -35,13 +35,13 @@ public class YggdrasilService {
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
 
-    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, Boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, int authRetry) {
+    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, int authRetry) {
         this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
         this.enable = enable;
         this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
         this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("body"));
         this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convUuid"));
-        this.convRepeat = ValueUtil.getOrThrow(convRepeat, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convRepeat"));
+        this.convRepeat = convRepeat;
         this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
         this.whitelist = whitelist;
         this.refuseRepeatedLogin =refuseRepeatedLogin;
