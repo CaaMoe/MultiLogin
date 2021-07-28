@@ -45,13 +45,6 @@
       # Yggdrasil 验证服务器的基本属性设置。
       body:
 
-        # 服务器类型，
-        # 目前只支持以下值:
-        # BLESSING_SKIN                            // 表示 Blessing skin 的 Yggdrasil 验证服务器
-        # MINECRAFT （仅能出现一次）                  // 表示 Minecraft 原版验证类型服务器
-        # CUSTOM                                   // 其他类型验证服务器
-        serverType: CUSTOM
-
         # Yggdrasil 验证服务器服务端 hasJoin 部分验证请求链接设置。
         # 当 serverType 为 ‘MINECRAFT’ 时，此节点无需设置。
         # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
@@ -76,12 +69,9 @@
 
         # 设置 post 的请求内容。
         # 仅当 postMode 节点值为 true 时，此节点才有效。
-        # 其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置内容
+        # 其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId
+        # 内容不包含 IP 信息，请不要添加额外的参数
         postContent: '{"username":"{0}", "serverId":"{1}"}'
-
-        # 设置 url 节点 {2} 变量内容，
-        # 仅当 passIp 节点为 true 时此节点有效
-        passIpContentByPost: '"ip":"{0}"'
 
       # 当某名玩家第一次在此节点所设置的验证服务器中验证通过后，游戏内的 UUID 会按照此节点所填写的规则来生成：
       # 目前只支持以下值:
@@ -115,60 +105,21 @@
 
 * 添加 Minecraft 原版验证服务器
 
-      official:
-        body:
-  	
-  	      # 这里需填写 MINECRAFT 类型
-          serverType: MINECRAFT
-  	  
-  	      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
-  	      passIp: false
-
-* 以特殊的方式添加 Minecraft 原版验证服务器
-
       officialCustom:
         body:
-    
-          # 这里需填写 CUSTOM 类型
-          serverType: CUSTOM
   	  
   	      # 这是原版验证服务器 HasJoin 阶段向 Yggdrasil 账户验证服务器所请求的 URL
   	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置的内容
   	      url: "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
-  	
-  	      # 由于原版账户验证服务器 HasJoin 阶段是采用 HTTP GET 请求来验证用户登入消息的，所以
-  	      # 此值应为 false
-  	      postMode: false
-  	      
-  	      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
-  	      passIp: true
-  	  
-  	      # 原版验证服务器中 url 占位符 {2} 内容为 ‘ip={IP}’
-  	      # 所以此值应为 ‘ip={0}’ ，其中，变量 {0} 表示 ip 
-          passIpContent: "ip={0}"
 
 * 添加 Blessing Skin 类型验证服务器
 
       blessingSkinCustom:
         body:
-    
-          # 这里需填写 CUSTOM 类型
-          serverType: CUSTOM
   	  
   	      # 假如当前 Blessing Skin 的 Yggdrasil api 地址为 {0} ，则 url 值应该为 ‘{0}/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
   	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置的内容
   	      url: "{0}/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
-  	
-  	      # 由于 Blessing Skin 的 Yggdrasil 账户验证服务器 HasJoin 阶段是采用 HTTP GET 请求来验证用户登入消息的，所以
-  	      # 此值应为 false
-  	      postMode: false
-  	      
-  	      # hasJoin 阶段是否传递用户 IP 信息，如果存在。
-  	      passIp: true
-  	      
-  	      # Blessing Skin 的 Yggdrasil 账户验证服务器中 url 占位符 {2} 内容为 ‘ip={IP}’
-  	      # 所以此值应为 ‘ip={0}’ ，其中，变量 {0} 表示 ip 
-          passIpContent: "ip={0}"
 
 ## 命令和权限
 
