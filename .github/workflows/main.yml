@@ -22,22 +22,32 @@ jobs:
           version: '11'
           architecture: x64
           targets: 'JDK_11'
-      - name: Setup gradle 6
-        run: |
-          wget https://downloads.gradle-dn.com/distributions/gradle-6.9-bin.zip -P /tmp
-          unzip -d /usr/share/tools /tmp/gradle-6.9-bin.zip
-          ln -s /usr/share/tools/gradle-6.9/ /usr/share/gradle
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build
+        uses: gradle/gradle-command-action@v1
+        with:
+            arguments: build
+            gradle-version: 6.9
+      - name: Package Artifact
         run: |
-          export GRADLE_HOME=/usr/share/gradle
-          export PATH=${GRADLE_HOME}/bin:${PATH}
-          gradle build
           mkdir builds
           mv bukkit/build/libs/*.jar builds
           mv bungee/build/libs/*.jar builds
           mv core/build/libs/*.jar builds
           mv fabric/build/libs/*.jar builds
           mv velocity/build/libs/*.jar builds
+      - name: Cleanup Gradle Cache
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
       - name: Upload to Artifact
         uses: actions/upload-artifact@v2
         with:
