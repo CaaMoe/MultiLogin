@@ -18,6 +18,16 @@
 
 ![BStats](https://bstats.org/signatures/bukkit/MultiLoginR.svg)
 
+## 关于混合验证登入的安全性问题
+
+MultiLogin能很好的处理角色重名和UUID重复的问题，并且还提供了设置角色在游戏中UUID的功能，
+以及实现了依据不同验证服务器分组管理的白名单系统和角色名称限制服务。
+
+如果要真有俩角色的在线 UUID 相同，MultiLogin 会根据在线 UUID 查询上次登入时所使用的验证服务器的 
+path 来判断是否允许登入。
+
+理论上不存在什么安全性问题，除非没想到...
+
 ## 如何使用
 
 ### 安装
