@@ -56,9 +56,7 @@ path 来判断是否允许登入。
       body:
 
         # Yggdrasil 验证服务器服务端 hasJoin 部分验证请求链接设置。
-        # 当 serverType 为 ‘MINECRAFT’ 时，此节点无需设置。
-        # 当 serverType 为 ‘BLESSING_SKIN’ 时，只需要指定 Yggdrasil api 地址即可（比如 LittleSkin 的 Yggdrasil api 地址为：‘https://mcskin.littleservice.cn/api/yggdrasil’）。
-        # 当 serverType 为 ‘CUSTOM’时，必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置内容。
+        # 必须指定完整的请求链接，其中 GET 请求中的变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置内容。
         #       （比如：‘https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}’ ，若是POST请求，则需填写完整的请求链接即可）。
         url: "https://example.com/yggdrasil/session/hasJoined?username={0}&serverId={1}{2}"
 
