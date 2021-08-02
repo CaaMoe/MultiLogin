@@ -33,7 +33,6 @@ services:
       # 以 post 请求方式验证账户身份
       # 绝大多数下， Yggdrasil 验证服务器都使用 GET 请求方式验证用户数据的，
       # 如果你不了解当前 Yggdrasil 验证流程的话，请勿擅自修改它。
-      # 仅当 serverType 节点值为 ‘CUSTOM’ 时，此节点才有效。
       # 默认值: false
       postMode: false
 
