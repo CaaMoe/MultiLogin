@@ -117,7 +117,7 @@ path 来判断是否允许登入。
         body:
   	  
   	      # 这是原版验证服务器 HasJoin 阶段向 Yggdrasil 账户验证服务器所请求的 URL
-  	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置的内容
+  	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置的内容
   	      url: "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
 
 * 添加 Blessing Skin 类型验证服务器
@@ -126,7 +126,7 @@ path 来判断是否允许登入。
         body:
   	  
   	      # 假如当前 Blessing Skin 的 Yggdrasil api 地址为 {0} ，则 url 值应该为 ‘{0}/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
-  	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContentByPost 节点所设置的内容
+  	      # 其中，变量 {0} 表示 username ，变量 {1} 表示 serverId ，变量 {2} 表示 passIpContent 节点所设置的内容
   	      url: "{0}/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
 
 ## 命令和权限
