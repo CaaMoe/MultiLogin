@@ -12,6 +12,7 @@
 package moe.caa.multilogin.core.command.commands.multilogin;
 
 import moe.caa.multilogin.core.command.Permission;
+import moe.caa.multilogin.core.command.commands.multilogin.independent.PrintCommand;
 import moe.caa.multilogin.core.command.commands.multilogin.independent.ReloadCommand;
 import moe.caa.multilogin.core.command.commands.multilogin.query.QueryCommand;
 import moe.caa.multilogin.core.command.impl.RootCommand;
@@ -22,5 +23,6 @@ public class MultiLoginCommand extends RootCommand {
         super(Permission.MULTI_LOGIN);
         subCommands.put("reload", new ReloadCommand());
         subCommands.put("query", new QueryCommand());
+        subCommands.put("print", new PrintCommand());
     }
 }

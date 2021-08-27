@@ -19,6 +19,7 @@ public enum Permission {
     MULTI_LOGIN("multilogin"),
     MULTI_LOGIN_UPDATE("multilogin.update"),
     MULTI_LOGIN_MULTI_LOGIN_RELOAD("multilogin.multilogin.reload"),
+    MULTI_LOGIN_MULTI_LOGIN_PRINT("multilogin.multilogin.print"),
     MULTI_LOGIN_WHITELIST_ADD("multilogin.whitelist.add"),
     MULTI_LOGIN_WHITELIST_REMOVE("multilogin.whitelist.remove"),
     MULTI_LOGIN_MULTI_LOGIN_QUERY("multilogin.multilogin.query");
