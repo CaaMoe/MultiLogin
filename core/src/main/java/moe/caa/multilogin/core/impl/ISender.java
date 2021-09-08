@@ -1,15 +1,3 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.impl.ISender
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.impl;
 
 import java.util.UUID;
@@ -20,17 +8,14 @@ import java.util.UUID;
 public interface ISender {
 
     /**
-     * 获得执行者名称
-     *
-     * @return 执行者名称
+     * 这个命令执行者是不是一位玩家
+     * @return 是不是玩家
      */
-    String getName();
+    boolean isPlayer();
 
     /**
-     * 获得执行者有没有某权限
-     *
-     * @param permission 权限
-     * @return 执行者是否有某权限
+     * 这个命令执行者是否具有某权限
+     * @return 是否具有某权限
      */
     boolean hasPermission(String permission);
 
@@ -42,31 +27,20 @@ public interface ISender {
     void sendMessage(String message);
 
     /**
-     * 判断执行者是否是操作员
-     *
-     * @return 执行者是否是操作员
+     * 如果这个命令执行者是一名玩家，则以给定的理由踢出这名玩家
+     * @param message 给定的理由
      */
-    boolean isOp();
+    void kickPlayer(String message);
 
     /**
-     * 判断执行者是否是一名实体玩家
-     *
-     * @return 执行者是否是一名实体玩家
+     * 获得这个命令执行者的名称
+     * @return 命令执行者的名称
      */
-    boolean isPlayer();
+    String getName();
 
     /**
-     * 获得执行者对应的玩家的UniqueIdentifier
-     *
-     * @return 对应的玩家的UniqueIdentifier
+     * 如果这个命令执行者是一名玩家，则返回改名玩家的游戏内 UUID
+     * @return 玩家的游戏内 UUID，否则为 NULL
      */
-    UUID getPlayerUniqueIdentifier();
-
-    /**
-     * 以给定的字符串消息踢出该名执行者对象
-     *
-     * @param message 字符串消息
-     * @return 踢出是否成功
-     */
-    boolean kickPlayer(String message);
+    UUID getPlayerUid();
 }

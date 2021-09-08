@@ -1,110 +1,87 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.util.ReflectUtil
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.var;
 import moe.caa.multilogin.core.exception.NoSuchEnumException;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
+import java.lang.reflect.Type;
 
+/**
+ * 反射工具类库
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReflectUtil {
-    public static MethodHandles.Lookup super_lookup;
 
-    public static void init() throws ClassNotFoundException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, NoSuchMethodException {
-        Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
-        Field theUnsafeField = getField(unsafeClass, unsafeClass, true);
-        Method theUnsafeGetObjectMethod = getMethod(unsafeClass, "getObject", false, Object.class, long.class);
-        Method theUnsafeStaticFieldOffsetMethod = getMethod(unsafeClass, "staticFieldOffset", false, Field.class);
-        Object theUnsafe = theUnsafeField.get(null);
-        Field implLookup = getField(MethodHandles.Lookup.class, "IMPL_LOOKUP", false);
+    /**
+     * 单例模式下的超级反射权限
+     */
+    private static class SuperClassInstance {
+        private static final MethodHandles.Lookup super_lookup;
 
-        super_lookup = (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+        static {
+            super_lookup = get();
+        }
+
+        @SneakyThrows
+        private static MethodHandles.Lookup get(){
+            // TODO: 2021/9/5 SYSTEM INFO 
+            var unsafeClass = Class.forName("sun.misc.Unsafe");
+            var theUnsafeField = handleAccessible(getField(unsafeClass, unsafeClass), true);
+            var theUnsafeGetObjectMethod = handleAccessible(unsafeClass.getDeclaredMethod("getObject", Object.class, long.class), true);
+            var theUnsafeStaticFieldOffsetMethod = handleAccessible(unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class), true);
+            var theUnsafe = theUnsafeField.get(null);
+            var implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            return  (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+        }
     }
 
     /**
-     * 通过 Class 对象在指定的 Class 类中检索第一次出现的 Field
-     *
-     * @param clazz            指定的 Class
-     * @param target           Field 的 Class类型
-     * @param handleAccessible 是否操作检索到的 Field 可见
-     * @return 检索到的第一个 Field
+     * 获得拥有超级反射权限的 MethodHandles.Lookup
+     * @return 拥有超级反射权限的 MethodHandles.Lookup
      */
-    public static Field getField(Class<?> clazz, Class<?> target, boolean handleAccessible) throws NoSuchFieldException {
-        return getField0(clazz, clazz, target, handleAccessible);
+    public static MethodHandles.Lookup getSuperLookup(){
+        return SuperClassInstance.super_lookup;
     }
 
-    private static Field getField0(Class<?> source, Class<?> clazz, Class<?> target, boolean handleAccessible) throws NoSuchFieldException {
-        for (Field field : clazz.getDeclaredFields()) {
-            if (field.getType() != target) continue;
-            if (handleAccessible) field.setAccessible(true);
+    /**
+     * 操作 Method accessible 属性
+     * @param method 指定 Method
+     * @param newAccessible 新的 accessible flag
+     * @return 指定的 Method 本身
+     */
+    public static Method handleAccessible(Method method, boolean newAccessible){
+        method.setAccessible(newAccessible);
+        return method;
+    }
+
+    /**
+     * 操作 Method accessible 属性
+     * @param field 指定 Field
+     * @param newAccessible 新的 accessible flag
+     * @return 指定的 Field 本身
+     */
+    public static Field handleAccessible(Field field, boolean newAccessible){
+        field.setAccessible(newAccessible);
+        return field;
+    }
+
+    /**
+     * 获取指定 Class 对象内匹配的第一个 Field
+     * @param targetClass 指定 Class
+     * @param type Field 的类型
+     * @return 第一次匹配的 Field
+     */
+    public static Field getField(Class<?> targetClass, Type type) throws NoSuchFieldException {
+        for (var field : targetClass.getDeclaredFields()) {
+            if (field.getType() != type) continue;
             return field;
         }
-        clazz = clazz.getSuperclass();
-        if (clazz != null) return getField(clazz, target, handleAccessible);
-        throw new NoSuchFieldException(target.getName() + " type in " + source.getName());
-    }
-
-    /**
-     * 通过 Field 名在指定的 Class 类中检索 Field
-     *
-     * @param clazz            指定的 Class
-     * @param target           Field 的 name
-     * @param handleAccessible 是否操作检索到的 Field 可见
-     * @return 检索到的 Field
-     */
-    public static Field getField(Class<?> clazz, String target, boolean handleAccessible) throws NoSuchFieldException {
-        try {
-            Field field;
-            field = clazz.getDeclaredField(target);
-            if (handleAccessible) field.setAccessible(true);
-            return field;
-        } catch (NoSuchFieldException e) {
-            throw new NoSuchFieldException(target + " field in " + clazz.getName());
-        }
-    }
-
-    /**
-     * 通过 Class 数组对象在指定的 Class 类中检索 Method
-     *
-     * @param clazz            指定的 Class
-     * @param name             Method 的 name
-     * @param handleAccessible 是否操作检索到的 Field 可见
-     * @param args             参数数组
-     * @return 检索到的 Method
-     */
-    public static Method getMethod(Class<?> clazz, String name, boolean handleAccessible, Class<?>... args) throws NoSuchMethodException {
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.getName().equalsIgnoreCase(name)) continue;
-            if (!Arrays.equals(method.getParameterTypes(), args)) continue;
-            if (handleAccessible) method.setAccessible(true);
-            return method;
-        }
-        throw new NoSuchMethodException(name + " method in " + clazz.getName());
-    }
-
-    public static Method getMethodWithParent(Class<?> clazz, String name, boolean handleAccessible, Class<?>... args) throws NoSuchMethodException {
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (!method.getName().equalsIgnoreCase(name)) continue;
-            if (!Arrays.equals(method.getParameterTypes(), args)) continue;
-            if (handleAccessible) method.setAccessible(true);
-            return method;
-        }
-        if (clazz != Object.class)
-            return getMethodWithParent(clazz.getSuperclass(), name, handleAccessible, args);
-        throw new NoSuchMethodException(name + " method in " + clazz.getName());
+        throw new NoSuchFieldException(type.getTypeName());
     }
 
     /**
@@ -115,11 +92,25 @@ public class ReflectUtil {
      * @return 指定的实例
      */
     public static Object getEnumIns(Class<? extends Enum<?>> clazz, String name) throws NoSuchEnumException {
-        for (Enum<?> constant : clazz.getEnumConstants()) {
+        for (var constant : clazz.getEnumConstants()) {
             if (!constant.name().equalsIgnoreCase(name)) continue;
             return constant;
         }
         throw new NoSuchEnumException(name + " enum in " + clazz.getName());
+    }
+
+    /**
+     * 判断类是否已被加载
+     * @param name 类全名
+     * @return 是否已被加载
+     */
+    public static boolean isExistsClass(String name){
+        try {
+            Class.forName(name);
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
     }
 
     /**
@@ -131,7 +122,7 @@ public class ReflectUtil {
      */
     public static boolean isCaseClass(Class<?> src, Class<?> parent) {
         if (parent == src) return true;
-        for (Class<?> anInterface : src.getInterfaces()) {
+        for (var anInterface : src.getInterfaces()) {
             if (anInterface == parent) {
                 return true;
             }
@@ -139,13 +130,5 @@ public class ReflectUtil {
         src = src.getSuperclass();
         if (src != null) return isCaseClass(src, parent);
         return false;
-    }
-
-    public static Class<?> getClass(String name) {
-        try {
-            return Class.forName(name);
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

@@ -1,72 +1,74 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.language.LanguageHandler
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.language;
 
+import lombok.NoArgsConstructor;
+import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.util.YamlConfig;
+import moe.caa.multilogin.core.util.IOUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.Properties;
 
 /**
- * 可读消息处理程序
+ * 代表可读文本处理程序
  */
+@NoArgsConstructor
 public class LanguageHandler {
-    private YamlConfig defaultLanguageYamlConfig = null;
-    private YamlConfig languageYamlConfig;
-    private boolean outside = false;
+    private Properties inside;
+    private Properties outside;
 
-    public LanguageHandler() {
-    }
-
-
-    public void init() {
-        defaultLanguageYamlConfig = YamlConfig.fromInputStream(MultiCore.getPlugin().getJarResource("language.yml"));
-        File languageFile = new File(MultiCore.getPlugin().getDataFolder(), "language.yml");
-        if (languageFile.exists()) {
+    /**
+     * 初始化这个可读文本处理程序
+     * @param core 插件核心
+     * @param fileName 可读文本文件名称
+     */
+    public boolean init(MultiCore core, String fileName){
+        inside = new Properties();
+        try {
+            inside.load(new InputStreamReader(IOUtil.getJarResource(fileName), StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("Unable to load inside message file. (%s)", fileName), e);
+            return false;
+        }
+        var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
+        if(outsideFile.exists()){
+            outside = new Properties();
             try {
-                languageYamlConfig = YamlConfig.fromInputStream(new FileInputStream(languageFile));
-                outside = true;
-            } catch (Exception ignore) {
-                languageYamlConfig = null;
+                outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("Unable to load outside message file. (%s)", outsideFile.getAbsolutePath()), e);
             }
+        } else {
+            outside = null;
         }
-        MultiCore.log(LoggerLevel.INFO, outside ? LanguageKeys.USE_OUTSIDE_LANGUAGE.getMessage() : LanguageKeys.USE_INSIDE_LANGUAGE.getMessage());
-        if (outside) testLanguage();
+        return true;
     }
 
-    private void testLanguage() {
-        for (LanguageKeys value : LanguageKeys.values()) {
-            String msg = languageYamlConfig.get(value.key, String.class);
-            if (msg != null) {
-                try {
-                    MessageFormat.format(msg, value.args);
-                    continue;
-                } catch (Exception ignored) {
-                }
+    /**
+     * 通过 节点 和 参数 构建这个可读文本字符串对象
+     * @param node 节点
+     * @param args 占位参数
+     * @return 可读文本字符串对象
+     */
+    public String getMessage(String node, Object... args){
+        var ret = String.format("The language file node '%s' is missing or wrong, please contact the administrator.", node);
+        try {
+            String pat;
+            if(outside != null && outside.containsKey(node)){
+                pat = outside.getProperty(node);
+            } else {
+                pat = inside.getProperty(node);
             }
-            repairLanguagePath(value.key);
-            //MultiLogger.log(LoggerLevel.WARN, LanguageKeys.REPAIR_LANGUAGE_KEY.getMessage(value.key));
+            ret = args.length == 0 ? pat : MessageFormat.format(pat, args);
+        } catch (Exception e){
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("The language file node '%s' is missing or wrong.", node), e);
         }
-    }
-
-    private void repairLanguagePath(String path) {
-        languageYamlConfig.set(path, defaultLanguageYamlConfig.get(path, String.class));
-    }
-
-    protected String getMessage(LanguageKeys keys, Object... args) {
-        return MessageFormat.format(outside ? languageYamlConfig.get(keys.key, String.class) : defaultLanguageYamlConfig.get(keys.key, String.class), args);
+        return ret;
     }
 }

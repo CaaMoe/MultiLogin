@@ -1,72 +1,51 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.yggdrasil;
 
-import moe.caa.multilogin.core.language.LanguageKeys;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.YamlConfig;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * 代表 Yggdrasil 账户验证服务器数据对象管理程序
+ */
+@NoArgsConstructor
+@Getter
 public class YggdrasilServicesHandler {
-    private static final ArrayList<YggdrasilService> SERVICES = new ArrayList<>();
-
-    public YggdrasilServicesHandler() {
-    }
-
-    public void init() {
-        reload();
-    }
+    private final Set<YggdrasilService> yggdrasilServices = Collections.synchronizedSet(new HashSet<>());
 
     /**
-     * 读取 Yggdrasil
+     * 读取配置
+     * @param config 配置文件
      */
-    public void reload() {
-        SERVICES.clear();
-        YamlConfig services = MultiCore.getConfig().get("services", YamlConfig.class);
-        if (services != null) {
-            for (String path : services.getKeys()) {
-                YamlConfig section = services.get(path, YamlConfig.class);
-                if (section == null) continue;
-                try {
-                    YggdrasilService service = YggdrasilService.fromYamlConfig(path, section);
-                    SERVICES.add(service);
-                    if (service.isEnable()) {
-                        MultiCore.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL.getMessage(service.getName(), service.getPath()));
-                    } else {
-                        MultiCore.log(LoggerLevel.INFO, LanguageKeys.APPLY_YGGDRASIL_NO_ENABLE.getMessage(service.getName(), service.getPath()));
-                    }
-                } catch (Exception e) {
-                    MultiCore.log(LoggerLevel.ERROR, LanguageKeys.YGGDRASIL_CONFIGURATION_ERROR.getMessage(path, e.getMessage()));
-                }
+    public void init(YamlConfig config){
+        yggdrasilServices.clear();
+        for (var key : config.getKeys()) {
+            var section = config.get(key, YamlConfig.class);
+            if(section == null) continue;
+            try {
+                var service = YggdrasilService.getYggdrasilServiceFromMap(key, section);
+                yggdrasilServices.add(service);
+                MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("添加 Yggdrasil 账户验证服务器 %s(%s)%s。",
+                        service.getNameString(), service.getPathString(), (service.isEnable() ? "" : "，但未启用它")));
+                MultiLogger.getLogger().log(LoggerLevel.DEBUG, service.toString());
+            } catch (Exception e) {
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("无法读取配置文件节点 '%s' 中的 Yggdrasil 账户验证服务器", key), e);
             }
-        }
-        if (SERVICES.stream().noneMatch(YggdrasilService::isEnable)) {
-            MultiCore.log(LoggerLevel.WARN, LanguageKeys.SERVICES_NOTHING.getMessage());
         }
     }
 
-    public YggdrasilService getService(String path) {
-        for (YggdrasilService service : SERVICES) {
-            if (service.getPath().equals(path)) {
+    public YggdrasilService getYggdrasilService(String path){
+        for (YggdrasilService service : yggdrasilServices) {
+            if(service.getPathString().equals(path)){
                 return service;
             }
         }
         return null;
-    }
-
-    public ArrayList<YggdrasilService> getServices() {
-        return SERVICES;
     }
 }

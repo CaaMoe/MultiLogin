@@ -1,0 +1,17 @@
+allprojects {
+    apply plugin: "java"
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+
+        compileOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
+        compileOnly group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+        implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+    }
+}

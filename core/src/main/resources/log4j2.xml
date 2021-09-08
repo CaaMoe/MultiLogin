@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <properties>
+        <property name="LOG_HOME">%path%/logs</property>
+    </properties>
+    <Appenders>
+        <Console name="TerminalConsole" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="[%style{%c{1.}}{cyan}][%style{%t}{bright,magenta}/%highlight{%level}{ERROR=Bright RED, WARN=Bright Yellow, INFO=Bright Green, DEBUG=Bright Cyan, TRACE=Bright White}]:%msg%n"/>
+        </Console>
+        <RollingRandomAccessFile name="File" fileName="${LOG_HOME}/latest.log"
+                                 filePattern="${LOG_HOME}/%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[%d{yyyy-MM-dd - HH:mm:ss}] [%t - %level]: %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="1000"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="File"/>
+            <!--            <AppenderRef ref="TerminalConsole" level="info"/>-->
+        </Root>
+    </Loggers>
+</Configuration>
+

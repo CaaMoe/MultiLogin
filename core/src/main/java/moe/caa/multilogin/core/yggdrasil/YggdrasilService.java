@@ -1,99 +1,123 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.yggdrasil.YggdrasilService
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.yggdrasil;
 
+import lombok.Data;
+import lombok.var;
 import moe.caa.multilogin.core.data.ConvUuidEnum;
-import moe.caa.multilogin.core.language.LanguageKeys;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 
-import java.text.MessageFormat;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
 
 /**
- * 表示 Yggdrasil 验证服务器对象
+ * 代表 Yggdrasil 账户验证服务器数据对象
  */
+
+@Data
 public class YggdrasilService {
-    private final String path;
+    private final char[] path;
     private final boolean enable;
-    private final String name;
-    private final YggdrasilServiceBody body;
+    private final char[] name;
+    private final char[] url;
+    private final boolean postMode;
+    private final boolean passIp;
+    private final char[] passIpContent;
+    private final char[] postContent;
     private final ConvUuidEnum convUuid;
     private final boolean convRepeat;
-    private final String nameAllowedRegular;
+    private final char[] nameAllowedRegular;
     private final boolean whitelist;
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
+    private final boolean safeId;
 
-    private YggdrasilService(String path, boolean enable, String name, YggdrasilServiceBody body, ConvUuidEnum convUuid, boolean convRepeat, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, int authRetry) {
-        this.path = ValueUtil.getOrThrow(path, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("path"));
+    /**
+     * 构建这个 YggdrasilService 实例
+     * @param path 识别路径
+     * @param enable 启用情况
+     * @param name 别称
+     * @param url 请求链接
+     * @param postMode 报文请求模式
+     * @param passIp 是否传递 IP
+     * @param passIpContent 传递的 IP 内容
+     * @param postContent 报文请求内容
+     * @param convUuid UUID 生成规则
+     * @param convRepeat 始终处理 UUID 重复问题
+     * @param nameAllowedRegular  允许的用户名正则
+     * @param whitelist 白名单
+     * @param refuseRepeatedLogin 不进行强制登入
+     * @param authRetry 验证超时重试次数
+     * @param safeId ID 强优先
+     */
+    private YggdrasilService(char[] path, boolean enable, char[] name, char[] url,
+                            boolean postMode, boolean passIp, char[] passIpContent,
+                            char[] postContent, ConvUuidEnum convUuid, boolean convRepeat,
+                            char[] nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin,
+                             int authRetry, boolean safeId) {
+        this.path = Objects.requireNonNull(path, "path is null");
         this.enable = enable;
-        this.name = ValueUtil.getOrThrow(name, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("name"));
-        this.body = ValueUtil.getOrThrow(body, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("body"));
-        this.convUuid = ValueUtil.getOrThrow(convUuid, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("convUuid"));
+        this.name = Objects.requireNonNull(name, "name is null");
+        this.url = Objects.requireNonNull(url, "url is null");
+        this.postMode = postMode;
+        this.passIp = passIp;
+        this.passIpContent = Objects.requireNonNull(passIpContent, "passIpContent is null");
+        this.postContent = postContent;
+        this.convUuid = Objects.requireNonNull(convUuid, "convUuid is null");
         this.convRepeat = convRepeat;
-        this.nameAllowedRegular = ValueUtil.getOrThrow(nameAllowedRegular, LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("nameAllowedRegular"));
+        this.nameAllowedRegular = Objects.requireNonNull(nameAllowedRegular, "nameAllowedRegular is null");
         this.whitelist = whitelist;
-        this.refuseRepeatedLogin =refuseRepeatedLogin;
+        this.refuseRepeatedLogin = refuseRepeatedLogin;
         this.authRetry = authRetry;
-        integrity();
-    }
-
-    public static YggdrasilService fromYamlConfig(String path, YamlConfig config) {
-        return new YggdrasilService(
-                path,
-                config.get("enable", Boolean.class, false),
-                config.get("name", String.class),
-                YggdrasilServiceBody.fromYaml(config.get("body", YamlConfig.class)),
-                config.get("convUuid", ConvUuidEnum.class, ConvUuidEnum.DEFAULT),
-                config.get("convRepeat", Boolean.class, true),
-                config.get("nameAllowedRegular", String.class, "^[0-9a-zA-Z_]{2,10}$"),
-                config.get("whitelist", Boolean.class, true),
-                config.get("refuseRepeatedLogin", Boolean.class, false),
-                config.get("authRetry", Integer.class, 1)
-        );
+        this.safeId = safeId;
     }
 
     /**
-     * 验证配置完整性
+     * 获得路径字符串
+     * @return 路径字符串
      */
-    private void integrity() {
-        if (body.isPostMode())
-            ValueUtil.getOrThrow(body.getPostContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("postContent"));
-        ValueUtil.getOrThrow(body.getUrl(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("url"));
-        if (body.isPassIp()) {
-            if (!body.isPostMode()) {
-                ValueUtil.getOrThrow(body.getPassIpContent(), LanguageKeys.CONFIGURATION_VALUE_ERROR.getMessage("passIpContent"));
-            }
-        }
-        try {
-            MessageFormat.format(body.getUrl(), "", "", "");
-        } catch (Exception exception) {
-            throw new IllegalArgumentException(LanguageKeys.URL_ILLEGAL_FORMAT.getMessage(exception.getMessage()));
-        }
+    public String getPathString() {
+        return ValueUtil.charArrayToString(path);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        YggdrasilService service = (YggdrasilService) o;
-        return Objects.equals(path, service.path);
+    /**
+     * 获得别称字符串
+     * @return 别称字符串
+     */
+    public String getNameString(){
+        return ValueUtil.charArrayToString(name);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(path);
+    /**
+     * 获得链接字符串
+     * @return 链接字符串
+     */
+    public String getUrlString(){
+        return ValueUtil.charArrayToString(url);
+    }
+
+    /**
+     * 获得报文内容字符串
+     * @return 报文内容字符串
+     */
+    public String getPostContentString(){
+        return ValueUtil.charArrayToString(postContent);
+    }
+
+    /**
+     * 获得 ip 信息内容字符串
+     * @return ip 信息内容字符串
+     */
+    public String getPassIpContentString(){
+        return ValueUtil.charArrayToString(passIpContent);
+    }
+
+    /**
+     * 获得用户名正则字符串
+     * @return 用户名正则字符串
+     */
+    public String getNameAllowedRegularString(){
+        return ValueUtil.charArrayToString(nameAllowedRegular);
     }
 
     /**
@@ -105,66 +129,107 @@ public class YggdrasilService {
      * @return URL
      */
     public String buildUrl(String username, String serverId, String ip) {
-        if (body.isPostMode()) return body.getUrl();
-        if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
-            return MessageFormat.format(body.getUrl(), username, serverId, MessageFormat.format(body.getPassIpContent(), ip));
+        if(postMode) return getUrlString();
+        if (passIp) {
+            var passIp = buildPassIpContent(ip);
+            return getUrlString()
+                    .replace("{0}", username)
+                    .replace("{username}", username)
+                    .replace("{1}", serverId)
+                    .replace("{serverId}", serverId)
+                    .replace("{2}", passIp)
+                    .replace("{passIpContent}", passIp);
+
         }
-        return MessageFormat.format(body.getUrl(), username, serverId, "");
+        return getUrlString()
+                .replace("{0}", username)
+                .replace("{username}", username)
+                .replace("{1}", serverId)
+                .replace("{serverId}", serverId)
+                .replace("{2}", "")
+                .replace("{passIpContent}", "");
     }
 
     /**
-     * 构建 POST 请求内容
+     * 构建 ip 信息内容
+     * @param ip ip
+     * @return ip 信息内容
+     */
+    private String buildPassIpContent(String ip){
+        var passIp = getPassIpContentString();
+        if (ValueUtil.isEmpty(passIp)) return "";
+        return passIp
+                .replace("{0}", ip)
+                .replace("{ip}", ip);
+    }
+
+    /**
+     * 构建 POST 请求报文内容
      *
      * @param username 用户名
      * @param serverId 服务器ID
      * @param ip       地址
-     * @return 内容
+     * @return URL
      */
-    public String buildPostContent(String username, String serverId, String ip) {
-        if (!body.isPostMode()) return null;
-        if (body.isPassIp() && ValueUtil.notIsEmpty(ip)) {
-            return body.getPostContent().replace("{0}", username).replace("{1}", serverId);
+    private String buildPostContent(String username, String serverId, String ip){
+        if(!postMode) return "";
+        if (passIp) {
+            var passIp = buildPassIpContent(ip);
+            return getPostContentString()
+                    .replace("{0}", username)
+                    .replace("{username}", username)
+                    .replace("{1}", serverId)
+                    .replace("{serverId}", serverId)
+                    .replace("{2}", passIp)
+                    .replace("{passIpContent}", passIp);
         }
-        return body.getPostContent().replace("{0}", username).replace("{1}", serverId);
+        return getPostContentString()
+                .replace("{0}", username)
+                .replace("{username}", username)
+                .replace("{1}", serverId)
+                .replace("{serverId}", serverId)
+                .replace("{2}", "")
+                .replace("{passIpContent}", "");
     }
 
-    public String getPath() {
-        return path;
-    }
+    public static YggdrasilService getYggdrasilServiceFromMap(String path, YamlConfig config) {
+        YamlConfig bodyConfig = config.get("body", YamlConfig.class, YamlConfig.empty());
+        var enable = config.get("enable", Boolean.class, true);
 
-    public boolean isEnable() {
-        return enable;
-    }
+        var name = Objects.requireNonNull(config.get("name", String.class), "name is null");
 
-    public String getName() {
-        return name;
-    }
+        var url = Objects.requireNonNull(bodyConfig.get("url", String.class), "name is null");
+        var postMode = bodyConfig.get("postMode", Boolean.class, false);
+        var passIp = bodyConfig.get("passIp", Boolean.class, false);
+        var passIpContent = bodyConfig.get("passIpContent", String.class, "&ip={ip}");
+        var postContent = bodyConfig.get("postContent", String.class, "{\"username\":\"{username}\", \"serverId\":\"{serverId}\"}");
 
-    public ConvUuidEnum getConvUuid() {
-        return convUuid;
-    }
+        var convUuid = config.get("convUuid", ConvUuidEnum.class, ConvUuidEnum.DEFAULT);
+        var convRepeat = config.get("convRepeat", Boolean.class, true);
+        var nameAllowedRegular = config.get("nameAllowedRegular", String.class, "");
+        var whitelist = config.get("whitelist", Boolean.class, false);
+        var refuseRepeatedLogin = config.get("refuseRepeatedLogin", Boolean.class, false);
+        var authRetry =  config.get("authRetry", Integer.class, 1);
+        var safeId =  config.get("safeId", Boolean.class, false);
 
-    public boolean isConvRepeat() {
-        return convRepeat;
-    }
+        if(ValueUtil.isEmpty(url)){
+            throw new IllegalArgumentException("url is illegal argument");
+        }
 
-    public String getNameAllowedRegular() {
-        return nameAllowedRegular;
-    }
+        if(ValueUtil.isEmpty(Objects.requireNonNull(path, "path is null"))){
+            throw new IllegalArgumentException("path is illegal argument");
+        }
 
-    public boolean isWhitelist() {
-        return whitelist;
-    }
+        try {
+            new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("url is illegal argument", e);
+        }
 
-    public int getAuthRetry() {
-        return authRetry;
-    }
-
-    public YggdrasilServiceBody getBody() {
-        return body;
-    }
-
-    public boolean isRefuseRepeatedLogin() {
-        return refuseRepeatedLogin;
+        return new YggdrasilService(
+                path.toCharArray(), enable, name.toCharArray(),
+                url.toCharArray(), postMode, passIp, passIpContent.toCharArray(), postContent.toCharArray(),
+                convUuid, convRepeat, nameAllowedRegular.toCharArray(), whitelist, refuseRepeatedLogin, authRetry, safeId
+        );
     }
 }

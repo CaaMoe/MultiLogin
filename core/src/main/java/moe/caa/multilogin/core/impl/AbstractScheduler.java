@@ -1,50 +1,41 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.impl.Scheduler
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.impl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 代表一个调度器对象
+ * 代表插件线程调度器对象
  */
 public abstract class AbstractScheduler {
-    ScheduledExecutorService timerExecutor = Executors.newScheduledThreadPool(5);
-    ExecutorService asyncExecutor = Executors.newCachedThreadPool();
+    private final AtomicInteger asyncThreadId = new AtomicInteger(0);
+    private final AtomicInteger timerThreadId = new AtomicInteger(0);
+    private final ScheduledExecutorService timerExecutor = Executors.newScheduledThreadPool(5,
+            r -> new Thread(r, "MultiLogin Async Timer #" + timerThreadId.incrementAndGet()));
+    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
+            r -> new Thread(r, "MultiLogin Async #" + asyncThreadId.incrementAndGet()));
 
     /**
-     * 延迟执行任务
-     *
-     * @param run 任务
+     * 执行一个异步任务
+     * @param runnable 任务对象
      */
-    public void runTaskAsync(Runnable run) {
-        asyncExecutor.execute(run);
+    public void runTaskAsync(Runnable runnable){
+        asyncExecutor.execute(runnable);
     }
 
     /**
-     * 异步延迟执行任务
-     *
-     * @param run   任务
-     * @param delay 延迟
+     * 执行一个异步任务
+     * @param runnable 任务对象
+     * @param delay 延时
      */
-    public void runTaskAsync(Runnable run, long delay) {
-        timerExecutor.schedule(run, delay, TimeUnit.MILLISECONDS);
+    public void runTaskAsync(Runnable runnable, long delay){
+        timerExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
-     * 异步延迟执行周期任务
+     * 执行一个周期异步任务
      *
      * @param run    任务
      * @param delay  延迟
@@ -55,7 +46,15 @@ public abstract class AbstractScheduler {
     }
 
     /**
-     * 延迟执行任务
+     * 关闭所有线程池内的线程
+     */
+    public void shutdown(){
+        timerExecutor.shutdown();
+        asyncExecutor.shutdown();
+    }
+
+    /**
+     * 执行一个同步任务
      *
      * @param run   任务
      * @param delay 延迟
@@ -63,7 +62,7 @@ public abstract class AbstractScheduler {
     public abstract void runTask(Runnable run, long delay);
 
     /**
-     * 执行任务
+     * 执行一个同步任务
      *
      * @param run 任务
      */

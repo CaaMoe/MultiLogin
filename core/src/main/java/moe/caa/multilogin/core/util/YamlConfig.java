@@ -1,17 +1,6 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.util.YamlConfig
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.util;
 
+import lombok.var;
 import moe.caa.multilogin.core.exception.NoSuchEnumException;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -24,22 +13,21 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Yaml 配置文件读写类
+ * YAML 配置文件读取类
  */
-@SuppressWarnings("all")
-public final class YamlConfig {
+public class YamlConfig {
     private static final Yaml YAML;
 
     static {
-        DumperOptions dumperOptions = new DumperOptions();
+        var dumperOptions = new DumperOptions();
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         YAML = new Yaml(dumperOptions);
     }
 
-    private final Map<String, Object> CONTENT;
+    private final Map<String, Object> content;
 
     private YamlConfig(Map<String, Object> content) {
-        this.CONTENT = ValueUtil.getOrDef(content, new LinkedHashMap<>());
+        this.content = ValueUtil.getOrDef(content, new LinkedHashMap<>());
     }
 
     /**
@@ -53,12 +41,20 @@ public final class YamlConfig {
     }
 
     /**
+     * 返回空的配置文件对象
+     * @return 空的配置文件对象
+     */
+    public static YamlConfig empty() {
+        return new YamlConfig(null);
+    }
+
+    /**
      * 获得当前节点下所有的真子节点
      *
      * @return 真子节点
      */
     public Set<String> getKeys() {
-        return CONTENT.keySet();
+        return content.keySet();
     }
 
     /**
@@ -70,7 +66,7 @@ public final class YamlConfig {
      * @return 值
      */
     public <R> R get(String path, Class<R> type) {
-        Object val = CONTENT.get(path);
+        var val = content.get(path);
         if (type.isEnum()) {
             if (val instanceof String)
                 try {
@@ -99,8 +95,5 @@ public final class YamlConfig {
     public <R> R get(String path, Class<R> type, R def) {
         return ValueUtil.getOrDef(get(path, type), def);
     }
-
-    public void set(String path, Object newValue) {
-        CONTENT.put(path, newValue);
-    }
 }
+

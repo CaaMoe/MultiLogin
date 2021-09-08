@@ -1,36 +1,22 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
-    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 repositories {
-    mavenCentral()
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
-    maven { url "https://libraries.minecraft.net/" }
-    jcenter()
-    maven { url "https://repo.dmulloy2.net/repository/public/" }
-    maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
 }
 
 dependencies {
-    compileOnly 'me.clip:placeholderapi:2.10.9'
-    compile project(':core')
-    implementation group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
-    implementation 'com.mojang:authlib:2.1.28'
+    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
+    implementation project(":core")
 }
 
-processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: project.plugin_version]
-    }
-}
+shadowJar {
+    archiveFileName = "MultiLogin-Bukkit.shadow.jar"
 
-jar {
-    archiveBaseName.set "MultiLogin-Bukkit-" + project.plugin_version
-    from {
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
+    dependencies {
+        dependencies {
+            include(project(":core"))
         }
     }
 }

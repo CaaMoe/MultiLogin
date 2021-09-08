@@ -1,20 +1,27 @@
-/*
- * Copyleft (c) 2021 ksqeib,CaaMoe. All rights reserved.
- * @author  ksqeib <ksqeib@dalao.ink> <https://github.com/ksqeib445>
- * @author  CaaMoe <miaolio@qq.com> <https://github.com/CaaMoe>
- * @github  https://github.com/CaaMoe/MultiLogin
- *
- * moe.caa.multilogin.core.logger.LoggerLevel
- *
- * Use of this source code is governed by the GPLv3 license that can be found via the following link.
- * https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE
- */
-
 package moe.caa.multilogin.core.logger;
 
+/**
+ * 代表日志级别
+ */
 public enum LoggerLevel {
+
+    /**
+     * 常规级别
+     */
     INFO,
+
+    /**
+     * 警告级别
+     */
     WARN,
+
+    /**
+     * 错误级别
+     */
     ERROR,
-    DEBUG;
+
+    /**
+     * 调试级别
+     */
+    DEBUG,
 }
