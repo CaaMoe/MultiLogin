@@ -42,6 +42,7 @@ public class YamlConfig {
 
     /**
      * 返回空的配置文件对象
+     *
      * @return 空的配置文件对象
      */
     public static YamlConfig empty() {

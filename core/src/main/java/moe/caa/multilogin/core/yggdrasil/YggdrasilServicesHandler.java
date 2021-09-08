@@ -21,13 +21,14 @@ public class YggdrasilServicesHandler {
 
     /**
      * 读取配置
+     *
      * @param config 配置文件
      */
-    public void init(YamlConfig config){
+    public void init(YamlConfig config) {
         yggdrasilServices.clear();
         for (var key : config.getKeys()) {
             var section = config.get(key, YamlConfig.class);
-            if(section == null) continue;
+            if (section == null) continue;
             try {
                 var service = YggdrasilService.getYggdrasilServiceFromMap(key, section);
                 yggdrasilServices.add(service);
@@ -40,9 +41,9 @@ public class YggdrasilServicesHandler {
         }
     }
 
-    public YggdrasilService getYggdrasilService(String path){
+    public YggdrasilService getYggdrasilService(String path) {
         for (YggdrasilService service : yggdrasilServices) {
-            if(service.getPathString().equals(path)){
+            if (service.getPathString().equals(path)) {
                 return service;
             }
         }

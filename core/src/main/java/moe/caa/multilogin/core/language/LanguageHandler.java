@@ -25,10 +25,11 @@ public class LanguageHandler {
 
     /**
      * 初始化这个可读文本处理程序
-     * @param core 插件核心
+     *
+     * @param core     插件核心
      * @param fileName 可读文本文件名称
      */
-    public boolean init(MultiCore core, String fileName){
+    public boolean init(MultiCore core, String fileName) {
         inside = new Properties();
         try {
             inside.load(new InputStreamReader(IOUtil.getJarResource(fileName), StandardCharsets.UTF_8));
@@ -37,7 +38,7 @@ public class LanguageHandler {
             return false;
         }
         var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
-        if(outsideFile.exists()){
+        if (outsideFile.exists()) {
             outside = new Properties();
             try {
                 outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));
@@ -52,21 +53,22 @@ public class LanguageHandler {
 
     /**
      * 通过 节点 和 参数 构建这个可读文本字符串对象
+     *
      * @param node 节点
      * @param args 占位参数
      * @return 可读文本字符串对象
      */
-    public String getMessage(String node, Object... args){
+    public String getMessage(String node, Object... args) {
         var ret = String.format("The language file node '%s' is missing or wrong, please contact the administrator.", node);
         try {
             String pat;
-            if(outside != null && outside.containsKey(node)){
+            if (outside != null && outside.containsKey(node)) {
                 pat = outside.getProperty(node);
             } else {
                 pat = inside.getProperty(node);
             }
             ret = args.length == 0 ? pat : MessageFormat.format(pat, args);
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("The language file node '%s' is missing or wrong.", node), e);
         }
         return ret;

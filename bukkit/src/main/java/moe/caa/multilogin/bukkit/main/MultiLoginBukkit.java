@@ -21,7 +21,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void onDisable() {
-        if(core != null) core.disable();
+        if (core != null) core.disable();
     }
 
     @Override
@@ -42,10 +42,10 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void loggerLog(LoggerLevel level, String message, Throwable throwable) {
         Level logLevel;
-        if(level == LoggerLevel.INFO) logLevel = Level.INFO;
-        else if(level == LoggerLevel.WARN) logLevel = Level.WARNING;
-        else if(level == LoggerLevel.ERROR) logLevel = Level.SEVERE;
-        else if(level == LoggerLevel.DEBUG) return;
+        if (level == LoggerLevel.INFO) logLevel = Level.INFO;
+        else if (level == LoggerLevel.WARN) logLevel = Level.WARNING;
+        else if (level == LoggerLevel.ERROR) logLevel = Level.SEVERE;
+        else if (level == LoggerLevel.DEBUG) return;
         else logLevel = Level.INFO;
         getLogger().log(logLevel, message, throwable);
     }

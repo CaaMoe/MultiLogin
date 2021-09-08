@@ -1,7 +1,6 @@
 package moe.caa.multilogin.bukkit.impl;
 
 import lombok.AllArgsConstructor;
-
 import moe.caa.multilogin.core.impl.IPlayerManager;
 import moe.caa.multilogin.core.impl.ISender;
 import org.bukkit.Server;
@@ -20,7 +19,7 @@ public class BukkitPlayerManager implements IPlayerManager {
     public Set<ISender> getPlayer(String name) {
         Set<ISender> ret = new HashSet<>();
         for (Player player : server.getOnlinePlayers()) {
-            if(player.getName().equalsIgnoreCase(name)){
+            if (player.getName().equalsIgnoreCase(name)) {
                 ret.add(new BukkitSender(player));
             }
         }
@@ -30,7 +29,7 @@ public class BukkitPlayerManager implements IPlayerManager {
     @Override
     public ISender getPlayer(UUID uuid) {
         Player ret = server.getPlayer(uuid);
-        if(ret == null) return null;
+        if (ret == null) return null;
         return new BukkitSender(ret);
     }
 

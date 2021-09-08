@@ -34,6 +34,7 @@ public class MultiCore {
 
     /**
      * 构建插件核心
+     *
      * @param plugin 插件实例
      */
     public MultiCore(IPlugin plugin) {
@@ -45,9 +46,9 @@ public class MultiCore {
         yggdrasilServicesHandler = new YggdrasilServicesHandler();
     }
 
-    public boolean init(){
+    public boolean init() {
         try {
-            if(!librariesHandler.init()) return false;
+            if (!librariesHandler.init()) return false;
 
             IOUtil.saveResource(IOUtil.getJarResource("config.yml"), configFile, false);
             yamlConfig = YamlConfig.fromInputStream(new FileInputStream(configFile));
@@ -58,7 +59,7 @@ public class MultiCore {
 
             logger.init(debug);
 
-            if(!languageHandler.init(this, "message.properties")) return false;
+            if (!languageHandler.init(this, "message.properties")) return false;
 
             if (!plugin.getRunServer().getPlayerManager().isOnlineMode()) {
                 logger.log(LoggerLevel.ERROR, "服务器是运行在离线模式下。");
@@ -66,7 +67,7 @@ public class MultiCore {
                 return false;
             }
 
-            if(plugin.getRunServer().getPlayerManager().isWhitelist()){
+            if (plugin.getRunServer().getPlayerManager().isWhitelist()) {
                 logger.log(LoggerLevel.WARN, "服务器似乎开启了自带的白名单程序，有可能与此插件的白名单程序发生冲突！");
             }
 
@@ -74,10 +75,9 @@ public class MultiCore {
             yggdrasilServicesHandler.init(yamlConfig.get("services", YamlConfig.class, YamlConfig.empty()));
 
 
-
             plugin.initService();
             plugin.initOther();
-        } catch (Throwable throwable){
+        } catch (Throwable throwable) {
             logger.log(LoggerLevel.ERROR, "启动时遇到致命异常", throwable);
             return false;
         }

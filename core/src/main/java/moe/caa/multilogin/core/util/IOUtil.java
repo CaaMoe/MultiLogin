@@ -6,11 +6,8 @@ import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
-import org.apache.logging.log4j.Level;
 
 import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * 流操作工具类

@@ -19,18 +19,20 @@ public abstract class AbstractScheduler {
 
     /**
      * 执行一个异步任务
+     *
      * @param runnable 任务对象
      */
-    public void runTaskAsync(Runnable runnable){
+    public void runTaskAsync(Runnable runnable) {
         asyncExecutor.execute(runnable);
     }
 
     /**
      * 执行一个异步任务
+     *
      * @param runnable 任务对象
-     * @param delay 延时
+     * @param delay    延时
      */
-    public void runTaskAsync(Runnable runnable, long delay){
+    public void runTaskAsync(Runnable runnable, long delay) {
         timerExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
     }
 
@@ -48,7 +50,7 @@ public abstract class AbstractScheduler {
     /**
      * 关闭所有线程池内的线程
      */
-    public void shutdown(){
+    public void shutdown() {
         timerExecutor.shutdown();
         asyncExecutor.shutdown();
     }

@@ -18,62 +18,43 @@ import java.lang.reflect.Type;
 public class ReflectUtil {
 
     /**
-     * 单例模式下的超级反射权限
-     */
-    private static class SuperClassInstance {
-        private static final MethodHandles.Lookup super_lookup;
-
-        static {
-            super_lookup = get();
-        }
-
-        @SneakyThrows
-        private static MethodHandles.Lookup get(){
-            // TODO: 2021/9/5 SYSTEM INFO 
-            var unsafeClass = Class.forName("sun.misc.Unsafe");
-            var theUnsafeField = handleAccessible(getField(unsafeClass, unsafeClass), true);
-            var theUnsafeGetObjectMethod = handleAccessible(unsafeClass.getDeclaredMethod("getObject", Object.class, long.class), true);
-            var theUnsafeStaticFieldOffsetMethod = handleAccessible(unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class), true);
-            var theUnsafe = theUnsafeField.get(null);
-            var implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            return  (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
-        }
-    }
-
-    /**
      * 获得拥有超级反射权限的 MethodHandles.Lookup
+     *
      * @return 拥有超级反射权限的 MethodHandles.Lookup
      */
-    public static MethodHandles.Lookup getSuperLookup(){
+    public static MethodHandles.Lookup getSuperLookup() {
         return SuperClassInstance.super_lookup;
     }
 
     /**
      * 操作 Method accessible 属性
-     * @param method 指定 Method
+     *
+     * @param method        指定 Method
      * @param newAccessible 新的 accessible flag
      * @return 指定的 Method 本身
      */
-    public static Method handleAccessible(Method method, boolean newAccessible){
+    public static Method handleAccessible(Method method, boolean newAccessible) {
         method.setAccessible(newAccessible);
         return method;
     }
 
     /**
      * 操作 Method accessible 属性
-     * @param field 指定 Field
+     *
+     * @param field         指定 Field
      * @param newAccessible 新的 accessible flag
      * @return 指定的 Field 本身
      */
-    public static Field handleAccessible(Field field, boolean newAccessible){
+    public static Field handleAccessible(Field field, boolean newAccessible) {
         field.setAccessible(newAccessible);
         return field;
     }
 
     /**
      * 获取指定 Class 对象内匹配的第一个 Field
+     *
      * @param targetClass 指定 Class
-     * @param type Field 的类型
+     * @param type        Field 的类型
      * @return 第一次匹配的 Field
      */
     public static Field getField(Class<?> targetClass, Type type) throws NoSuchFieldException {
@@ -101,10 +82,11 @@ public class ReflectUtil {
 
     /**
      * 判断类是否已被加载
+     *
      * @param name 类全名
      * @return 是否已被加载
      */
-    public static boolean isExistsClass(String name){
+    public static boolean isExistsClass(String name) {
         try {
             Class.forName(name);
             return true;
@@ -130,5 +112,28 @@ public class ReflectUtil {
         src = src.getSuperclass();
         if (src != null) return isCaseClass(src, parent);
         return false;
+    }
+
+    /**
+     * 单例模式下的超级反射权限
+     */
+    private static class SuperClassInstance {
+        private static final MethodHandles.Lookup super_lookup;
+
+        static {
+            super_lookup = get();
+        }
+
+        @SneakyThrows
+        private static MethodHandles.Lookup get() {
+            // TODO: 2021/9/5 SYSTEM INFO
+            var unsafeClass = Class.forName("sun.misc.Unsafe");
+            var theUnsafeField = handleAccessible(getField(unsafeClass, unsafeClass), true);
+            var theUnsafeGetObjectMethod = handleAccessible(unsafeClass.getDeclaredMethod("getObject", Object.class, long.class), true);
+            var theUnsafeStaticFieldOffsetMethod = handleAccessible(unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class), true);
+            var theUnsafe = theUnsafeField.get(null);
+            var implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            return (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+        }
     }
 }

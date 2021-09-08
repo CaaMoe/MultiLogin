@@ -12,7 +12,7 @@ public class LoadLibraryFailedException extends Exception {
         super(s);
     }
 
-    public LoadLibraryFailedException(Throwable t){
+    public LoadLibraryFailedException(Throwable t) {
         super(t);
     }
 }

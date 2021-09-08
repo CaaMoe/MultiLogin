@@ -21,6 +21,7 @@ public class HttpUtil {
 
     /**
      * 通过给定字符串对象生成这个 URL 对象
+     *
      * @param url 给定字符串对象
      * @return 匹配的 URL 对象，否则为空
      */
@@ -35,7 +36,8 @@ public class HttpUtil {
 
     /**
      * 向目标 URL 发起 HTTP GET 请求
-     * @param url 目标 URL
+     *
+     * @param url     目标 URL
      * @param timeOut 超时时常
      * @return GET 请求返回数据
      * @throws IOException 请求异常
@@ -47,7 +49,7 @@ public class HttpUtil {
             conn.setConnectTimeout(timeOut);
             conn.setReadTimeout(timeOut);
             try (var input = conn.getInputStream();
-                 var result = new ByteArrayOutputStream()){
+                 var result = new ByteArrayOutputStream()) {
                 byte[] buffer = new byte[1024];
                 int length;
                 while ((length = input.read(buffer)) != -1) {
@@ -57,7 +59,7 @@ public class HttpUtil {
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Response: " + response);
                 return response;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Request failed. (%s)", url), e);
             throw e;
         }
@@ -65,10 +67,11 @@ public class HttpUtil {
 
     /**
      * 向目标 URL 发起 HTTP POST 请求
-     * @param url 目标 URL
-     * @param content 报文数据
+     *
+     * @param url         目标 URL
+     * @param content     报文数据
      * @param contentType 报文类型
-     * @param timeOut 超时时常
+     * @param timeOut     超时时常
      * @return 报文请求返回数据
      * @throws IOException 请求异常
      */
@@ -86,24 +89,24 @@ public class HttpUtil {
             connection.setRequestProperty("User-Agent", "MultiLogin");
             connection.setConnectTimeout(timeOut);
             connection.setReadTimeout(timeOut);
-            try (var output = connection.getOutputStream()){
+            try (var output = connection.getOutputStream()) {
                 output.write(raw);
                 output.flush();
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Reading data from " + url);
                 try (var input = connection.getInputStream();
-                     var result = new ByteArrayOutputStream()){
+                     var result = new ByteArrayOutputStream()) {
                     byte[] buffer = new byte[1024];
                     int length;
                     while ((length = input.read(buffer)) != -1) {
                         result.write(buffer, 0, length);
                     }
-                    var response =  result.toString(StandardCharsets.UTF_8.name());
+                    var response = result.toString(StandardCharsets.UTF_8.name());
                     MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Response: " + response);
                     return response;
                 }
 
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Request failed. (%s)", url), e);
             throw e;
         }
@@ -111,6 +114,7 @@ public class HttpUtil {
 
     /**
      * 编码下载链接
+     *
      * @param url URL 字符串
      * @return 编码后链接
      * @throws UnsupportedEncodingException 编码异常
@@ -140,6 +144,7 @@ public class HttpUtil {
 
     /**
      * 向目标 URL 发起 文件下载 请求
+     *
      * @param url 目标 URL
      * @param out 本机下载目标
      * @return 是否成功下载文件
@@ -171,7 +176,7 @@ public class HttpUtil {
             }
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Download failed. (%s)", out.getName()));
             return false;
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Download failed. (%s)", out.getName()), e);
             throw e;
         }
@@ -179,15 +184,16 @@ public class HttpUtil {
 
     /**
      * 向目标 URL 发起 HTTP POST 请求
-     * @param url 目标 URL
-     * @param content 报文数据
+     *
+     * @param url         目标 URL
+     * @param content     报文数据
      * @param contentType 报文类型
-     * @param timeOut 超时时常
-     * @param retry 重试次数
+     * @param timeOut     超时时常
+     * @param retry       重试次数
      * @return 报文请求返回数据
      * @throws IOException 请求异常
      */
-    public static String httpPostJson(URL url, String content, String contentType,  int timeOut, int retry) throws IOException {
+    public static String httpPostJson(URL url, String content, String contentType, int timeOut, int retry) throws IOException {
         IOException thr = null;
         for (int i = 0; i < retry; i++) {
             try {
@@ -201,9 +207,10 @@ public class HttpUtil {
 
     /**
      * 向目标 URL 发起 HTTP GET 请求
-     * @param url 目标 URL
+     *
+     * @param url     目标 URL
      * @param timeOut 超时时常
-     * @param retry 重试次数
+     * @param retry   重试次数
      * @return GET 请求返回数据
      * @throws IOException 请求异常
      */

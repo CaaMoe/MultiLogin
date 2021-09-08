@@ -19,6 +19,7 @@ public class FileLoggerWriteHandler {
 
     /**
      * 构建这个日志文件写入程序
+     *
      * @param multiLogger 插件日志记录程序
      */
     protected FileLoggerWriteHandler(MultiLogger multiLogger) {
@@ -27,6 +28,7 @@ public class FileLoggerWriteHandler {
 
     /**
      * 初始化这个日志记录程序
+     *
      * @throws IOException 文件存取异常
      */
     protected void init() throws IOException {
@@ -36,7 +38,7 @@ public class FileLoggerWriteHandler {
         var bytes = new byte[inputStream.available()];
         inputStream.read(bytes);
         var config = new String(bytes);
-        try (var fw = new FileWriter(tempFile)){
+        try (var fw = new FileWriter(tempFile)) {
             fw.write(config.replace("%path%", multiLogger.getCore().getPlugin().getDataFolder().getAbsolutePath()));
             fw.flush();
         }
@@ -46,17 +48,17 @@ public class FileLoggerWriteHandler {
         toFileLogger = context.getLogger("MultiLogin");
     }
 
-    protected void log(LoggerLevel level, String message, Throwable throwable){
+    protected void log(LoggerLevel level, String message, Throwable throwable) {
         Level log4Level;
-        if(level == LoggerLevel.INFO) log4Level = Level.INFO;
-        else if(level == LoggerLevel.WARN) log4Level = Level.WARN;
-        else if(level == LoggerLevel.ERROR) log4Level = Level.ERROR;
-        else if(level == LoggerLevel.DEBUG) log4Level = Level.DEBUG;
+        if (level == LoggerLevel.INFO) log4Level = Level.INFO;
+        else if (level == LoggerLevel.WARN) log4Level = Level.WARN;
+        else if (level == LoggerLevel.ERROR) log4Level = Level.ERROR;
+        else if (level == LoggerLevel.DEBUG) log4Level = Level.DEBUG;
         else log4Level = Level.INFO;
         log(log4Level, message, throwable);
     }
 
-    protected void log(Level level, String message, Throwable throwable){
-        if(toFileLogger != null) toFileLogger.log(level, message, throwable);
+    protected void log(Level level, String message, Throwable throwable) {
+        if (toFileLogger != null) toFileLogger.log(level, message, throwable);
     }
 }

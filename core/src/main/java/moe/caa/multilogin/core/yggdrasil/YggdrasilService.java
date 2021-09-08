@@ -34,26 +34,27 @@ public class YggdrasilService {
 
     /**
      * 构建这个 YggdrasilService 实例
-     * @param path 识别路径
-     * @param enable 启用情况
-     * @param name 别称
-     * @param url 请求链接
-     * @param postMode 报文请求模式
-     * @param passIp 是否传递 IP
-     * @param passIpContent 传递的 IP 内容
-     * @param postContent 报文请求内容
-     * @param convUuid UUID 生成规则
-     * @param convRepeat 始终处理 UUID 重复问题
+     *
+     * @param path                识别路径
+     * @param enable              启用情况
+     * @param name                别称
+     * @param url                 请求链接
+     * @param postMode            报文请求模式
+     * @param passIp              是否传递 IP
+     * @param passIpContent       传递的 IP 内容
+     * @param postContent         报文请求内容
+     * @param convUuid            UUID 生成规则
+     * @param convRepeat          始终处理 UUID 重复问题
      * @param nameAllowedRegular  允许的用户名正则
-     * @param whitelist 白名单
+     * @param whitelist           白名单
      * @param refuseRepeatedLogin 不进行强制登入
-     * @param authRetry 验证超时重试次数
-     * @param safeId ID 强优先
+     * @param authRetry           验证超时重试次数
+     * @param safeId              ID 强优先
      */
     private YggdrasilService(char[] path, boolean enable, char[] name, char[] url,
-                            boolean postMode, boolean passIp, char[] passIpContent,
-                            char[] postContent, ConvUuidEnum convUuid, boolean convRepeat,
-                            char[] nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin,
+                             boolean postMode, boolean passIp, char[] passIpContent,
+                             char[] postContent, ConvUuidEnum convUuid, boolean convRepeat,
+                             char[] nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin,
                              int authRetry, boolean safeId) {
         this.path = Objects.requireNonNull(path, "path is null");
         this.enable = enable;
@@ -72,8 +73,50 @@ public class YggdrasilService {
         this.safeId = safeId;
     }
 
+    public static YggdrasilService getYggdrasilServiceFromMap(String path, YamlConfig config) {
+        YamlConfig bodyConfig = config.get("body", YamlConfig.class, YamlConfig.empty());
+        var enable = config.get("enable", Boolean.class, true);
+
+        var name = Objects.requireNonNull(config.get("name", String.class), "name is null");
+
+        var url = Objects.requireNonNull(bodyConfig.get("url", String.class), "name is null");
+        var postMode = bodyConfig.get("postMode", Boolean.class, false);
+        var passIp = bodyConfig.get("passIp", Boolean.class, false);
+        var passIpContent = bodyConfig.get("passIpContent", String.class, "&ip={ip}");
+        var postContent = bodyConfig.get("postContent", String.class, "{\"username\":\"{username}\", \"serverId\":\"{serverId}\"}");
+
+        var convUuid = config.get("convUuid", ConvUuidEnum.class, ConvUuidEnum.DEFAULT);
+        var convRepeat = config.get("convRepeat", Boolean.class, true);
+        var nameAllowedRegular = config.get("nameAllowedRegular", String.class, "");
+        var whitelist = config.get("whitelist", Boolean.class, false);
+        var refuseRepeatedLogin = config.get("refuseRepeatedLogin", Boolean.class, false);
+        var authRetry = config.get("authRetry", Integer.class, 1);
+        var safeId = config.get("safeId", Boolean.class, false);
+
+        if (ValueUtil.isEmpty(url)) {
+            throw new IllegalArgumentException("url is illegal argument");
+        }
+
+        if (ValueUtil.isEmpty(Objects.requireNonNull(path, "path is null"))) {
+            throw new IllegalArgumentException("path is illegal argument");
+        }
+
+        try {
+            new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("url is illegal argument", e);
+        }
+
+        return new YggdrasilService(
+                path.toCharArray(), enable, name.toCharArray(),
+                url.toCharArray(), postMode, passIp, passIpContent.toCharArray(), postContent.toCharArray(),
+                convUuid, convRepeat, nameAllowedRegular.toCharArray(), whitelist, refuseRepeatedLogin, authRetry, safeId
+        );
+    }
+
     /**
      * 获得路径字符串
+     *
      * @return 路径字符串
      */
     public String getPathString() {
@@ -82,41 +125,46 @@ public class YggdrasilService {
 
     /**
      * 获得别称字符串
+     *
      * @return 别称字符串
      */
-    public String getNameString(){
+    public String getNameString() {
         return ValueUtil.charArrayToString(name);
     }
 
     /**
      * 获得链接字符串
+     *
      * @return 链接字符串
      */
-    public String getUrlString(){
+    public String getUrlString() {
         return ValueUtil.charArrayToString(url);
     }
 
     /**
      * 获得报文内容字符串
+     *
      * @return 报文内容字符串
      */
-    public String getPostContentString(){
+    public String getPostContentString() {
         return ValueUtil.charArrayToString(postContent);
     }
 
     /**
      * 获得 ip 信息内容字符串
+     *
      * @return ip 信息内容字符串
      */
-    public String getPassIpContentString(){
+    public String getPassIpContentString() {
         return ValueUtil.charArrayToString(passIpContent);
     }
 
     /**
      * 获得用户名正则字符串
+     *
      * @return 用户名正则字符串
      */
-    public String getNameAllowedRegularString(){
+    public String getNameAllowedRegularString() {
         return ValueUtil.charArrayToString(nameAllowedRegular);
     }
 
@@ -129,7 +177,7 @@ public class YggdrasilService {
      * @return URL
      */
     public String buildUrl(String username, String serverId, String ip) {
-        if(postMode) return getUrlString();
+        if (postMode) return getUrlString();
         if (passIp) {
             var passIp = buildPassIpContent(ip);
             return getUrlString()
@@ -152,10 +200,11 @@ public class YggdrasilService {
 
     /**
      * 构建 ip 信息内容
+     *
      * @param ip ip
      * @return ip 信息内容
      */
-    private String buildPassIpContent(String ip){
+    private String buildPassIpContent(String ip) {
         var passIp = getPassIpContentString();
         if (ValueUtil.isEmpty(passIp)) return "";
         return passIp
@@ -171,8 +220,8 @@ public class YggdrasilService {
      * @param ip       地址
      * @return URL
      */
-    private String buildPostContent(String username, String serverId, String ip){
-        if(!postMode) return "";
+    private String buildPostContent(String username, String serverId, String ip) {
+        if (!postMode) return "";
         if (passIp) {
             var passIp = buildPassIpContent(ip);
             return getPostContentString()
@@ -190,46 +239,5 @@ public class YggdrasilService {
                 .replace("{serverId}", serverId)
                 .replace("{2}", "")
                 .replace("{passIpContent}", "");
-    }
-
-    public static YggdrasilService getYggdrasilServiceFromMap(String path, YamlConfig config) {
-        YamlConfig bodyConfig = config.get("body", YamlConfig.class, YamlConfig.empty());
-        var enable = config.get("enable", Boolean.class, true);
-
-        var name = Objects.requireNonNull(config.get("name", String.class), "name is null");
-
-        var url = Objects.requireNonNull(bodyConfig.get("url", String.class), "name is null");
-        var postMode = bodyConfig.get("postMode", Boolean.class, false);
-        var passIp = bodyConfig.get("passIp", Boolean.class, false);
-        var passIpContent = bodyConfig.get("passIpContent", String.class, "&ip={ip}");
-        var postContent = bodyConfig.get("postContent", String.class, "{\"username\":\"{username}\", \"serverId\":\"{serverId}\"}");
-
-        var convUuid = config.get("convUuid", ConvUuidEnum.class, ConvUuidEnum.DEFAULT);
-        var convRepeat = config.get("convRepeat", Boolean.class, true);
-        var nameAllowedRegular = config.get("nameAllowedRegular", String.class, "");
-        var whitelist = config.get("whitelist", Boolean.class, false);
-        var refuseRepeatedLogin = config.get("refuseRepeatedLogin", Boolean.class, false);
-        var authRetry =  config.get("authRetry", Integer.class, 1);
-        var safeId =  config.get("safeId", Boolean.class, false);
-
-        if(ValueUtil.isEmpty(url)){
-            throw new IllegalArgumentException("url is illegal argument");
-        }
-
-        if(ValueUtil.isEmpty(Objects.requireNonNull(path, "path is null"))){
-            throw new IllegalArgumentException("path is illegal argument");
-        }
-
-        try {
-            new URL(url);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("url is illegal argument", e);
-        }
-
-        return new YggdrasilService(
-                path.toCharArray(), enable, name.toCharArray(),
-                url.toCharArray(), postMode, passIp, passIpContent.toCharArray(), postContent.toCharArray(),
-                convUuid, convRepeat, nameAllowedRegular.toCharArray(), whitelist, refuseRepeatedLogin, authRetry, safeId
-        );
     }
 }

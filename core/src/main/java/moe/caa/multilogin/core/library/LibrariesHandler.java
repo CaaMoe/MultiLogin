@@ -26,7 +26,8 @@ public class LibrariesHandler {
 
     /**
      * 构建这个依赖处理程序
-     * @param core 插件核心
+     *
+     * @param core            插件核心
      * @param librariesFolder 依赖存放文件夹
      */
     public LibrariesHandler(MultiCore core, File librariesFolder) {
@@ -42,23 +43,23 @@ public class LibrariesHandler {
             core.getLogger().log(LoggerLevel.INFO, "Loading libraries...");
             IOUtil.createNewFileOrFolder(librariesFolder, true);
             List<Library> needLoadLibraries = check();
-            if(needLoadLibraries.size() == 0) return true;
+            if (needLoadLibraries.size() == 0) return true;
             core.getLogger().log(LoggerLevel.INFO,
                     String.format("Need to load %d %s, namely %s.", needLoadLibraries.size(),
                             needLoadLibraries.size() == 1 ? "library" : "libraries", needLoadLibraries.stream().map(Library::getJarName).collect(Collectors.joining(", "))));
             List<File> needLoadFiles = download(needLoadLibraries);
             load(needLoadFiles);
             List<Library> failed = check();
-            if(failed.size() == 0){
+            if (failed.size() == 0) {
                 core.getLogger().log(LoggerLevel.INFO,
                         String.format("Loaded, %d failed.", failed.size()));
                 return true;
             } else {
                 LoadLibraryFailedException exception = new LoadLibraryFailedException(failed.stream().map(Library::getJarName).collect(Collectors.joining(", ")));
                 core.getLogger().log(LoggerLevel.ERROR,
-                        String.format("Load failed, %d failed, namely %s.", failed.size() , exception.getMessage()), exception);
+                        String.format("Load failed, %d failed, namely %s.", failed.size(), exception.getMessage()), exception);
             }
-        } catch (Throwable t){
+        } catch (Throwable t) {
             LoadLibraryFailedException exception = new LoadLibraryFailedException(t);
             core.getLogger().log(LoggerLevel.ERROR,
                     "Load failed.", exception);
@@ -68,6 +69,7 @@ public class LibrariesHandler {
 
     /**
      * 加载 jar 文件到当前网络类加载器中
+     *
      * @param needLoadFiles 文件列表
      * @throws Throwable 加载失败
      */
@@ -81,6 +83,7 @@ public class LibrariesHandler {
 
     /**
      * 返回所有需要加载的依赖集合
+     *
      * @return 需要加载的依赖集合
      */
     private List<Library> check() {
@@ -89,6 +92,7 @@ public class LibrariesHandler {
 
     /**
      * 下载依赖
+     *
      * @param libraries 依赖列表
      * @return 下载后依赖的文件实例
      * @throws InterruptedException 线程同步异常
@@ -99,15 +103,15 @@ public class LibrariesHandler {
         for (Library library : libraries) {
             File libraryFile = new File(librariesFolder, library.getJarName());
 
-            if(libraryFile.exists()){
-                if(libraryFile.length() != 0){
+            if (libraryFile.exists()) {
+                if (libraryFile.length() != 0) {
                     countDownLatch.countDown();
                     ret.add(libraryFile);
                     continue;
                 }
                 libraryFile.delete();
             }
-            core.getPlugin().getRunServer().getScheduler().runTaskAsync(()->{
+            core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                 try {
                     HttpUtil.downloadFile(library.getDownloadUrl(), libraryFile);
                     ret.add(libraryFile);
