@@ -152,3 +152,19 @@ sql:
   # 前缀
   # 默认值 'multilogin'
   prefix: 'multilogin'
+
+  # 指定 MySQL 链接 URL
+  # 其中占位变量 {0} 或 {ip} 表示 ip，占位变量 {1} 或 {port} 表示 port，
+  #        占位变量 {2} 或 {database} 表示 database 。
+  # URL 对大小写非常敏感，设置需谨慎！
+  # 值留空默认，建议不对其进行设置。
+  # 默认值 'jdbc:mysql://{ip}:{port}/{database}?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false'
+  mysqlUrl: ''
+
+  # 指定 H2 链接 URL
+  # 其中占位变量 {0} 或 {file_path} 表示默认的数据库文件绝对路径（不包含数据库文件扩展名 '.mv.db'）。
+  # 一般的，{file_path} 变量为 '$server$/plugins/MultiLogin/multilogin' ($server$ 仅在此表示服务端文件路径)
+  # URL 对大小写非常敏感，设置需谨慎！
+  # 值留空默认，建议不对其进行设置。
+  # 默认值 'jdbc:h2:{file_path};TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=0'
+  h2Url: ''

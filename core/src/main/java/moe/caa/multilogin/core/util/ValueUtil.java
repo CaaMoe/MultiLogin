@@ -3,6 +3,8 @@ package moe.caa.multilogin.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * 值操作工具类
  */
@@ -42,5 +44,21 @@ public class ValueUtil {
      */
     public static <R> R getOrDef(R val, R def) {
         return val == null ? def : val;
+    }
+
+    /**
+     * 占位填充数据
+     *
+     * @param source  源字符串
+     * @param content 填充内容
+     * @return 完善后的字符串
+     */
+    public static String format(String source, FormatContent content) {
+        List<FormatContent.FormatEntry> entries = content.getFormatEntries();
+        for (int i = 0; i < entries.size(); i++) {
+            source = source.replace("{" + i + "}", entries.get(i).getContent());
+            source = source.replace("{" + entries.get(i).getName() + "}", entries.get(i).getContent());
+        }
+        return source;
     }
 }

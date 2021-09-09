@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.yggdrasil;
 import lombok.Data;
 import lombok.var;
 import moe.caa.multilogin.core.data.ConvUuidEnum;
+import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 
@@ -180,22 +181,17 @@ public class YggdrasilService {
         if (postMode) return getUrlString();
         if (passIp) {
             var passIp = buildPassIpContent(ip);
-            return getUrlString()
-                    .replace("{0}", username)
-                    .replace("{username}", username)
-                    .replace("{1}", serverId)
-                    .replace("{serverId}", serverId)
-                    .replace("{2}", passIp)
-                    .replace("{passIpContent}", passIp);
-
+            return ValueUtil.format(getUrlString(), new FormatContent(
+                    FormatContent.FormatEntry.builder().name("username").content(username).build(),
+                    FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
+                    FormatContent.FormatEntry.builder().name("passIpContent").content(passIp).build()
+            ));
         }
-        return getUrlString()
-                .replace("{0}", username)
-                .replace("{username}", username)
-                .replace("{1}", serverId)
-                .replace("{serverId}", serverId)
-                .replace("{2}", "")
-                .replace("{passIpContent}", "");
+        return ValueUtil.format(getUrlString(), new FormatContent(
+                FormatContent.FormatEntry.builder().name("username").content(username).build(),
+                FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
+                FormatContent.FormatEntry.builder().name("passIpContent").content("").build()
+        ));
     }
 
     /**
@@ -207,9 +203,9 @@ public class YggdrasilService {
     private String buildPassIpContent(String ip) {
         var passIp = getPassIpContentString();
         if (ValueUtil.isEmpty(passIp)) return "";
-        return passIp
-                .replace("{0}", ip)
-                .replace("{ip}", ip);
+        return ValueUtil.format(passIp, new FormatContent(
+                FormatContent.FormatEntry.builder().name("ip").content(ip).build()
+        ));
     }
 
     /**
@@ -224,20 +220,16 @@ public class YggdrasilService {
         if (!postMode) return "";
         if (passIp) {
             var passIp = buildPassIpContent(ip);
-            return getPostContentString()
-                    .replace("{0}", username)
-                    .replace("{username}", username)
-                    .replace("{1}", serverId)
-                    .replace("{serverId}", serverId)
-                    .replace("{2}", passIp)
-                    .replace("{passIpContent}", passIp);
+            return ValueUtil.format(getPostContentString(), new FormatContent(
+                    FormatContent.FormatEntry.builder().name("username").content(username).build(),
+                    FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
+                    FormatContent.FormatEntry.builder().name("passIpContent").content(passIp).build()
+            ));
         }
-        return getPostContentString()
-                .replace("{0}", username)
-                .replace("{username}", username)
-                .replace("{1}", serverId)
-                .replace("{serverId}", serverId)
-                .replace("{2}", "")
-                .replace("{passIpContent}", "");
+        return ValueUtil.format(getPostContentString(), new FormatContent(
+                FormatContent.FormatEntry.builder().name("username").content(username).build(),
+                FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
+                FormatContent.FormatEntry.builder().name("passIpContent").content("").build()
+        ));
     }
 }

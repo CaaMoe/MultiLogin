@@ -1,8 +1,11 @@
 package moe.caa.multilogin.core.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * 没有检索到 enum 类实例异常
  */
+@NoArgsConstructor
 public class NoSuchEnumException extends ReflectiveOperationException {
 
     /**

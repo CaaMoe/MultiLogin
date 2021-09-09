@@ -1,4 +1,4 @@
-# MultiLogin 
+# MultiLogin
 
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
@@ -24,11 +24,9 @@ MultiLogin 是一款能让你的服务端支持混合验证登入的服务端程
 
 ## 关于混合验证登入的安全性问题
 
-MultiLogin 能很好的处理角色重名和 UUID 重复的问题，并且还提供了设置角色在游戏中UUID的功能，
-以及实现了依据不同验证服务器分组管理的白名单系统和角色名称限制服务。
+MultiLogin 能很好的处理角色重名和 UUID 重复的问题，并且还提供了设置角色在游戏中UUID的功能， 以及实现了依据不同验证服务器分组管理的白名单系统和角色名称限制服务。
 
-如果要真有俩角色的在线 UUID 相同，MultiLogin 会根据在线 UUID 查询上次登入时所使用的验证服务器的
-path 来判断是否允许登入。
+如果要真有俩角色的在线 UUID 相同，MultiLogin 会根据在线 UUID 查询上次登入时所使用的验证服务器的 path 来判断是否允许登入。
 
 理论上不存在什么安全性问题，除非没想到...
 
@@ -166,6 +164,7 @@ path 来判断是否允许登入。
   	  
             # 假设当前服务器 UID 为 {uid}
             url: "https://auth2.nide8.com:233/{uid}/sessionserver/session/minecraft/hasJoined?serverId={1}&username={0}"
+
 ## 命令和权限
 
 | 命令 | 权限 | 简介 |
