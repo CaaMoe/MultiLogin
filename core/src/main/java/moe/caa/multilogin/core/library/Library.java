@@ -28,7 +28,9 @@ public class Library {
                 Library.builder().group("com.h2database").name("h2").version("1.4.200").mainClass("org.h2.jdbcx.JdbcConnectionPool").build(),
                 Library.builder().group("com.google.code.gson").name("gson").version("2.8.7").mainClass("com.google.gson.Gson").build(),
                 Library.builder().group("org.apache.logging.log4j").name("log4j-api").version("2.14.1").mainClass("org.apache.logging.log4j.Level").build(),
-                Library.builder().group("org.apache.logging.log4j").name("log4j-core").version("2.14.1").mainClass("org.apache.logging.log4j.core.LoggerContext").build()
+                Library.builder().group("org.apache.logging.log4j").name("log4j-core").version("2.14.1").mainClass("org.apache.logging.log4j.core.LoggerContext").build(),
+                Library.builder().group("cglib").name("cglib").version("3.3.0").mainClass("net.sf.cglib.proxy.MethodInterceptor").build(),
+                Library.builder().group("asm").name("asm").version("3.3.1").mainClass("org.objectweb.asm.Type").build()
         );
     }
 

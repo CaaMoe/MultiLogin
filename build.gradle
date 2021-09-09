@@ -12,6 +12,8 @@ subprojects {
 
         compileOnly group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
         compileOnly group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
-        implementation group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+        compileOnly group: 'org.yaml', name: 'snakeyaml', version: '1.29'
+        implementation group: 'cglib', name: 'cglib', version: '3.3.0'
+        implementation group: 'asm', name: 'asm', version: '3.3.1'
     }
 }
