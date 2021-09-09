@@ -1,18 +1,17 @@
 # MultiLogin 
 
-
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
-正版与多种外置共存
+MultiLogin 是一款能让你的服务端支持混合验证登入的服务端程序，让你的服务端同时支持正版登入和多种外置登入共存。
 
     这是 MultiLogin 的第三次正在重写的分支 R2 (暂不可使用)
 
+## 功能特性
 
-## 功能
-
-* 多 Yggdrasil 账户验证服务器共存
-* 可控制玩家在游戏内的 UUID
+* 多 Yggdrasil 共存
+* 高度可配置 Yggdrasil 方式，支持市面上绝大多数 Yggdrasil 服务器
+* 可控制和设置玩家在游戏内的 UUID
 * 支持 Yggdrasil 分组管理的白名单系统
 * 阻止服务器出现同名账户
 * 防止出现抢注服务器内 ID 的情况
@@ -37,7 +36,7 @@ path 来判断是否允许登入。
 
 ### 安装
 
-与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数， 只需将适合服务端的插件本体丢入 plugins 文件夹下即可。
+与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置程序）， 只需将适合服务端的插件本体丢入 plugins 文件夹下即可。
 
 ### 添加一个 Yggdrasil 账户验证服务器
 
@@ -159,8 +158,31 @@ path 来判断是否允许登入。
             # 假设当前 Blessing Skin 的 Yggdrasil api 地址为 {url}
             url: "{url}/sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}"
 
+* 添加 统一通行证 账户验证服务器
+
+      blessingSkinCustom:
+        name: "统一通行证"
+        body:
+  	  
+            # 假设当前服务器 UID 为 {uid}
+            url: "https://auth2.nide8.com:233/{uid}/sessionserver/session/minecraft/hasJoined?serverId={1}&username={0}"
 ## 命令和权限
-命令和权限暂时不可使用在R2版本中
+
+| 命令 | 权限 | 简介 |
+|  ----  | ----  | --- |
+| /multilogin reload   | | 重新加载配置文件|
+| /multilogin query name &lt;name&gt; | | 查询 name 所属用户信息（可能多个）|
+| /multilogin query redirectUuid &lt;UUID&gt; | | 查询 redirectUuid 所属用户信息（可能多个）|
+| /multilogin query onlineUuid &lt;UUID&gt;     | |查询 onlineUuid 所属用户信息 |
+| /multilogin query yggdrasil &lt;path&gt;     | |查询 path 所属 Yggdrasil 账户验证服务器信息 |
+| /multilogin update     | | 检查更新|
+| /multilogin list | | 查看具有 Yggdrasil 登入信息的在线玩家列表|
+| /multilogin remove &lt;onlineUuid&gt;     | | 移除一条记录|
+| /multilogin remove &lt;onlineUuid&gt;     | | 移除一条记录|
+|/multilogin confirm    | | 确认当前风险操作|
+| /whitelist add &lt;name&#124;uuid&gt;     | | 将 target 添加到白名单中|
+| /whitelist remove &lt;name&#124;uuid&gt;    | | 移除 target 的白名单|
+| /whitelist have &lt;name&#124;uuid&gt;         | | 判断 target 是否具有白名单|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
 群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
