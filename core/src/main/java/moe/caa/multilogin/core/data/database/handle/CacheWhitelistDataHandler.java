@@ -1,11 +1,10 @@
 package moe.caa.multilogin.core.data.database.handle;
 
 import moe.caa.multilogin.core.data.database.SQLManager;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static moe.caa.multilogin.core.data.database.SQLManager.CACHE_WHITELIST_TABLE_NAME;
 import static moe.caa.multilogin.core.data.database.SQLManager.WHITELIST;
@@ -66,6 +65,9 @@ public class CacheWhitelistDataHandler {
         ))) {
             ps.setString(1, nameOrUuid);
             return ps.executeUpdate() != 0;
+        } catch (SQLIntegrityConstraintViolationException e) {
+            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Duplicate whitelist", e);
+            return false;
         }
     }
 }

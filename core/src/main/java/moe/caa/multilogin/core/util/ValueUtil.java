@@ -3,13 +3,48 @@ package moe.caa.multilogin.core.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 值操作工具类
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ValueUtil {
+
+    /**
+     * UUID 转 bytes
+     *
+     * @param uuid 需要转换的 uuid
+     * @return 转换后的 bytes
+     */
+    public static byte[] uuidToByte(UUID uuid) {
+        byte[] uuidBytes = new byte[16];
+        ByteBuffer.wrap(uuidBytes).order(ByteOrder.BIG_ENDIAN).putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits());
+        return uuidBytes;
+    }
+
+    /**
+     * bytes 转 UUID
+     *
+     * @param bytes 需要转换的 bytes
+     * @return 转换后的 UUID
+     */
+    public static UUID byteToUuid(byte[] bytes) {
+        if (bytes.length != 16) return null;
+        int i = 0;
+        long msl = 0;
+        for (; i < 8; i++) {
+            msl = (msl << 8) | (bytes[i] & 0xFF);
+        }
+        long lsl = 0;
+        for (; i < 16; i++) {
+            lsl = (lsl << 8) | (bytes[i] & 0xFF);
+        }
+        return new UUID(msl, lsl);
+    }
 
     /**
      * 判断字符串是否为空
@@ -56,8 +91,8 @@ public class ValueUtil {
     public static String format(String source, FormatContent content) {
         List<FormatContent.FormatEntry> entries = content.getFormatEntries();
         for (int i = 0; i < entries.size(); i++) {
-            source = source.replace("{" + i + "}", entries.get(i).getContent());
-            source = source.replace("{" + entries.get(i).getName() + "}", entries.get(i).getContent());
+            source = source.replace("{" + i + "}", entries.get(i).getContent().toString());
+            source = source.replace("{" + entries.get(i).getName() + "}", entries.get(i).getContent().toString());
         }
         return source;
     }

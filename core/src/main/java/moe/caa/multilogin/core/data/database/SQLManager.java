@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.data.database;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.var;
 import moe.caa.multilogin.core.data.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.database.pool.ISQLConnectionPool;
@@ -17,7 +16,7 @@ import moe.caa.multilogin.core.util.YamlConfig;
 /**
  * 数据库管理类
  */
-@NoArgsConstructor
+@Getter
 public class SQLManager {
     public static final String ONLINE_UUID = "online_uuid";
     public static final String CURRENT_NAME = "current_name";
@@ -26,9 +25,12 @@ public class SQLManager {
     public static final String WHITELIST = "whitelist";
     public static String USER_DATA_TABLE_NAME = "user_data";
     public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
-
-    @Getter
+    private final MultiCore core;
     private ISQLConnectionPool pool;
+
+    public SQLManager(MultiCore core) {
+        this.core = core;
+    }
 
     /**
      * 初始化和链接数据库
