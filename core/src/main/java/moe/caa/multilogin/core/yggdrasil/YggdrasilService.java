@@ -115,6 +115,27 @@ public class YggdrasilService {
         );
     }
 
+    @Override
+    public String toString() {
+        return "YggdrasilService{" +
+                "path=" + getPathString() +
+                ", enable=" + enable +
+                ", name=" + getNameString() +
+                ", url=" + getUrlString() +
+                ", postMode=" + postMode +
+                ", passIp=" + passIp +
+                ", passIpContent=" + getPassIpContentString() +
+                ", postContent=" + getPostContentString() +
+                ", convUuid=" + convUuid +
+                ", convRepeat=" + convRepeat +
+                ", nameAllowedRegular=" + getNameAllowedRegularString() +
+                ", whitelist=" + whitelist +
+                ", refuseRepeatedLogin=" + refuseRepeatedLogin +
+                ", authRetry=" + authRetry +
+                ", safeId=" + safeId +
+                '}';
+    }
+
     /**
      * 获得路径字符串
      *

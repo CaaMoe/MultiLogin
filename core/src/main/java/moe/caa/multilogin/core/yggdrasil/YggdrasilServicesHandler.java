@@ -32,9 +32,10 @@ public class YggdrasilServicesHandler {
             try {
                 var service = YggdrasilService.getYggdrasilServiceFromMap(key, section);
                 yggdrasilServices.add(service);
+                MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Add " + service.toString());
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("添加 Yggdrasil 账户验证服务器 %s(%s)%s。",
                         service.getNameString(), service.getPathString(), (service.isEnable() ? "" : "，但未启用它")));
-                MultiLogger.getLogger().log(LoggerLevel.DEBUG, service.toString());
+
             } catch (Exception e) {
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("无法读取配置文件节点 '%s' 中的 Yggdrasil 账户验证服务器", key), e);
             }

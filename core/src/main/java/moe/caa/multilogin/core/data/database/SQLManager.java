@@ -2,6 +2,8 @@ package moe.caa.multilogin.core.data.database;
 
 import lombok.Getter;
 import lombok.var;
+import moe.caa.multilogin.core.data.database.handle.CacheWhitelistDataHandler;
+import moe.caa.multilogin.core.data.database.handle.UserDataHandler;
 import moe.caa.multilogin.core.data.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.database.pool.ISQLConnectionPool;
 import moe.caa.multilogin.core.data.database.pool.MysqlConnectionPool;
@@ -12,6 +14,8 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
+
+import java.sql.SQLException;
 
 /**
  * 数据库管理类
@@ -27,6 +31,8 @@ public class SQLManager {
     public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private final MultiCore core;
     private ISQLConnectionPool pool;
+    private CacheWhitelistDataHandler cacheWhitelistDataHandler;
+    private UserDataHandler userDataHandler;
 
     public SQLManager(MultiCore core) {
         this.core = core;
@@ -35,11 +41,10 @@ public class SQLManager {
     /**
      * 初始化和链接数据库
      *
-     * @param core   插件核心
      * @param config 数据库配置文件节点部分
      * @return 是否链接成功
      */
-    public boolean init(MultiCore core, YamlConfig config) {
+    public boolean init(YamlConfig config) {
         try {
             var backend = config.get("backend", SQLBackendEnum.class, SQLBackendEnum.H2);
             var prefix = config.get("prefix", String.class, "multilogin");
@@ -72,16 +77,31 @@ public class SQLManager {
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));
                 pool = new H2ConnectionPool(url, username, password);
+
+                cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
+                userDataHandler = new UserDataHandler(this);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("Linked to database(%s).", backend.name()));
             } else {
                 pool = null;
                 throw new UnsupportedDatabaseException();
             }
-            return true;
+
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "无法链接到数据库", e);
+            return false;
         }
-        return false;
+        try {
+            loadBase();
+        } catch (SQLException e) {
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "初始化数据库时发生异常", e);
+            return false;
+        }
+        return true;
+    }
+
+    public void loadBase() throws SQLException {
+        userDataHandler.createIfNotExists(pool.getConnection().createStatement());
+        cacheWhitelistDataHandler.createIfNotExists(pool.getConnection().createStatement());
     }
 
     public void close() {

@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.main;
 
 import lombok.Getter;
 import lombok.var;
+import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.library.LibrariesHandler;
@@ -24,6 +25,7 @@ public class MultiCore {
     private final IPlugin plugin;
     private final LibrariesHandler librariesHandler;
     private final YggdrasilServicesHandler yggdrasilServicesHandler;
+    private final SQLManager sqlManager;
 
     private final File configFile;
     private YamlConfig yamlConfig;
@@ -44,9 +46,26 @@ public class MultiCore {
         librariesHandler = new LibrariesHandler(this, new File(plugin.getDataFolder(), "libraries"));
         languageHandler = new LanguageHandler();
         yggdrasilServicesHandler = new YggdrasilServicesHandler();
+        sqlManager = new SQLManager(this);
     }
 
+    /**
+     * 初始化插件服务
+     *
+     * @return 初始化成功
+     */
     public boolean init() {
+        var ret = init0();
+        if (!ret) logger.log(LoggerLevel.ERROR, "遇到致命性异常，插件将关闭");
+        return ret;
+    }
+
+    /**
+     * 初始化插件服务
+     *
+     * @return 初始化成功
+     */
+    private boolean init0() {
         try {
             if (!librariesHandler.init()) return false;
 
@@ -71,14 +90,15 @@ public class MultiCore {
                 logger.log(LoggerLevel.WARN, "服务器似乎开启了自带的白名单程序，有可能与此插件的白名单程序发生冲突！");
             }
 
-
             yggdrasilServicesHandler.init(yamlConfig.get("services", YamlConfig.class, YamlConfig.empty()));
+
+            if (!sqlManager.init(yamlConfig.get("sql", YamlConfig.class, YamlConfig.empty()))) return false;
 
 
             plugin.initService();
             plugin.initOther();
         } catch (Throwable throwable) {
-            logger.log(LoggerLevel.ERROR, "启动时遇到致命异常", throwable);
+            logger.log(LoggerLevel.ERROR, "", throwable);
             return false;
         }
         return true;
@@ -86,6 +106,7 @@ public class MultiCore {
 
     public void disable() {
         plugin.getRunServer().getScheduler().shutdown();
+        sqlManager.close();
         plugin.getRunServer().shutdown();
     }
 }

@@ -177,7 +177,6 @@ MultiLogin 能很好的处理角色重名和 UUID 重复的问题，并且还提
 | /multilogin update     | | 检查更新|
 | /multilogin list | | 查看具有 Yggdrasil 登入信息的在线玩家列表|
 | /multilogin remove &lt;onlineUuid&gt;     | | 移除一条记录|
-| /multilogin remove &lt;onlineUuid&gt;     | | 移除一条记录|
 |/multilogin confirm    | | 确认当前风险操作|
 | /whitelist add &lt;name&#124;uuid&gt;     | | 将 target 添加到白名单中|
 | /whitelist remove &lt;name&#124;uuid&gt;    | | 移除 target 的白名单|
