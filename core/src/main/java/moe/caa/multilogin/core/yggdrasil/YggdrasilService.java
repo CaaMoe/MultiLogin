@@ -237,7 +237,7 @@ public class YggdrasilService {
      * @param ip       地址
      * @return URL
      */
-    private String buildPostContent(String username, String serverId, String ip) {
+    public String buildPostContent(String username, String serverId, String ip) {
         if (!postMode) return "";
         if (passIp) {
             var passIp = buildPassIpContent(ip);
