@@ -30,7 +30,7 @@ public class Library {
                 Library.builder().group("org.apache.logging.log4j").name("log4j-api").version("2.14.1").mainClass("org.apache.logging.log4j.Level").build(),
                 Library.builder().group("org.apache.logging.log4j").name("log4j-core").version("2.14.1").mainClass("org.apache.logging.log4j.core.LoggerContext").build(),
                 Library.builder().group("cglib").name("cglib").version("3.3.0").mainClass("net.sf.cglib.proxy.MethodInterceptor").build(),
-                Library.builder().group("asm").name("asm").version("3.3.1").mainClass("org.objectweb.asm.Type").build()
+                Library.builder().group("org.ow2.asm").name("asm").version("9.2").mainClass("org.objectweb.asm.Type").build()
         );
     }
 

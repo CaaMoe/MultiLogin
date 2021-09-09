@@ -10,9 +10,13 @@ import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.IOUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.lang.reflect.Method;
 
 /**
  * 插件核心，衔接
