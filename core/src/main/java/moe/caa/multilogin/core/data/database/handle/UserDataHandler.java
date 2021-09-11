@@ -186,4 +186,31 @@ public class UserDataHandler {
             ps.executeUpdate();
         }
     }
+
+    /**
+     * 移除一条玩家数据
+     *
+     * @param entry 玩家数据实例
+     * @return 是否移除成功
+     * @throws SQLException 移除异常
+     */
+    public boolean deleteUserEntry(User entry) throws SQLException {
+        return deleteUserEntry(entry.getOnlineUuid());
+    }
+
+    /**
+     * 移除一条玩家数据
+     *
+     * @param uuid 玩家在线 uuid
+     * @return 是否移除成功
+     * @throws SQLException 移除异常
+     */
+    public boolean deleteUserEntry(UUID uuid) throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
+                USER_DATA_TABLE_NAME, ONLINE_UUID
+        ))) {
+            ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
+            return ps.executeUpdate() != 0;
+        }
+    }
 }
