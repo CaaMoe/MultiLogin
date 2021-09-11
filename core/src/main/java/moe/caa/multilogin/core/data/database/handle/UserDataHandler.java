@@ -51,9 +51,9 @@ public class UserDataHandler {
      */
     private User getUser(ResultSet resultSet) throws SQLException {
         return new User(
-                ValueUtil.byteToUuid(resultSet.getBytes(1)),
+                ValueUtil.bytesToUuid(resultSet.getBytes(1)),
                 resultSet.getString(2),
-                ValueUtil.byteToUuid(resultSet.getBytes(3)),
+                ValueUtil.bytesToUuid(resultSet.getBytes(3)),
                 resultSet.getString(4),
                 resultSet.getBoolean(5)
         );
@@ -86,7 +86,7 @@ public class UserDataHandler {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, ONLINE_UUID
         ))) {
-            ps.setBytes(1, ValueUtil.uuidToByte(uuid));
+            ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
             ResultSet resultSet = ps.executeQuery();
             if (resultSet.next()) {
                 return getUser(resultSet);
@@ -106,7 +106,7 @@ public class UserDataHandler {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
                 USER_DATA_TABLE_NAME, REDIRECT_UUID
         ))) {
-            ps.setBytes(1, ValueUtil.uuidToByte(uuid));
+            ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
             return getUsers(ps.executeQuery());
         }
     }
@@ -159,9 +159,9 @@ public class UserDataHandler {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
                 USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
         ))) {
-            ps.setBytes(1, ValueUtil.uuidToByte(entry.getOnlineUuid()));
+            ps.setBytes(1, ValueUtil.uuidToBytes(entry.getOnlineUuid()));
             ps.setString(2, entry.getCurrentName());
-            ps.setBytes(3, ValueUtil.uuidToByte(entry.getRedirectUuid()));
+            ps.setBytes(3, ValueUtil.uuidToBytes(entry.getRedirectUuid()));
             ps.setString(4, entry.getYggdrasilService());
             ps.setBoolean(5, entry.isWhitelist());
             ps.executeUpdate();
@@ -175,14 +175,14 @@ public class UserDataHandler {
      * @throws SQLException 更新异常
      */
     public void updateUserEntry(User entry) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ? limit 1",
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
                 USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
         ))) {
             ps.setString(1, entry.getCurrentName());
-            ps.setBytes(2, ValueUtil.uuidToByte(entry.getRedirectUuid()));
+            ps.setBytes(2, ValueUtil.uuidToBytes(entry.getRedirectUuid()));
             ps.setString(3, entry.getYggdrasilService());
             ps.setBoolean(4, entry.isWhitelist());
-            ps.setBytes(5, ValueUtil.uuidToByte(entry.getOnlineUuid()));
+            ps.setBytes(5, ValueUtil.uuidToBytes(entry.getOnlineUuid()));
             ps.executeUpdate();
         }
     }

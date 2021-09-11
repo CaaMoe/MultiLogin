@@ -66,7 +66,7 @@ public class CacheWhitelistDataHandler {
             ps.setString(1, nameOrUuid);
             return ps.executeUpdate() != 0;
         } catch (SQLIntegrityConstraintViolationException e) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Duplicate whitelist", e);
+            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Duplicate whitelist.", e);
             return false;
         }
     }

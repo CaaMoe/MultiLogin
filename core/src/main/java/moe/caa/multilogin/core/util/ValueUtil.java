@@ -20,7 +20,7 @@ public class ValueUtil {
      * @param uuid 需要转换的 uuid
      * @return 转换后的 bytes
      */
-    public static byte[] uuidToByte(UUID uuid) {
+    public static byte[] uuidToBytes(UUID uuid) {
         byte[] uuidBytes = new byte[16];
         ByteBuffer.wrap(uuidBytes).order(ByteOrder.BIG_ENDIAN).putLong(uuid.getMostSignificantBits()).putLong(uuid.getLeastSignificantBits());
         return uuidBytes;
@@ -32,7 +32,7 @@ public class ValueUtil {
      * @param bytes 需要转换的 bytes
      * @return 转换后的 UUID
      */
-    public static UUID byteToUuid(byte[] bytes) {
+    public static UUID bytesToUuid(byte[] bytes) {
         if (bytes.length != 16) return null;
         int i = 0;
         long msl = 0;
