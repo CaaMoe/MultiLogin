@@ -2,6 +2,8 @@ package moe.caa.multilogin.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,6 +46,22 @@ public class ValueUtil {
             lsl = (lsl << 8) | (bytes[i] & 0xFF);
         }
         return new UUID(msl, lsl);
+    }
+
+    /**
+     * 通过字符串生成 UUID
+     *
+     * @param uuid 字符串
+     * @return 匹配的 uuid， 否则为空
+     */
+    public static UUID getUuidOrNull(String uuid) {
+        UUID ret = null;
+        try {
+            ret = UUID.fromString(uuid);
+        } catch (Exception e) {
+            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Invalid UUID string", e);
+        }
+        return ret;
     }
 
     /**

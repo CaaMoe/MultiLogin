@@ -202,13 +202,13 @@ public class YggdrasilService {
         if (postMode) return getUrlString();
         if (passIp) {
             var passIp = buildPassIpContent(ip);
-            return ValueUtil.format(getUrlString(), new FormatContent(
+            return ValueUtil.format(getUrlString(), FormatContent.createContent(
                     FormatContent.FormatEntry.builder().name("username").content(username).build(),
                     FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
                     FormatContent.FormatEntry.builder().name("passIpContent").content(passIp).build()
             ));
         }
-        return ValueUtil.format(getUrlString(), new FormatContent(
+        return ValueUtil.format(getUrlString(), FormatContent.createContent(
                 FormatContent.FormatEntry.builder().name("username").content(username).build(),
                 FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
                 FormatContent.FormatEntry.builder().name("passIpContent").content("").build()
@@ -224,7 +224,7 @@ public class YggdrasilService {
     private String buildPassIpContent(String ip) {
         var passIp = getPassIpContentString();
         if (ValueUtil.isEmpty(passIp)) return "";
-        return ValueUtil.format(passIp, new FormatContent(
+        return ValueUtil.format(passIp, FormatContent.createContent(
                 FormatContent.FormatEntry.builder().name("ip").content(ip).build()
         ));
     }
@@ -241,13 +241,13 @@ public class YggdrasilService {
         if (!postMode) return "";
         if (passIp) {
             var passIp = buildPassIpContent(ip);
-            return ValueUtil.format(getPostContentString(), new FormatContent(
+            return ValueUtil.format(getPostContentString(), FormatContent.createContent(
                     FormatContent.FormatEntry.builder().name("username").content(username).build(),
                     FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
                     FormatContent.FormatEntry.builder().name("passIpContent").content(passIp).build()
             ));
         }
-        return ValueUtil.format(getPostContentString(), new FormatContent(
+        return ValueUtil.format(getPostContentString(), FormatContent.createContent(
                 FormatContent.FormatEntry.builder().name("username").content(username).build(),
                 FormatContent.FormatEntry.builder().name("serverId").content(serverId).build(),
                 FormatContent.FormatEntry.builder().name("passIpContent").content("").build()

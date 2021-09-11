@@ -14,8 +14,27 @@ import java.util.List;
 public class FormatContent {
     private final List<FormatEntry> formatEntries;
 
-    public FormatContent(FormatEntry... entries) {
+    private FormatContent(FormatEntry... entries) {
         formatEntries = Arrays.asList(entries);
+    }
+
+    /**
+     * 构建空占位内容
+     *
+     * @return 空占位内容
+     */
+    public static FormatContent empty() {
+        return new FormatContent();
+    }
+
+    /**
+     * 创建一个占位内容
+     *
+     * @param entries 占位聚合
+     * @return 占位内容
+     */
+    public static FormatContent createContent(FormatEntry... entries) {
+        return new FormatContent(entries);
     }
 
     /**

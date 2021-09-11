@@ -61,7 +61,7 @@ public class SQLManager {
                 var url = config.get("mysqlUrl", String.class, "");
                 if (ValueUtil.isEmpty(url))
                     url = "jdbc:mysql://{ip}:{port}/{database}?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
-                url = ValueUtil.format(url, new FormatContent(
+                url = ValueUtil.format(url, FormatContent.createContent(
                         FormatContent.FormatEntry.builder().name("ip").content(ip).build(),
                         FormatContent.FormatEntry.builder().name("port").content(port).build(),
                         FormatContent.FormatEntry.builder().name("database").content(database).build()
@@ -72,7 +72,7 @@ public class SQLManager {
             } else if (backend == SQLBackendEnum.H2) {
                 var url = config.get("h2Url", String.class, "");
                 if (ValueUtil.isEmpty(url)) url = "jdbc:h2:{file_path};TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=0";
-                url = ValueUtil.format(url, new FormatContent(
+                url = ValueUtil.format(url, FormatContent.createContent(
                         FormatContent.FormatEntry.builder().name("file_path").content(core.getPlugin().getDataFolder().getAbsolutePath() + "/multilogin").build()
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));

@@ -5,14 +5,15 @@ import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.IOUtil;
+import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.Properties;
 
 /**
@@ -58,7 +59,7 @@ public class LanguageHandler {
      * @param args 占位参数
      * @return 可读文本字符串对象
      */
-    public String getMessage(String node, Object... args) {
+    public String getMessage(String node, FormatContent content) {
         var ret = String.format("The language file node '%s' is missing or wrong, please contact the administrator.", node);
         try {
             String pat;
@@ -67,7 +68,7 @@ public class LanguageHandler {
             } else {
                 pat = inside.getProperty(node);
             }
-            ret = args.length == 0 ? pat : MessageFormat.format(pat, args);
+            ret = ValueUtil.format(ret, content);
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("The language file node '%s' is missing or wrong.", node), e);
         }

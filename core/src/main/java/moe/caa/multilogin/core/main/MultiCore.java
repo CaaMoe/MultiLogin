@@ -109,4 +109,10 @@ public class MultiCore {
         sqlManager.close();
         plugin.getRunServer().shutdown();
     }
+
+    /**
+     * 重新加载配置文件
+     */
+    public void reload() {
+    }
 }
