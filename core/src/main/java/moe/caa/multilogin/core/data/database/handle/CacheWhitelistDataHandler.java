@@ -33,7 +33,7 @@ public class CacheWhitelistDataHandler {
     public void createIfNotExists(Statement statement) throws SQLException {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
-                WHITELIST + " VARCHAR(36) PRIMARY KEY NOT NULL)");
+                WHITELIST + " VARCHAR(100) PRIMARY KEY NOT NULL)");
     }
 
     /**

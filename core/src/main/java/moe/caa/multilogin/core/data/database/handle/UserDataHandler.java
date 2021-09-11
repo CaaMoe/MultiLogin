@@ -35,11 +35,11 @@ public class UserDataHandler {
     public void createIfNotExists(Statement statement) throws SQLException {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
-                ONLINE_UUID + "  binary(16) PRIMARY KEY NOT NULL, " +
-                CURRENT_NAME + "  VARCHAR(32), " +
-                REDIRECT_UUID + "  binary(16), " +
-                YGGDRASIL_SERVICE + "  VARCHAR(50), " +
-                WHITELIST + "  INTEGER)");
+                ONLINE_UUID + " BINARY(16) PRIMARY KEY NOT NULL, " +
+                CURRENT_NAME + " VARCHAR(100) NOT NULL, " +
+                REDIRECT_UUID + " BINARY(16) NOT NULL, " +
+                YGGDRASIL_SERVICE + " VARCHAR(100) NOT NULL, " +
+                WHITELIST + " BOOL NOT NULL)");
     }
 
     /**
@@ -55,7 +55,7 @@ public class UserDataHandler {
                 resultSet.getString(2),
                 ValueUtil.byteToUuid(resultSet.getBytes(3)),
                 resultSet.getString(4),
-                resultSet.getInt(5) != 0
+                resultSet.getBoolean(5)
         );
     }
 
@@ -163,7 +163,7 @@ public class UserDataHandler {
             ps.setString(2, entry.getCurrentName());
             ps.setBytes(3, ValueUtil.uuidToByte(entry.getRedirectUuid()));
             ps.setString(4, entry.getYggdrasilService());
-            ps.setInt(5, entry.isWhitelist() ? 1 : 0);
+            ps.setBoolean(5, entry.isWhitelist());
             ps.executeUpdate();
         }
     }
@@ -181,7 +181,7 @@ public class UserDataHandler {
             ps.setString(1, entry.getCurrentName());
             ps.setBytes(2, ValueUtil.uuidToByte(entry.getRedirectUuid()));
             ps.setString(3, entry.getYggdrasilService());
-            ps.setInt(4, entry.isWhitelist() ? 1 : 0);
+            ps.setBoolean(4, entry.isWhitelist());
             ps.setBytes(5, ValueUtil.uuidToByte(entry.getOnlineUuid()));
             ps.executeUpdate();
         }
