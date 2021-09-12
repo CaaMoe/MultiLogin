@@ -68,7 +68,7 @@ public class LanguageHandler {
             } else {
                 pat = inside.getProperty(node);
             }
-            ret = ValueUtil.format(ret, content);
+            ret = ValueUtil.format(pat, content);
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("The language file node '%s' is missing or wrong.", node), e);
         }

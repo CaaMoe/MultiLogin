@@ -1,3 +1,8 @@
 name: MultiLogin
 version: 1.0
 main: moe.caa.multilogin.bukkit.main.MultiLoginBukkit
+commands:
+  multilogin:
+    aliases:
+      - login
+      - ml

@@ -8,7 +8,6 @@ import moe.caa.multilogin.core.impl.IServer;
 import org.bukkit.Server;
 
 public class BukkitServer implements IServer {
-    private final MultiLoginBukkit plugin;
     private final Server server;
 
     @Getter
@@ -18,7 +17,6 @@ public class BukkitServer implements IServer {
     private final IPlayerManager playerManager;
 
     public BukkitServer(MultiLoginBukkit plugin, Server server) {
-        this.plugin = plugin;
         this.server = server;
         this.scheduler = new BukkitScheduler(plugin);
         this.playerManager = new BukkitPlayerManager(server);
