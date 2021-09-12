@@ -19,4 +19,7 @@ public class Permissions {
     public static final String COMMAND_CONFIRM = "multilogin.confirm";
 
 
+    public static final String WHITELIST_ADD = "multilogin.whitelist.add";
+    public static final String WHITELIST_REMOVE = "multilogin.whitelist.remove";
+    public static final String WHITELIST_HAVE = "multilogin.whitelist.have";
 }
