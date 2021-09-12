@@ -9,4 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Permissions {
     public static final String COMMAND_RELOAD = "multilogin.reload";
+    public static final String COMMAND_QUERY_NAME = "multilogin.query.name";
+    public static final String COMMAND_QUERY_REDIRECT_UUID = "multilogin.query.redirectuuid";
+    public static final String COMMAND_QUERY_ONLINE_UUID = "multilogin.query.onlineuuid";
+    public static final String COMMAND_QUERY_YGGDRASIL = "multilogin.query.yggdrasil";
+    public static final String COMMAND_UPDATE = "multilogin.update";
+    public static final String COMMAND_LIST = "multilogin.list";
+    public static final String COMMAND_REMOVE = "multilogin.remove";
+    public static final String COMMAND_CONFIRM = "multilogin.confirm";
+
+
 }
