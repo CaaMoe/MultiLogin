@@ -1,7 +1,13 @@
 package moe.caa.multilogin.core.main;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.var;
+import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
+import moe.caa.multilogin.core.auth.response.Property;
+import moe.caa.multilogin.core.auth.serialize.HasJoinedResponseSerializer;
+import moe.caa.multilogin.core.auth.serialize.PropertySerializer;
 import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
@@ -20,16 +26,22 @@ import java.io.FileInputStream;
  */
 @Getter
 public class MultiCore {
+    @Getter
+    private static final Gson gson = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(HasJoinedResponse.class, new HasJoinedResponseSerializer())
+            .registerTypeAdapter(Property.class, new PropertySerializer())
+            .create();
+    @Getter
+    private static MultiCore core;
     private final MultiLogger logger;
     private final LanguageHandler languageHandler;
     private final IPlugin plugin;
     private final LibrariesHandler librariesHandler;
     private final YggdrasilServicesHandler yggdrasilServicesHandler;
     private final SQLManager sqlManager;
-
     private final File configFile;
     private YamlConfig yamlConfig;
-
     private long servicesTimeOut;
     private boolean whitelist;
     private String nameAllowedRegular;
@@ -40,6 +52,7 @@ public class MultiCore {
      * @param plugin 插件实例
      */
     public MultiCore(IPlugin plugin) {
+        MultiCore.core = this;
         this.plugin = plugin;
         configFile = new File(plugin.getDataFolder(), "config.yml");
         logger = new MultiLogger(this);
