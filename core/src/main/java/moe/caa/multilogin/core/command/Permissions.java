@@ -17,6 +17,7 @@ public class Permissions {
     public static final String COMMAND_LIST = "multilogin.list";
     public static final String COMMAND_REMOVE = "multilogin.remove";
     public static final String COMMAND_CONFIRM = "multilogin.confirm";
+    public static final String COMMAND_HELP = "multilogin.help";
 
 
     public static final String WHITELIST_ADD = "multilogin.whitelist.add";
