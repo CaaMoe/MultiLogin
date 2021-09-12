@@ -57,7 +57,7 @@ public class ValueUtil {
     public static UUID getUuidOrNull(String uuid) {
         UUID ret = null;
         try {
-            ret = UUID.fromString(uuid);
+            ret = UUID.fromString(uuid.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Invalid UUID string", e);
         }
