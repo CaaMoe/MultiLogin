@@ -24,23 +24,25 @@ public class HasJoinedResponseSerializer implements JsonSerializer<HasJoinedResp
         var ret = new HasJoinedResponse();
         var propertyMap = new HashMap<String, Property>();
         ret.setPropertyMap(propertyMap);
-        var root = json.getAsJsonObject();
-        ret.setId(ValueUtil.getUuidOrNull(root.get("id").getAsString()));
-        ret.setName(root.get("name").getAsString());
-        var propertiesJsonElement = root.get("properties");
-        if(propertiesJsonElement.isJsonObject()){
-            JsonObject object = propertiesJsonElement.getAsJsonObject();
-            for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-                if(entry.getValue().isJsonArray()){
-                    for (JsonElement ignored : entry.getValue().getAsJsonArray()) {
-                        propertyMap.put(entry.getKey(), context.deserialize(ignored, Property.class));
+        if (json.isJsonObject()) {
+            var root = json.getAsJsonObject();
+            ret.setId(ValueUtil.getUuidOrNull(root.get("id").getAsString()));
+            ret.setName(root.get("name").getAsString());
+            var propertiesJsonElement = root.get("properties");
+            if (propertiesJsonElement.isJsonObject()) {
+                JsonObject object = propertiesJsonElement.getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                    if (entry.getValue().isJsonArray()) {
+                        for (JsonElement ignored : entry.getValue().getAsJsonArray()) {
+                            propertyMap.put(entry.getKey(), context.deserialize(ignored, Property.class));
+                        }
                     }
                 }
-            }
-        } else if(propertiesJsonElement.isJsonArray()){
-            for (JsonElement element : propertiesJsonElement.getAsJsonArray()) {
-                Property value = context.deserialize(element, Property.class);
-                propertyMap.put(value.getName(), value);
+            } else if (propertiesJsonElement.isJsonArray()) {
+                for (JsonElement element : propertiesJsonElement.getAsJsonArray()) {
+                    Property value = context.deserialize(element, Property.class);
+                    propertyMap.put(value.getName(), value);
+                }
             }
         }
         return ret;
