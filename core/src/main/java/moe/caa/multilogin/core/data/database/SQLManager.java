@@ -30,9 +30,9 @@ public class SQLManager {
     public static String USER_DATA_TABLE_NAME = "user_data";
     public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
     private final MultiCore core;
+    private final CacheWhitelistDataHandler cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
+    private final UserDataHandler userDataHandler = new UserDataHandler(this);
     private ISQLConnectionPool pool;
-    private CacheWhitelistDataHandler cacheWhitelistDataHandler;
-    private UserDataHandler userDataHandler;
 
     public SQLManager(MultiCore core) {
         this.core = core;
@@ -77,15 +77,11 @@ public class SQLManager {
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));
                 pool = new H2ConnectionPool(url, username, password);
-
-                cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
-                userDataHandler = new UserDataHandler(this);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("Linked to database(%s).", backend.name()));
             } else {
                 pool = null;
                 throw new UnsupportedDatabaseException();
             }
-
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "无法链接到数据库", e);
             return false;

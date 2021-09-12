@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.auth;
+package moe.caa.multilogin.core.auth.before;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
@@ -21,6 +21,12 @@ public class AuthTask implements Callable<HasJoinedResponse> {
     private final String serverId;
     private final String ip;
 
+    /**
+     * 开始进行网络验证
+     *
+     * @return 验证返回值
+     * @throws Exception 验证时网络异常或序列化异常
+     */
     @Override
     public HasJoinedResponse call() throws Exception {
         MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Verifying player login request...(service: %s, username: %s, serverId: %s, ip: %s)",
