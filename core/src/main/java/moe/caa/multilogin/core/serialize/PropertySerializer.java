@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.auth.serialize;
+package moe.caa.multilogin.core.serialize;
 
 import com.google.gson.*;
 import lombok.NoArgsConstructor;
