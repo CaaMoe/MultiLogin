@@ -11,10 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class AbstractScheduler {
     private final AtomicInteger asyncThreadId = new AtomicInteger(0);
-    private final AtomicInteger timerThreadId = new AtomicInteger(0);
-    private final ScheduledExecutorService timerExecutor = Executors.newScheduledThreadPool(5,
-            r -> new Thread(r, "MultiLogin Async Timer #" + timerThreadId.incrementAndGet()));
-    private final ExecutorService asyncExecutor = Executors.newCachedThreadPool(
+    private final ScheduledExecutorService asyncExecutor = Executors.newScheduledThreadPool(5,
             r -> new Thread(r, "MultiLogin Async #" + asyncThreadId.incrementAndGet()));
 
     /**
@@ -33,7 +30,7 @@ public abstract class AbstractScheduler {
      * @param delay    延时
      */
     public void runTaskAsync(Runnable runnable, long delay) {
-        timerExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
+        asyncExecutor.schedule(runnable, delay, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -44,14 +41,13 @@ public abstract class AbstractScheduler {
      * @param period 周期
      */
     public void runTaskAsyncTimer(Runnable run, long delay, long period) {
-        timerExecutor.scheduleAtFixedRate(run, delay, period, TimeUnit.MILLISECONDS);
+        asyncExecutor.scheduleAtFixedRate(run, delay, period, TimeUnit.MILLISECONDS);
     }
 
     /**
      * 关闭所有线程池内的线程
      */
     public void shutdown() {
-        timerExecutor.shutdown();
         asyncExecutor.shutdown();
     }
 
