@@ -1,5 +1,6 @@
-package moe.caa.multilogin.core.auth.before;
+package moe.caa.multilogin.core.auth.yggdrasil;
 
+import lombok.Getter;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.impl.Callback;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -13,46 +14,32 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 代表一个验证请求的线程
  */
 
-public class AuthTask implements Runnable {
+public class YggdrasilAuthTask implements Runnable {
+
+    @Getter
     private final YggdrasilService service;
-    private final String username;
-    private final String serverId;
-    private final String ip;
-    private final Callback<HasJoinedResponse> callback;
+    private final UserData user;
+    private final Callback<YggdrasilAuthTask> callback;
     private final AtomicBoolean isCancel = new AtomicBoolean(false);
     private boolean done = false;
 
-    /**
-     * 构建这个验证方法
-     *
-     * @param service  Yggdrasil 账户验证服务器实例
-     * @param username 用户名
-     * @param serverId 服务器ID
-     * @param ip       用户IP（可选）
-     * @param callback 回调
-     */
-    public AuthTask(YggdrasilService service, String username, String serverId, String ip, Callback<HasJoinedResponse> callback) {
-        this.service = service;
-        this.username = username;
-        this.serverId = serverId;
-        this.ip = ip;
-        this.callback = callback;
-    }
+    @Getter
+    private HasJoinedResponse response;
+
+    @Getter
+    private Throwable throwable;
 
     /**
      * 构建这个验证方法
      *
      * @param service  Yggdrasil 账户验证服务器实例
-     * @param username 用户名
-     * @param serverId 服务器ID
+     * @param user     用户验证数据
      * @param callback 回调
      */
-    public AuthTask(YggdrasilService service, String username, String serverId, Callback<HasJoinedResponse> callback) {
+    public YggdrasilAuthTask(YggdrasilService service, UserData user, Callback<YggdrasilAuthTask> callback) {
         this.service = service;
-        this.username = username;
-        this.serverId = serverId;
+        this.user = user;
         this.callback = callback;
-        this.ip = null;
     }
 
     /**
@@ -69,8 +56,6 @@ public class AuthTask implements Runnable {
      */
     @Override
     public void run() {
-        HasJoinedResponse response = null;
-        Throwable throwable = null;
         try {
             response = call();
         } catch (Throwable e) {
@@ -78,7 +63,7 @@ public class AuthTask implements Runnable {
         } finally {
             done = true;
         }
-        if (!isCancel.get()) callback.solve(response, throwable);
+        if (!isCancel.get()) callback.solve(this);
     }
 
     /**
@@ -99,8 +84,8 @@ public class AuthTask implements Runnable {
     private HasJoinedResponse call() throws Exception {
         if (service.isPostMode()) return MultiCore.getGson().fromJson(
                 HttpUtil.httpPostJson(
-                        new URL(service.buildUrl(username, serverId, ip)),
-                        service.buildPostContent(username, serverId, ip),
+                        new URL(service.buildUrl(user.username, user.serverId, user.ip)),
+                        service.buildPostContent(user.username, user.serverId, user.ip),
                         "application/json",
                         (int) MultiCore.getCore().getServicesTimeOut(),
                         service.getAuthRetry()
@@ -109,7 +94,7 @@ public class AuthTask implements Runnable {
         );
         return MultiCore.getGson().fromJson(
                 HttpUtil.httpGet(
-                        new URL(service.buildUrl(username, serverId, ip)),
+                        new URL(service.buildUrl(user.username, user.serverId, user.ip)),
                         (int) MultiCore.getCore().getServicesTimeOut(),
                         service.getAuthRetry()
                 ),

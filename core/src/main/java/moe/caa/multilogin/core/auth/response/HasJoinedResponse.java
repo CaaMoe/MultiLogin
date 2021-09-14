@@ -13,4 +13,8 @@ public class HasJoinedResponse {
     private UUID id;
     private String name;
     private Map<String, Property> propertyMap;
+
+    public boolean isSucceed() {
+        return id != null;
+    }
 }

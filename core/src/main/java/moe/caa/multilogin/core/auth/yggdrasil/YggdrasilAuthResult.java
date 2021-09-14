@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.auth.before;
+package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
@@ -8,8 +8,8 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
  * Yggdrasil HasJoined 验证结果
  */
 @AllArgsConstructor
-public class AuthResult {
-    public final AuthReasonEnum err;
+public class YggdrasilAuthResult {
+    public final YggdrasilAuthReasonEnum err;
     public final HasJoinedResponse result;
     public final YggdrasilService service;
     public final Throwable throwable;
@@ -20,6 +20,6 @@ public class AuthResult {
      * @return 验证是否成功
      */
     public boolean isSuccess() {
-        return result != null && result.getId() != null && err == AuthReasonEnum.RETURN && throwable == null;
+        return result != null && result.getId() != null && err == YggdrasilAuthReasonEnum.RETURN && throwable == null;
     }
 }

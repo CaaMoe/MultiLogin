@@ -8,8 +8,7 @@ public interface Callback<V> {
     /**
      * 当事件有结果时被调用
      *
-     * @param value     事件结果
-     * @param throwable 事件错误，如果有的话
+     * @param value 事件结果
      */
-    void solve(V value, Throwable throwable);
+    void solve(V value);
 }

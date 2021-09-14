@@ -1,9 +1,9 @@
-package moe.caa.multilogin.core.auth.before;
+package moe.caa.multilogin.core.auth.yggdrasil;
 
 /**
  * Yggdrasil 账户验证返回原因枚举
  */
-public enum AuthReasonEnum {
+public enum YggdrasilAuthReasonEnum {
 
     /**
      * 访问没有错误的返回
