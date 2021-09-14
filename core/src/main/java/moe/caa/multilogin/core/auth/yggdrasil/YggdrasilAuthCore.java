@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.var;
+import moe.caa.multilogin.core.impl.AbstractUserLogin;
 import moe.caa.multilogin.core.impl.Callback;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -10,7 +10,8 @@ import moe.caa.multilogin.core.util.GroupBurstArrayList;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,9 +28,6 @@ public class YggdrasilAuthCore {
     private final AtomicInteger authThreadId = new AtomicInteger(0);
     private final ExecutorService authExecutor = Executors.newScheduledThreadPool(5,
             r -> new Thread(r, "MultiLogin Authenticator #" + authThreadId.incrementAndGet()));
-
-    @Getter
-    private final Set<UUID> abnormalUsers = Collections.synchronizedSet(new HashSet<>());
     private final MultiCore core;
 
     /**
@@ -37,17 +35,17 @@ public class YggdrasilAuthCore {
      *
      * @param user 用户数据
      */
-    public YggdrasilAuthResult yggdrasilAuth(YggdrasilUserData user) throws SQLException, InterruptedException {
+    public YggdrasilAuthResult yggdrasilAuth(AbstractUserLogin user) throws SQLException, InterruptedException {
         core.getLogger().log(LoggerLevel.DEBUG, String.format("Start online verification of player. (username: %s, serverId: %s, ip: %s)",
-                user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
         ));
         // 服务器宕机
         AtomicBoolean down = new AtomicBoolean(false);
         // 放顺序的
-        var order = getVerifyOrder(user.username);
+        var order = getVerifyOrder(user.getUsername());
         if (order.size() == 0) {
             core.getLogger().log(LoggerLevel.DEBUG, String.format("Online verification is over, there is no verification server error. (username: %s, serverId: %s, ip: %s)",
-                    user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                    user.getUsername(), user.getUsername(), user.getIp() == null ? "unknown" : user.getIp()
             ));
             return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.NO_SERVICE, null, null);
         }
@@ -64,35 +62,30 @@ public class YggdrasilAuthCore {
                 if (task.getThrowable() != null) {
                     down.set(true);
                     core.getLogger().log(LoggerLevel.DEBUG, String.format("Verification failed, wrong request. (server: %s, username: %s, serverId: %s, ip: %s)",
-                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                            task.getService().getPathString(), user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
                     ), task.getThrowable());
                     return;
                 }
                 if (task.getResponse().isSucceed()) {
-
                     // 有两个登入验证凭据?
-                    // 不，这绝对不可能的
+                    // 不，这绝对不可能
                     // 除非是使用了重复的或是不安全的 Yggdrasil 账户验证服务器
-                    // warn 一下，踢死他
+                    // 直接忽略
                     synchronized (succeed) {
                         if (succeed.get() != null) {
-                            core.getLogger().log(LoggerLevel.WARN, String.format("The account seems to have multiple login credentials at the same time? This is impossible. Please check your Yggdrasil account verification server configuration. (username: %s, serverId: %s, ip: %s)",
-                                    user.username, user.serverId, user.ip == null ? "unknown" : user.ip
-                            ));
-                            abnormalUsers.add(task.getResponse().getId());
                             return;
                         }
                         succeed.set(task);
                     }
                     core.getLogger().log(LoggerLevel.DEBUG, String.format("The verification is successful, the player has valid login credentials. (server: %s, username: %s, serverId: %s, ip: %s)",
-                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                            task.getService().getPathString(), user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
                     ), task.getThrowable());
                     succeed.set(task);
                     // 有结果后立刻释放执行线程
                     latch.countDown();
                 } else {
                     core.getLogger().log(LoggerLevel.DEBUG, String.format("Verification failed, authentication failed. (server: %s, username: %s, serverId: %s, ip: %s)",
-                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                            task.getService().getPathString(), user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
                     ));
                 }
                 currentAuthTasks.remove(task);
@@ -103,7 +96,7 @@ public class YggdrasilAuthCore {
                 var authTask = new YggdrasilAuthTask(service, user, callback);
                 currentAuthTasks.add(authTask);
                 core.getLogger().log(LoggerLevel.DEBUG, String.format("Verifying player login request. (server: %s, username: %s, serverId: %s, ip: %s)",
-                        service.getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                        service.getPathString(), user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
                 ));
                 authExecutor.execute(authTask);
             }

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -8,10 +9,11 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
  * Yggdrasil HasJoined 验证结果
  */
 @AllArgsConstructor
+@Getter
 public class YggdrasilAuthResult {
-    public final YggdrasilAuthReasonEnum reason;
-    public final HasJoinedResponse result;
-    public final YggdrasilService service;
+    private final YggdrasilAuthReasonEnum reason;
+    private final HasJoinedResponse result;
+    private final YggdrasilService service;
 
     /**
      * 身份验证是否有效且成功

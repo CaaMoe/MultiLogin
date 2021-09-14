@@ -3,7 +3,7 @@ package moe.caa.multilogin.core.auth.verify;
 /**
  * 代表身份核查结果
  */
-public enum VerifyResultEnum {
+public enum VerifyAuthReasonEnum {
 
     /**
      * 通过
