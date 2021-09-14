@@ -18,7 +18,7 @@ public class YggdrasilAuthTask implements Runnable {
 
     @Getter
     private final YggdrasilService service;
-    private final UserData user;
+    private final YggdrasilUserData user;
     private final Callback<YggdrasilAuthTask> callback;
     private final AtomicBoolean isCancel = new AtomicBoolean(false);
     private boolean done = false;
@@ -36,7 +36,7 @@ public class YggdrasilAuthTask implements Runnable {
      * @param user     用户验证数据
      * @param callback 回调
      */
-    public YggdrasilAuthTask(YggdrasilService service, UserData user, Callback<YggdrasilAuthTask> callback) {
+    public YggdrasilAuthTask(YggdrasilService service, YggdrasilUserData user, Callback<YggdrasilAuthTask> callback) {
         this.service = service;
         this.user = user;
         this.callback = callback;

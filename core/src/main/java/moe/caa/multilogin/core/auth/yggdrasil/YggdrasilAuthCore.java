@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.var;
 import moe.caa.multilogin.core.impl.Callback;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -9,8 +10,7 @@ import moe.caa.multilogin.core.util.GroupBurstArrayList;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +27,9 @@ public class YggdrasilAuthCore {
     private final AtomicInteger authThreadId = new AtomicInteger(0);
     private final ExecutorService authExecutor = Executors.newScheduledThreadPool(5,
             r -> new Thread(r, "MultiLogin Authenticator #" + authThreadId.incrementAndGet()));
+
+    @Getter
+    private final Set<UUID> abnormalUsers = Collections.synchronizedSet(new HashSet<>());
     private final MultiCore core;
 
     /**
@@ -34,15 +37,20 @@ public class YggdrasilAuthCore {
      *
      * @param user 用户数据
      */
-    public YggdrasilAuthResult yggdrasilAuth(UserData user) throws SQLException, InterruptedException {
-        core.getLogger().log(LoggerLevel.DEBUG, String.format("Start verifying player login request. (username: %s, serverId: %s, ip: %s)",
+    public YggdrasilAuthResult yggdrasilAuth(YggdrasilUserData user) throws SQLException, InterruptedException {
+        core.getLogger().log(LoggerLevel.DEBUG, String.format("Start online verification of player. (username: %s, serverId: %s, ip: %s)",
                 user.username, user.serverId, user.ip == null ? "unknown" : user.ip
         ));
         // 服务器宕机
         AtomicBoolean down = new AtomicBoolean(false);
         // 放顺序的
         var order = getVerifyOrder(user.username);
-        if (order.size() == 0) return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.NO_SERVICE, null, null, null);
+        if (order.size() == 0) {
+            core.getLogger().log(LoggerLevel.DEBUG, String.format("Online verification is over, there is no verification server error. (username: %s, serverId: %s, ip: %s)",
+                    user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+            ));
+            return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.NO_SERVICE, null, null);
+        }
         // 放验证成功后的结果的
         var succeed = new AtomicReference<YggdrasilAuthTask>();
         while (order.hasNext()) {
@@ -55,13 +63,37 @@ public class YggdrasilAuthCore {
             var callback = (Callback<YggdrasilAuthTask>) (task) -> {
                 if (task.getThrowable() != null) {
                     down.set(true);
-                    // TODO: 2021/9/14 PRINT ERROR
+                    core.getLogger().log(LoggerLevel.DEBUG, String.format("Verification failed, wrong request. (server: %s, username: %s, serverId: %s, ip: %s)",
+                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                    ), task.getThrowable());
                     return;
                 }
                 if (task.getResponse().isSucceed()) {
+
+                    // 有两个登入验证凭据?
+                    // 不，这绝对不可能的
+                    // 除非是使用了重复的或是不安全的 Yggdrasil 账户验证服务器
+                    // warn 一下，踢死他
+                    synchronized (succeed) {
+                        if (succeed.get() != null) {
+                            core.getLogger().log(LoggerLevel.WARN, String.format("The account seems to have multiple login credentials at the same time? This is impossible. Please check your Yggdrasil account verification server configuration. (username: %s, serverId: %s, ip: %s)",
+                                    user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                            ));
+                            abnormalUsers.add(task.getResponse().getId());
+                            return;
+                        }
+                        succeed.set(task);
+                    }
+                    core.getLogger().log(LoggerLevel.DEBUG, String.format("The verification is successful, the player has valid login credentials. (server: %s, username: %s, serverId: %s, ip: %s)",
+                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                    ), task.getThrowable());
                     succeed.set(task);
                     // 有结果后立刻释放执行线程
                     latch.countDown();
+                } else {
+                    core.getLogger().log(LoggerLevel.DEBUG, String.format("Verification failed, authentication failed. (server: %s, username: %s, serverId: %s, ip: %s)",
+                            task.getService().getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                    ));
                 }
                 currentAuthTasks.remove(task);
                 if (currentAuthTasks.isEmpty()) latch.countDown();
@@ -70,6 +102,9 @@ public class YggdrasilAuthCore {
             for (YggdrasilService service : crtService) {
                 var authTask = new YggdrasilAuthTask(service, user, callback);
                 currentAuthTasks.add(authTask);
+                core.getLogger().log(LoggerLevel.DEBUG, String.format("Verifying player login request. (server: %s, username: %s, serverId: %s, ip: %s)",
+                        service.getPathString(), user.username, user.serverId, user.ip == null ? "unknown" : user.ip
+                ));
                 authExecutor.execute(authTask);
             }
             //阻塞
@@ -77,9 +112,9 @@ public class YggdrasilAuthCore {
             YggdrasilAuthTask task = succeed.get();
             if (task == null) continue;
             // 直接返回
-            return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.RETURN, task.getResponse(), task.getService(), null);
+            return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.RETURN, task.getResponse(), task.getService());
         }
-        return new YggdrasilAuthResult(down.get() ? YggdrasilAuthReasonEnum.SERVER_DOWN : YggdrasilAuthReasonEnum.VALIDATION_FAILED, null, null, null);
+        return new YggdrasilAuthResult(down.get() ? YggdrasilAuthReasonEnum.SERVER_DOWN : YggdrasilAuthReasonEnum.VALIDATION_FAILED, null, null);
     }
 
     /**

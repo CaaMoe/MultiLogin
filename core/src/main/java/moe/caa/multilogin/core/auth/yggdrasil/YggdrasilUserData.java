@@ -10,7 +10,7 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserData {
+public class YggdrasilUserData {
     protected final String username;
     protected final String serverId;
     protected final String ip;
