@@ -2,8 +2,8 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.Getter;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
-import moe.caa.multilogin.core.impl.AbstractUserLogin;
 import moe.caa.multilogin.core.impl.Callback;
+import moe.caa.multilogin.core.impl.IUserLogin;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.HttpUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
@@ -19,7 +19,7 @@ public class YggdrasilAuthTask implements Runnable {
 
     @Getter
     private final YggdrasilService service;
-    private final AbstractUserLogin user;
+    private final IUserLogin user;
     private final Callback<YggdrasilAuthTask> callback;
     private final AtomicBoolean isCancel = new AtomicBoolean(false);
     private boolean done = false;
@@ -37,7 +37,7 @@ public class YggdrasilAuthTask implements Runnable {
      * @param user     用户验证数据
      * @param callback 回调
      */
-    public YggdrasilAuthTask(YggdrasilService service, AbstractUserLogin user, Callback<YggdrasilAuthTask> callback) {
+    public YggdrasilAuthTask(YggdrasilService service, IUserLogin user, Callback<YggdrasilAuthTask> callback) {
         this.service = service;
         this.user = user;
         this.callback = callback;

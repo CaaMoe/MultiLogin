@@ -3,7 +3,7 @@ package moe.caa.multilogin.core.auth.verify;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthResult;
-import moe.caa.multilogin.core.impl.AbstractUserLogin;
+import moe.caa.multilogin.core.impl.IUserLogin;
 import moe.caa.multilogin.core.main.MultiCore;
 
 /**
@@ -21,7 +21,7 @@ public class VerifyAuthCore {
      * @param result 在线认证结果返回
      * @param user   用户数据
      */
-    public VerifyAuthResult verifyAuth(YggdrasilAuthResult result, AbstractUserLogin user) {
+    public VerifyAuthResult verifyAuth(YggdrasilAuthResult result, IUserLogin user) {
         return null;
     }
 }

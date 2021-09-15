@@ -3,7 +3,7 @@ package moe.caa.multilogin.core.auth;
 import lombok.var;
 import moe.caa.multilogin.core.auth.verify.VerifyAuthCore;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthCore;
-import moe.caa.multilogin.core.impl.AbstractUserLogin;
+import moe.caa.multilogin.core.impl.IUserLogin;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.sql.SQLException;
@@ -34,7 +34,7 @@ public class CombineAuthCore {
     /**
      * 对该名玩家进行综合验证
      */
-    public void doAuth(AbstractUserLogin userLogin) throws SQLException, InterruptedException {
+    public void doAuth(IUserLogin userLogin) throws SQLException, InterruptedException {
         var yggdrasilAuthResult = yggdrasilAuthCore.yggdrasilAuth(userLogin);
         // 处理 Yggdrasil failed
         var verifyAuthResult = verifyAuthCore.verifyAuth(yggdrasilAuthResult, userLogin);
