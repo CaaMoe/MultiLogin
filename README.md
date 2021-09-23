@@ -3,25 +3,26 @@
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
-MultiLogin 是一款能让你的服务端支持混合验证登入的服务端程序，让你的服务端同时支持正版登入和多种外置登入共存。
+让你的服务端支持正版登入和多种外置登入共存。
 
     这是 MultiLogin 的第三次正在重写的分支 R2 (暂不可使用)
 
 ## 功能特性
 
 * 多 Yggdrasil 共存
-* 高度可自定义 Yggdrasil 方式，支持市面上绝大多数 Yggdrasil 服务器
+* 高度可设置 Yggdrasil 方式，支持市面上几乎所有类型的 Yggdrasil 服务器
 * 账户安全机制
     * 账户安全核查
         * 限制只使用一种 Yggdrasil 登入方式，杜绝可能出现的重复 UUID 问题
-        * 可设置是否允许服务器内 UUID 占线登入
+        * 可设置占线登入方式
     * 用户名核查
         * 阻止服务器内出现同名账户
-        * 可设置部分账户验证服务器下的玩家跳过重名检查并且进行用户名占线登入
+        * 可设置部分账户验证服务器下的玩家跳过重名检查并进行占线登入
         * 多 Yggdrasil 下分组设置的用户名正则匹配检查
     * 支持多 Yggdrasil 下分组管理的白名程序
 * 可控制生成玩家在游戏内的 UUID
-* 自动修复多 Yggdrasil 情况下出现的皮肤问题（即将到来）
+* PlaceholderAPI 变量支持 (Bukkit)
+* 自动修复多 Yggdrasil 情况下出现的皮肤问题 (即将到来)
 
 ## BStats 数据
 
@@ -29,17 +30,15 @@ MultiLogin 是一款能让你的服务端支持混合验证登入的服务端程
 
 ## 关于混合验证登入的安全性问题
 
-MultiLogin 能很好的处理角色重名和 UUID 重复的问题，并且还提供了设置角色在游戏中UUID的功能， 以及实现了依据不同验证服务器分组管理的白名单系统和角色名称限制服务。
+混合验证登入的潜在问题就是有可能存在两个同名甚至同 UUID 的玩家，一旦出现这种情况可能会出现数据混乱、命令选择器失效等致命问题，及难排查。
 
-如果要真有俩角色的在线 UUID 相同，MultiLogin 会根据在线 UUID 查询上次登入时所使用的验证服务器的 path 来判断是否允许登入。
-
-理论上不存在什么安全性问题，除非没想到...
+MultiLogin 能很好的处理角色重名和 UUID 重复的问题，理论上不会存在什么安全性的问题。
 
 ## 如何使用
 
 ### 安装
 
-与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置程序）， 只需将适合服务端的插件本体丢入 plugins 文件夹下即可。
+与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置 javaagent 程序）， 只需将适合服务端的插件本体丢入 plugins(mods) 文件夹下即可。
 
 ### 添加一个 Yggdrasil 账户验证服务器
 
@@ -186,6 +185,7 @@ MultiLogin 能很好的处理角色重名和 UUID 重复的问题，并且还提
 | /whitelist add &lt;name&#124;uuid&gt;     | | 将 target 添加到白名单中|
 | /whitelist remove &lt;name&#124;uuid&gt;    | | 移除 target 的白名单|
 | /whitelist have &lt;name&#124;uuid&gt;         | | 判断 target 是否具有白名单|
+| /whitelist list         | | 获得白名单列表|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
 群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
