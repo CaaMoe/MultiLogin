@@ -38,7 +38,8 @@ MultiLogin 能很好的处理角色重名和 UUID 重复的问题，理论上不
 
 ### 安装
 
-与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置 javaagent 程序）， 只需将适合服务端的插件本体丢入 plugins(mods) 文件夹下即可。
+与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置 javaagent 程序）， 只需将适合服务端的插件本体丢入 plugins(mods)
+文件夹下即可。
 
 ### 添加一个 Yggdrasil 账户验证服务器
 

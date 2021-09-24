@@ -1,30 +1,26 @@
 package moe.caa.multilogin.core.logger;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.var;
 import moe.caa.multilogin.core.util.IOUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.Objects;
 
 /**
- * 日志文件写入程序，使用 LOG4J
+ * 日志文件写入程序，使用 log4j<br>
+ * 此实例仅能通过 MultiLogger 来访问<br>
+ * 请确保当前类或父加载器包含 log4j 库<br>
+ *
+ * @see MultiLogger
  */
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FileLoggerWriteHandler {
-    private final MultiLogger multiLogger;
     private Logger toFileLogger;
-
-    /**
-     * 构建这个日志文件写入程序
-     *
-     * @param multiLogger 插件日志记录程序
-     */
-    protected FileLoggerWriteHandler(MultiLogger multiLogger) {
-        this.multiLogger = multiLogger;
-    }
 
     /**
      * 初始化这个日志记录程序
@@ -34,12 +30,14 @@ public class FileLoggerWriteHandler {
     protected void init() throws IOException {
         var tempFile = File.createTempFile("log4j2-temp", "multilogin");
         tempFile.deleteOnExit();
-        var inputStream = IOUtil.getJarResource("log4j2.xml");
-        var bytes = new byte[inputStream.available()];
-        inputStream.read(bytes);
-        var config = new String(bytes);
+        var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("log4j2.xml"), String.format("File '%s' was not found in the jar.", "log4j2.xml"))));
+        var rePlacePath = MultiLogger.getLogger().getCore().getPlugin().getDataFolder().getAbsolutePath();
         try (var fw = new FileWriter(tempFile)) {
-            fw.write(config.replace("%path%", multiLogger.getCore().getPlugin().getDataFolder().getAbsolutePath()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                fw.write(line.replace("%path%", rePlacePath));
+                fw.write('\n');
+            }
             fw.flush();
         }
         var context = new LoggerContext("MultiLogin");
@@ -48,6 +46,13 @@ public class FileLoggerWriteHandler {
         toFileLogger = context.getLogger("MultiLogin");
     }
 
+    /**
+     * 写入一条日志到文件中
+     *
+     * @param level     日志级别
+     * @param message   日志信息
+     * @param throwable 栈信息
+     */
     protected void log(LoggerLevel level, String message, Throwable throwable) {
         Level log4Level;
         if (level == LoggerLevel.INFO) log4Level = Level.INFO;
@@ -58,6 +63,13 @@ public class FileLoggerWriteHandler {
         log(log4Level, message, throwable);
     }
 
+    /**
+     * 写入一条日志到文件中
+     *
+     * @param level     日志级别
+     * @param message   日志信息
+     * @param throwable 栈信息
+     */
     protected void log(Level level, String message, Throwable throwable) {
         if (toFileLogger != null) toFileLogger.log(level, message, throwable);
     }

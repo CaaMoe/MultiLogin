@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.library;
 
+import lombok.var;
 import moe.caa.multilogin.core.exception.LoadLibraryFailedException;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -21,8 +22,8 @@ import java.util.stream.Collectors;
  * 依赖文件下载和处理程序
  */
 public class LibrariesHandler {
-    private final MultiCore core;
     private final File librariesFolder;
+    private final MultiCore core;
 
     /**
      * 构建这个依赖处理程序
@@ -31,38 +32,30 @@ public class LibrariesHandler {
      * @param librariesFolder 依赖存放文件夹
      */
     public LibrariesHandler(MultiCore core, File librariesFolder) {
-        this.core = core;
         this.librariesFolder = librariesFolder;
+        this.core = core;
     }
 
     /**
      * 加载依赖核心
      */
-    public boolean init() {
+    public boolean loadLibraries() throws Throwable {
         try {
             core.getLogger().log(LoggerLevel.INFO, "Loading libraries...");
             IOUtil.createNewFileOrFolder(librariesFolder, true);
-            List<Library> needLoadLibraries = check();
+            var needLoadLibraries = check();
             if (needLoadLibraries.size() == 0) return true;
-            core.getLogger().log(LoggerLevel.INFO,
-                    String.format("Need to load %d %s, namely %s.", needLoadLibraries.size(),
-                            needLoadLibraries.size() == 1 ? "library" : "libraries", needLoadLibraries.stream().map(Library::getJarName).collect(Collectors.joining(", "))));
-            List<File> needLoadFiles = download(needLoadLibraries);
+            var needLoadFiles = download(needLoadLibraries);
             load(needLoadFiles);
-            List<Library> failed = check();
-            if (failed.size() == 0) {
-                core.getLogger().log(LoggerLevel.INFO,
-                        String.format("Loaded, %d failed.", failed.size()));
-                return true;
-            } else {
-                LoadLibraryFailedException exception = new LoadLibraryFailedException(failed.stream().map(Library::getJarName).collect(Collectors.joining(", ")));
-                core.getLogger().log(LoggerLevel.ERROR,
-                        String.format("Load failed, %d failed, namely %s.", failed.size(), exception.getMessage()), exception);
-            }
-        } catch (Throwable t) {
+            var failed = check();
+            if (failed.size() == 0) return true;
+            var exception = new LoadLibraryFailedException(failed.stream().map(Library::getJarName)
+                    .collect(Collectors.joining(", ")));
+            core.getLogger().log(LoggerLevel.ERROR, String.format("Load failed, %d failed, namely %s.",
+                    failed.size(), exception.getMessage()), exception);
+        } catch (Exception t) {
             LoadLibraryFailedException exception = new LoadLibraryFailedException(t);
-            core.getLogger().log(LoggerLevel.ERROR,
-                    "Load failed.", exception);
+            core.getLogger().log(LoggerLevel.ERROR, "Load failed.", exception);
         }
         return false;
     }
@@ -102,7 +95,6 @@ public class LibrariesHandler {
         CountDownLatch countDownLatch = new CountDownLatch(libraries.size());
         for (Library library : libraries) {
             File libraryFile = new File(librariesFolder, library.getJarName());
-
             if (libraryFile.exists()) {
                 if (libraryFile.length() != 0) {
                     countDownLatch.countDown();
@@ -116,7 +108,7 @@ public class LibrariesHandler {
                     HttpUtil.downloadFile(library.getDownloadUrl(), libraryFile);
                     ret.add(libraryFile);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    // 此异常在上一个try中被 调试信息 打印
                 } finally {
                     countDownLatch.countDown();
                 }

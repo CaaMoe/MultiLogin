@@ -6,14 +6,14 @@ import lombok.Getter;
 import lombok.var;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
+import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
+import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.library.LibrariesHandler;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
-import moe.caa.multilogin.core.serialize.HasJoinedResponseSerializer;
-import moe.caa.multilogin.core.serialize.PropertySerializer;
 import moe.caa.multilogin.core.util.IOUtil;
 import moe.caa.multilogin.core.util.YamlConfig;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
@@ -22,25 +22,24 @@ import java.io.File;
 import java.io.FileInputStream;
 
 /**
- * 插件核心，衔接
+ * 插件公共基础核心类<br>
+ * 所有后端插件实现都要与这个基础核心同生共死
+ *
+ * @see IPlugin
  */
 @Getter
-public class MultiCore {
+public final class MultiCore {
     @Getter
     private static final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
             .registerTypeAdapter(HasJoinedResponse.class, new HasJoinedResponseSerializer())
-            .registerTypeAdapter(Property.class, new PropertySerializer())
-            .create();
-    @Getter
-    private static MultiCore core;
-    private final MultiLogger logger;
-    private final LanguageHandler languageHandler;
-    private final IPlugin plugin;
-    private final LibrariesHandler librariesHandler;
-    private final YggdrasilServicesHandler yggdrasilServicesHandler;
-    private final SQLManager sqlManager;
-    private final File configFile;
+            .registerTypeAdapter(Property.class, new PropertySerializer()).create();
+    private MultiLogger logger;
+    private LanguageHandler languageHandler;
+    private IPlugin plugin;
+    private LibrariesHandler librariesHandler;
+    private YggdrasilServicesHandler yggdrasilServicesHandler;
+    private SQLManager sqlManager;
+    private File configFile;
     private YamlConfig yamlConfig;
     private long servicesTimeOut;
     private boolean whitelist;
@@ -52,8 +51,8 @@ public class MultiCore {
      * @param plugin 插件实例
      */
     public MultiCore(IPlugin plugin) {
-        MultiCore.core = this;
         this.plugin = plugin;
+
         configFile = new File(plugin.getDataFolder(), "config.yml");
         logger = new MultiLogger(this);
         librariesHandler = new LibrariesHandler(this, new File(plugin.getDataFolder(), "libraries"));
@@ -63,24 +62,24 @@ public class MultiCore {
     }
 
     /**
-     * 初始化插件服务
+     * 初始化操作
      *
-     * @return 初始化成功
+     * @return 初始化状态
      */
     public boolean init() {
         var ret = init0();
-        if (!ret) logger.log(LoggerLevel.ERROR, "遇到致命性异常，插件将关闭");
+        if (!ret) logger.log(LoggerLevel.ERROR, "ENCOUNTERED A FATAL ERROR, THE PLUGIN WILL BE DISABLED.");
         return ret;
     }
 
     /**
-     * 初始化插件服务
+     * 初始化操作
      *
-     * @return 初始化成功
+     * @return 初始化状态
      */
     private boolean init0() {
         try {
-            if (!librariesHandler.init()) return false;
+            if (!librariesHandler.loadLibraries()) return false;
 
             IOUtil.saveResource(IOUtil.getJarResource("config.yml"), configFile, false);
             yamlConfig = YamlConfig.fromInputStream(new FileInputStream(configFile));
@@ -117,6 +116,9 @@ public class MultiCore {
         return true;
     }
 
+    /**
+     * 关闭插件
+     */
     public void disable() {
         plugin.getRunServer().getScheduler().shutdown();
         sqlManager.close();

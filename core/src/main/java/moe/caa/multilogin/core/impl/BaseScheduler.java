@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 代表插件线程调度器对象
  */
-public abstract class AbstractScheduler {
+public abstract class BaseScheduler {
     private final AtomicInteger asyncThreadId = new AtomicInteger(0);
     private final ScheduledExecutorService asyncExecutor = Executors.newScheduledThreadPool(5,
             r -> new Thread(r, "MultiLogin Async #" + asyncThreadId.incrementAndGet()));

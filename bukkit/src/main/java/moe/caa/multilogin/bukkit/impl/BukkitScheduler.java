@@ -2,10 +2,10 @@ package moe.caa.multilogin.bukkit.impl;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.impl.AbstractScheduler;
+import moe.caa.multilogin.core.impl.BaseScheduler;
 
 @AllArgsConstructor
-public class BukkitScheduler extends AbstractScheduler {
+public class BukkitScheduler extends BaseScheduler {
     private final MultiLoginBukkit plugin;
 
     @Override

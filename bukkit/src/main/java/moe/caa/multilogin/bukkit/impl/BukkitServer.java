@@ -2,7 +2,7 @@ package moe.caa.multilogin.bukkit.impl;
 
 import lombok.Getter;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.impl.AbstractScheduler;
+import moe.caa.multilogin.core.impl.BaseScheduler;
 import moe.caa.multilogin.core.impl.IPlayerManager;
 import moe.caa.multilogin.core.impl.IServer;
 import org.bukkit.Server;
@@ -11,7 +11,7 @@ public class BukkitServer implements IServer {
     private final Server server;
 
     @Getter
-    private final AbstractScheduler scheduler;
+    private final BaseScheduler scheduler;
 
     @Getter
     private final IPlayerManager playerManager;

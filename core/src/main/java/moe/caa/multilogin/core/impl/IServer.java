@@ -24,7 +24,7 @@ public interface IServer {
      *
      * @return 线程调度器对象
      */
-    AbstractScheduler getScheduler();
+    BaseScheduler getScheduler();
 
     /**
      * 获得玩家管理器

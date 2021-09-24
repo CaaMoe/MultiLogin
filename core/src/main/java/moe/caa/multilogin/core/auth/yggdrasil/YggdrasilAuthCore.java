@@ -93,7 +93,7 @@ public class YggdrasilAuthCore {
             };
             // 执行线程的
             for (YggdrasilService service : crtService) {
-                var authTask = new YggdrasilAuthTask(service, user, callback);
+                var authTask = new YggdrasilAuthTask(core, service, user, callback);
                 currentAuthTasks.add(authTask);
                 core.getLogger().log(LoggerLevel.DEBUG, String.format("Verifying player login request. (server: %s, username: %s, serverId: %s, ip: %s)",
                         service.getPathString(), user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()

@@ -23,10 +23,10 @@ public class Library {
     static {
         libraries = Arrays.asList(
                 Library.builder().group("org.slf4j").name("slf4j-api").version("1.7.31").mainClass("org.slf4j.LoggerFactory").build(),
-                Library.builder().group("com.zaxxer").name("HikariCP").version("4.0.3").mainClass("com.zaxxer.hikari.HikariDataSource").build(),
+                Library.builder().group("com.zaxxer").name("HikariCP").version("5.0.0").mainClass("com.zaxxer.hikari.HikariDataSource").build(),
                 Library.builder().group("mysql").name("mysql-connector-java").version("8.0.25").mainClass("com.mysql.cj.jdbc.Driver").build(),
                 Library.builder().group("com.h2database").name("h2").version("1.4.200").mainClass("org.h2.jdbcx.JdbcConnectionPool").build(),
-                Library.builder().group("com.google.code.gson").name("gson").version("2.8.7").mainClass("com.google.gson.Gson").build(),
+                Library.builder().group("com.google.code.gson").name("gson").version("2.8.8").mainClass("com.google.gson.Gson").build(),
                 Library.builder().group("org.apache.logging.log4j").name("log4j-api").version("2.14.1").mainClass("org.apache.logging.log4j.Level").build(),
                 Library.builder().group("org.apache.logging.log4j").name("log4j-core").version("2.14.1").mainClass("org.apache.logging.log4j.core.LoggerContext").build(),
                 Library.builder().group("cglib").name("cglib").version("3.3.0").mainClass("net.sf.cglib.proxy.MethodInterceptor").build(),
@@ -47,7 +47,8 @@ public class Library {
      * @return 依赖的本体文件名称
      */
     protected String getJarName() {
-        if (jarName == null) jarName = name + '-' + version + ".jar";
+        if (jarName != null) return jarName;
+        jarName = name + '-' + version + ".jar";
         return jarName;
     }
 
@@ -57,17 +58,13 @@ public class Library {
      * @return 依赖本体的下载地址
      */
     protected String getDownloadUrl() {
-        if (downloadUrl == null) {
-            StringBuilder sb = new StringBuilder(MAVEN_ALIYUN);
-            String[] packetSplit = group.split("\\.");
-            for (String get : packetSplit) {
-                sb.append(get);
-                sb.append('/');
-            }
-            sb.append(name).append('/').append(version).append('/');
-            sb.append(name).append('-').append(version).append(".jar");
-            downloadUrl = sb.toString();
-        }
+        if (downloadUrl != null) return downloadUrl;
+        StringBuilder sb = new StringBuilder(MAVEN_ALIYUN);
+        String[] packetSplit = group.split("\\.");
+        for (String get : packetSplit) sb.append(get).append('/');
+        sb.append(name).append('/').append(version).append('/');
+        sb.append(name).append('-').append(version).append(".jar");
+        downloadUrl = sb.toString();
         return downloadUrl;
     }
 

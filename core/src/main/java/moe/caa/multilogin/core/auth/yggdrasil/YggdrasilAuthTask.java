@@ -22,8 +22,8 @@ public class YggdrasilAuthTask implements Runnable {
     private final IUserLogin user;
     private final Callback<YggdrasilAuthTask> callback;
     private final AtomicBoolean isCancel = new AtomicBoolean(false);
+    private final MultiCore core;
     private boolean done = false;
-
     @Getter
     private HasJoinedResponse response;
 
@@ -33,11 +33,13 @@ public class YggdrasilAuthTask implements Runnable {
     /**
      * 构建这个验证方法
      *
+     * @param core     插件核心
      * @param service  Yggdrasil 账户验证服务器实例
      * @param user     用户验证数据
      * @param callback 回调
      */
-    public YggdrasilAuthTask(YggdrasilService service, IUserLogin user, Callback<YggdrasilAuthTask> callback) {
+    public YggdrasilAuthTask(MultiCore core, YggdrasilService service, IUserLogin user, Callback<YggdrasilAuthTask> callback) {
+        this.core = core;
         this.service = service;
         this.user = user;
         this.callback = callback;
@@ -88,7 +90,7 @@ public class YggdrasilAuthTask implements Runnable {
                         new URL(service.buildUrl(user.getUsername(), user.getServerId(), user.getIp())),
                         service.buildPostContent(user.getUsername(), user.getServerId(), user.getIp()),
                         "application/json",
-                        (int) MultiCore.getCore().getServicesTimeOut(),
+                        (int) core.getServicesTimeOut(),
                         service.getAuthRetry()
                 ),
                 HasJoinedResponse.class
@@ -96,7 +98,7 @@ public class YggdrasilAuthTask implements Runnable {
         return MultiCore.getGson().fromJson(
                 HttpUtil.httpGet(
                         new URL(service.buildUrl(user.getUsername(), user.getServerId(), user.getIp())),
-                        (int) MultiCore.getCore().getServicesTimeOut(),
+                        (int) core.getServicesTimeOut(),
                         service.getAuthRetry()
                 ),
                 HasJoinedResponse.class
