@@ -109,7 +109,6 @@ services:
     # 默认值 'false'
     safeId: false
 
-
   # 此节点代表 Minecraft 原版验证
   official:
     name: "正版"
