@@ -3,24 +3,24 @@
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
-让你的服务端支持正版登入和多种外置登入共存。
+支持多 Yggdrasil 混合验证共存的外置登入插件
 
     这是 MultiLogin 的第三次正在重写的分支 R2 (暂不可使用)
 
 ## 功能特性
 
 * 多 Yggdrasil 共存
-* 高度可设置 Yggdrasil 方式，支持市面上几乎所有类型的 Yggdrasil 服务器
+* 高度可配置的 Yggdrasil 方式， 支持市面上几乎所有类型的 Yggdrasil 账户验证服务器
 * 账户安全机制
-    * 账户安全核查
+    * 二次验证
         * 限制只使用一种 Yggdrasil 登入方式，杜绝可能出现的重复 UUID 问题
-        * 可设置占线登入方式
+        * 可设置占线登入机制
     * 用户名核查
         * 阻止服务器内出现同名账户
         * 可设置部分账户验证服务器下的玩家跳过重名检查并进行占线登入
         * 多 Yggdrasil 下分组设置的用户名正则匹配检查
-    * 支持多 Yggdrasil 下分组管理的白名程序
-* 可控制生成玩家在游戏内的 UUID
+    * 支持多 Yggdrasil 下分组管理的白名系统
+* 可控制和生成玩家在游戏内的 UUID
 * PlaceholderAPI 变量支持 (Bukkit)
 * 自动修复多 Yggdrasil 情况下出现的皮肤问题 (即将到来)
 
@@ -28,11 +28,11 @@
 
 ![BStats](https://bstats.org/signatures/bukkit/MultiLoginR.svg)
 
-## 关于混合验证登入的安全性问题
+## 关于混合验证登入下的账户安全问题
 
-混合验证登入的潜在问题就是有可能存在两个同名甚至同 UUID 的玩家，一旦出现这种情况可能会出现数据混乱、命令选择器失效等致命问题，及难排查。
+混合验证登入下有可能会出现同 UUID 账户， 而原版机制下的服务器程序只认 UUID， 一旦出现这种情况将会导致玩家间数据混乱和丢失，并且极难排查原因。
 
-MultiLogin 能很好的处理角色重名和 UUID 重复的问题，理论上不会存在什么安全性的问题。
+MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩家只能通过其中一种 Yggdrasil 验证方式登入游戏， 杜绝了可能出现的重复 UUID 的问题，极大程度上保证了账户安全，理论上不会存在安全问题。
 
 ## 如何使用
 
