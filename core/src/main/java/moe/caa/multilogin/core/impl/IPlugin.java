@@ -12,7 +12,7 @@ public interface IPlugin {
     /**
      * 调用此方法通知实现类进行替换原有的账户验证服务
      */
-    void initService();
+    void initService() throws Throwable;
 
     /**
      * 调用此方法通知实现类加载除替换原有的账户验证服务外的其他附加服务<br>
