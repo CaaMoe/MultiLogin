@@ -2,8 +2,8 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
 import lombok.var;
+import moe.caa.multilogin.core.impl.BaseUserLogin;
 import moe.caa.multilogin.core.impl.Callback;
-import moe.caa.multilogin.core.impl.IUserLogin;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.GroupBurstArrayList;
@@ -35,7 +35,7 @@ public class YggdrasilAuthCore {
      *
      * @param user 用户数据
      */
-    public YggdrasilAuthResult yggdrasilAuth(IUserLogin user) throws SQLException, InterruptedException {
+    public YggdrasilAuthResult yggdrasilAuth(BaseUserLogin user) throws SQLException, InterruptedException {
         core.getLogger().log(LoggerLevel.DEBUG, String.format("Start online verification of player. (username: %s, serverId: %s, ip: %s)",
                 user.getUsername(), user.getServerId(), user.getIp() == null ? "unknown" : user.getIp()
         ));

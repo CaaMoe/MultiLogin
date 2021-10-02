@@ -2,7 +2,7 @@ package moe.caa.multilogin.bukkit.main;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.SneakyThrows;
-import moe.caa.multilogin.bukkit.proxy.MultiPacketLoginInEncryptionBegin;
+import moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy.MultiPacketLoginInEncryptionBegin;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.util.ReflectUtil;
