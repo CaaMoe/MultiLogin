@@ -17,7 +17,6 @@ public class GroupBurstArrayList<T> {
      *
      * @param list 一组数据
      */
-
     public void offer(ArrayList<T> list) {
         contents.offer(list);
     }

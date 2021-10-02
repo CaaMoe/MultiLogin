@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.logger;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -11,38 +10,37 @@ import moe.caa.multilogin.core.main.MultiCore;
  * 需要后端实现提供控制台日志打印方法
  */
 public class MultiLogger {
+
     @Getter
     private static MultiLogger logger;
-    @Getter(value = AccessLevel.PROTECTED)
     private final MultiCore core;
-    private FileLoggerWriteHandler flwh;
     @Getter
     @Setter
     private boolean debug = false;
+    private FileLoggerWriteHandler flwh;
 
     /**
      * 构建这个插件日志综合处理程序<br>
-     * 在不执行 init 方法前，本模块仅能处理打印日志到控制台的功能
+     * 在不执行 init 操作前，本模块仅能处理打印日志到控制台的功能
      *
-     * @param core 插件核心
+     * @param core  插件核心
+     * @param debug 调试模式
      */
-    public MultiLogger(MultiCore core) {
+    public MultiLogger(MultiCore core, boolean debug) {
         logger = this;
         this.core = core;
+        this.debug = debug;
     }
 
     /**
      * 初始化操作
-     *
-     * @param debug 是否开启调试模式
      */
-    public void init(boolean debug) {
-        this.debug = debug;
+    public void init() {
         try {
             this.flwh = new FileLoggerWriteHandler();
-            flwh.init();
+            flwh.init(core);
         } catch (Throwable e) {
-            log(LoggerLevel.ERROR, "Unable to save log to file.", e);
+            log(LoggerLevel.ERROR, "Failed to initial Logfile.", e);
             log(LoggerLevel.ERROR, "debug will be enabled.");
             this.flwh = null;
             this.debug = true;

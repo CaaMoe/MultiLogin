@@ -1,9 +1,7 @@
 package moe.caa.multilogin.core.impl;
 
-import java.util.UUID;
-
 /**
- * 代表一个命令执行者对象
+ * 公共命令执行者对象
  */
 public interface ISender {
 
@@ -29,13 +27,6 @@ public interface ISender {
     void sendMessage(String message);
 
     /**
-     * 如果这个命令执行者是一名玩家，则以给定的理由踢出这名玩家
-     *
-     * @param message 给定的理由
-     */
-    void kickPlayer(String message);
-
-    /**
      * 获得这个命令执行者的名称
      *
      * @return 命令执行者的名称
@@ -43,9 +34,11 @@ public interface ISender {
     String getName();
 
     /**
-     * 如果这个命令执行者是一名玩家，则返回改名玩家的游戏内 UUID
+     * 获取对应的玩家对象
      *
-     * @return 玩家的游戏内 UUID，否则为 NULL
+     * @return 对应的玩家对象
      */
-    UUID getPlayerUid();
+    default IPlayer getAsPlayer() {
+        return (IPlayer) this;
+    }
 }

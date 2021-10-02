@@ -55,8 +55,8 @@ public class LanguageHandler {
     /**
      * 通过 节点 和 参数 构建这个可读文本字符串对象
      *
-     * @param node 节点
-     * @param args 占位参数
+     * @param node    节点
+     * @param content 占位参数
      * @return 可读文本字符串对象
      */
     public String getMessage(String node, FormatContent content) {
@@ -70,7 +70,7 @@ public class LanguageHandler {
             }
             ret = ValueUtil.format(pat, content);
         } catch (Exception e) {
-            MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("The language file node '%s' is missing or wrong.", node), e);
+            MultiLogger.getLogger().log(LoggerLevel.WARN, String.format("The language file node '%s' is missing or wrong.", node), e);
         }
         return ret;
     }

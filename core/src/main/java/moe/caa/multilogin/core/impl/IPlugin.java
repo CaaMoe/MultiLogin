@@ -5,32 +5,23 @@ import moe.caa.multilogin.core.logger.LoggerLevel;
 import java.io.File;
 
 /**
- * 代表插件主类
+ * 公共插件实例
  */
 public interface IPlugin {
 
     /**
-     * 修改原有的验证服务
-     *
-     * @throws Throwable 异常
+     * 调用此方法通知实现类进行替换原有的账户验证服务
      */
-    void initService() throws Throwable;
+    void initService();
 
     /**
-     * 加载其他附加服务
+     * 调用此方法通知实现类加载除替换原有的账户验证服务外的其他附加服务<br>
+     * 包括命令注册、变量注册
      */
     void initOther();
 
     /**
-     * 获得服务器对象
-     *
-     * @return 服务器对象
-     */
-    IServer getRunServer();
-
-    /**
-     * 写入一条日志<br>
-     * 这是一个早期写入日志的方法，用于处理 Log4J Core 加载前的日志信息
+     * 写入一条日志
      *
      * @param level     日志级别
      * @param message   日志信息

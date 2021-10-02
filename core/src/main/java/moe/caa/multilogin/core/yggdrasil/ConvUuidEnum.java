@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.data;
+package moe.caa.multilogin.core.yggdrasil;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;

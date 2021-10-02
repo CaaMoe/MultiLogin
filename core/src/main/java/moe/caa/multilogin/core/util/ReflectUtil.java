@@ -2,11 +2,9 @@ package moe.caa.multilogin.core.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.var;
 import moe.caa.multilogin.core.exception.NoSuchEnumException;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -16,15 +14,6 @@ import java.lang.reflect.Type;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReflectUtil {
-
-    /**
-     * 获得拥有超级反射权限的 MethodHandles.Lookup
-     *
-     * @return 拥有超级反射权限的 MethodHandles.Lookup
-     */
-    public static MethodHandles.Lookup getSuperLookup() {
-        return SuperClassInstance.super_lookup;
-    }
 
     /**
      * 操作 Method accessible 属性
@@ -112,28 +101,5 @@ public class ReflectUtil {
         src = src.getSuperclass();
         if (src != null) return isCaseClass(src, parent);
         return false;
-    }
-
-    /**
-     * 单例模式下的超级反射权限
-     */
-    private static class SuperClassInstance {
-        private static final MethodHandles.Lookup super_lookup;
-
-        static {
-            super_lookup = get();
-        }
-
-        @SneakyThrows
-        private static MethodHandles.Lookup get() {
-            // TODO: 2021/9/5 SYSTEM INFO
-            var unsafeClass = Class.forName("sun.misc.Unsafe");
-            var theUnsafeField = handleAccessible(getField(unsafeClass, unsafeClass), true);
-            var theUnsafeGetObjectMethod = handleAccessible(unsafeClass.getDeclaredMethod("getObject", Object.class, long.class), true);
-            var theUnsafeStaticFieldOffsetMethod = handleAccessible(unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class), true);
-            var theUnsafe = theUnsafeField.get(null);
-            var implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            return (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
-        }
     }
 }

@@ -6,9 +6,9 @@ package moe.caa.multilogin.core.logger;
 public enum LoggerLevel {
 
     /**
-     * 常规级别
+     * 错误级别
      */
-    INFO,
+    ERROR,
 
     /**
      * 警告级别
@@ -16,12 +16,12 @@ public enum LoggerLevel {
     WARN,
 
     /**
-     * 错误级别
+     * 信息级别
      */
-    ERROR,
+    INFO,
 
     /**
      * 调试级别
      */
-    DEBUG,
+    DEBUG;
 }

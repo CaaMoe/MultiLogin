@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.impl;
 
 /**
- * 代表一个登入状态中的用户实例
+ * 公共登入状态中的用户实例
  */
 public interface IUserLogin {
 

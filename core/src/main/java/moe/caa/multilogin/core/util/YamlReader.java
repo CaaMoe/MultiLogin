@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * YAML 配置文件读取类
  */
-public class YamlConfig {
+public class YamlReader {
     private static final Yaml YAML;
 
     static {
@@ -26,7 +26,7 @@ public class YamlConfig {
 
     private final Map<String, Object> content;
 
-    private YamlConfig(Map<String, Object> content) {
+    private YamlReader(Map<String, Object> content) {
         this.content = ValueUtil.getOrDef(content, new LinkedHashMap<>());
     }
 
@@ -36,8 +36,8 @@ public class YamlConfig {
      * @param input 输入流
      * @return YamlConfig
      */
-    public static YamlConfig fromInputStream(InputStream input) {
-        return new YamlConfig(YAML.loadAs(new InputStreamReader(input, StandardCharsets.UTF_8), LinkedHashMap.class));
+    public static YamlReader fromInputStream(InputStream input) {
+        return new YamlReader(YAML.loadAs(new InputStreamReader(input, StandardCharsets.UTF_8), LinkedHashMap.class));
     }
 
     /**
@@ -45,8 +45,8 @@ public class YamlConfig {
      *
      * @return 空的配置文件对象
      */
-    public static YamlConfig empty() {
-        return new YamlConfig(null);
+    public static YamlReader empty() {
+        return new YamlReader(null);
     }
 
     /**
@@ -79,7 +79,7 @@ public class YamlConfig {
 
         if (type == getClass()) {
             if (!(val instanceof Map)) return null;
-            return (R) new YamlConfig((Map) val);
+            return (R) new YamlReader((Map<String, Object>) val);
         }
         return val != null ? ReflectUtil.isCaseClass(val.getClass(), type) ? (R) val : null : null;
     }

@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 代表插件线程调度器对象
+ * 公共服务器线程调度器对象
  */
 public abstract class BaseScheduler {
     private final AtomicInteger asyncThreadId = new AtomicInteger(0);
@@ -44,7 +44,7 @@ public abstract class BaseScheduler {
     }
 
     /**
-     * 关闭所有线程池内的线程
+     * 关闭线程池
      */
     public void shutdown() {
         asyncExecutor.shutdown();

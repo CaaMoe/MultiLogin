@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.impl;
 
 /**
- * 异步回调接口
+ * 回调接口
  */
 public interface Callback<V> {
 

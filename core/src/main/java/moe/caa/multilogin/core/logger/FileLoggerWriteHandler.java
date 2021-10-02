@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.logger;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.var;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.IOUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -25,13 +26,14 @@ public class FileLoggerWriteHandler {
     /**
      * 初始化这个日志记录程序
      *
+     * @param core 插件核心
      * @throws IOException 文件存取异常
      */
-    protected void init() throws IOException {
+    protected void init(MultiCore core) throws IOException {
         var tempFile = File.createTempFile("log4j2-temp", "multilogin");
         tempFile.deleteOnExit();
         var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("log4j2.xml"), String.format("File '%s' was not found in the jar.", "log4j2.xml"))));
-        var rePlacePath = MultiLogger.getLogger().getCore().getPlugin().getDataFolder().getAbsolutePath();
+        var rePlacePath = core.getPlugin().getDataFolder().getAbsolutePath();
         try (var fw = new FileWriter(tempFile)) {
             String line;
             while ((line = reader.readLine()) != null) {

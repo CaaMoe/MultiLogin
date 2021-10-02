@@ -29,7 +29,7 @@ public class HttpUtil {
         try {
             return new URL(url);
         } catch (MalformedURLException exception) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Try to generate the URL failed. (%s)", url), exception);
+            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Try to generate the URL failed: %s", url), exception);
         }
         return null;
     }
@@ -162,8 +162,7 @@ public class HttpUtil {
             httpURLConnection.connect();
 
             if (httpURLConnection.getResponseCode() == 200) {
-                try (var inputStream = httpURLConnection.getInputStream();
-                     var fileOutputStream = new FileOutputStream(downloadingFile)) {
+                try (var inputStream = httpURLConnection.getInputStream(); var fileOutputStream = new FileOutputStream(downloadingFile)) {
                     var b = new byte[1024];
                     int n;
                     while ((n = inputStream.read(b)) != -1) {
@@ -202,7 +201,7 @@ public class HttpUtil {
                 thr = e;
             }
         }
-        throw thr == null ? new IOException("unknown") : thr;
+        throw thr == null ? new IOException(String.format("retry: %d", retry)) : thr;
     }
 
     /**
@@ -223,6 +222,6 @@ public class HttpUtil {
                 thr = e;
             }
         }
-        throw thr == null ? new IOException("unknown") : thr;
+        throw thr == null ? new IOException(String.format("retry: %d", retry)) : thr;
     }
 }

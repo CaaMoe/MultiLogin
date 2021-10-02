@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
@@ -11,12 +13,16 @@ dependencies {
     implementation project(":core")
 }
 
-shadowJar {
-    archiveFileName = "MultiLogin-Bukkit.shadow.jar"
-
-    dependencies {
-        dependencies {
-            include(project(":core"))
-        }
+processResources {
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: project.plugin_version]
+        filter ReplaceTokens, tokens: [author: 'ksqeib, CaaMoe']
     }
+}
+
+shadowJar {
+    archiveBaseName.set('MultiLogin-Bukkit')
+    archiveVersion.set(project.plugin_version as String)
+    archiveClassifier.set('')
 }
