@@ -8,7 +8,8 @@ import net.minecraft.server.v1_16_R3.PacketLoginInListener;
 public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBegin {
 
     public void a(PacketLoginInListener var0) {
-        var0.a(this);
+        //var0.a(this);
+        ((LoginListener) var0).disconnect("爬开");
         BukkitUserLogin login = new BukkitUserLogin((LoginListener) var0);
     }
 }
