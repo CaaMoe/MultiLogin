@@ -9,6 +9,8 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
 
     public void a(PacketLoginInListener var0) {
         //var0.a(this);
+
+        // 服务端加密妹有完成，消息不能完整送达
         ((LoginListener) var0).disconnect("爬开");
         BukkitUserLogin login = new BukkitUserLogin((LoginListener) var0);
     }
