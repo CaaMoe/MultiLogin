@@ -9,7 +9,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
+    //compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
     implementation project(":core")
 }
 

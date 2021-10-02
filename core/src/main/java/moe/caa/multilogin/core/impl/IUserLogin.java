@@ -35,8 +35,10 @@ public interface IUserLogin {
 
     /**
      * 加密开始
+     *
+     * @return 服务器ID
      */
-    void startEncrypting();
+    String startEncrypting();
 
     /**
      * 登入结束
