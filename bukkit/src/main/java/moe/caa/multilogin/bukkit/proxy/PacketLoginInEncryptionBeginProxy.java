@@ -14,15 +14,8 @@ import java.util.function.Supplier;
  * net.minecraft.network.protocol.login.PacketLoginInEncryptionBegin
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class PacketLoginInEncryptionBeginProxy {
-    public static final Class<?> packetLoginInEncryptionClass;
-    public static final Enhancer ENHANCER = new Enhancer();
-
-    static {
-        packetLoginInEncryptionClass = genPacketLoginInEncryptionClass();
-        ENHANCER.setSuperclass(packetLoginInEncryptionClass);
-        ENHANCER.setCallback((MethodInterceptor) PacketLoginInEncryptionBeginProxy::intercept);
-    }
+public class PacketLoginInEncryptionBeginProxy implements MethodInterceptor{
+    public static final Class<?> packetLoginInEncryptionClass = genPacketLoginInEncryptionClass();
 
     @SneakyThrows
     private static Class<?> genPacketLoginInEncryptionClass() {
@@ -30,14 +23,19 @@ public class PacketLoginInEncryptionBeginProxy {
     }
 
     private static Object createNewInstance() {
-        return ENHANCER.create();
+        PacketLoginInEncryptionBeginProxy proxy = new PacketLoginInEncryptionBeginProxy();
+        Enhancer enhancer = new Enhancer();
+        enhancer.setSuperclass(packetLoginInEncryptionClass);
+        enhancer.setCallback(proxy);
+        return enhancer.create();
     }
 
     public static Supplier<?> hand() {
         return PacketLoginInEncryptionBeginProxy::createNewInstance;
     }
 
-    public static Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+    @Override
+    public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         proxy.invoke(obj, args);
         return obj;
     }
