@@ -28,4 +28,14 @@ public class BukkitUserLogin implements IUserLogin {
     public String getIp() {
         return null;
     }
+
+    @Override
+    public void startEncrypting() {
+
+    }
+
+    @Override
+    public void finish() {
+
+    }
 }

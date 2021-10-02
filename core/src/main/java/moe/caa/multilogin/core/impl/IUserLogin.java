@@ -32,4 +32,14 @@ public interface IUserLogin {
      * @return IP，如果拥有
      */
     String getIp();
+
+    /**
+     * 加密开始
+     */
+    void startEncrypting();
+
+    /**
+     * 登入结束
+     */
+    void finish();
 }
