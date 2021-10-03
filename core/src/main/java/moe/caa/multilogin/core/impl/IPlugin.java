@@ -30,6 +30,13 @@ public interface IPlugin {
     void loggerLog(LoggerLevel level, String message, Throwable throwable);
 
     /**
+     * 获得服务器对象
+     *
+     * @return 服务器对象
+     */
+    IServer getRunServer();
+
+    /**
      * 获得配置和数据文件路径
      *
      * @return 配置和数据文件路径

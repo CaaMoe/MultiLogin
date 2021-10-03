@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.data.config;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import moe.caa.multilogin.core.util.ValueUtil;
 
@@ -15,6 +16,7 @@ import java.util.Properties;
  */
 @Getter
 @ToString
+@NoArgsConstructor
 public class AdvancedSetting {
     private transient final Properties properties = new Properties();
     private String database_user_data_table_name = "{prefix}{_}user_data";
@@ -31,12 +33,10 @@ public class AdvancedSetting {
     private boolean verify_username_allow_duplicate_name = false;
     private boolean logger_debug = false;
 
-    public AdvancedSetting(InputStream stream) throws IOException, IllegalAccessException {
-        properties.load(stream);
-        read();
-    }
 
-    private void read() throws IllegalAccessException {
+    public void load(InputStream stream) throws IllegalAccessException, IOException {
+        properties.clear();
+        properties.load(stream);
         for (Field field : this.getClass().getDeclaredFields()) {
             if (Modifier.isTransient(field.getModifiers())) continue;
             String path = field.getName();

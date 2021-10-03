@@ -2,8 +2,10 @@ package moe.caa.multilogin.bukkit.main;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy.MultiPacketLoginInEncryptionBegin;
 import moe.caa.multilogin.core.impl.IPlugin;
+import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
@@ -18,11 +20,18 @@ import java.util.logging.Level;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     private final MultiCore core = new MultiCore(this);
+    private IServer server;
 
     @SneakyThrows
     @Override
     public void onEnable() {
-        core.init();
+        server = new BukkitServer(getServer(), this);
+        if (!core.init()) setEnabled(false);
+    }
+
+    @Override
+    public void onDisable() {
+        core.disable();
     }
 
     @Override
@@ -57,14 +66,17 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void loggerLog(LoggerLevel level, String message, Throwable throwable) {
-        Level vanLevel = Level.INFO;
+        Level vanLevel;
         if (level == LoggerLevel.ERROR) vanLevel = Level.SEVERE;
         else if (level == LoggerLevel.WARN) vanLevel = Level.WARNING;
-        else if (level == LoggerLevel.DEBUG) {
-            if (core.getSetting().isLogger_debug()) {
-                return;
-            }
-        }
+        else if (level == LoggerLevel.INFO) vanLevel = Level.INFO;
+        else if (level == LoggerLevel.DEBUG) return;
+        else vanLevel = Level.INFO;
         getLogger().log(vanLevel, message, throwable);
+    }
+
+    @Override
+    public IServer getRunServer() {
+        return server;
     }
 }

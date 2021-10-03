@@ -74,7 +74,7 @@ public class SQLManager {
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));
                 pool = new H2ConnectionPool(url, username, password);
-                MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("Linked to database(%s).", backend.name()));
+                MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("成功连接到数据库. (%s)", backend.name()));
             } else {
                 pool = null;
                 throw new UnsupportedDatabaseException();

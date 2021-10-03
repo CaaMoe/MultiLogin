@@ -47,7 +47,8 @@ public abstract class BaseScheduler {
      * 关闭线程池
      */
     public void shutdown() {
-        asyncExecutor.shutdown();
+        if (!asyncExecutor.isShutdown())
+            asyncExecutor.shutdown();
     }
 
     /**

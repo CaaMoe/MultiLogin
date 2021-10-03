@@ -44,7 +44,7 @@ public class YggdrasilServicesHandler {
             }
         }
         if (enabledServices.isEmpty())
-            MultiLogger.getLogger().log(LoggerLevel.WARN, "尚未启用任何 Yggdrasil 账户验证服务器，将会拒绝所有玩家登入游戏.");
+            MultiLogger.getLogger().log(LoggerLevel.WARN, "尚未启用任何 Yggdrasil 账户验证服务器，将拒绝所有玩家登入游戏.");
     }
 
     /**

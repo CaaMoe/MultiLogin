@@ -16,7 +16,7 @@ public class MultiLogger {
     private final MultiCore core;
     @Getter
     @Setter
-    private boolean debug = false;
+    private boolean debug;
     private FileLoggerWriteHandler flwh;
 
     /**
