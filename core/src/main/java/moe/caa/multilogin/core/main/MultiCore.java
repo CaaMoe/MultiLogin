@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.core.auth.CombineAuthCore;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
@@ -40,6 +41,8 @@ public class MultiCore {
     private final File generalConfig;
     private final File dataFolder;
 
+    private final CombineAuthCore authCore;
+
     /**
      * 构建插件核心
      *
@@ -56,6 +59,7 @@ public class MultiCore {
         languageHandler = new LanguageHandler();
         yggdrasilServicesHandler = new YggdrasilServicesHandler();
         sqlManager = new SQLManager(this);
+        authCore = new CombineAuthCore(this);
     }
 
     /**

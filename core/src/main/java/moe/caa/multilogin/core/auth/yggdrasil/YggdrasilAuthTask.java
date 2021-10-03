@@ -14,7 +14,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 代表一个验证请求的线程
  */
-
 public class YggdrasilAuthTask implements Runnable {
 
     @Getter
@@ -65,8 +64,8 @@ public class YggdrasilAuthTask implements Runnable {
             throwable = e;
         } finally {
             done = true;
+            if (!isCancel.get()) callback.solve(this);
         }
-        if (!isCancel.get()) callback.solve(this);
     }
 
     /**
@@ -90,8 +89,7 @@ public class YggdrasilAuthTask implements Runnable {
                         new URL(service.buildUrl(user.getUsername(), user.getServerId(), user.getIp())),
                         service.buildPostContent(user.getUsername(), user.getServerId(), user.getIp()),
                         "application/json",
-//                        (int) core.getServicesTimeOut(),
-                        7000,
+                        (int) core.getConfig().getServicesTimeOut(),
                         service.getAuthRetry()
                 ),
                 HasJoinedResponse.class
@@ -99,10 +97,8 @@ public class YggdrasilAuthTask implements Runnable {
         return MultiCore.getGson().fromJson(
                 HttpUtil.httpGet(
                         new URL(service.buildUrl(user.getUsername(), user.getServerId(), user.getIp())),
-//                        (int) core.getServicesTimeOut(),
-                        7000,
+                        (int) core.getConfig().getServicesTimeOut(),
                         service.getAuthRetry()
-
                 ),
                 HasJoinedResponse.class
         );

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.bukkit.main;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy.MultiPacketLoginInEncryptionBegin;
@@ -19,12 +20,16 @@ import java.util.function.Supplier;
 import java.util.logging.Level;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
+    @Getter
+    private static MultiLoginBukkit instance;
+    @Getter
     private final MultiCore core = new MultiCore(this);
     private IServer server;
 
     @SneakyThrows
     @Override
     public void onEnable() {
+        instance = this;
         server = new BukkitServer(getServer(), this);
         if (!core.init()) setEnabled(false);
     }

@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -10,6 +11,7 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
  */
 @AllArgsConstructor
 @Getter
+@ToString
 public class YggdrasilAuthResult {
     private final YggdrasilAuthReasonEnum reason;
     private final HasJoinedResponse result;

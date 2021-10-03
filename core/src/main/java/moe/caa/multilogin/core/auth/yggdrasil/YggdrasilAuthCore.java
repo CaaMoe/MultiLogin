@@ -18,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * 代表前置验证核心类<br>
@@ -43,12 +44,7 @@ public class YggdrasilAuthCore {
         AtomicBoolean down = new AtomicBoolean(false);
         // 放顺序的
         var order = getVerifyOrder(user.getUsername());
-        if (order.size() == 0) {
-            core.getLogger().log(LoggerLevel.DEBUG, String.format("Online verification is over, there is no verification server error. (username: %s, serverId: %s, ip: %s)",
-                    user.getUsername(), user.getUsername(), user.getIp() == null ? "unknown" : user.getIp()
-            ));
-            return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.NO_SERVICE, null, null);
-        }
+        if (order.size() == 0) return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.NO_SERVICE, null, null);
         // 放验证成功后的结果的
         var succeed = new AtomicReference<YggdrasilAuthTask>();
         while (order.hasNext()) {
@@ -66,13 +62,15 @@ public class YggdrasilAuthCore {
                     ), task.getThrowable());
                     return;
                 }
-                if (task.getResponse().isSucceed()) {
+                // 为什么这里可能会空??????????????????????????
+                if (task.getResponse() != null && task.getResponse().isSucceed()) {
                     // 有两个登入验证凭据?
                     // 不，这绝对不可能
                     // 除非是使用了重复的或是不安全的 Yggdrasil 账户验证服务器
-                    // 直接忽略
                     synchronized (succeed) {
                         if (succeed.get() != null) {
+                            core.getLogger().log(LoggerLevel.WARN, "Maybe you have one or more Yggdrasil servers with duplicate configurations?");
+                            core.getLogger().log(LoggerLevel.WARN, String.format("Because %s has multiple login credentials.", task.getResponse().getName()));
                             return;
                         }
                         succeed.set(task);
@@ -117,24 +115,26 @@ public class YggdrasilAuthCore {
      * @return 验证服务器排序的结果
      */
     private GroupBurstArrayList<YggdrasilService> getVerifyOrder(String name) throws SQLException {
+        // 返回结果
         var ret = new GroupBurstArrayList<YggdrasilService>();
-        var one = core.getSqlManager().getUserDataHandler().getYggdrasilServiceByCurrentName(name);
+        // 查在数据库中缓存的验证服务器对象(开启的)
+        var one = core.getSqlManager().getUserDataHandler().getYggdrasilServiceByCurrentName(name).stream().filter(service -> !service.isEnable()).collect(Collectors.toSet());
         var temp = new ArrayList<YggdrasilService>();
         for (YggdrasilService service : one) {
             if (service == null) continue;
-            if (!service.isEnable()) continue;
             temp.add(service);
         }
+        // 添加到第一梯队
         ret.offer(temp);
-        var two = new ArrayList<YggdrasilService>();
+        temp = new ArrayList<>();
         var serviceList = core.getYggdrasilServicesHandler().getEnabledServices();
         for (YggdrasilService service : serviceList) {
             if (service == null) continue;
             if (one.contains(service)) continue;
-            if (!service.isEnable()) continue;
-            two.add(service);
+            temp.add(service);
         }
-        ret.offer(two);
+        ret.offer(temp);
+        ret.printDebug();
         return ret;
     }
 }

@@ -99,6 +99,19 @@ public class YggdrasilService {
         );
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        YggdrasilService that = (YggdrasilService) o;
+        return Objects.equals(that.path, path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(path);
+    }
+
     /**
      * 构建 GET 请求 URL
      *
@@ -162,4 +175,6 @@ public class YggdrasilService {
                 FormatContent.FormatEntry.builder().name("passIpContent").content("").build()
         ));
     }
+
+
 }

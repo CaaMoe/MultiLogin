@@ -1,10 +1,10 @@
 package moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy;
 
 import lombok.SneakyThrows;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.nms.IEncryptionBeginProxy;
 import moe.caa.multilogin.bukkit.nms.IncompatibleException;
 import moe.caa.multilogin.bukkit.nms.v1_16_R3.impl.BukkitUserLogin;
-import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.exception.NoSuchEnumException;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.minecraft.server.v1_16_R3.*;
@@ -18,7 +18,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
 import java.util.Arrays;
-import java.util.UUID;
 
 public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBegin implements IEncryptionBeginProxy {
     private static final Class<?> LOGIN_LISTENER_CLASS;
@@ -52,13 +51,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
         String ip = getIp(var0);
         String username = listener.getGameProfile().getName();
         BukkitUserLogin userLogin = new BukkitUserLogin(listener, username, serverId, ip);
-        // Yggdrasil 混合在线验证代码....
-        // 二次验证代码...
-
-        HasJoinedResponse response = new HasJoinedResponse();
-        response.setId(UUID.randomUUID());
-        response.setName("WDNMD");
-        userLogin.finish(response);
+        MultiLoginBukkit.getInstance().getCore().getAuthCore().doAuth(userLogin);
     }
 
     private String startEncrypting(PacketLoginInListener var0) throws IllegalAccessException, NoSuchEnumException {
