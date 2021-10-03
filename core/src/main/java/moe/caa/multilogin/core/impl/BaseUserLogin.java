@@ -52,7 +52,8 @@ public abstract class BaseUserLogin {
     }
 
     /**
-     * 登入结束
+     * 登入结束<br>
+     * 此方法传入的 response 一定是有效的用户数据，不需要再次进行非空或有效判断
      */
     public abstract void finish(HasJoinedResponse response);
 }

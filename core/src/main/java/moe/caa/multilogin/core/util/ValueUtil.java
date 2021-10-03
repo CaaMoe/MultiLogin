@@ -114,4 +114,14 @@ public class ValueUtil {
         }
         return source;
     }
+
+    /**
+     * 判断一个字符串是不是一个布尔值
+     *
+     * @param value 字符串
+     * @return 是不是一个布尔值
+     */
+    public static boolean isBoolValue(String value) {
+        return value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false");
+    }
 }

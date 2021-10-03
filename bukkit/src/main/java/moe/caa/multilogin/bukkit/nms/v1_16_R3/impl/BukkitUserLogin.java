@@ -25,7 +25,7 @@ public class BukkitUserLogin extends BaseUserLogin {
             LOGIN_LISTENER_CLASS = LoginListener.class;
             LOGIN_LISTENER_LOGIN_HANDLER_CLASS = LoginListener.LoginHandler.class;
             LOGIN_LISTENER_NETWORK_MANAGER_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("networkManager"), true);
-            LOGIN_LISTENER_GAME_PROFILE_FIELD =  ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("i"), true);
+            LOGIN_LISTENER_GAME_PROFILE_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("i"), true);
         } catch (Exception e) {
             throw new IncompatibleException(e);
         }
@@ -53,7 +53,7 @@ public class BukkitUserLogin extends BaseUserLogin {
     }
 
 
-    private GameProfile genGameProfile(HasJoinedResponse response){
+    private GameProfile genGameProfile(HasJoinedResponse response) {
         GameProfile result = new GameProfile(response.getId(), response.getName());
         if (response.getPropertyMap() != null) {
             for (Map.Entry<String, Property> entry : response.getPropertyMap().entrySet()) {

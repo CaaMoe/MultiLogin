@@ -39,7 +39,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
             LOGIN_LISTENER_MINECRAFT_SERVER_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("server"), true);
             LOGIN_LISTENER_NONCE_BYTES_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("e"), true);
             LOGIN_LISTENER_NETWORK_MANAGER_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("networkManager"), true);
-            LOGIN_LISTENER_SECRET_KEY_FIELD  = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("loginKey"), true);
+            LOGIN_LISTENER_SECRET_KEY_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("loginKey"), true);
         } catch (Exception e) {
             throw new IncompatibleException(e);
         }
@@ -52,6 +52,9 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
         String ip = getIp(var0);
         String username = listener.getGameProfile().getName();
         BukkitUserLogin userLogin = new BukkitUserLogin(listener, username, serverId, ip);
+        // Yggdrasil 混合在线验证代码....
+        // 二次验证代码...
+
         HasJoinedResponse response = new HasJoinedResponse();
         response.setId(UUID.randomUUID());
         response.setName("WDNMD");

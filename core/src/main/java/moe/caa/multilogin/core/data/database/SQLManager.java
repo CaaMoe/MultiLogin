@@ -11,6 +11,8 @@ import moe.caa.multilogin.core.exception.UnsupportedDatabaseException;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.util.FormatContent;
+import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlReader;
 
 import java.sql.SQLException;
@@ -57,12 +59,19 @@ public class SQLManager {
                 var port = config.get("port", Number.class, 3306).intValue();
                 var database = config.get("database", String.class, "multilogin");
                 var url = "jdbc:mysql://{ip}:{port}/{database}?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
-
+                url = ValueUtil.format(url, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("ip").content(ip).build(),
+                        FormatContent.FormatEntry.builder().name("port").content(port).build(),
+                        FormatContent.FormatEntry.builder().name("database").content(database).build()
+                ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));
                 pool = new MysqlConnectionPool(url, username, password);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("Linked to database(%s).", backend.name()));
             } else if (backend == SQLBackendEnum.H2) {
                 var url = "jdbc:h2:{file_path};TRACE_LEVEL_FILE=0;TRACE_LEVEL_SYSTEM_OUT=0";
+                url = ValueUtil.format(url, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("file_path").content(core.getPlugin().getDataFolder().getAbsolutePath() + "/multilogin").build()
+                ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Linking database(%s): %s", backend.name(), url));
                 pool = new H2ConnectionPool(url, username, password);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("Linked to database(%s).", backend.name()));
