@@ -29,7 +29,6 @@ public class AdvancedSetting {
     private String database_backend_url_mysql = "jdbc:mysql://{ip}:{port}/{database}?autoReconnect=true&useUnicode=true&amp&characterEncoding=UTF-8&useSSL=false";
     private boolean verify_yggdrasil_ignore_path = false;
     private boolean verify_username_allow_duplicate_name = false;
-    private boolean load_failed_exit_server = true;
     private boolean logger_debug = false;
 
     public AdvancedSetting(InputStream stream) throws IOException, IllegalAccessException {
