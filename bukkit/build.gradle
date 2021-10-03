@@ -6,11 +6,11 @@ plugins {
 
 repositories {
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
+    maven { url "https://repo.codemc.io/repository/nms/" }
 }
 
 dependencies {
-    //compileOnly group: 'org.spigotmc', name: 'spigot-api', version: '1.16.5-R0.1-SNAPSHOT'
-    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
+    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
     implementation project(":core")
 }
 

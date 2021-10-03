@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy;
 
+import com.mojang.authlib.GameProfile;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.bukkit.nms.IEncryptionBeginProxy;
@@ -28,6 +29,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
     private static final Field LOGIN_LISTENER_NONCE_BYTES_FIELD;
     private static final Field LOGIN_LISTENER_NETWORK_MANAGER_FIELD;
     private static final Field LOGIN_LISTENER_SECRET_KEY_FIELD;
+    private static final Field LOGIN_LISTENER_GAME_PROFILE_FIELD;
 
 
     static {
@@ -39,6 +41,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
             LOGIN_LISTENER_NONCE_BYTES_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("e"), true);
             LOGIN_LISTENER_NETWORK_MANAGER_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("networkManager"), true);
             LOGIN_LISTENER_SECRET_KEY_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("loginKey"), true);
+            LOGIN_LISTENER_GAME_PROFILE_FIELD = ReflectUtil.handleAccessible(LOGIN_LISTENER_CLASS.getDeclaredField("i"), true);
         } catch (Exception e) {
             throw new IncompatibleException(e);
         }
@@ -49,7 +52,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
         LoginListener listener = (LoginListener) var0;
         String serverId = startEncrypting(var0);
         String ip = getIp(var0);
-        String username = listener.getGameProfile().getName();
+        String username = ((GameProfile) LOGIN_LISTENER_GAME_PROFILE_FIELD.get(var0)).getName();
         BukkitUserLogin userLogin = new BukkitUserLogin(listener, username, serverId, ip);
         MultiLoginBukkit.getInstance().getCore().getAuthCore().doAuth(userLogin);
     }
