@@ -56,7 +56,7 @@ public class HttpUtil {
                     result.write(buffer, 0, length);
                 }
                 var response = result.toString(StandardCharsets.UTF_8.name());
-                MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Response: " + response);
+                MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Response: %s. (%s)", response, url));
                 return response;
             }
         } catch (Exception e) {
@@ -101,7 +101,7 @@ public class HttpUtil {
                         result.write(buffer, 0, length);
                     }
                     var response = result.toString(StandardCharsets.UTF_8.name());
-                    MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Response: " + response);
+                    MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Response: %s. (%s)", response, url));
                     return response;
                 }
 
