@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.impl;
 
+import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
+
 /**
  * 公共登入状态中的用户实例<br>
  * 需要在完成对称加密状态下使用此实例
@@ -52,5 +54,5 @@ public abstract class BaseUserLogin {
     /**
      * 登入结束
      */
-    public abstract void finish();
+    public abstract void finish(HasJoinedResponse response);
 }
