@@ -107,14 +107,19 @@ public class VerifyAuthCore {
             user.setRedirectUuid(getRepeatUuid(user));
         }
 
-
         // 白名单检查
-        if (!user.isWhitelist() && result.getService().isWhitelist()) {
-            if (!(core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getName())
-                    | core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getId().toString()))) {
-                return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_no_whitelist", FormatContent.empty()));
+        if (core.getConfig().isWhitelist() || result.getService().isWhitelist()) {
+            if (!user.isWhitelist()) {
+                if (core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getName())) {
+                    user.setWhitelist(true);
+                }
+                if (core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getId().toString())) {
+                    user.setWhitelist(true);
+                }
+                if (!user.isWhitelist()) {
+                    return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_no_whitelist", FormatContent.empty()));
+                }
             }
-            user.setWhitelist(true);
         }
 
         // 写入

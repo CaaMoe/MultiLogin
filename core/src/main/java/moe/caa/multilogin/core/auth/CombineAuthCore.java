@@ -96,6 +96,6 @@ public class CombineAuthCore {
         response.setPropertyMap(yggdrasilAuthResult.getResult().getPropertyMap());
         response.setId(verifyAuthResult.getUser().getRedirectUuid());
         response.setName(verifyAuthResult.getUser().getCurrentName());
-        return yggdrasilAuthResult.getResult();
+        return response;
     }
 }
