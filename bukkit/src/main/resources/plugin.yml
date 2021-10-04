@@ -1,7 +1,6 @@
 name: MultiLogin
-version: ver
+version: 1.0-RC.4.DEV.1
 main: moe.caa.multilogin.bukkit.main.MultiLoginBukkit
-author: aut
 api-version: 1.13
 commands:
   multilogin:
