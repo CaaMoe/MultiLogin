@@ -1,22 +1,26 @@
 package moe.caa.multilogin.bukkit.main;
 
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
+import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
-import moe.caa.multilogin.bukkit.nms.v1_16_R3.proxy.MultiPacketLoginInEncryptionBegin;
+import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
-import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
@@ -40,33 +44,38 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
-    public void initService() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
-        Class<?> clazz = Class.forName("net.minecraft.server.v1_16_R3.EnumProtocol");
-        Field jField = ReflectUtil.handleAccessible(clazz.getDeclaredField("h"), true);
-        Map<EnumProtocolDirection, ?> jValue = (Map<EnumProtocolDirection, ?>) jField.get(EnumProtocol.LOGIN);
+    public void initService() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+        Class<?> craftServerClass = getServer().getClass();
+        Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
+        Class<?> dedicatedPlayerListClass = craftServerGetHandle.getReturnType();
+        Method dedicatedPlayerListGetHandler = dedicatedPlayerListClass.getDeclaredMethod("getServer");
+        Class<?> minecraftServerClass = dedicatedPlayerListGetHandler.getReturnType().getSuperclass();
 
-        Class<?> aClass = Class.forName("net.minecraft.server.v1_16_R3.EnumProtocol$a");
+        Field field = ReflectUtil.handleAccessible(ReflectUtil.getField(minecraftServerClass, MinecraftSessionService.class), true);
+        Object obj = dedicatedPlayerListGetHandler.invoke(craftServerGetHandle.invoke(getServer()));
 
-        Object aValue = jValue.get(EnumProtocolDirection.SERVERBOUND);
-        Object2IntMap aV = (Object2IntMap) ReflectUtil.handleAccessible(aClass.getDeclaredField("a"), true).get(aValue);
-        List<Supplier<? extends Packet<?>>> bV = (List) ReflectUtil.handleAccessible(aClass.getDeclaredField("b"), true).get(aValue);
-
-        aV.clear();
-        bV.clear();
-
-        aV.put(PacketLoginInStart.class, 0);
-        bV.add(PacketLoginInStart::new);
-
-        aV.put(PacketLoginInEncryptionBegin.class, 1);
-        bV.add(MultiPacketLoginInEncryptionBegin::new);
-
-        aV.put(PacketLoginInCustomPayload.class, 2);
-        bV.add(PacketLoginInCustomPayload::new);
+        HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
+        MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
+        mlymss.setVanService(vanServer);
+        field.set(obj, mlymss);
     }
 
     @Override
     public void initOther() {
-
+        getServer().getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            private void onLogin(AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent) {
+                if (asyncPlayerPreLoginEvent.getUniqueId().equals(BukkitAuthCore.getDIRTY_UUID())) {
+                    for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
+                        if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
+                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage());
+                            return;
+                        }
+                    }
+                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "喜报\nNMSL");
+                }
+            }
+        }, this);
     }
 
     @Override
