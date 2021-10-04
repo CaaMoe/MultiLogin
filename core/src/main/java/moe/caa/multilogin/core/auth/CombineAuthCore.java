@@ -83,12 +83,19 @@ public class CombineAuthCore {
         User user = verifyAuthResult.getUser();
 
         core.getLogger().log(LoggerLevel.DEBUG, String.format("Authentication is complete, allow login. (username: %s, serverId: %s, ip: %s)",
-                userLogin.getUsername(), userLogin.getUsername(), userLogin.getIp() == null ? "unknown" : userLogin.getIp()
+                userLogin.getUsername(), userLogin.getServerId(), userLogin.getIp() == null ? "unknown" : userLogin.getIp()
         ));
         core.getLogger().log(LoggerLevel.INFO, String.format("The online uuid of player %s is %s, and the uuid in the game is %s, from the yggdrasil server %s.",
                 user.getCurrentName(), user.getOnlineUuid(), user.getRedirectUuid(), user.getYggdrasilService()));
 
-        userLogin.finish(generateHasJoinedGameProfile(yggdrasilAuthResult, verifyAuthResult));
+        HasJoinedResponse response = generateHasJoinedGameProfile(yggdrasilAuthResult, verifyAuthResult);
+
+
+        // 这里进行异步皮肤修复操作
+        core.getRestorerCore().doRestorer(response);
+
+
+        userLogin.finish(response);
     }
 
     public HasJoinedResponse generateHasJoinedGameProfile(YggdrasilAuthResult yggdrasilAuthResult, VerifyAuthResult verifyAuthResult) {

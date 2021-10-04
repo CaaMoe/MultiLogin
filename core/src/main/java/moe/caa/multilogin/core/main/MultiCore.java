@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.util.IOUtil;
 import moe.caa.multilogin.core.util.YamlReader;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
@@ -42,6 +43,7 @@ public class MultiCore {
     private final File dataFolder;
 
     private final CombineAuthCore authCore;
+    private final SkinRestorerCore restorerCore;
 
     /**
      * 构建插件核心
@@ -60,6 +62,7 @@ public class MultiCore {
         yggdrasilServicesHandler = new YggdrasilServicesHandler();
         sqlManager = new SQLManager(this);
         authCore = new CombineAuthCore(this);
+        restorerCore = new SkinRestorerCore(this);
     }
 
     /**

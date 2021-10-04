@@ -1,4 +1,2 @@
 dependencies {
-
-    implementation 'asm:asm-all:3.3.1'
 }

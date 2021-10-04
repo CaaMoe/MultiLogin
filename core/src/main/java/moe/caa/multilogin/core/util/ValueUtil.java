@@ -1,12 +1,14 @@
 package moe.caa.multilogin.core.util;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ValueUtil {
+    @Getter
+    private static final Base64.Decoder DECODER = Base64.getDecoder();
 
     /**
      * UUID 转 bytes

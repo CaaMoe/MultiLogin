@@ -26,4 +26,6 @@ shadowJar {
     archiveBaseName.set('MultiLogin-Bukkit')
     archiveVersion.set(project.plugin_version as String)
     archiveClassifier.set('')
+
+    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
 }
