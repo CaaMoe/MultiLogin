@@ -1,5 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
@@ -14,18 +12,16 @@ dependencies {
     implementation project(":core")
 }
 
-processResources {
-    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
-    from(sourceSets.main.resources.srcDirs) {
-        filter ReplaceTokens, tokens: [version: project.plugin_version]
-        filter ReplaceTokens, tokens: [author: 'ksqeib, CaaMoe']
-    }
-}
-
 shadowJar {
+    String env = System.getProperty("env", "AUTO")
     archiveBaseName.set('MultiLogin-Bukkit')
-    archiveVersion.set(project.plugin_version as String)
-    archiveClassifier.set('')
+    if (env.toLowerCase() == "final") {
+        archiveVersion.set(project.plugin_version as String)
+    } else {
+        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        archiveVersion.set(ver)
+    }
+    archiveClassifier.set("")
 
     relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
 }
