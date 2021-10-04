@@ -1,5 +1,5 @@
 name: Java CI
-on: [ push ]
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,8 +23,8 @@ jobs:
       - name: Build
         uses: gradle/gradle-command-action@v1
         with:
-          arguments: shadowJar
-          gradle-version: 7.2
+            arguments: shadowJar
+            gradle-version: 7.2
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
@@ -38,3 +38,4 @@ jobs:
         with:
           name: Package
           path: builds
+          retention-days: 1
