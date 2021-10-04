@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.data.database;
 import lombok.Getter;
 import lombok.var;
 import moe.caa.multilogin.core.data.database.handle.CacheWhitelistDataHandler;
+import moe.caa.multilogin.core.data.database.handle.SkinRestorerDataHandler;
 import moe.caa.multilogin.core.data.database.handle.UserDataHandler;
 import moe.caa.multilogin.core.data.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.data.database.pool.ISQLConnectionPool;
@@ -22,20 +23,20 @@ import java.sql.SQLException;
  */
 @Getter
 public class SQLManager {
-    public static final String ONLINE_UUID = "online_uuid";
-    public static final String CURRENT_NAME = "current_name";
-    public static final String REDIRECT_UUID = "redirect_name";
-    public static final String YGGDRASIL_SERVICE = "yggdrasil_service";
-    public static final String WHITELIST = "whitelist";
-    public static String USER_DATA_TABLE_NAME = "user_data";
-    public static String CACHE_WHITELIST_TABLE_NAME = "whitelist";
+    public static String USER_DATA_TABLE_NAME;
+    public static String CACHE_WHITELIST_TABLE_NAME;
+    public static String SKIN_RESTORER_TABLE_NAME;
     private final MultiCore core;
     private final CacheWhitelistDataHandler cacheWhitelistDataHandler = new CacheWhitelistDataHandler(this);
     private final UserDataHandler userDataHandler = new UserDataHandler(this);
+    private final SkinRestorerDataHandler skinRestorerDataHandler = new SkinRestorerDataHandler(this);
     private ISQLConnectionPool pool;
 
     public SQLManager(MultiCore core) {
         this.core = core;
+        USER_DATA_TABLE_NAME = core.getSetting().getDatabase_user_data_table_name();
+        CACHE_WHITELIST_TABLE_NAME = core.getSetting().getDatabase_cache_whitelist_table_name();
+        SKIN_RESTORER_TABLE_NAME = core.getSetting().getDatabase_skin_restorer_table_name();
     }
 
     /**
@@ -49,8 +50,31 @@ public class SQLManager {
             var backend = config.get("backend", SQLBackendEnum.class, SQLBackendEnum.H2);
             var prefix = config.get("prefix", String.class, "multilogin");
             if (prefix.trim().length() != 0) {
-                USER_DATA_TABLE_NAME = prefix + "_" + USER_DATA_TABLE_NAME;
-                CACHE_WHITELIST_TABLE_NAME = prefix + "_" + CACHE_WHITELIST_TABLE_NAME;
+                USER_DATA_TABLE_NAME = ValueUtil.format(USER_DATA_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("_").build()
+                ));
+                CACHE_WHITELIST_TABLE_NAME = ValueUtil.format(CACHE_WHITELIST_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("_").build()
+                ));
+                SKIN_RESTORER_TABLE_NAME = ValueUtil.format(SKIN_RESTORER_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("_").build()
+                ));
+            } else {
+                USER_DATA_TABLE_NAME = ValueUtil.format(USER_DATA_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("").build()
+                ));
+                CACHE_WHITELIST_TABLE_NAME = ValueUtil.format(CACHE_WHITELIST_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("").build()
+                ));
+                SKIN_RESTORER_TABLE_NAME = ValueUtil.format(SKIN_RESTORER_TABLE_NAME, FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("prefix").content(prefix).build(),
+                        FormatContent.FormatEntry.builder().name("_").content("").build()
+                ));
             }
             var username = config.get("username", String.class, "root");
             var password = config.get("password", String.class, "12345");
@@ -95,6 +119,7 @@ public class SQLManager {
     public void loadBase() throws SQLException {
         userDataHandler.createIfNotExists(pool.getConnection().createStatement());
         cacheWhitelistDataHandler.createIfNotExists(pool.getConnection().createStatement());
+        skinRestorerDataHandler.createIfNotExists(pool.getConnection().createStatement());
     }
 
     /**

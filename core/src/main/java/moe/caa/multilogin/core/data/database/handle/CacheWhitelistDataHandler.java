@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.data.database.handle;
 
+import moe.caa.multilogin.core.data.database.IDataHandler;
 import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -7,13 +8,12 @@ import moe.caa.multilogin.core.logger.MultiLogger;
 import java.sql.*;
 
 import static moe.caa.multilogin.core.data.database.SQLManager.CACHE_WHITELIST_TABLE_NAME;
-import static moe.caa.multilogin.core.data.database.SQLManager.WHITELIST;
 
 
 /**
  * 擦车白名单管理类
  */
-public class CacheWhitelistDataHandler {
+public class CacheWhitelistDataHandler implements IDataHandler {
     private final SQLManager sqlManager;
 
     /**
@@ -31,10 +31,11 @@ public class CacheWhitelistDataHandler {
      * @param statement 链接
      * @throws SQLException 创表异常
      */
+    @Override
     public void createIfNotExists(Statement statement) throws SQLException {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
-                WHITELIST + " VARCHAR(100) PRIMARY KEY NOT NULL)");
+                sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign() + " VARCHAR(100) PRIMARY KEY NOT NULL)");
     }
 
     /**
@@ -46,7 +47,7 @@ public class CacheWhitelistDataHandler {
      */
     public boolean removeCacheWhitelist(String nameOrUuid) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
-                CACHE_WHITELIST_TABLE_NAME, WHITELIST
+                CACHE_WHITELIST_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign()
         ))) {
             ps.setString(1, nameOrUuid);
             return ps.executeUpdate() != 0;
@@ -62,7 +63,7 @@ public class CacheWhitelistDataHandler {
      */
     public boolean addCacheWhitelist(String nameOrUuid) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s) VALUES(?)",
-                CACHE_WHITELIST_TABLE_NAME, WHITELIST
+                CACHE_WHITELIST_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign()
         ))) {
             ps.setString(1, nameOrUuid);
             return ps.executeUpdate() != 0;

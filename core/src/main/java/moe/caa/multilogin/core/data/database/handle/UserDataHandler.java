@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.data.database.handle;
 
+import moe.caa.multilogin.core.data.database.IDataHandler;
 import moe.caa.multilogin.core.data.database.SQLManager;
 import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.ValueUtil;
@@ -8,12 +9,12 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 import java.sql.*;
 import java.util.*;
 
-import static moe.caa.multilogin.core.data.database.SQLManager.*;
+import static moe.caa.multilogin.core.data.database.SQLManager.USER_DATA_TABLE_NAME;
 
 /**
  * 玩家数据管理类
  */
-public class UserDataHandler {
+public class UserDataHandler implements IDataHandler {
 
     private final SQLManager sqlManager;
 
@@ -32,14 +33,15 @@ public class UserDataHandler {
      * @param statement 链接
      * @throws SQLException 创表异常
      */
+    @Override
     public void createIfNotExists(Statement statement) throws SQLException {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
-                ONLINE_UUID + " BINARY(16) PRIMARY KEY NOT NULL, " +
-                CURRENT_NAME + " VARCHAR(100) NOT NULL, " +
-                REDIRECT_UUID + " BINARY(16) NOT NULL, " +
-                YGGDRASIL_SERVICE + " VARCHAR(100) NOT NULL, " +
-                WHITELIST + " BOOL NOT NULL)");
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid() + " BINARY(16) PRIMARY KEY NOT NULL, " +
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name() + " VARCHAR(100) NOT NULL, " +
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid() + " BINARY(16) NOT NULL, " +
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service() + " VARCHAR(100) NOT NULL, " +
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist() + " BOOL NOT NULL)");
     }
 
     /**
@@ -84,7 +86,7 @@ public class UserDataHandler {
      */
     public User getUserEntryByOnlineUuid(UUID uuid) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ? limit 1",
-                USER_DATA_TABLE_NAME, ONLINE_UUID
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
             ResultSet resultSet = ps.executeQuery();
@@ -104,7 +106,7 @@ public class UserDataHandler {
      */
     public List<User> getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
-                USER_DATA_TABLE_NAME, REDIRECT_UUID
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
             return getUsers(ps.executeQuery());
@@ -120,7 +122,7 @@ public class UserDataHandler {
      */
     public List<User> getUserEntryByCurrentName(String name) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
-                USER_DATA_TABLE_NAME, CURRENT_NAME
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name()
         ))) {
             ps.setString(1, name);
             return getUsers(ps.executeQuery());
@@ -136,7 +138,8 @@ public class UserDataHandler {
      */
     public Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
-                YGGDRASIL_SERVICE, USER_DATA_TABLE_NAME, CURRENT_NAME
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(), USER_DATA_TABLE_NAME,
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name()
         ))) {
             ps.setString(1, name);
             ResultSet resultSet = ps.executeQuery();
@@ -157,7 +160,11 @@ public class UserDataHandler {
      */
     public void writeNewUserEntry(User entry) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
-                USER_DATA_TABLE_NAME, ONLINE_UUID, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(entry.getOnlineUuid()));
             ps.setString(2, entry.getCurrentName());
@@ -176,7 +183,11 @@ public class UserDataHandler {
      */
     public void updateUserEntry(User entry) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
-                USER_DATA_TABLE_NAME, CURRENT_NAME, REDIRECT_UUID, YGGDRASIL_SERVICE, WHITELIST, ONLINE_UUID
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist(),
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
         ))) {
             ps.setString(1, entry.getCurrentName());
             ps.setBytes(2, ValueUtil.uuidToBytes(entry.getRedirectUuid()));
@@ -207,7 +218,7 @@ public class UserDataHandler {
      */
     public boolean deleteUserEntry(UUID uuid) throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
-                USER_DATA_TABLE_NAME, ONLINE_UUID
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
             return ps.executeUpdate() != 0;
