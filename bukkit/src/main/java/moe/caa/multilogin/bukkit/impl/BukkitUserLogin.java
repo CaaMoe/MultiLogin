@@ -7,7 +7,8 @@ import moe.caa.multilogin.core.impl.BaseUserLogin;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * 早知道要做那么多适配，就不弄这个接口了
+ * 早知道要做那么多适配，就不弄这个接口了<br>
+ * 你妈的，为什么
  */
 public class BukkitUserLogin extends BaseUserLogin {
     private final CountDownLatch latch;
