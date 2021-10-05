@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.language;
 
-import lombok.NoArgsConstructor;
 import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -20,10 +19,14 @@ import java.util.Properties;
 /**
  * 代表可读文本处理程序
  */
-@NoArgsConstructor
 public class LanguageHandler {
+    private final MultiCore core;
     private Properties inside;
     private Properties outside;
+
+    public LanguageHandler(MultiCore core) {
+        this.core = core;
+    }
 
     /**
      * 初始化这个可读文本处理程序
@@ -32,6 +35,7 @@ public class LanguageHandler {
      * @param fileName 可读文本文件名称
      */
     public boolean init(MultiCore core, String fileName) {
+
         inside = new Properties();
         try {
             inside.load(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource(fileName)), StandardCharsets.UTF_8));
@@ -51,6 +55,23 @@ public class LanguageHandler {
             outside = null;
         }
         return true;
+    }
+
+    /**
+     * 重新加载外置语言仓库
+     */
+    public void reloadOutside(String fileName) {
+        var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
+        if (outsideFile.exists()) {
+            outside = new Properties();
+            try {
+                outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("Unable to load outside message file. (%s)", outsideFile.getAbsolutePath()), e);
+            }
+        } else {
+            outside = null;
+        }
     }
 
     /**

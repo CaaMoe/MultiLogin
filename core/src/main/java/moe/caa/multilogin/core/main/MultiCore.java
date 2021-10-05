@@ -61,7 +61,7 @@ public class MultiCore {
         setting = new AdvancedSetting();
         config = new GeneralConfig();
         logger = new MultiLogger(this, setting.isLogger_debug());
-        languageHandler = new LanguageHandler();
+        languageHandler = new LanguageHandler(this);
         yggdrasilServicesHandler = new YggdrasilServicesHandler();
         sqlManager = new SQLManager(this);
         authCore = new CombineAuthCore(this);
@@ -134,6 +134,15 @@ public class MultiCore {
         } catch (Exception e) {
             logger.log(LoggerLevel.WARN, String.format("Failed to read advanced configuration file, Will keep the default values. (%s)", file.getAbsolutePath()), e);
         }
+    }
+
+    /**
+     * 重新加载
+     */
+    public void reload() {
+        generateConfigFile();
+        yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
+        languageHandler.reloadOutside("message.properties");
     }
 
     /**

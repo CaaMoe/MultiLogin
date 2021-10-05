@@ -6,10 +6,12 @@ import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /**
  * 代表一个最顶级的命令处理器
@@ -33,7 +35,7 @@ public abstract class BaseCommandExecutor {
      * @param sender    命令执行者
      * @param arguments 命令参数
      */
-    protected void execute(ISender sender, CommandArguments arguments) {
+    protected void execute(ISender sender, CommandArguments arguments) throws SQLException, ExecutionException, InterruptedException {
         if (arguments.getLength() != 0) {
             BaseCommandExecutor executor = subCommand.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
             if (executor != null) {

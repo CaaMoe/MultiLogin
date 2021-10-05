@@ -6,7 +6,7 @@ import moe.caa.multilogin.core.command.executes.multilogin.subcommands.ReloadCom
 import moe.caa.multilogin.core.main.MultiCore;
 
 /**
- * 命令 '/multilogin [args...] 处理程序'
+ * 命令 '/multilogin [args...]' 处理程序
  */
 public class MultiLoginCommandExecutor extends BaseCommandExecutor {
 

@@ -8,6 +8,8 @@ commands:
     aliases:
       - login
       - ml
+  whitelist:
+
 permissions:
   command.multilogin.*:
     default: op

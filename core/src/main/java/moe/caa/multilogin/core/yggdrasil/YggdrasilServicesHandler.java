@@ -26,6 +26,15 @@ public class YggdrasilServicesHandler {
      * @param config 配置文件
      */
     public synchronized void init(YamlReader config) {
+        reload(config);
+    }
+
+    /**
+     * 重新加载配置
+     *
+     * @param config 配置
+     */
+    public synchronized void reload(YamlReader config) {
         allServices.clear();
         enabledServices.clear();
         for (var key : config.getKeys()) {

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.command;
 
 import moe.caa.multilogin.core.command.executes.multilogin.MultiLoginCommandExecutor;
+import moe.caa.multilogin.core.command.executes.whitelist.WhitelistCommandExecutor;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
@@ -25,6 +26,7 @@ public class CommandHandler {
     public CommandHandler(MultiCore core) {
         this.core = core;
         rootCommandExecutorConcurrentHashMap.put("multilogin", new MultiLoginCommandExecutor(this, core));
+        rootCommandExecutorConcurrentHashMap.put("whitelist", new WhitelistCommandExecutor(this, core));
     }
 
     /**
@@ -34,7 +36,7 @@ public class CommandHandler {
      * @param arguments 命令参数
      */
     public void executeAsync(ISender sender, CommandArguments arguments) {
-        core.getPlugin().getRunServer().getScheduler().runTask(() -> execute(sender, arguments));
+        core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> execute(sender, arguments));
     }
 
     /**
@@ -44,17 +46,22 @@ public class CommandHandler {
      * @param arguments 命令参数
      */
     public void execute(ISender sender, CommandArguments arguments) {
-        if (arguments.getLength() != 0) {
-            BaseCommandExecutor executor = rootCommandExecutorConcurrentHashMap.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
-            if (executor != null) {
-                if (testPermission(sender, executor.getPermission(), true)) {
-                    arguments.offset(1);
-                    executor.execute(sender, arguments);
+        try {
+            if (arguments.getLength() != 0) {
+                BaseCommandExecutor executor = rootCommandExecutorConcurrentHashMap.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
+                if (executor != null) {
+                    if (testPermission(sender, executor.getPermission(), true)) {
+                        arguments.offset(1);
+                        executor.execute(sender, arguments);
+                    }
+                    return;
                 }
-                return;
             }
+            sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+        } catch (Exception e) {
+
         }
-        sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+
     }
 
     /**

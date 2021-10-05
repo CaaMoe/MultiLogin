@@ -130,6 +130,21 @@ public class UserDataHandler implements IDataHandler {
     }
 
     /**
+     * 获取所有具有白名单的玩家
+     *
+     * @return 玩家数据对象列表
+     * @throws SQLException 读取异常
+     */
+    public List<User> getUserEntryWhereHaveWhitelist() throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist()
+        ))) {
+            ps.setBoolean(1, true);
+            return getUsers(ps.executeQuery());
+        }
+    }
+
+    /**
      * 通过 currentName 获取 YggdrasilService 实例
      *
      * @param name 当前name

@@ -6,6 +6,8 @@ import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static moe.caa.multilogin.core.data.database.SQLManager.CACHE_WHITELIST_TABLE_NAME;
 
@@ -36,6 +38,25 @@ public class CacheWhitelistDataHandler implements IDataHandler {
         statement.executeUpdate("" +
                 "CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
                 sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign() + " VARCHAR(100) PRIMARY KEY NOT NULL)");
+    }
+
+    /**
+     * 获得所有缓存白名单列表
+     *
+     * @return 缓存白名单列表
+     * @throws SQLException 查询异常
+     */
+    public List<String> getAllCacheWhitelist() throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s",
+                CACHE_WHITELIST_TABLE_NAME
+        ))) {
+            ResultSet resultSet = ps.executeQuery();
+            List<String> ret = new ArrayList<>();
+            while (resultSet.next()) {
+                ret.add(resultSet.getString(1));
+            }
+            return ret;
+        }
     }
 
     /**

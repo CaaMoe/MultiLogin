@@ -31,6 +31,7 @@ public interface IPlayerManager {
      */
     Set<IPlayer> getOnlinePlayers();
 
+
     /**
      * 是否开启在线验证
      *
@@ -42,4 +43,39 @@ public interface IPlayerManager {
      * 判断是否开启原版的白名单系统
      */
     boolean isWhitelist();
+
+    /**
+     * 踢出玩家，如果这名玩家存在的话
+     *
+     * @param name    玩家名称
+     * @param message 踢出信息
+     */
+    default void kickPlayerIfOnline(String name, String message) {
+        for (IPlayer player : getPlayer(name)) {
+            player.kickPlayer(message);
+        }
+    }
+
+    /**
+     * 踢出玩家，如果这名玩家存在的话
+     *
+     * @param uuid    玩家UUID
+     * @param message 踢出信息
+     */
+    default void kickPlayerIfOnline(UUID uuid, String message) {
+        IPlayer player = getPlayer(uuid);
+        if (player != null) {
+            player.kickPlayer(message);
+        }
+    }
+
+    /**
+     * 判断玩家是否在线
+     *
+     * @param redirectUuid 玩家的UUID
+     * @return 玩家是否在线
+     */
+    default boolean hasOnline(UUID redirectUuid) {
+        return getPlayer(redirectUuid) != null;
+    }
 }
