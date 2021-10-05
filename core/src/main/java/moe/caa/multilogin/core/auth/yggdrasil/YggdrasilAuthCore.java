@@ -2,13 +2,11 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 
 import lombok.AllArgsConstructor;
 import lombok.var;
-import moe.caa.multilogin.core.auth.verify.VerifyAuthResult;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
 import moe.caa.multilogin.core.impl.Callback;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.GroupBurstArrayList;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
@@ -97,7 +95,7 @@ public class YggdrasilAuthCore {
                 return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.RETURN, task.getResponse(), task.getService());
             }
             return new YggdrasilAuthResult(down.get() ? YggdrasilAuthReasonEnum.SERVER_DOWN : YggdrasilAuthReasonEnum.VALIDATION_FAILED, null, null);
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing authentication .", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "user: " + user);
             return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.ERROR, null, null);

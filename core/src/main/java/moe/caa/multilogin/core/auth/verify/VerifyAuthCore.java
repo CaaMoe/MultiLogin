@@ -153,7 +153,7 @@ public class VerifyAuthCore {
                 }
             }
             return VerifyAuthResult.generateAllowResult(user);
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing verification.", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "yggdrasil result: " + result);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "user: " + baseUserLogin);

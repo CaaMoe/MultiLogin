@@ -13,9 +13,6 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.FormatContent;
 
-import java.sql.SQLException;
-import java.util.concurrent.ExecutionException;
-
 /**
  * 综合性验证核心<br>
  * 账户必须通过 yggdrasil 在线账户验证和 verify 安防核查才能正常登入游戏.
@@ -58,7 +55,7 @@ public class CombineAuthCore {
                 userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_no_server", FormatContent.empty()));
                 return;
             }
-            if(yggdrasilAuthResult.getReason() == YggdrasilAuthReasonEnum.ERROR){
+            if (yggdrasilAuthResult.getReason() == YggdrasilAuthReasonEnum.ERROR) {
                 userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_error", FormatContent.empty()));
                 return;
             }

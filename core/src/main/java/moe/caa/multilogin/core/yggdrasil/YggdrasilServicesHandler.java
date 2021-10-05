@@ -36,7 +36,7 @@ public class YggdrasilServicesHandler {
                 allServices.add(service);
                 StringBuilder sb = new StringBuilder();
                 sb.append("添加 Yggdrasil 账户验证服务器 ").append(service.getName()).append('(').append(service.getPath()).append(')');
-                if (service.isEnable()){
+                if (service.isEnable()) {
                     enabledServices.add(service);
                     sb.append(", 但未启用它。");
                 }

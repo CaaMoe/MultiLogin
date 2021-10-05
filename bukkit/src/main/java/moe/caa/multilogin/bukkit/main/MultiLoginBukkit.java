@@ -3,7 +3,6 @@ package moe.caa.multilogin.bukkit.main;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.impl.BukkitSender;
@@ -35,7 +34,6 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     private final MultiCore core = new MultiCore(this);
     private IServer server;
 
-    @SneakyThrows
     @Override
     public void onEnable() {
         instance = this;

@@ -3,7 +3,6 @@ package moe.caa.multilogin.core.skinrestorer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.var;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -13,7 +12,6 @@ import moe.caa.multilogin.core.util.HttpUtil;
 import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,7 +116,7 @@ public class SkinRestorerCore {
                     doAsyncRestoring.remove(response.getId());
                 }
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, "An exception occurs when repairing the skin.", e);
             MultiLogger.getLogger().log(LoggerLevel.DEBUG, "response: " + response);
         }

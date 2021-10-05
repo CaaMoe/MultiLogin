@@ -10,7 +10,6 @@ import moe.caa.multilogin.core.util.ValueUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Properties;

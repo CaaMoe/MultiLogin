@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.util.FormatContent;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -39,7 +38,7 @@ public abstract class BaseCommandExecutor {
         if (arguments.getLength() != 0) {
             BaseCommandExecutor executor = subCommand.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
             if (executor != null) {
-                if(executor.getPermission() == null || sender.hasPermission(executor.getPermission())){
+                if (executor.getPermission() == null || sender.hasPermission(executor.getPermission())) {
                     arguments.offset(1);
                     return executor.execute(sender, arguments);
                 }

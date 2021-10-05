@@ -54,7 +54,7 @@ public class CommandHandler {
             if (arguments.getLength() != 0) {
                 BaseCommandExecutor executor = rootCommandExecutorConcurrentHashMap.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
                 if (executor != null) {
-                    if(executor.getPermission() == null || sender.hasPermission(executor.getPermission())){
+                    if (executor.getPermission() == null || sender.hasPermission(executor.getPermission())) {
                         arguments.offset(1);
                         result = executor.execute(sender, arguments);
                     } else {
@@ -62,10 +62,10 @@ public class CommandHandler {
                     }
                 }
             }
-            if(result == CommandResult.PASS) return;
-            if(result == CommandResult.UNKNOWN_USAGE) {
+            if (result == CommandResult.PASS) return;
+            if (result == CommandResult.UNKNOWN_USAGE) {
                 sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
-            } else if (result == CommandResult.NO_PERMISSION){
+            } else if (result == CommandResult.NO_PERMISSION) {
                 sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_missing_permission", FormatContent.empty()));
             }
         } catch (Exception e) {

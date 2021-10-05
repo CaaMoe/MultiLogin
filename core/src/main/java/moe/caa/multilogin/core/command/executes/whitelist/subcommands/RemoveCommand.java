@@ -6,7 +6,6 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
-import org.omg.CORBA.UNKNOWN;
 
 import java.sql.SQLException;
 import java.util.UUID;
