@@ -41,14 +41,9 @@ public class CombineAuthCore {
     /**
      * 对该名玩家进行综合验证
      */
-    public void doAuth(BaseUserLogin userLogin) throws SQLException, InterruptedException, ExecutionException {
+    public void doAuth(BaseUserLogin userLogin) {
         // 进行 Yggdrasil 在线验证
         var yggdrasilAuthResult = yggdrasilAuthCore.yggdrasilAuth(userLogin);
-
-        core.getLogger().log(LoggerLevel.DEBUG, String.format("End of online verification: %s. (username: %s, serverId: %s, ip: %s)",
-                yggdrasilAuthResult, userLogin.getUsername(), userLogin.getUsername(), userLogin.getIp() == null ? "unknown" : userLogin.getIp()
-        ));
-
         // Yggdrasil 在线验证失败的处置
         if (!yggdrasilAuthResult.isSuccess()) {
             if (yggdrasilAuthResult.getReason() == YggdrasilAuthReasonEnum.SERVER_DOWN) {
@@ -63,38 +58,26 @@ public class CombineAuthCore {
                 userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_no_server", FormatContent.empty()));
                 return;
             }
-            userLogin.disconnect("Unknown exception.");
+            if(yggdrasilAuthResult.getReason() == YggdrasilAuthReasonEnum.ERROR){
+                userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_error", FormatContent.empty()));
+                return;
+            }
+            userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_error_unknown", FormatContent.empty()));
             return;
         }
-
         // 进行后置验证
         var verifyAuthResult = verifyAuthCore.verifyAuth(yggdrasilAuthResult, userLogin);
-
-        core.getLogger().log(LoggerLevel.DEBUG, String.format("End of information check: %s. (username: %s, serverId: %s, ip: %s)",
-                verifyAuthResult, userLogin.getUsername(), userLogin.getUsername(), userLogin.getIp() == null ? "unknown" : userLogin.getIp()
-        ));
-
         // 后置验证失败的处置
         if (verifyAuthResult.isFailed()) {
             userLogin.disconnect(verifyAuthResult.getKickMessage());
             return;
         }
-
         User user = verifyAuthResult.getUser();
-
-        core.getLogger().log(LoggerLevel.DEBUG, String.format("Authentication is complete, allow login. (username: %s, serverId: %s, ip: %s)",
-                userLogin.getUsername(), userLogin.getServerId(), userLogin.getIp() == null ? "unknown" : userLogin.getIp()
-        ));
-        core.getLogger().log(LoggerLevel.INFO, String.format("The online uuid of player %s is %s, and the uuid in the game is %s, from the yggdrasil server %s.",
-                user.getCurrentName(), user.getOnlineUuid(), user.getRedirectUuid(), user.getYggdrasilService()));
-
+        core.getLogger().log(LoggerLevel.INFO, String.format("Authentication passed, login allowed. (user: %s, in game uuid: %s, online uuid: %s, yggdrasil: %s)",
+                user.getCurrentName(), user.getRedirectUuid(), user.getOnlineUuid(), user.getYggdrasilService()));
         HasJoinedResponse response = generateHasJoinedGameProfile(yggdrasilAuthResult, verifyAuthResult);
-
-
         // 这里进行异步皮肤修复操作
         core.getRestorerCore().doRestorer(response);
-
-
         userLogin.finish(response);
     }
 
