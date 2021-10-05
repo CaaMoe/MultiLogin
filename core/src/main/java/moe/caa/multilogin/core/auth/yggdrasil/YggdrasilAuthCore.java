@@ -118,7 +118,7 @@ public class YggdrasilAuthCore {
         // 返回结果
         var ret = new GroupBurstArrayList<YggdrasilService>();
         // 查在数据库中缓存的验证服务器对象(开启的)
-        var one = core.getSqlManager().getUserDataHandler().getYggdrasilServiceByCurrentName(name).stream().filter(service -> !service.isEnable()).collect(Collectors.toSet());
+        var one = core.getSqlManager().getUserDataHandler().getYggdrasilServiceByCurrentName(name).stream().filter(YggdrasilService::isEnable).collect(Collectors.toSet());
         var temp = new ArrayList<YggdrasilService>();
         for (YggdrasilService service : one) {
             if (service == null) continue;
