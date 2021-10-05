@@ -1,8 +1,9 @@
 package moe.caa.multilogin.core.command;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_RELOAD = "command.multilogin.reload";
     public static final String COMMAND_WHITELIST_ADD = "command.multilogin.whitelist.add";
