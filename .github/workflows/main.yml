@@ -38,3 +38,4 @@ jobs:
         with:
           name: Package
           path: builds
+          retention-days: 1
