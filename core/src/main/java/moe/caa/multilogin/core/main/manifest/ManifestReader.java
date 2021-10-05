@@ -34,8 +34,8 @@ public class ManifestReader {
             MultiLogger.getLogger().log(LoggerLevel.WARN, "#    Version : " + attributes.getValue("MultiLogin-Version"));
             MultiLogger.getLogger().log(LoggerLevel.WARN, "################################################");
             if (type == FAST) return;
-            MultiLogger.getLogger().log(LoggerLevel.WARN, "服务端将在 7 秒钟后继续启动");
-            Thread.sleep(7 * 1000);
+            MultiLogger.getLogger().log(LoggerLevel.WARN, "服务器将在 15 秒后继续启动");
+            Thread.sleep(15 * 1000);
         }
     }
 }
