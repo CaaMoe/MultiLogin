@@ -3,8 +3,6 @@ package moe.caa.multilogin.core.util;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -62,8 +60,7 @@ public class ValueUtil {
         UUID ret = null;
         try {
             ret = UUID.fromString(uuid.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
-        } catch (Exception e) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Invalid UUID string: %s", uuid), e);
+        } catch (Exception ignored) {
         }
         return ret;
     }

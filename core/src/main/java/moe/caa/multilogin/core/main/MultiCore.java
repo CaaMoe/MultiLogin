@@ -9,6 +9,7 @@ import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
+import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.data.config.AdvancedSetting;
 import moe.caa.multilogin.core.data.config.GeneralConfig;
 import moe.caa.multilogin.core.data.database.SQLManager;
@@ -45,6 +46,7 @@ public class MultiCore {
 
     private final CombineAuthCore authCore;
     private final SkinRestorerCore restorerCore;
+    private final CommandHandler commandHandler;
 
     /**
      * 构建插件核心
@@ -64,6 +66,7 @@ public class MultiCore {
         sqlManager = new SQLManager(this);
         authCore = new CombineAuthCore(this);
         restorerCore = new SkinRestorerCore(this);
+        commandHandler = new CommandHandler(this);
         try {
             new ManifestReader().read();
         } catch (Exception e) {

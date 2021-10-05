@@ -6,17 +6,22 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
+import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
+import moe.caa.multilogin.core.command.CommandArguments;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -76,6 +81,12 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
                 }
             }
         }, this);
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        core.getCommandHandler().executeAsync(new BukkitSender(sender), new CommandArguments(command.getName(), args));
+        return true;
     }
 
     @Override

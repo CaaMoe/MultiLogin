@@ -9,33 +9,33 @@ commands:
       - login
       - ml
 permissions:
-  multilogin.*:
+  command.multilogin.*:
     default: op
     children:
-      multilogin.reload: true
-      multilogin.query: true
-      multilogin.query.redirectuuid: true
-      multilogin.query.onlineuuid: true
-      multilogin.query.yggdrasil: true
-      multilogin.update: true
-      multilogin.list: true
-      multilogin.remove: true
-      multilogin.confirm: true
-      multilogin.help: true
-      multilogin.whitelist.add: true
-      multilogin.whitelist.remove: true
-      multilogin.whitelist.have: true
-  multilogin.query.*:
+      command.multilogin.reload: true
+      command.multilogin.query: true
+      command.multilogin.query.redirectuuid: true
+      command.multilogin.query.onlineuuid: true
+      command.multilogin.query.yggdrasil: true
+      command.multilogin.update: true
+      command.multilogin.list: true
+      command.multilogin.remove: true
+      command.multilogin.confirm: true
+      command.multilogin.help: true
+      command.multilogin.whitelist.add: true
+      command.multilogin.whitelist.remove: true
+      command.multilogin.whitelist.have: true
+  command.multilogin.query.*:
     default: op
     children:
-      multilogin.query.redirectuuid: true
-      multilogin.query.onlineuuid: true
-      multilogin.query.yggdrasil: true
-  multilogin.whitelist.*:
+      command.multilogin.query.redirectuuid: true
+      command.multilogin.query.onlineuuid: true
+      command.multilogin.query.yggdrasil: true
+  command.multilogin.whitelist.*:
     default: op
     children:
-      multilogin.whitelist.add: true
-      multilogin.whitelist.remove: true
-      multilogin.whitelist.have: true
-  multilogin.list:
+      command.multilogin.whitelist.add: true
+      command.multilogin.whitelist.remove: true
+      command.multilogin.whitelist.have: true
+  command.multilogin.list:
     default: true
