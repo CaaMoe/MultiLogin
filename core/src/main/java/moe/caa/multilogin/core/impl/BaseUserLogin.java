@@ -1,11 +1,13 @@
 package moe.caa.multilogin.core.impl;
 
+import lombok.ToString;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 
 /**
  * 公共登入状态中的用户实例<br>
  * 需要在完成对称加密状态下使用此实例
  */
+@ToString
 public abstract class BaseUserLogin {
     private final String username;
     private final String serverId;

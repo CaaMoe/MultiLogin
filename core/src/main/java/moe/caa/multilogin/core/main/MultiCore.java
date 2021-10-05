@@ -3,7 +3,6 @@ package moe.caa.multilogin.core.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import moe.caa.multilogin.core.auth.CombineAuthCore;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
@@ -24,7 +23,6 @@ import moe.caa.multilogin.core.util.YamlReader;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilServicesHandler;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 @Getter
 public class MultiCore {
@@ -53,7 +51,6 @@ public class MultiCore {
      *
      * @param plugin 插件实例
      */
-    @SneakyThrows
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
         dataFolder = plugin.getDataFolder();
@@ -70,7 +67,7 @@ public class MultiCore {
         try {
             new ManifestReader().read();
         } catch (Exception e) {
-            getLogger().log(LoggerLevel.ERROR, "The manifest file is damaged.", e);
+            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
         }
     }
 
@@ -83,7 +80,7 @@ public class MultiCore {
         try {
             return init0();
         } catch (Throwable e) {
-            logger.log(LoggerLevel.ERROR, "A fatal error was encountered while loading the plugin.", e);
+            logger.log(LoggerLevel.ERROR, "A FATAL ERROR WAS ENCOUNTERED WHILE INITIALIZING THE PLUGIN.", e);
             return false;
         }
     }
@@ -94,8 +91,6 @@ public class MultiCore {
      * @return 初始化是否成功
      */
     private boolean init0() throws Throwable {
-        // 数据文件夹
-        IOUtil.createNewFileOrFolder(dataFolder, true);
         // 初始化和读取高级配置文件
         generateSettingFile();
         // 重新设置DEBUG属性
@@ -107,14 +102,13 @@ public class MultiCore {
         // 读取语言文件
         if (!languageHandler.init(this, "message.properties")) return false;
         // 加载 Yggdrasil 账户验证服务器配置
-        yggdrasilServicesHandler.init(config.getReader().get("services", YamlReader.class));
+        yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         // 连接数据库操作
         if (!sqlManager.init(config.getReader().get("sql", YamlReader.class))) return false;
-
         // 后端实现任务
         plugin.initService();
         plugin.initOther();
-        logger.log(LoggerLevel.INFO, "插件已加载");
+        logger.log(LoggerLevel.INFO, "插件加载完毕");
         return true;
     }
 
@@ -128,9 +122,10 @@ public class MultiCore {
      */
     private void generateSettingFile() {
         File file = new File(dataFolder, "advanced_setting.properties");
-        if (!file.exists()) return;
         try {
-            setting.load(new FileInputStream(file));
+            IOUtil.createNewFileOrFolder(dataFolder, true);
+            if (!file.exists()) return;
+            setting.load(file);
         } catch (Exception e) {
             logger.log(LoggerLevel.WARN, String.format("Failed to read advanced configuration file, Will keep the default values. (%s)", file.getAbsolutePath()), e);
         }

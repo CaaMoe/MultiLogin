@@ -6,9 +6,10 @@ import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -18,21 +19,6 @@ import java.nio.charset.StandardCharsets;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HttpUtil {
-
-    /**
-     * 通过给定字符串对象生成这个 URL 对象
-     *
-     * @param url 给定字符串对象
-     * @return 匹配的 URL 对象，否则为空
-     */
-    public static URL getUrlOrNull(String url) {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException exception) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Try to generate the URL failed: %s", url), exception);
-        }
-        return null;
-    }
 
     /**
      * 向目标 URL 发起 HTTP GET 请求
@@ -140,45 +126,6 @@ public class HttpUtil {
                 sb.append("/");
         }
         return sb.toString();
-    }
-
-    /**
-     * 向目标 URL 发起 文件下载 请求
-     *
-     * @param url 目标 URL
-     * @param out 本机下载目标
-     * @return 是否成功下载文件
-     * @throws IOException 请求异常
-     */
-    public static boolean downloadFile(String url, File out) throws IOException {
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Downloading file " + url + " to " + out.getAbsolutePath());
-        try {
-            if (out.exists()) out.delete();
-            var downloadingFile = new File(out.getParent(), out.getName() + ".downloading");
-            IOUtil.clearFile(downloadingFile);
-            var httpURLConnection = (HttpURLConnection) new URL(urlEncode(url)).openConnection();
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.setDoOutput(false);
-            httpURLConnection.connect();
-
-            if (httpURLConnection.getResponseCode() == 200) {
-                try (var inputStream = httpURLConnection.getInputStream(); var fileOutputStream = new FileOutputStream(downloadingFile)) {
-                    var b = new byte[1024];
-                    int n;
-                    while ((n = inputStream.read(b)) != -1) {
-                        fileOutputStream.write(b, 0, n);// 写入数据
-                    }
-                    fileOutputStream.flush();
-                }
-                MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Download succeeded. (%s)", out.getName()));
-                return downloadingFile.renameTo(out);
-            }
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Download failed. (%s)", out.getName()));
-            return false;
-        } catch (Exception e) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Download failed. (%s)", out.getName()), e);
-            throw e;
-        }
     }
 
     /**

@@ -23,5 +23,10 @@ public enum YggdrasilAuthReasonEnum {
     /**
      * 由于配置失误没有匹配到验证服务器
      */
-    NO_SERVICE;
+    NO_SERVICE,
+
+    /**
+     * 异常
+     */
+    ERROR;
 }

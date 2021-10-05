@@ -43,17 +43,7 @@ public class LanguageHandler {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("Unable to load inside message file. (%s)", fileName), e);
             return false;
         }
-        var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
-        if (outsideFile.exists()) {
-            outside = new Properties();
-            try {
-                outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("Unable to load outside message file. (%s)", outsideFile.getAbsolutePath()), e);
-            }
-        } else {
-            outside = null;
-        }
+        reloadOutside(fileName);
         return true;
     }
 
@@ -63,6 +53,7 @@ public class LanguageHandler {
     public void reloadOutside(String fileName) {
         var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
         if (outsideFile.exists()) {
+            MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("加载文件: %s", outsideFile.getName()));
             outside = new Properties();
             try {
                 outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));

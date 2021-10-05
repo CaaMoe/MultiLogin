@@ -3,8 +3,12 @@ package moe.caa.multilogin.core.data.config;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.ValueUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -38,7 +42,9 @@ public class AdvancedSetting {
     private boolean logger_debug = false;
 
 
-    public void load(InputStream stream) throws IllegalAccessException, IOException {
+    public void load(File file) throws IllegalAccessException, IOException {
+        MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("加载文件: %s", file.getName()));
+        FileInputStream stream = new FileInputStream(file);
         properties.clear();
         properties.load(stream);
         for (Field field : this.getClass().getDeclaredFields()) {

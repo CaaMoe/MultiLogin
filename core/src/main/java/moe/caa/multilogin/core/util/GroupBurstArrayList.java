@@ -1,8 +1,6 @@
 package moe.caa.multilogin.core.util;
 
 import lombok.NoArgsConstructor;
-import moe.caa.multilogin.core.logger.LoggerLevel;
-import moe.caa.multilogin.core.logger.MultiLogger;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -62,24 +60,5 @@ public class GroupBurstArrayList<T> {
             num += list.size();
         }
         return num;
-    }
-
-    public void printDebug() {
-        StringBuilder sb = new StringBuilder();
-        sb.append('\n');
-        sb.append("Grouping information:");
-        sb.append('\n');
-        sb.append("count: ");
-        sb.append(size());
-        sb.append('\n');
-        for (int i = 0; i < contents.size(); i++) {
-            sb.append(i + 1).append(": ");
-            sb.append('\n');
-            for (T t : contents.get(i)) {
-                sb.append("    ").append(t);
-                sb.append('\n');
-            }
-        }
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, sb.toString());
     }
 }

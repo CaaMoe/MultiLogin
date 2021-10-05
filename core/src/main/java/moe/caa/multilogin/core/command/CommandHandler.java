@@ -3,6 +3,8 @@ package moe.caa.multilogin.core.command;
 import moe.caa.multilogin.core.command.executes.multilogin.MultiLoginCommandExecutor;
 import moe.caa.multilogin.core.command.executes.whitelist.WhitelistCommandExecutor;
 import moe.caa.multilogin.core.impl.ISender;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
@@ -46,22 +48,32 @@ public class CommandHandler {
      * @param arguments 命令参数
      */
     public void execute(ISender sender, CommandArguments arguments) {
+        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.join("Executing command: %s. (%s)", arguments.toString(), sender.getName()));
         try {
+            CommandResult result = CommandResult.UNKNOWN_USAGE;
             if (arguments.getLength() != 0) {
                 BaseCommandExecutor executor = rootCommandExecutorConcurrentHashMap.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
                 if (executor != null) {
-                    if (testPermission(sender, executor.getPermission(), true)) {
+                    if(executor.getPermission() == null || sender.hasPermission(executor.getPermission())){
                         arguments.offset(1);
-                        executor.execute(sender, arguments);
+                        result = executor.execute(sender, arguments);
+                    } else {
+                        result = CommandResult.NO_PERMISSION;
                     }
-                    return;
                 }
             }
-            sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+            if(result == CommandResult.PASS) return;
+            if(result == CommandResult.UNKNOWN_USAGE) {
+                sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+            } else if (result == CommandResult.NO_PERMISSION){
+                sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_missing_permission", FormatContent.empty()));
+            }
         } catch (Exception e) {
-
+            sender.sendMessage(core.getLanguageHandler().getMessage("command_error", FormatContent.empty()));
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while executing the command.", e);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + arguments);
         }
-
     }
 
     /**
@@ -72,24 +84,5 @@ public class CommandHandler {
      */
     public List<String> tabComplete(ISender sender, CommandArguments arguments) {
         return Collections.emptyList();
-    }
-
-    /**
-     * 测试某位执行者是否有某权限
-     *
-     * @param sender     命令执行者
-     * @param permission 权限
-     * @param feedback   没有权限时是否需要反馈
-     * @return 是否具有某权限
-     */
-    public boolean testPermission(ISender sender, String permission, boolean feedback) {
-        if (permission == null) return true;
-        boolean ret = sender.hasPermission(permission);
-        if (!ret) {
-            sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_missing_permission", FormatContent.createContent(
-                    FormatContent.FormatEntry.builder().name("permission").content(permission).build()
-            )));
-        }
-        return ret;
     }
 }

@@ -35,18 +35,18 @@ public abstract class BaseCommandExecutor {
      * @param sender    命令执行者
      * @param arguments 命令参数
      */
-    protected void execute(ISender sender, CommandArguments arguments) throws SQLException, ExecutionException, InterruptedException {
+    protected CommandResult execute(ISender sender, CommandArguments arguments) throws SQLException, ExecutionException, InterruptedException {
         if (arguments.getLength() != 0) {
             BaseCommandExecutor executor = subCommand.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
             if (executor != null) {
-                if (commandHandler.testPermission(sender, executor.getPermission(), true)) {
+                if(executor.getPermission() == null || sender.hasPermission(executor.getPermission())){
                     arguments.offset(1);
-                    executor.execute(sender, arguments);
+                    return executor.execute(sender, arguments);
                 }
-                return;
+                return CommandResult.NO_PERMISSION;
             }
         }
-        sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+        return CommandResult.UNKNOWN_USAGE;
     }
 
     /**

@@ -73,7 +73,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
                 if (asyncPlayerPreLoginEvent.getUniqueId().equals(BukkitAuthCore.getDIRTY_UUID())) {
                     for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
                         if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
-                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage());
+                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "喜报\nNMSL" : login.getKickMessage());
                             return;
                         }
                     }

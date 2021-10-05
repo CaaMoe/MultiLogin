@@ -21,16 +21,7 @@ public class YggdrasilServicesHandler {
     private final Set<YggdrasilService> enabledServices = Collections.synchronizedSet(new HashSet<>());
 
     /**
-     * 读取配置
-     *
-     * @param config 配置文件
-     */
-    public synchronized void init(YamlReader config) {
-        reload(config);
-    }
-
-    /**
-     * 重新加载配置
+     * 加载配置
      *
      * @param config 配置
      */
@@ -43,17 +34,20 @@ public class YggdrasilServicesHandler {
             try {
                 var service = YggdrasilService.getYggdrasilServiceFromMap(key, section);
                 allServices.add(service);
-                if (service.isEnable()) enabledServices.add(service);
-                MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Add " + service);
-                MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("添加 Yggdrasil 账户验证服务器 %s(%s)%s。",
-                        service.getName(), service.getPath(), (service.isEnable() ? "" : "，但未启用它")));
-
+                StringBuilder sb = new StringBuilder();
+                sb.append("添加 Yggdrasil 账户验证服务器 ").append(service.getName()).append('(').append(service.getPath()).append(')');
+                if (service.isEnable()){
+                    enabledServices.add(service);
+                    sb.append(", 但未启用它。");
+                }
+                sb.append('.');
+                MultiLogger.getLogger().log(LoggerLevel.INFO, sb.toString());
             } catch (Exception e) {
-                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("无法读取配置文件节点 '%s' 中设置的 Yggdrasil 账户验证服务器", key), e);
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("无法读取配置文件节点 '%s' 中设置的 Yggdrasil 账户验证服务器。", key), e);
             }
         }
         if (enabledServices.isEmpty())
-            MultiLogger.getLogger().log(LoggerLevel.WARN, "尚未启用任何 Yggdrasil 账户验证服务器，将拒绝所有玩家登入游戏.");
+            MultiLogger.getLogger().log(LoggerLevel.WARN, "尚未启用任何 Yggdrasil 账户验证服务器，将会拒绝所有玩家登入游戏。");
     }
 
     /**

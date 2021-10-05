@@ -23,6 +23,6 @@ public class YggdrasilAuthResult {
      * @return 验证是否成功
      */
     public boolean isSuccess() {
-        return result != null && result.getId() != null;
+        return result != null && result.getId() != null && reason == YggdrasilAuthReasonEnum.RETURN;
     }
 }

@@ -1,9 +1,6 @@
 package moe.caa.multilogin.core.command.executes.whitelist.subcommands;
 
-import moe.caa.multilogin.core.command.BaseCommandExecutor;
-import moe.caa.multilogin.core.command.CommandArguments;
-import moe.caa.multilogin.core.command.CommandHandler;
-import moe.caa.multilogin.core.command.Permissions;
+import moe.caa.multilogin.core.command.*;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.user.User;
@@ -23,14 +20,14 @@ public class ListCommand extends BaseCommandExecutor {
     }
 
     @Override
-    protected void execute(ISender sender, CommandArguments arguments) throws SQLException, ExecutionException, InterruptedException {
+    protected CommandResult execute(ISender sender, CommandArguments arguments) throws SQLException, ExecutionException, InterruptedException {
         if (arguments.getLength() == 0) {
             List<User> users = getCore().getSqlManager().getUserDataHandler().getUserEntryWhereHaveWhitelist();
             List<String> cacheWhitelist = getCore().getSqlManager().getCacheWhitelistDataHandler().getAllCacheWhitelist();
             int count = users.size() + cacheWhitelist.size();
             if (count == 0) {
                 sender.sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_list_empty", FormatContent.empty()));
-                return;
+                return CommandResult.PASS;
             }
             StringBuilder sb = new StringBuilder();
             for (String s : cacheWhitelist) {
@@ -50,8 +47,8 @@ public class ListCommand extends BaseCommandExecutor {
                     FormatContent.FormatEntry.builder().name("cache_count").content(cacheWhitelist.size()).build(),
                     FormatContent.FormatEntry.builder().name("list").content(sb).build()
             )));
-            return;
+            return CommandResult.PASS;
         }
-        sender.sendMessage(getCore().getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
+        return CommandResult.UNKNOWN_USAGE;
     }
 }
