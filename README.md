@@ -185,8 +185,7 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
 | /multilogin reload   | command.multilogin.reload| 重新加载配置文件|
 | /whitelist add &lt;name&#124;uuid&gt;     | command.multilogin.whitelist.add| 将 target 添加到白名单中|
 | /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
-| /whitelist have &lt;name&#124;uuid&gt;         | command.multilogin.whitelist.list| 判断 target 是否具有白名单|
-| /whitelist list         | | 获得白名单列表|
+| /whitelist list         | command.multilogin.whitelist.list| 获得白名单列表|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
 群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
