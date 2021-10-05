@@ -22,7 +22,7 @@
     * 可设置占线登入机制
 * 可控制和生成玩家在游戏内的 UUID
 * PlaceholderAPI 变量支持 (Bukkit)
-* 自动修复多 Yggdrasil 情况下出现的皮肤问题 (即将到来)
+* 自动修复多 Yggdrasil 情况下出现的皮肤问题
 
 ## BStats 数据
 
@@ -182,18 +182,10 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
 
 | 命令 | 权限 | 简介 |
 |  ----  | ----  | --- |
-| /multilogin reload   | | 重新加载配置文件|
-| /multilogin query name &lt;name&gt; | | 查询 name 所属用户信息（可能多个）|
-| /multilogin query redirectUuid &lt;UUID&gt; | | 查询 redirectUuid 所属用户信息（可能多个）|
-| /multilogin query onlineUuid &lt;UUID&gt;     | |查询 onlineUuid 所属用户信息 |
-| /multilogin query yggdrasil &lt;path&gt;     | |查询 path 所属 Yggdrasil 账户验证服务器信息 |
-| /multilogin update     | | 检查更新|
-| /multilogin list | | 查看具有 Yggdrasil 登入信息的在线玩家列表|
-| /multilogin remove &lt;onlineUuid&gt;     | | 移除一条记录|
-|/multilogin confirm    | | 确认当前风险操作|
-| /whitelist add &lt;name&#124;uuid&gt;     | | 将 target 添加到白名单中|
-| /whitelist remove &lt;name&#124;uuid&gt;    | | 移除 target 的白名单|
-| /whitelist have &lt;name&#124;uuid&gt;         | | 判断 target 是否具有白名单|
+| /multilogin reload   | command.multilogin.reload| 重新加载配置文件|
+| /whitelist add &lt;name&#124;uuid&gt;     | command.multilogin.whitelist.add| 将 target 添加到白名单中|
+| /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
+| /whitelist have &lt;name&#124;uuid&gt;         | command.multilogin.whitelist.list| 判断 target 是否具有白名单|
 | /whitelist list         | | 获得白名单列表|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
