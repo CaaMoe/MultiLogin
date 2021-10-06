@@ -88,7 +88,7 @@ public class SkinRestorerCore {
             String finalSkinModel = skinModel;
             core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                 try {
-                    Property property = doRestorer(finalSkinModel, skinUrl);
+                    Property property = doRestorer(finalSkinModel, skinUrl, result.getService().getSkinRestorerRetry());
                     apply(textures.get(), property);
                     JsonObject write = new JsonObject();
                     write.addProperty("value", property.getValue());
@@ -125,14 +125,14 @@ public class SkinRestorerCore {
      * @return 修复后带有签名的空name数据
      * @throws Exception 修复时异常
      */
-    private Property doRestorer(String skinModel, String skinUrl) throws Exception {
+    private Property doRestorer(String skinModel, String skinUrl, int retry) throws Exception {
         JsonObject jo = new JsonObject();
         jo.addProperty("name", UUID.randomUUID().toString().substring(0, 6));
         jo.addProperty("variant", skinModel == null ? "classic" : skinModel);
         jo.addProperty("visibility", 0);
         jo.addProperty("url", skinUrl);
         String s = HttpUtil.httpPostJson(new URL("https://api.mineskin.org/generate/url"),
-                MultiCore.getGson().toJson(jo), "application/json", (int) core.getConfig().getServicesTimeOut());
+                MultiCore.getGson().toJson(jo), "application/json", (int) core.getConfig().getServicesTimeOut(), retry);
         JsonObject resultJson = JsonParser.parseString(s).getAsJsonObject().getAsJsonObject("data").getAsJsonObject("texture");
 
         return Property.builder().name("")
