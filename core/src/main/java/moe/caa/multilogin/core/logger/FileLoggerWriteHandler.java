@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -34,7 +35,8 @@ public class FileLoggerWriteHandler {
         tempFile.deleteOnExit();
         var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("multilogin_log4j2.xml"), String.format("File '%s' was not found in the jar.", "multilogin_log4j2.xml"))));
         var rePlacePath = core.getPlugin().getDataFolder().getAbsolutePath();
-        try (var fw = new FileWriter(tempFile)) {
+        try (var fw = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(tempFile), StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 fw.write(line.replace("%path%", rePlacePath));
