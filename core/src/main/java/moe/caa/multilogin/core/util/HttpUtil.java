@@ -62,7 +62,7 @@ public class HttpUtil {
      * @throws IOException 请求异常
      */
     public static String httpPostJson(URL url, String content, String contentType, int timeOut) throws IOException {
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Writing POST request data to " + url);
+        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Writing POST request data(%s) to %s", content, url));
         try {
             var connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);

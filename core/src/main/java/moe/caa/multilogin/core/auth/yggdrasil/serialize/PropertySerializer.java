@@ -17,7 +17,7 @@ public class PropertySerializer implements JsonSerializer<Property>, JsonDeseria
 
     @Override
     public Property deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-        var ret = new Property();
+        var ret = Property.builder().build();
         if (json.isJsonObject()) {
             var root = json.getAsJsonObject();
             ret.setName(root.get("name").getAsString());

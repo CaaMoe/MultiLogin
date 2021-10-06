@@ -86,7 +86,7 @@ public class YggdrasilAuthCore {
                     authExecutor.execute(authTask);
                 }
                 //阻塞
-                if (!latch.await(core.getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS)) {
+                if (!latch.await(core.getConfig().getServicesTimeOut() * 3, TimeUnit.MILLISECONDS)) {
                     down.set(true);
                 }
                 YggdrasilAuthTask task = succeed.get();
