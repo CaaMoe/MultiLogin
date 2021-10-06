@@ -4,10 +4,12 @@ plugins {
 
 repositories {
     maven { url "https://repo.codemc.io/repository/maven-public/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
 }
 
 dependencies {
-    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
+    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.16-R0.5-20210527.222654-29'
+
     implementation project(":core")
 }
 
@@ -22,6 +24,11 @@ shadowJar {
     }
     archiveClassifier.set("")
 
+    shadowJar {
+        dependencies {
+            exclude(('net.md-5:brigadier'))
+        }
+    }
 
     relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
