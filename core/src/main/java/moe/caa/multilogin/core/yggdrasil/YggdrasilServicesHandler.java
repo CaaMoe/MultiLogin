@@ -38,9 +38,10 @@ public class YggdrasilServicesHandler {
                 sb.append("添加 Yggdrasil 账户验证服务器 ").append(service.getName()).append('(').append(service.getPath()).append(')');
                 if (service.isEnable()) {
                     enabledServices.add(service);
-                    sb.append(", 但未启用它。");
+                } else {
+                    sb.append(", 但未启用它");
                 }
-                sb.append('.');
+                sb.append('。');
                 MultiLogger.getLogger().log(LoggerLevel.INFO, sb.toString());
             } catch (Exception e) {
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, String.format("无法读取配置文件节点 '%s' 中设置的 Yggdrasil 账户验证服务器。", key), e);
