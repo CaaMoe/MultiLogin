@@ -1,0 +1,33 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+repositories {
+    maven { url "https://repo.codemc.io/repository/maven-public/" }
+}
+
+dependencies {
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
+    implementation project(":core")
+}
+
+shadowJar {
+    String env = System.getProperty("env", "AUTO")
+    archiveBaseName.set('MultiLogin-Bungee')
+    if (env.toLowerCase() == "final") {
+        archiveVersion.set(project.plugin_version as String)
+    } else {
+        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        archiveVersion.set(ver)
+    }
+    archiveClassifier.set("")
+
+
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
+    relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
+    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
+    relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
+    relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
+    relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+
+}
