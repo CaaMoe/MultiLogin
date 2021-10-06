@@ -10,6 +10,8 @@ import net.md_5.bungee.connection.LoginResult;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BungeeUserLogin extends BaseUserLogin {
     private static MethodHandle LOGIN_PROFILE;
@@ -50,10 +52,15 @@ public class BungeeUserLogin extends BaseUserLogin {
     }
 
     private LoginResult generateLoginResult(HasJoinedResponse response){
+        List<Property> values = new ArrayList<>(response.getPropertyMap().values());
+        LoginResult.Property[] properties = new LoginResult.Property[values.size()];
+        for (int i = 0; i < values.size(); i++) {
+            properties[i] = generateProperty(values.get(i));
+        }
         return new LoginResult(
                 response.getId().toString().replace("-", ""),
                 response.getName(),
-                response.getPropertyMap().values().stream().map(this::generateProperty).toArray(value -> new LoginResult.Property[0])
+                properties
         );
     }
 
