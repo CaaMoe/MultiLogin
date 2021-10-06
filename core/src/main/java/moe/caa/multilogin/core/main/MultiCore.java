@@ -136,6 +136,8 @@ public class MultiCore {
      */
     public void reload() {
         generateConfigFile();
+        generateSettingFile();
+        logger.setDebug(setting.isLogger_debug());
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         languageHandler.reloadOutside("message.properties");
     }
