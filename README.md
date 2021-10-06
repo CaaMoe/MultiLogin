@@ -150,6 +150,21 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
         # 默认值 'false'
         safeId: false
 
+        # 皮肤修复规则，用来解决不同 Yggdrasil 账户验证服务器下的皮肤不可见问题。
+        #    比如使用 Minecraft 原版验证服务器的玩家无法看到使用第三方外置验证登入玩家的皮肤。
+        # 目前只支持设置以下值:
+        #   OFF       - 关闭这个功能
+        #   LOGIN     - 占用登入时间进行皮肤修复操作（修复时间过长会导致登入超时）
+        #   ASYNC     - 登入后修复（修复成功后需要重新连接服务器）
+        # 系统将会自动过滤掉皮肤源域名为 '*.minecraft.net' 的情况
+        # 皮肤修复服务器来自 'mineskin.org'
+        # 默认值 'OFF'
+        skinRestorer: OFF
+    
+        # 皮肤修复错误重试次数
+        # 默认值: 2
+        skinRestorerRetry: 2
+
 #### 例子
 
 * 添加 Minecraft 原版验证服务器
