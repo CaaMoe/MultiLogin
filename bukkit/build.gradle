@@ -24,10 +24,11 @@ shadowJar {
     archiveClassifier.set("")
 
 
-    relocate 'com.zaxxer', 'moe.caa.multilogin.lib.com.zaxxer'
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
-    relocate 'com.google', 'moe.caa.multilogin.lib.com.google'
-    relocate 'google', 'moe.caa.multilogin.lib.google'
-    relocate 'org.yaml', 'moe.caa.multilogin.lib.org.yaml'
+    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
+    relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
+    relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
+    relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
 
 }

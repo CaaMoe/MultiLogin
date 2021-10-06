@@ -48,7 +48,7 @@ public class CommandHandler {
      * @param arguments 命令参数
      */
     public void execute(ISender sender, CommandArguments arguments) {
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.join("Executing command: %s. (%s)", arguments.toString(), sender.getName()));
+        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Executing command: %s. (%s)", arguments.toString(), sender.getName()));
         try {
             CommandResult result = CommandResult.UNKNOWN_USAGE;
             if (arguments.getLength() != 0) {
