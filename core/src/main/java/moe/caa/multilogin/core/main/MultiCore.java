@@ -135,11 +135,11 @@ public class MultiCore {
      * 重新加载
      */
     public void reload() {
+        languageHandler.reloadOutside("message.properties");
         generateConfigFile();
         generateSettingFile();
         logger.setDebug(setting.isLogger_debug());
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
-        languageHandler.reloadOutside("message.properties");
     }
 
     /**
