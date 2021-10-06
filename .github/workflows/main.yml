@@ -34,6 +34,7 @@ jobs:
         run: |
           mkdir builds
           mv bukkit/build/libs/*.jar builds
+          mv bungee/build/libs/*.jar builds
       - name: Upload to Artifact
         uses: actions/upload-artifact@v2
         with:

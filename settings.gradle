@@ -1,4 +1,5 @@
 rootProject.name = 'MultiLogin'
 include 'core'
 include 'bukkit'
+include 'bungee'
 

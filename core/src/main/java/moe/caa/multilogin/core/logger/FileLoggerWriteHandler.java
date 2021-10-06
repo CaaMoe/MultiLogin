@@ -32,7 +32,7 @@ public class FileLoggerWriteHandler {
     protected void init(MultiCore core) throws IOException {
         var tempFile = File.createTempFile("log4j2-temp", "multilogin");
         tempFile.deleteOnExit();
-        var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("log4j2.xml"), String.format("File '%s' was not found in the jar.", "log4j2.xml"))));
+        var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("multilogin_log4j2.xml"), String.format("File '%s' was not found in the jar.", "multilogin_log4j2.xml"))));
         var rePlacePath = core.getPlugin().getDataFolder().getAbsolutePath();
         try (var fw = new FileWriter(tempFile)) {
             String line;
@@ -42,10 +42,10 @@ public class FileLoggerWriteHandler {
             }
             fw.flush();
         }
-        var context = new LoggerContext("MultiLogin");
+        var context = new LoggerContext("MultiLogin_To_Logfile");
         context.setConfigLocation(tempFile.toURI());
         context.reconfigure();
-        toFileLogger = context.getLogger("MultiLogin");
+        toFileLogger = context.getLogger("MultiLogin_To_Logfile");
     }
 
     /**

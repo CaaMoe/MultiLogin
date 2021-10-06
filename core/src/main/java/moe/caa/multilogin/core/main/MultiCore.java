@@ -64,11 +64,6 @@ public class MultiCore {
         authCore = new CombineAuthCore(this);
         restorerCore = new SkinRestorerCore(this);
         commandHandler = new CommandHandler(this);
-        try {
-            new ManifestReader().read();
-        } catch (Exception e) {
-            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
-        }
     }
 
     /**
@@ -91,6 +86,11 @@ public class MultiCore {
      * @return 初始化是否成功
      */
     private boolean init0() throws Throwable {
+        try {
+            new ManifestReader().read();
+        } catch (Exception e) {
+            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
+        }
         // 初始化和读取高级配置文件
         generateSettingFile();
         // 重新设置DEBUG属性
