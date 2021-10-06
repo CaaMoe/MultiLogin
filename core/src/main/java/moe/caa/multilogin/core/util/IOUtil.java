@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.var;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
-import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.*;
 
@@ -23,7 +22,7 @@ public class IOUtil {
      */
     public static InputStream getJarResource(String path) {
         try {
-            var url = MultiCore.class.getClassLoader().getResource(path);
+            var url = IOUtil.class.getClassLoader().getResource(path);
             if (url != null) {
                 var connection = url.openConnection();
                 connection.setUseCaches(false);

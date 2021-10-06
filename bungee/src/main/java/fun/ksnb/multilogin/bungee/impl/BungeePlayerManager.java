@@ -21,7 +21,7 @@ public class BungeePlayerManager implements IPlayerManager {
     public Set<IPlayer> getPlayer(String name) {
         Set<IPlayer> ret = new HashSet<>();
         for (ProxiedPlayer player : cord.getPlayers()) {
-            if(player.getName().equalsIgnoreCase(name)){
+            if (player.getName().equalsIgnoreCase(name)) {
                 ret.add(new BungeePlayer(player));
             }
         }
@@ -31,7 +31,7 @@ public class BungeePlayerManager implements IPlayerManager {
     @Override
     public IPlayer getPlayer(UUID uuid) {
         ProxiedPlayer player = cord.getPlayer(uuid);
-        if(player == null) return null;
+        if (player == null) return null;
         return new BungeePlayer(player);
     }
 

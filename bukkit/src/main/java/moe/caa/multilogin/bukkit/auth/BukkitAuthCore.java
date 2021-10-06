@@ -2,11 +2,12 @@ package moe.caa.multilogin.bukkit.auth;
 
 import com.mojang.authlib.GameProfile;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.CachedHashSet;
 
 import java.net.InetAddress;
@@ -22,14 +23,19 @@ public class BukkitAuthCore {
     @Getter
     private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 
-    @SneakyThrows
     public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
-        CountDownLatch latch = new CountDownLatch(1);
-        BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress(), latch);
-        MultiLoginBukkit.getInstance().getCore().getAuthCore().doAuth(login);
-        latch.await(MultiLoginBukkit.getInstance().getCore().getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS);
-        loginCachedHashSet.add(login);
-        return generate(login.getResponse(), user.getName());
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress(), latch);
+            MultiLoginBukkit.getInstance().getCore().getAuthCore().doAuth(login);
+            latch.await(MultiLoginBukkit.getInstance().getCore().getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS);
+            loginCachedHashSet.add(login);
+            return generate(login.getResponse(), user.getName());
+        } catch (Exception e) {
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "GameProfile: " + user);
+            return new GameProfile(DIRTY_UUID, user.getName());
+        }
     }
 
     private GameProfile generate(HasJoinedResponse response, String username) {

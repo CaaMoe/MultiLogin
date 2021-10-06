@@ -3,8 +3,9 @@ package fun.ksnb.multilogin.bungee.auth;
 import com.google.common.base.Preconditions;
 import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
 import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
-import lombok.SneakyThrows;
-import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.EncryptionUtil;
@@ -23,7 +24,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,7 +35,6 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private static MethodHandle CHANNEL_WRAPPER;
     private SecretKey sharedKey;
     private EncryptionRequest request;
-    private static MultiCore core = MultiLoginBungee.getInstance().getCore();
 
     public static void init() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
         Class<InitialHandler> INITIAL_HANDLER_CLASS = InitialHandler.class;
@@ -48,18 +47,30 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     }
 
 
-    @SneakyThrows
     @Override
-    public void handle(AbstractPacketHandler handler) {
+    public void handle(AbstractPacketHandler handler) throws Exception {
         if (!(handler instanceof InitialHandler)) {
             handler.handle(this);
             return;
         }
 
-        addEncrypt((InitialHandler) handler);
+        try {
+            addEncrypt((InitialHandler) handler);
+        } catch (Throwable throwable) {
+            ((InitialHandler) handler).disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception while processing encryption.", throwable);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
+        }
 
-        MultiLoginBungee.getInstance().getRunServer().getScheduler().runTaskAsync(()->{
-            MultiLoginBungee.getInstance().getCore().getAuthCore().doAuth(new BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler),(InitialHandler) handler));
+        MultiLoginBungee.getInstance().getRunServer().getScheduler().runTaskAsync(() -> {
+            try {
+                MultiLoginBungee.getInstance().getCore().getAuthCore().doAuth(new BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler), (InitialHandler) handler));
+            } catch (Exception e) {
+                ((InitialHandler) handler).disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
+            }
+
         });
     }
 
@@ -80,26 +91,21 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         ch.addBefore("frame-prepender", "encrypt", new CipherEncoder(encrypt));
     }
 
-    //    解密服务器ID
-    @SneakyThrows
-    public String getServerId() {
+    public String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
         byte[][] var7 = new byte[][]{this.request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
         int var8 = var7.length;
-        for(int var9 = 0; var9 < var8; ++var9) {
+        for (int var9 = 0; var9 < var8; ++var9) {
             byte[] bit = var7[var9];
             sha.update(bit);
         }
         return URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");
     }
 
-    //    获取玩家名
-    @SneakyThrows
-    public String getUsername(InitialHandler handler) {
+    public String getUsername(InitialHandler handler) throws UnsupportedEncodingException {
         return URLEncoder.encode(handler.getName(), "UTF-8");
     }
 
-    //    获取IP
     public String getIp(InitialHandler handler) {
         if (BungeeCord.getInstance().config.isPreventProxyConnections() && handler.getSocketAddress() instanceof InetSocketAddress) {
             return handler.getAddress().getAddress().getHostAddress();

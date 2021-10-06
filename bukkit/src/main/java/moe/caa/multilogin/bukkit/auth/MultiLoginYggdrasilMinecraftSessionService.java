@@ -30,7 +30,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
     }
 
     // 不要注解不要注解不要注解不要注解不要注解不要注解
-    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) throws AuthenticationUnavailableException {
+    public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
         BukkitAuthCore core = new BukkitAuthCore();
         return core.doAuth(user, serverId, address);
     }

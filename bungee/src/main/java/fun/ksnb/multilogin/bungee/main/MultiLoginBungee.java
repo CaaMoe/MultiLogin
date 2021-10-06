@@ -1,10 +1,10 @@
 package fun.ksnb.multilogin.bungee.main;
 
 import fun.ksnb.multilogin.bungee.auth.MultiLoginEncryptionResponse;
+import fun.ksnb.multilogin.bungee.impl.BungeeServer;
 import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
 import gnu.trove.map.TIntObjectMap;
 import lombok.Getter;
-import fun.ksnb.multilogin.bungee.impl.BungeeServer;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;

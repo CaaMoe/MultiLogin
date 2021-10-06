@@ -1,9 +1,12 @@
 package fun.ksnb.multilogin.bungee.impl;
 
-import lombok.SneakyThrows;
+import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
+import moe.caa.multilogin.core.logger.LoggerLevel;
+import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.connection.LoginResult;
@@ -20,6 +23,11 @@ public class BungeeUserLogin extends BaseUserLogin {
     private static MethodHandle FINISH;
     private final InitialHandler handler;
 
+    public BungeeUserLogin(String username, String serverId, String ip, InitialHandler handler) {
+        super(username, serverId, ip);
+        this.handler = handler;
+    }
+
     public static void init() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         Class<InitialHandler> INITIAL_HANDLER_CLASS = InitialHandler.class;
 
@@ -31,27 +39,27 @@ public class BungeeUserLogin extends BaseUserLogin {
         FINISH = lookup.unreflect(ReflectUtil.handleAccessible(INITIAL_HANDLER_CLASS.getDeclaredMethod("finish"), true));
     }
 
-    public BungeeUserLogin(String username, String serverId, String ip, InitialHandler handler) {
-        super(username, serverId, ip);
-        this.handler = handler;
-    }
-
     @Override
     public void disconnect(String message) {
         handler.disconnect(message);
     }
 
     @Override
-    @SneakyThrows
     public void finish(HasJoinedResponse response) {
-        LOGIN_PROFILE.invoke(handler, generateLoginResult(response));
-        UNIQUE_ID.invoke(handler, response.getId());
-        NAME.invoke(handler, response.getName());
-
-        FINISH.invoke(handler);
+        try {
+            LOGIN_PROFILE.invoke(handler, generateLoginResult(response));
+            UNIQUE_ID.invoke(handler, response.getId());
+            NAME.invoke(handler, response.getName());
+            FINISH.invoke(handler);
+        } catch (Throwable throwable) {
+            handler.disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred at the end of processing login.", throwable);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "userLogin: " + this);
+        }
     }
 
-    private LoginResult generateLoginResult(HasJoinedResponse response){
+    private LoginResult generateLoginResult(HasJoinedResponse response) {
         List<Property> values = new ArrayList<>(response.getPropertyMap().values());
         LoginResult.Property[] properties = new LoginResult.Property[values.size()];
         for (int i = 0; i < values.size(); i++) {
@@ -64,7 +72,7 @@ public class BungeeUserLogin extends BaseUserLogin {
         );
     }
 
-    private LoginResult.Property generateProperty(Property property){
+    private LoginResult.Property generateProperty(Property property) {
         return new LoginResult.Property(property.getName(), property.getValue(), property.getSignature());
     }
 }
