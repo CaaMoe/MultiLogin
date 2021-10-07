@@ -102,4 +102,9 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public IServer getRunServer() {
         return server;
     }
+
+    @Override
+    public String getPluginVersion() {
+        return getDescription().getVersion();
+    }
 }

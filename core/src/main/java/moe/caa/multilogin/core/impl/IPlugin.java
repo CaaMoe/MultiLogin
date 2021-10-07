@@ -42,4 +42,11 @@ public interface IPlugin {
      * @return 配置和数据文件路径
      */
     File getDataFolder();
+
+    /**
+     * 获得插件版本
+     *
+     * @return 插件版本
+     */
+    String getPluginVersion();
 }

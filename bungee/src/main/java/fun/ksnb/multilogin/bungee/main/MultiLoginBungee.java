@@ -86,4 +86,9 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public IServer getRunServer() {
         return server;
     }
+
+    @Override
+    public String getPluginVersion() {
+        return getDescription().getVersion();
+    }
 }

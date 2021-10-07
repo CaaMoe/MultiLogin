@@ -46,6 +46,9 @@ public class MultiCore {
     private final SkinRestorerCore restorerCore;
     private final CommandHandler commandHandler;
 
+    private MetricsLite metricsLite;
+    private CheckUpdater updater;
+
     /**
      * 构建插件核心
      *
@@ -89,8 +92,9 @@ public class MultiCore {
         try {
             new ManifestReader().read();
         } catch (Exception e) {
-            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
+            getLogger().log(LoggerLevel.DEBUG, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
         }
+
         // 初始化和读取高级配置文件
         generateSettingFile();
         // 重新设置DEBUG属性
@@ -108,6 +112,13 @@ public class MultiCore {
         // 后端实现任务
         plugin.initService();
         plugin.initOther();
+
+
+        metricsLite = new MetricsLite(plugin);
+        updater = new CheckUpdater(this);
+        plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 0, 1000 * 60 * 60 * 24);
+
+
         logger.log(LoggerLevel.INFO, "插件加载完毕");
         return true;
     }
