@@ -137,6 +137,7 @@ public class MultiCore {
     public void disable() {
         sqlManager.close();
         plugin.getRunServer().getScheduler().shutdown();
+        plugin.getRunServer().shutdown();
     }
 
     /**
