@@ -5,8 +5,6 @@
 
 支持多 Yggdrasil 混合验证共存的外置登入插件
 
-    这是 MultiLogin 的第三次正在重写的分支 R2 (暂不可使用)
-
 ## 功能特性
 
 * 多 Yggdrasil 共存
