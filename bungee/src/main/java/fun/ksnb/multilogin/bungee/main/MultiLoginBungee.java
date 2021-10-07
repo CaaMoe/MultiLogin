@@ -36,7 +36,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     }
 
     @Override
-    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
+    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, UnsupportedException {
         BungeeUserLogin.init();
         MultiLoginEncryptionResponse.init();
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
@@ -59,7 +59,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 } else if (constructors instanceof Constructor[]) {
                     constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-
+                    throw new UnsupportedException("Unsupported server.");
                 }
             }
         }
