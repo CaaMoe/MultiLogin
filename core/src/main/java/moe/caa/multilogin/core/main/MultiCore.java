@@ -113,6 +113,17 @@ public class MultiCore {
         plugin.initService();
         plugin.initOther();
 
+        if (getPlugin().getRunServer().getPlayerManager().isWhitelist()) {
+            logger.log(LoggerLevel.WARN, "原版的白名单系统并不适用于多外置共存的情况，请关掉它");
+            logger.log(LoggerLevel.WARN, "它很有可能会与本插件自带的白名单系统冲突");
+
+        }
+
+        if(!getPlugin().getRunServer().getPlayerManager().isOnlineMode()){
+            logger.log(LoggerLevel.WARN, "正版验证处于关闭状态，插件不能正常运行");
+            logger.log(LoggerLevel.WARN, "请开启它");
+            return false;
+        }
 
         metricsLite = new MetricsLite(plugin);
         updater = new CheckUpdater(this);
