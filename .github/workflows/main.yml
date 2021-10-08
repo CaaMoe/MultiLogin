@@ -12,6 +12,11 @@ jobs:
         with:
           version: '8'
           architecture: x64
+      - name: 'Setup JDK 11'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
@@ -35,6 +40,7 @@ jobs:
           mkdir builds
           mv bukkit/build/libs/*.jar builds
           mv bungee/build/libs/*.jar builds
+          mv velocity/build/libs/*.jar builds
       - name: Upload to Artifact
         uses: actions/upload-artifact@v2
         with:
