@@ -45,17 +45,9 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
 
-      - name: Package Artifact
-        run: |
-          mkdir builds
-          mv core/build/libs/*.jar builds
-          mv bukkit/build/libs/*.jar builds
-          mv bungee/build/libs/*.jar builds
-          mv velocity/build/libs/*.jar builds
-
-      - name: Upload to Artifact
-        uses: actions/upload-artifact@v2
+      - name: Upload to artifact respectively
+        uses: MuirProject/upload-artifact@v2-beta
         with:
-          name: Package
-          path: builds
+          name: '["bukkit", "bungee", "velocity"]'
+          path: '["bukkit/build/libs/*.jar", "bungee/build/libs/*.jar", "velocity/build/libs/*.jar"]'
           retention-days: 1
