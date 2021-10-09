@@ -8,8 +8,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
     implementation project(":core")
+    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
 }
 
 shadowJar {
@@ -22,13 +22,4 @@ shadowJar {
         archiveVersion.set(ver)
     }
     archiveClassifier.set("")
-
-
-    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
-    relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
-    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
-    relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
-    relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
-    relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
-
 }

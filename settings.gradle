@@ -3,4 +3,3 @@ include 'core'
 include 'bukkit'
 include 'bungee'
 include 'velocity'
-
