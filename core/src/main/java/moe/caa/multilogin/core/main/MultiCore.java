@@ -119,7 +119,7 @@ public class MultiCore {
 
         }
 
-        if(!getPlugin().getRunServer().getPlayerManager().isOnlineMode()){
+        if (!getPlugin().getRunServer().getPlayerManager().isOnlineMode()) {
             logger.log(LoggerLevel.WARN, "正版验证处于关闭状态，插件不能正常运行");
             logger.log(LoggerLevel.WARN, "请开启它");
             return false;

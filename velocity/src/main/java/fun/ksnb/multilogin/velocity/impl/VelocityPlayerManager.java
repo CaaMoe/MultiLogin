@@ -22,7 +22,7 @@ public class VelocityPlayerManager implements IPlayerManager {
     public Set<IPlayer> getPlayer(String name) {
         Set<IPlayer> ret = new HashSet<>();
         for (Player player : server.getAllPlayers()) {
-            if(player.getUsername().equalsIgnoreCase(name)){
+            if (player.getUsername().equalsIgnoreCase(name)) {
                 ret.add(new VelocityPlayer(player));
             }
         }

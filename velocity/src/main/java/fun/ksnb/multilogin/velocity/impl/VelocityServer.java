@@ -28,7 +28,7 @@ public class VelocityServer implements IServer {
 
     @Override
     public String getName() {
-        return  server.getVersion().getName();
+        return server.getVersion().getName();
     }
 
     @Override
