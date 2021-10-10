@@ -189,7 +189,7 @@ public class MultiLoginCoreLoader {
                     HttpUtil.downloadFile(library.generateDownloadUrl(), output);
                 } catch (Throwable e) {
                     downloadFailed.set(true);
-                    throw new RuntimeException(String.format("FAILED TO DOWNLOAD FILE %s. (%s)", library.generateJarName(), library.generateDownloadUrl()), e);
+                    sectionLoader.loggerLog(Level.SEVERE, String.format("FAILED TO DOWNLOAD FILE %s. (%s)", library.generateJarName(), library.generateDownloadUrl()), e);
                 } finally {
                     latch.countDown();
                 }
@@ -198,7 +198,11 @@ public class MultiLoginCoreLoader {
         latch.await();
         asyncExecutor.shutdown();
         if (downloadFailed.get()) {
-            throw new RuntimeException("ONE OR MORE MISSING FILES FAILED TO DOWNLOAD.");
+            RuntimeException exception = new RuntimeException("ONE OR MORE MISSING FILES FAILED TO DOWNLOAD.");
+            sectionLoader.loggerLog(Level.SEVERE, "ONE OR MORE MISSING FILES FAILED TO DOWNLOAD.", exception);
+            throw exception;
+
+
         }
     }
 
