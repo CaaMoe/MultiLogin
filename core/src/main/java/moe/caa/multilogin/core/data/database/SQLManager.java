@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlReader;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -103,9 +104,11 @@ public class SQLManager {
     }
 
     public void loadBase() throws SQLException {
-        userDataHandler.createIfNotExists(pool.getConnection().createStatement());
-        cacheWhitelistDataHandler.createIfNotExists(pool.getConnection().createStatement());
-        skinRestorerDataHandler.createIfNotExists(pool.getConnection().createStatement());
+        try(Connection connection=pool.getConnection()){
+            userDataHandler.createIfNotExists(connection);
+            cacheWhitelistDataHandler.createIfNotExists(connection);
+            skinRestorerDataHandler.createIfNotExists(connection);
+        }
     }
 
     /**

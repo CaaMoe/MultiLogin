@@ -27,21 +27,16 @@ public class UserDataHandler implements IDataHandler {
         this.sqlManager = sqlManager;
     }
 
-    /**
-     * 建表操作
-     *
-     * @param statement 链接
-     * @throws SQLException 创表异常
-     */
     @Override
-    public void createIfNotExists(Statement statement) throws SQLException {
-        statement.executeUpdate("" +
-                "CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
+    public void createIfNotExists(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + USER_DATA_TABLE_NAME + "( " +
                 sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid() + " BINARY(16) PRIMARY KEY NOT NULL, " +
                 sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name() + " VARCHAR(100) NOT NULL, " +
                 sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid() + " BINARY(16) NOT NULL, " +
                 sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service() + " VARCHAR(100) NOT NULL, " +
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist() + " BOOL NOT NULL)");
+                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist() + " BOOL NOT NULL)")) {
+            ps.executeUpdate();
+        }
     }
 
     /**
@@ -89,9 +84,10 @@ public class UserDataHandler implements IDataHandler {
                 USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
-            ResultSet resultSet = ps.executeQuery();
-            if (resultSet.next()) {
-                return getUser(resultSet);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                if (resultSet.next()) {
+                    return getUser(resultSet);
+                }
             }
             return null;
         }
@@ -105,11 +101,15 @@ public class UserDataHandler implements IDataHandler {
      * @throws SQLException 读取异常
      */
     public List<User> getUserEntryByRedirectUuid(UUID uuid) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
-                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid()
-        ))) {
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s WHERE %s = ?",
+                     USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid()
+             ))) {
+
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
-            return getUsers(ps.executeQuery());
+            try (ResultSet resultSet = ps.executeQuery()) {
+                return getUsers(resultSet);
+            }
         }
     }
 
@@ -125,7 +125,9 @@ public class UserDataHandler implements IDataHandler {
                 USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name()
         ))) {
             ps.setString(1, name);
-            return getUsers(ps.executeQuery());
+            try (ResultSet resultSet = ps.executeQuery()) {
+                return getUsers(resultSet);
+            }
         }
     }
 
@@ -140,7 +142,9 @@ public class UserDataHandler implements IDataHandler {
                 USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist()
         ))) {
             ps.setBoolean(1, true);
-            return getUsers(ps.executeQuery());
+            try (ResultSet resultSet = ps.executeQuery()) {
+                return getUsers(resultSet);
+            }
         }
     }
 
@@ -152,18 +156,20 @@ public class UserDataHandler implements IDataHandler {
      * @throws SQLException 读取异常
      */
     public Set<YggdrasilService> getYggdrasilServiceByCurrentName(String name) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(), USER_DATA_TABLE_NAME,
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name()
-        ))) {
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement ps = conn.prepareStatement(String.format("SELECT %s FROM %s WHERE %s = ?",
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(), USER_DATA_TABLE_NAME,
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name()
+             ))) {
             ps.setString(1, name);
-            ResultSet resultSet = ps.executeQuery();
-            Set<YggdrasilService> ret = new HashSet<>();
-            while (resultSet.next()) {
-                YggdrasilService yggdrasilService = sqlManager.getCore().getYggdrasilServicesHandler().getYggdrasilService(resultSet.getString(1));
-                if (yggdrasilService != null) ret.add(yggdrasilService);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                Set<YggdrasilService> ret = new HashSet<>();
+                while (resultSet.next()) {
+                    YggdrasilService yggdrasilService = sqlManager.getCore().getYggdrasilServicesHandler().getYggdrasilService(resultSet.getString(1));
+                    if (yggdrasilService != null) ret.add(yggdrasilService);
+                }
+                return ret;
             }
-            return ret;
         }
     }
 
@@ -174,13 +180,14 @@ public class UserDataHandler implements IDataHandler {
      * @throws SQLException 写入异常
      */
     public void writeNewUserEntry(User entry) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
-                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist()
-        ))) {
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement ps = conn.prepareStatement(String.format("INSERT INTO %s (%s, %s, %s, %s, %s) VALUES(?, ?, ?, ?, ?)",
+                     USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist()
+             ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(entry.getOnlineUuid()));
             ps.setString(2, entry.getCurrentName());
             ps.setBytes(3, ValueUtil.uuidToBytes(entry.getRedirectUuid()));
@@ -197,13 +204,14 @@ public class UserDataHandler implements IDataHandler {
      * @throws SQLException 更新异常
      */
     public void updateUserEntry(User entry) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
-                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist(),
-                sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
-        ))) {
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ?, %s = ?, %s = ? WHERE %s = ?",
+                     USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_current_name(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_redirect_uuid(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_whitelist(),
+                     sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
+             ))) {
             ps.setString(1, entry.getCurrentName());
             ps.setBytes(2, ValueUtil.uuidToBytes(entry.getRedirectUuid()));
             ps.setString(3, entry.getYggdrasilService());
@@ -232,7 +240,7 @@ public class UserDataHandler implements IDataHandler {
      * @throws SQLException 移除异常
      */
     public boolean deleteUserEntry(UUID uuid) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ? limit 1",
                 USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));

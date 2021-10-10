@@ -27,12 +27,13 @@ public class SkinRestorerDataHandler implements IDataHandler {
     }
 
     @Override
-    public void createIfNotExists(Statement statement) throws SQLException {
-        statement.executeUpdate("" +
-                "CREATE TABLE IF NOT EXISTS " + SKIN_RESTORER_TABLE_NAME + "( " +
+    public void createIfNotExists(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + SKIN_RESTORER_TABLE_NAME + "( " +
                 sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_online_uuid() + " BINARY(16) PRIMARY KEY NOT NULL, " +
                 sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_current_skin_url() + " LONGTEXT NOT NULL, " +
-                sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_restorer_data() + " LONGTEXT NOT NULL)");
+                sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_restorer_data() + " LONGTEXT NOT NULL)")) {
+            ps.executeUpdate();
+        }
     }
 
     /**
@@ -62,10 +63,10 @@ public class SkinRestorerDataHandler implements IDataHandler {
                 SKIN_RESTORER_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
-            ResultSet resultSet = ps.executeQuery();
-            if (resultSet.next()) {
-                return getRestorer(resultSet);
+            try (ResultSet resultSet = ps.executeQuery()) {
+                if (resultSet.next()) return getRestorer(resultSet);
             }
+
             return null;
         }
     }
@@ -97,7 +98,7 @@ public class SkinRestorerDataHandler implements IDataHandler {
      * @throws SQLException 更新异常
      */
     public void updateRestorerEntry(RestorerEntry entry) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?",
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ? limit 1",
                 SKIN_RESTORER_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_current_skin_url(),
                 sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_restorer_data(),
                 sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_online_uuid()
@@ -128,7 +129,7 @@ public class SkinRestorerDataHandler implements IDataHandler {
      * @throws SQLException 移除异常
      */
     public boolean deleteRestorerEntry(UUID uuid) throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ?",
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s WHERE %s = ? limit 1",
                 SKIN_RESTORER_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_skin_restorer_table_field_online_uuid()
         ))) {
             ps.setBytes(1, ValueUtil.uuidToBytes(uuid));
