@@ -4,4 +4,5 @@ include 'bukkit'
 include 'bungee'
 include 'velocity'
 include 'core:loader'
+include 'bukkit:loader'
 

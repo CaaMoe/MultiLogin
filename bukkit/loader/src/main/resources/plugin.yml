@@ -1,0 +1,40 @@
+name: MultiLogin
+version: @version@
+main: moe.caa.multilogin.bukkit.loader.main.MultiLoginBukkitLoader
+author: @author@
+api-version: 1.13
+commands:
+  multilogin:
+  whitelist:
+
+permissions:
+  command.multilogin.*:
+    default: op
+    children:
+      command.multilogin.reload: true
+      command.multilogin.query: true
+      command.multilogin.query.redirectuuid: true
+      command.multilogin.query.onlineuuid: true
+      command.multilogin.query.yggdrasil: true
+      command.multilogin.update: true
+      command.multilogin.list: true
+      command.multilogin.remove: true
+      command.multilogin.confirm: true
+      command.multilogin.help: true
+      command.multilogin.whitelist.add: true
+      command.multilogin.whitelist.remove: true
+      command.multilogin.whitelist.have: true
+  command.multilogin.query.*:
+    default: op
+    children:
+      command.multilogin.query.redirectuuid: true
+      command.multilogin.query.onlineuuid: true
+      command.multilogin.query.yggdrasil: true
+  command.multilogin.whitelist.*:
+    default: op
+    children:
+      command.multilogin.whitelist.add: true
+      command.multilogin.whitelist.remove: true
+      command.multilogin.whitelist.have: true
+  command.multilogin.list:
+    default: true

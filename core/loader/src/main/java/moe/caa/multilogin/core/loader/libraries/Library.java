@@ -5,7 +5,9 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 代表一个依赖对象
@@ -143,6 +145,28 @@ public class Library {
     }
 
     /**
+     * 生成 Remapped Jar 包名称
+     *
+     * @return Remapped Jar 包名称
+     */
+    public String generateRemapJarName() {
+        return name + "-" + version + "-remapped.jar";
+    }
+
+    /**
+     * 生成重定向规则
+     *
+     * @return 重定向规则
+     */
+    public Map<String, String> getRelocateRules() {
+        Map<String, String> ret = new HashMap<>();
+        if (needRelocate()) {
+            ret.put(getForwardPackage(), getRelocate());
+        }
+        return ret;
+    }
+
+    /**
      * 需要重定向
      *
      * @return 需要重定向
@@ -159,7 +183,6 @@ public class Library {
      */
     public boolean isLoaded(ClassLoader loader) {
         String className = needRelocate() ? mainClass.replace(forwardPackage, relocate) : mainClass;
-        System.out.println(className);
         try {
             Class.forName(className, true, loader);
             return true;
