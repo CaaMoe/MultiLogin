@@ -1,23 +1,25 @@
 package moe.caa.multilogin.core.loader.libraries;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.io.FileInputStream;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 代表一个依赖对象
  */
-@Getter(value = AccessLevel.PROTECTED)
+@Getter()
 @ToString
-@Builder(access = AccessLevel.PRIVATE)
+@Builder()
 public class Library {
 
-    @Getter(value = AccessLevel.PROTECTED)
-    private static final List<Library> LIBRARIES;
+    @Getter()
+    private static List<Library> LIBRARIES;
+
+    @Getter()
+    private static List<Library> JAR_RELOCATOR_LIBRARIES;
 
     static {
         LIBRARIES = Arrays.asList(
@@ -78,6 +80,26 @@ public class Library {
                         .relocate("moe.caa.multilogin.lib.org.yaml.snakeyaml")
                         .build()
         );
+        JAR_RELOCATOR_LIBRARIES = Arrays.asList(
+                Library.builder()
+                        .group("me.lucko")
+                        .name("jar-relocator")
+                        .version("1.5")
+                        .mainClass("me.lucko.jarrelocator.JarRelocator")
+                        .build(),
+                Library.builder()
+                        .group("org.ow2.asm")
+                        .name("asm")
+                        .version("9.2")
+                        .mainClass("org.objectweb.asm.Type")
+                        .build(),
+                Library.builder()
+                        .group("org.ow2.asm")
+                        .name("asm-commons")
+                        .version("9.2")
+                        .mainClass("org.objectweb.asm.commons.Method")
+                        .build()
+        );
     }
 
 
@@ -113,17 +135,19 @@ public class Library {
 
     /**
      * 生成 Jar 包名称
+     *
      * @return Jar 包名称
      */
-    public String generateJarName(){
+    public String generateJarName() {
         return name + "-" + version + ".jar";
     }
 
     /**
      * 需要重定向
+     *
      * @return 需要重定向
      */
-    public boolean needRelocate(){
+    public boolean needRelocate() {
         return relocate != null;
     }
 
@@ -133,7 +157,7 @@ public class Library {
      * @param loader 加载的类加载器
      * @return 是否已被成功加载
      */
-    public boolean isLoaded(ClassLoader loader){
+    public boolean isLoaded(ClassLoader loader) {
         String className = needRelocate() ? mainClass.replace(forwardPackage, relocate) : mainClass;
         System.out.println(className);
         try {
@@ -146,9 +170,10 @@ public class Library {
 
     /**
      * 生成下载链接
+     *
      * @return 下载链接
      */
-    public String generateDownloadUrl(){
+    public String generateDownloadUrl() {
         // 例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
         StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
         String[] groupSplit = group.split("\\.");
