@@ -23,8 +23,6 @@ shadowJar {
     }
     archiveClassifier.set("")
 
-    archiveFileName = "哼哼啊啊啊啊啊啊啊啊"
-
     from {
         project(':bukkit').tasks.shadowJar.archiveFile
     }
