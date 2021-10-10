@@ -39,6 +39,9 @@ public class MultiLoginBukkitLoader extends JavaPlugin implements ISectionLoader
     @Override
     public void onDisable() {
         if(baseBukkitPlugin != null) baseBukkitPlugin.onDisable();
+
+        baseBukkitPlugin = null;
+        coreLoader.close();
     }
 
     @Override

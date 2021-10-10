@@ -56,8 +56,6 @@ public class Library {
                         .name("mysql-connector-java")
                         .version("8.0.25")
                         .mainClass("com.mysql.cj.jdbc.MysqlDataSource")
-                        .forwardPackage("com.mysql")
-                        .relocate("moe.caa.multilogin.lib.com.mysql")
                         .build(),
                 Library.builder()
                         .group("com.h2database")

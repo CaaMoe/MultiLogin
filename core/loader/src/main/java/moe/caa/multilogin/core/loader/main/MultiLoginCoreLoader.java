@@ -10,10 +10,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -118,28 +115,33 @@ public class MultiLoginCoreLoader {
         // 这里的 library 都会有对应的依赖文件
         for (Library library : needLoad) {
             File file = new File(librariesFolder, library.generateJarName());
-            File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
-            urlList.add(outFile.toURI().toURL());
-            outFile.deleteOnExit();
-            Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
-            jarRelocator_runMethod.invoke(o);
+            if(library.needRelocate()){
+                File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
+                outFile.deleteOnExit();
+                Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
+                jarRelocator_runMethod.invoke(o);
+                urlList.add(outFile.toURI().toURL());
+            } else {
+                urlList.add(file.toURI().toURL());
+            }
         }
 
         // 释放本体文件
-        File f = File.createTempFile("MultiLogin-", "-" + sectionJarFileName + ".jar");
+        File fbt = File.createTempFile("MultiLogin-", "-" + sectionJarFileName + ".jar");
+        fbt.deleteOnExit();
 
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(
-                        Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionJarFileName)
-                                , "sectionJarFileName is null.")));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(f))){
-            String line;
-            while ((line = reader.readLine()) != null) {
-                writer.write(line);
+        try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionJarFileName)
+                , "sectionJarFileName is null.");
+                FileOutputStream output = new FileOutputStream(fbt)){
+            byte[] buff =new byte[1024];
+            int b ;
+            while ((b = input.read(buff)) != -1) {
+                output.write(buff,0,b);
             }
-            writer.flush();
+            output.flush();
         }
-        urlList.add(f.toURI().toURL());
+
+        urlList.add(fbt.toURI().toURL());
 
         // 释放
         currentUrlClassLoader.close();
@@ -150,10 +152,12 @@ public class MultiLoginCoreLoader {
 
     /**
      * 注销
-     * @throws IOException 异常
      */
-    public void close() throws IOException {
-        currentUrlClassLoader.close();
+    public void close() {
+        try {
+            currentUrlClassLoader.close();
+        } catch (IOException ignored) {
+        }
     }
 
     /**

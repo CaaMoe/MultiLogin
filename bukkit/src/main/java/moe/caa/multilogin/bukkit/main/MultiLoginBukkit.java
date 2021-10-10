@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.main;
 
+import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
@@ -23,6 +24,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.jetbrains.annotations.NotNull;
+import org.yaml.snakeyaml.Yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
