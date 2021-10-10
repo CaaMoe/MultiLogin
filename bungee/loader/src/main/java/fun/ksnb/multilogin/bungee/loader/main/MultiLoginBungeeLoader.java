@@ -4,6 +4,7 @@ import fun.ksnb.multilogin.bungee.loader.impl.BaseBungeePlugin;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.loader.impl.ISectionLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
@@ -18,7 +19,10 @@ public class MultiLoginBungeeLoader extends Plugin implements ISectionLoader {
     public void onLoad() {
         coreLoader = new MultiLoginCoreLoader(this);
         boolean b = coreLoader.start("MultiLogin-Bungee.JarFile");
-        if (!b) return;
+        if (!b) {
+            BungeeCord.getInstance().stop();
+            return;
+        }
 
         Class<?> baseBungeePluginClass = Class.forName("fun.ksnb.multilogin.bungee.main.MultiLoginBungee", true, coreLoader.getCurrentUrlClassLoader());
         Constructor<?> constructor = baseBungeePluginClass.getConstructor(MultiLoginBungeeLoader.class);

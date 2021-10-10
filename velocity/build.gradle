@@ -13,21 +13,25 @@ repositories {
 }
 
 dependencies {
+    implementation project(":core")
+    compileOnly project(":velocity:loader")
     compileOnly 'com.velocitypowered:velocity-api:3.0.1'
     annotationProcessor 'com.velocitypowered:velocity-api:3.0.1'
     compileOnly 'io.netty:netty-all:4.1.68.Final'
     compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
-    implementation project(":core")
+
 }
 
 shadowJar {
-    String env = System.getProperty("env", "AUTO")
-    archiveBaseName.set('MultiLogin-Velocity')
-    if (env.toLowerCase() == "final") {
-        archiveVersion.set(project.plugin_version as String)
-    } else {
-        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
-        archiveVersion.set(ver)
-    }
-    archiveClassifier.set("")
+    archiveFileName = "MultiLogin-Velocity.JarFile"
+
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
+    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
+    relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
+    relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
+    relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+}
+
+artifacts {
+    archives shadowJar
 }

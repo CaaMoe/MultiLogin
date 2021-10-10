@@ -48,8 +48,6 @@ jobs:
       - name: Upload to artifact respectively
         uses: MuirProject/upload-artifact@v2-beta
         with:
-          #          name: '["bukkit", "bungee", "velocity"]'
-          #          path: '["bukkit/build/libs/*.jar", "bungee/build/libs/*.jar", "velocity/build/libs/*.jar"]'
-          name: '["Bukkit", "Bungee" ]'
-          path: '["bukkit/loader/build/libs/MultiLogin-*.jar", "bungee/loader/build/libs/MultiLogin-*.jar"]'
+          name: '["Bukkit", "Bungee", "Velocity"]'
+          path: '["bukkit/loader/build/libs/MultiLogin-*.jar", "bungee/loader/build/libs/MultiLogin-*.jar", "velocity/loader/build/libs/MultiLogin-*.jar"]'
           retention-days: 1

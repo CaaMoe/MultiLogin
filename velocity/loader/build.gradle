@@ -1,0 +1,41 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+repositories {
+    maven { url "https://nexus.velocitypowered.com/repository/maven-public" }
+}
+
+dependencies {
+    implementation project(":core:loader")
+    compileOnly 'com.velocitypowered:velocity-api:3.0.1'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.0.1'
+    compileOnly 'io.netty:netty-all:4.1.68.Final'
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
+}
+
+shadowJar {
+    String env = System.getProperty("env", "AUTO")
+    archiveBaseName.set('MultiLogin-Velocity')
+    if (env.toLowerCase() == "final") {
+        archiveVersion.set(project.plugin_version as String)
+    } else {
+        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        archiveVersion.set(ver)
+    }
+    archiveClassifier.set("")
+
+    from {
+        project(':velocity').tasks.shadowJar.archiveFile
+    }
+}
+
+artifacts {
+    archives shadowJar
+}

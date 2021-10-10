@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.bukkit.loader.impl.BaseBukkitPlugin;
 import moe.caa.multilogin.core.loader.impl.ISectionLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,7 +20,11 @@ public class MultiLoginBukkitLoader extends JavaPlugin implements ISectionLoader
     public void onLoad() {
         coreLoader = new MultiLoginCoreLoader(this);
         boolean b = coreLoader.start("MultiLogin-Bukkit.JarFile");
-        if (!b) return;
+        if (!b) {
+            setEnable(false);
+            Bukkit.shutdown();
+            return;
+        }
 
         Class<?> baseBukkitPluginClass = Class.forName("moe.caa.multilogin.bukkit.main.MultiLoginBukkit", true, coreLoader.getCurrentUrlClassLoader());
         Constructor<?> constructor = baseBukkitPluginClass.getConstructor(MultiLoginBukkitLoader.class, Server.class);

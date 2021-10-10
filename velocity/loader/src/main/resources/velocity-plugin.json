@@ -7,5 +7,5 @@
     "CaaMoe"
   ],
   "dependencies": [],
-  "main": "fun.ksnb.multilogin.velocity.main.MultiLoginVelocity"
+  "main": "fun.ksnb.multilogin.velocity.loader.main.MultiLoginVelocityLoader"
 }

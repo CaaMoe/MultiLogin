@@ -6,5 +6,5 @@ include 'velocity'
 include 'core:loader'
 include 'bukkit:loader'
 include 'bungee:loader'
-findProject(':bungee:loader')?.name = 'loader'
+include 'velocity:loader'
 
