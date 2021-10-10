@@ -1,3 +1,6 @@
 dependencies {
+    compileOnly group: 'org.ow2.asm', name: 'asm', version: '9.2'
+    compileOnly group: 'org.ow2.asm', name: 'asm-commons', version: '9.2'
+    compileOnly group: 'me.lucko', name: 'jar-relocator', version: '1.5'
 }
 

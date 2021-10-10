@@ -13,13 +13,9 @@ dependencies {
 }
 
 shadowJar {
-    String env = System.getProperty("env", "AUTO")
-    archiveBaseName.set('MultiLogin-Bukkit')
-    if (env.toLowerCase() == "final") {
-        archiveVersion.set(project.plugin_version as String)
-    } else {
-        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
-        archiveVersion.set(ver)
-    }
-    archiveClassifier.set("")
+    archiveFileName = "MultiLogin-Bukkit.JarFile"
+}
+
+artifacts {
+    archives shadowJar
 }

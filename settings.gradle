@@ -4,5 +4,5 @@ include 'bukkit'
 include 'bungee'
 include 'velocity'
 include 'core:loader'
-findProject(':core:loader')?.name = 'loader'
+include 'bukkit:loader'
 
