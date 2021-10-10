@@ -3,6 +3,8 @@ package fun.ksnb.multilogin.bungee.main;
 import fun.ksnb.multilogin.bungee.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.bungee.impl.BungeeServer;
 import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
+import fun.ksnb.multilogin.bungee.loader.impl.BaseBungeePlugin;
+import fun.ksnb.multilogin.bungee.loader.main.MultiLoginBungeeLoader;
 import gnu.trove.map.TIntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -11,28 +13,42 @@ import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class MultiLoginBungee extends Plugin implements IPlugin {
+public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
     @Getter
     private static MultiLoginBungee instance;
     @Getter
     private final MultiCore core = new MultiCore(this);
     private IServer server;
 
+    public MultiLoginBungee(MultiLoginBungeeLoader loader) {
+        super(loader);
+    }
+
+    @Override
+    public void onLoad() {
+
+    }
+
     @Override
     public void onEnable() {
         instance = this;
-        server = new BungeeServer((BungeeCord) getProxy());
+        server = new BungeeServer((BungeeCord) getThis().getProxy());
         if (!core.init()) onDisable();
+    }
+
+    @Override
+    public void onDisable() {
+
     }
 
     @Override
@@ -67,8 +83,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOther() {
-        getProxy().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin", null, "login", "ml"));
-        getProxy().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist", null));
+        getThis().getProxy().getPluginManager().registerCommand(getThis(), new MultiLoginCommand("multilogin", null, "login", "ml"));
+        getThis().getProxy().getPluginManager().registerCommand(getThis(), new MultiLoginCommand("whitelist", null));
     }
 
     @Override
@@ -79,12 +95,17 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         else if (level == LoggerLevel.INFO) vanLevel = Level.INFO;
         else if (level == LoggerLevel.DEBUG) return;
         else vanLevel = Level.INFO;
-        getLogger().log(vanLevel, message, throwable);
+        getThis().getLogger().log(vanLevel, message, throwable);
     }
 
     @Override
     public IServer getRunServer() {
         return server;
+    }
+
+    @Override
+    public File getDataFolder() {
+        return getThis().getDataFolder();
     }
 
     @Override

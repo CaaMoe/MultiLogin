@@ -1,0 +1,4 @@
+name: MultiLogin
+version: @version@
+main: fun.ksnb.multilogin.bungee.loader.main.MultiLoginBungeeLoader
+author: @author@

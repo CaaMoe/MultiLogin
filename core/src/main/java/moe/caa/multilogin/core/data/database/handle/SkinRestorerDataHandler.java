@@ -6,7 +6,10 @@ import moe.caa.multilogin.core.skinrestorer.RestorerEntry;
 import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.ValueUtil;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static moe.caa.multilogin.core.data.database.SQLManager.SKIN_RESTORER_TABLE_NAME;

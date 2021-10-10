@@ -1,30 +1,23 @@
 package moe.caa.multilogin.bukkit.main;
 
-import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
 import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
-import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.bukkit.loader.impl.BaseBukkitPlugin;
 import moe.caa.multilogin.bukkit.loader.main.MultiLoginBukkitLoader;
-import moe.caa.multilogin.core.command.CommandArguments;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.jetbrains.annotations.NotNull;
-import org.yaml.snakeyaml.Yaml;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -42,6 +35,10 @@ public class MultiLoginBukkit extends BaseBukkitPlugin implements IPlugin {
         super(loader, server);
     }
 
+    @Override
+    public void onLoad() {
+
+    }
 
     @Override
     public void onEnable() {
@@ -88,12 +85,12 @@ public class MultiLoginBukkit extends BaseBukkitPlugin implements IPlugin {
                 }
             }
         }, getThis());
-    }
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        core.getCommandHandler().executeAsync(new BukkitSender(sender), new CommandArguments(command.getName(), args));
-        return true;
+        CommandHandler ch = new CommandHandler(this);
+        getThis().getCommand("multilogin").setExecutor(ch);
+        getThis().getCommand("multilogin").setTabCompleter(ch);
+        getThis().getCommand("whitelist").setExecutor(ch);
+        getThis().getCommand("whitelist").setTabCompleter(ch);
     }
 
     @Override

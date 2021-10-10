@@ -5,12 +5,18 @@ import moe.caa.multilogin.core.loader.impl.ISectionLoader;
 import moe.caa.multilogin.core.loader.libraries.Library;
 import moe.caa.multilogin.core.loader.util.HttpUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,7 +49,7 @@ public class MultiLoginCoreLoader {
      *
      * @param sectionJarFileName 部分需要加载的流名称
      */
-    public boolean start(String sectionJarFileName){
+    public boolean start(String sectionJarFileName) {
         try {
             start0(sectionJarFileName);
             return true;
@@ -115,7 +121,7 @@ public class MultiLoginCoreLoader {
         // 这里的 library 都会有对应的依赖文件
         for (Library library : needLoad) {
             File file = new File(librariesFolder, library.generateJarName());
-            if(library.needRelocate()){
+            if (library.needRelocate()) {
                 File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
                 outFile.deleteOnExit();
                 Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
@@ -132,11 +138,11 @@ public class MultiLoginCoreLoader {
 
         try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionJarFileName)
                 , "sectionJarFileName is null.");
-                FileOutputStream output = new FileOutputStream(fbt)){
-            byte[] buff =new byte[1024];
-            int b ;
+             FileOutputStream output = new FileOutputStream(fbt)) {
+            byte[] buff = new byte[1024];
+            int b;
             while ((b = input.read(buff)) != -1) {
-                output.write(buff,0,b);
+                output.write(buff, 0, b);
             }
             output.flush();
         }
@@ -155,7 +161,8 @@ public class MultiLoginCoreLoader {
      */
     public void close() {
         try {
-            currentUrlClassLoader.close();
+            if (currentUrlClassLoader != null)
+                currentUrlClassLoader.close();
         } catch (IOException ignored) {
         }
     }

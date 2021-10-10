@@ -6,7 +6,10 @@ import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 import static moe.caa.multilogin.core.data.database.SQLManager.USER_DATA_TABLE_NAME;

@@ -1,0 +1,33 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+repositories {
+    maven { url "https://repo.codemc.io/repository/maven-public/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
+}
+
+dependencies {
+    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.16-R0.5-20210527.222654-29'
+    implementation project(":core:loader")
+}
+
+shadowJar {
+    String env = System.getProperty("env", "AUTO")
+    archiveBaseName.set('MultiLogin-Bungee')
+    if (env.toLowerCase() == "final") {
+        archiveVersion.set(project.plugin_version as String)
+    } else {
+        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        archiveVersion.set(ver)
+    }
+    archiveClassifier.set("")
+
+    from {
+        project(':bungee').tasks.shadowJar.archiveFile
+    }
+}
+
+artifacts {
+    archives shadowJar
+}

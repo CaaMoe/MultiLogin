@@ -104,7 +104,7 @@ public class SQLManager {
     }
 
     public void loadBase() throws SQLException {
-        try(Connection connection=pool.getConnection()){
+        try (Connection connection = pool.getConnection()) {
             userDataHandler.createIfNotExists(connection);
             cacheWhitelistDataHandler.createIfNotExists(connection);
             skinRestorerDataHandler.createIfNotExists(connection);
