@@ -9,6 +9,7 @@ repositories {
 
 dependencies {
     implementation project(":core")
+    compileOnly project(":bukkit:loader")
     compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
 }
 

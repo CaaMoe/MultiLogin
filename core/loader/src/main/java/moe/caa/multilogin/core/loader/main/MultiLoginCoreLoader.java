@@ -1,10 +1,11 @@
 package moe.caa.multilogin.core.loader.main;
 
+import lombok.Getter;
 import moe.caa.multilogin.core.loader.impl.ISectionLoader;
 import moe.caa.multilogin.core.loader.libraries.Library;
 import moe.caa.multilogin.core.loader.util.HttpUtil;
 
-import java.io.File;
+import java.io.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -12,6 +13,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,6 +27,9 @@ import java.util.logging.Level;
 public class MultiLoginCoreLoader {
     private final ISectionLoader sectionLoader;
     private final File librariesFolder;
+
+    @Getter
+    private URLClassLoader currentUrlClassLoader;
 
     /**
      * 构建这个核心加载器
@@ -41,7 +46,22 @@ public class MultiLoginCoreLoader {
      *
      * @param sectionJarFileName 部分需要加载的流名称
      */
-    public void start(String sectionJarFileName) throws Throwable {
+    public boolean start(String sectionJarFileName){
+        try {
+            start0(sectionJarFileName);
+            return true;
+        } catch (Throwable e) {
+            sectionLoader.loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED WHILE PROCESSING A DEPENDENCY", e);
+            return false;
+        }
+    }
+
+    /**
+     * 开始加载这群依赖项目
+     *
+     * @param sectionJarFileName 部分需要加载的流名称
+     */
+    private void start0(String sectionJarFileName) throws Throwable {
         // 生成放置依赖的文件夹
         generateLibrariesFolder();
         // 需要加载的依赖
@@ -85,22 +105,55 @@ public class MultiLoginCoreLoader {
         for (Library library : Library.getJAR_RELOCATOR_LIBRARIES()) {
             urls.add(new File(librariesFolder, library.generateJarName()).toURI().toURL());
         }
-        URLClassLoader relocateUtilClassLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+        currentUrlClassLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
 
         // 加载反射值
-        Class<?> jarRelocatorClass = Class.forName("me.lucko.jarrelocator.JarRelocator", true, relocateUtilClassLoader);
+        Class<?> jarRelocatorClass = Class.forName("me.lucko.jarrelocator.JarRelocator", true, currentUrlClassLoader);
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodHandle jarRelocatorConstructor = lookup.unreflectConstructor(jarRelocatorClass.getConstructor(File.class, File.class, Map.class));
         MethodHandle jarRelocator_runMethod = lookup.unreflect(jarRelocatorClass.getMethod("run"));
 
+        // 这里存放要加载的文件
+        List<URL> urlList = new ArrayList<>();
         // 这里的 library 都会有对应的依赖文件
         for (Library library : needLoad) {
             File file = new File(librariesFolder, library.generateJarName());
-            File outFile = File.createTempFile("MultiLogin", library.generateRemapJarName());
+            File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
+            urlList.add(outFile.toURI().toURL());
             outFile.deleteOnExit();
             Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
             jarRelocator_runMethod.invoke(o);
         }
+
+        // 释放本体文件
+        File f = File.createTempFile("MultiLogin-", "-" + sectionJarFileName + ".jar");
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(
+                        Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionJarFileName)
+                                , "sectionJarFileName is null.")));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(f))){
+            String line;
+            while ((line = reader.readLine()) != null) {
+                writer.write(line);
+            }
+            writer.flush();
+        }
+        urlList.add(f.toURI().toURL());
+
+        // 释放
+        currentUrlClassLoader.close();
+
+        // 加载
+        currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
+    }
+
+    /**
+     * 注销
+     * @throws IOException 异常
+     */
+    public void close() throws IOException {
+        currentUrlClassLoader.close();
     }
 
     /**
@@ -142,7 +195,7 @@ public class MultiLoginCoreLoader {
      * 生成放置依赖的文件夹
      */
     @SuppressWarnings("all")
-    public void generateLibrariesFolder() {
+    private void generateLibrariesFolder() {
         if (!librariesFolder.exists()) {
             librariesFolder.mkdirs();
         }

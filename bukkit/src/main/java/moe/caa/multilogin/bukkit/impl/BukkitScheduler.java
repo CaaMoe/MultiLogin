@@ -17,11 +17,11 @@ public class BukkitScheduler extends BaseScheduler {
 
     @Override
     public void runTask(Runnable run, long delay) {
-        scheduler.runTaskLater(plugin, run, delay / 50);
+        scheduler.runTaskLater(plugin.getThis(), run, delay / 50);
     }
 
     @Override
     public void runTask(Runnable run) {
-        scheduler.runTask(plugin, run);
+        scheduler.runTask(plugin.getThis(), run);
     }
 }

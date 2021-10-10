@@ -31,4 +31,21 @@ subprojects {
                 "author" : 'ksqeib, CaaMoe',
         ]
     }
+
+    jar {
+        String env;
+        String ver;
+        env = System.getProperty("env", "AUTO")
+        if (env.toLowerCase() == "final") {
+            ver = (project.plugin_version as String)
+        } else {
+            ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        }
+
+        manifest.attributes(
+                "Build-Timestamp": System.currentTimeMillis(),
+                "MultiLogin-Version": ver,
+                "MultiLogin-Build-Type": env
+        )
+    }
 }

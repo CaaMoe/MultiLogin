@@ -8,18 +8,20 @@ import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService
 import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
+import moe.caa.multilogin.bukkit.loader.impl.BaseBukkitPlugin;
+import moe.caa.multilogin.bukkit.loader.main.MultiLoginBukkitLoader;
 import moe.caa.multilogin.core.command.CommandArguments;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -27,12 +29,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
-public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
+public class MultiLoginBukkit extends BaseBukkitPlugin implements IPlugin {
     @Getter
     private static MultiLoginBukkit instance;
     @Getter
     private final MultiCore core = new MultiCore(this);
     private IServer server;
+
+    public MultiLoginBukkit(MultiLoginBukkitLoader loader, Server server) {
+        super(loader, server);
+    }
+
 
     @Override
     public void onEnable() {
@@ -78,7 +85,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
                     asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "喜报\nNMSL");
                 }
             }
-        }, this);
+        }, getThis());
     }
 
     @Override
