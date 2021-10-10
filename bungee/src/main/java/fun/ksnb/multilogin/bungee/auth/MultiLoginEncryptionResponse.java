@@ -93,10 +93,8 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
     public String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        byte[][] var7 = new byte[][]{this.request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
-        int var8 = var7.length;
-        for (int var9 = 0; var9 < var8; ++var9) {
-            byte[] bit = var7[var9];
+        byte[][] sharedSecret = new byte[][]{this.request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
+        for (byte[] bit : sharedSecret) {
             sha.update(bit);
         }
         return URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");

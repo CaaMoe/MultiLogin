@@ -38,7 +38,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private ServerLogin login = null;
     private byte[] verify = EMPTY_BYTE_ARRAY;
     private LoginSessionHandler loginSessionHandler;
-    //    运行种产生
+    //    运行中产生
     private byte[] decryptedSharedSecret = EMPTY_BYTE_ARRAY;
     private KeyPair serverKeyPair;
     private MinecraftConnection mcConnection;
@@ -56,11 +56,16 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(LoginSessionHandler.class.getDeclaredField("inbound"), true));
     }
 
+    /**
+     * @param handler velocity内的处理
+     * @return 能否处理该包 必须是true 否则会被其他模块再次处理
+     */
     @Override
     public boolean handle(MinecraftSessionHandler handler) {
         // 不合法
-        if (!(handler instanceof LoginSessionHandler)) return false;
+        if (!(handler instanceof LoginSessionHandler)) return true;
         loginSessionHandler = (LoginSessionHandler) handler;
+        //初始化全部数值
         getValues();
 
         // 模拟常规流程
@@ -70,6 +75,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         if (verify.length == 0) {
             throw new IllegalStateException("No EncryptionRequest packet sent yet.");
         }
+        //velocity正常的加密配置方法
         if (!enableEncrypt()) return true;
 
         String username = login.getUsername();
@@ -77,9 +83,8 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         String playerIp = ((InetSocketAddress) mcConnection.getRemoteAddress()).getHostString();
 
         BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, inbound);
-        MultiLoginVelocity.getInstance().getRunServer().getScheduler().runTaskAsync(() -> {
-            MultiLoginVelocity.getInstance().getCore().getAuthCore().doAuth(userLogin);
-        });
+        MultiLoginVelocity.getInstance().getRunServer().getScheduler().runTaskAsync(() ->
+                MultiLoginVelocity.getInstance().getCore().getAuthCore().doAuth(userLogin));
 
         return true;
     }
