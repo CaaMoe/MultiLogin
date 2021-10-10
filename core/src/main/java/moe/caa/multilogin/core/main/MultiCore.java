@@ -104,7 +104,7 @@ public class MultiCore {
         // 读取一般配置文件
         if (!generateConfigFile()) return false;
         // 读取语言文件
-        if (!languageHandler.init(this, "message.properties")) return false;
+        if (!languageHandler.init("message.properties")) return false;
         // 加载 Yggdrasil 账户验证服务器配置
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         // 连接数据库操作
