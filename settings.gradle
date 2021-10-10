@@ -3,3 +3,6 @@ include 'core'
 include 'bukkit'
 include 'bungee'
 include 'velocity'
+include 'core:loader'
+findProject(':core:loader')?.name = 'loader'
+
