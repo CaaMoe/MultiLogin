@@ -31,7 +31,7 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     private static MultiLoginBukkitPluginBootstrap instance;
 
     @Getter
-    private final MultiCore core = new MultiCore(this);
+    private final MultiCore core;
 
     private final JavaPlugin vanPlugin;
     private final Server vanServer;
@@ -41,6 +41,7 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     public MultiLoginBukkitPluginBootstrap(MultiLoginBukkitLoader vanPlugin, Server server) {
         this.vanServer = server;
         this.vanPlugin = vanPlugin;
+        this.core = new MultiCore(this);
     }
 
     @Override
