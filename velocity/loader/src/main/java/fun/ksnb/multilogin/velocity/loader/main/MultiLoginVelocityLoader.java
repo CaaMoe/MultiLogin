@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import lombok.Getter;
 import moe.caa.multilogin.core.loader.impl.ISectionLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
 import org.slf4j.Logger;
@@ -20,13 +21,16 @@ public class MultiLoginVelocityLoader implements ISectionLoader {
     private final File dataDirectory;
     private BaseVelocityPlugin plugin;
 
+    @Getter
+    private MultiLoginCoreLoader coreLoader;
+
     @Inject
     public MultiLoginVelocityLoader(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.logger = logger;
         this.dataDirectory = dataDirectory.toFile();
 
         try {
-            MultiLoginCoreLoader coreLoader = new MultiLoginCoreLoader(this);
+            coreLoader = new MultiLoginCoreLoader(this);
             boolean b = coreLoader.start("MultiLogin-Velocity.JarFile");
             if (!b) {
                 server.shutdown();
@@ -34,6 +38,7 @@ public class MultiLoginVelocityLoader implements ISectionLoader {
             }
 
             Class<?> baseBungeePluginClass = Class.forName("fun.ksnb.multilogin.velocity.main.MultiLoginVelocity", true, coreLoader.getCurrentUrlClassLoader());
+            Class.forName("com.mysql.cj.jdbc.Driver", true, coreLoader.getCurrentUrlClassLoader());
             Constructor<?> constructor = baseBungeePluginClass.getConstructor(ProxyServer.class, Logger.class, File.class);
             plugin = (BaseVelocityPlugin) constructor.newInstance(server, logger, this.dataDirectory);
         } catch (Throwable throwable) {
@@ -71,8 +76,9 @@ public class MultiLoginVelocityLoader implements ISectionLoader {
     public void onDisable(ProxyShutdownEvent event) {
         if (plugin != null) {
             plugin.onDisable();
-        }
-//        关闭事件
 
+        }
+        coreLoader.close();
+//        关闭事件
     }
 }
