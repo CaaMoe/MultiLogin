@@ -12,7 +12,6 @@ import fun.ksnb.multilogin.velocity.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.impl.VelocityUserLogin;
 import fun.ksnb.multilogin.velocity.loader.main.BaseVelocityPlugin;
-import fun.ksnb.multilogin.velocity.loader.main.MultiLoginVelocityLoader;
 import io.netty.util.collection.IntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
