@@ -38,7 +38,7 @@ public class MultiLoginVelocityLoader implements IPluginLoader {
             }
             pluginBootstrap = coreLoader.loadBootstrap(
                     "fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap",
-                    new Class[]{}, new Object[]{});
+                    new Class[]{MultiLoginVelocityLoader.class}, new Object[]{this});
             pluginBootstrap.onLoad();
         } catch (Throwable throwable) {
             loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);
