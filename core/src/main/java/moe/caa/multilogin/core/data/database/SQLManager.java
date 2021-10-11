@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
 import moe.caa.multilogin.core.util.YamlReader;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -75,6 +76,7 @@ public class SQLManager {
                         FormatContent.FormatEntry.builder().name("database").content(database).build()
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Database url(%s): %s", backend.name(), url));
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 pool = new MysqlConnectionPool(url, username, password);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("成功连接到 %s 数据库", backend.name()));
             } else if (backend == SQLBackendEnum.H2) {
@@ -103,9 +105,11 @@ public class SQLManager {
     }
 
     public void loadBase() throws SQLException {
-        userDataHandler.createIfNotExists(pool.getConnection().createStatement());
-        cacheWhitelistDataHandler.createIfNotExists(pool.getConnection().createStatement());
-        skinRestorerDataHandler.createIfNotExists(pool.getConnection().createStatement());
+        try (Connection connection = pool.getConnection()) {
+            userDataHandler.createIfNotExists(connection);
+            cacheWhitelistDataHandler.createIfNotExists(connection);
+            skinRestorerDataHandler.createIfNotExists(connection);
+        }
     }
 
     /**

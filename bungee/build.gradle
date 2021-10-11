@@ -9,32 +9,22 @@ repositories {
 
 dependencies {
     compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.16-R0.5-20210527.222654-29'
-
+    compileOnly project(":bungee:loader")
+    compileOnly project(":core:loader")
     implementation project(":core")
 }
 
 shadowJar {
-    String env = System.getProperty("env", "AUTO")
-    archiveBaseName.set('MultiLogin-Bungee')
-    if (env.toLowerCase() == "final") {
-        archiveVersion.set(project.plugin_version as String)
-    } else {
-        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
-        archiveVersion.set(ver)
-    }
-    archiveClassifier.set("")
+    archiveFileName = "MultiLogin-Bungee.JarFile"
 
-    shadowJar {
-        dependencies {
-            exclude(('net.md-5:brigadier'))
-        }
-    }
-
-    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
     relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
     relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
     relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+}
 
+artifacts {
+    archives shadowJar
 }

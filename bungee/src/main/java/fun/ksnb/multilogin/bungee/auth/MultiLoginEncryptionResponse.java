@@ -2,7 +2,7 @@ package fun.ksnb.multilogin.bungee.auth;
 
 import com.google.common.base.Preconditions;
 import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
-import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
+import fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.util.FormatContent;
@@ -57,16 +57,16 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         try {
             addEncrypt((InitialHandler) handler);
         } catch (Throwable throwable) {
-            ((InitialHandler) handler).disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+            ((InitialHandler) handler).disconnect(MultiLoginBungeePluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception while processing encryption.", throwable);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
         }
 
-        MultiLoginBungee.getInstance().getRunServer().getScheduler().runTaskAsync(() -> {
+        MultiLoginBungeePluginBootstrap.getInstance().getRunServer().getScheduler().runTaskAsync(() -> {
             try {
-                MultiLoginBungee.getInstance().getCore().getAuthCore().doAuth(new BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler), (InitialHandler) handler));
+                MultiLoginBungeePluginBootstrap.getInstance().getCore().getAuthCore().doAuth(new BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler), (InitialHandler) handler));
             } catch (Exception e) {
-                ((InitialHandler) handler).disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+                ((InitialHandler) handler).disconnect(MultiLoginBungeePluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
             }
@@ -93,10 +93,8 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
     public String getServerId() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest sha = MessageDigest.getInstance("SHA-1");
-        byte[][] var7 = new byte[][]{this.request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
-        int var8 = var7.length;
-        for (int var9 = 0; var9 < var8; ++var9) {
-            byte[] bit = var7[var9];
+        byte[][] sharedSecret = new byte[][]{this.request.getServerId().getBytes("ISO_8859_1"), sharedKey.getEncoded(), EncryptionUtil.keys.getPublic().getEncoded()};
+        for (byte[] bit : sharedSecret) {
             sha.update(bit);
         }
         return URLEncoder.encode((new BigInteger(sha.digest())).toString(16), "UTF-8");

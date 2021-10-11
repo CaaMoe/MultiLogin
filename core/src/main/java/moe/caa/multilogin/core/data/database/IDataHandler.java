@@ -1,9 +1,15 @@
 package moe.caa.multilogin.core.data.database;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public interface IDataHandler {
 
-    void createIfNotExists(Statement statement) throws SQLException;
+    /**
+     * 建表操作
+     *
+     * @param connection 链接
+     * @throws SQLException 创表异常
+     */
+    void createIfNotExists(Connection connection) throws SQLException;
 }

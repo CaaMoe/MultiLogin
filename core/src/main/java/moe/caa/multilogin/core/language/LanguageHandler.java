@@ -31,10 +31,9 @@ public class LanguageHandler {
     /**
      * 初始化这个可读文本处理程序
      *
-     * @param core     插件核心
      * @param fileName 可读文本文件名称
      */
-    public boolean init(MultiCore core, String fileName) {
+    public boolean init(String fileName) {
 
         inside = new Properties();
         try {

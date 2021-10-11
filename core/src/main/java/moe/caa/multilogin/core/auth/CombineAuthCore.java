@@ -75,6 +75,8 @@ public class CombineAuthCore {
         HasJoinedResponse response = generateHasJoinedGameProfile(yggdrasilAuthResult, verifyAuthResult);
         // 这里进行异步皮肤修复操作
         core.getRestorerCore().doRestorer(yggdrasilAuthResult, response);
+        // 分发给后端 55555
+        userLogin.setUser(user);
         userLogin.finish(response);
     }
 

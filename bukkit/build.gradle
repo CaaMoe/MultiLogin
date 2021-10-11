@@ -5,30 +5,30 @@ plugins {
 repositories {
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
     maven { url "https://repo.codemc.io/repository/nms/" }
+    maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
 }
 
 dependencies {
-    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
     implementation project(":core")
+    compileOnly project(":bukkit:loader")
+    compileOnly project(":core:loader")
+    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
+
+    // support
+    compileOnly 'me.clip:placeholderapi:2.10.10'
 }
 
 shadowJar {
-    String env = System.getProperty("env", "AUTO")
-    archiveBaseName.set('MultiLogin-Bukkit')
-    if (env.toLowerCase() == "final") {
-        archiveVersion.set(project.plugin_version as String)
-    } else {
-        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
-        archiveVersion.set(ver)
-    }
-    archiveClassifier.set("")
+    archiveFileName = "MultiLogin-Bukkit.JarFile"
 
-
-    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
     relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
     relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
     relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+}
 
+artifacts {
+    archives shadowJar
 }

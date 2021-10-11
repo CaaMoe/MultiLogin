@@ -1,7 +1,10 @@
 package moe.caa.multilogin.core.impl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
+import moe.caa.multilogin.core.user.User;
 
 /**
  * 公共登入状态中的用户实例<br>
@@ -12,6 +15,10 @@ public abstract class BaseUserLogin {
     private final String username;
     private final String serverId;
     private final String ip;
+
+    @Getter
+    @Setter
+    private transient User user;
 
     protected BaseUserLogin(String username, String serverId, String ip) {
         this.username = username;

@@ -200,5 +200,16 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
 | /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
 | /whitelist list         | command.multilogin.whitelist.list| 获得白名单列表|
 
+## PlaceholderAPI 变量（Bukkit Only）
+
+| 变量 | 简介 |
+|  ----  | --- |
+| %multilogin_currentname%   | 玩家当前的游戏 ID|
+| %multilogin_onlineuuid%   | 玩家在线的 UUID|
+| %multilogin_redirecteduuid%   | 玩家在游戏内的 UUID|
+| %multilogin_whitelist%  | 玩家是否具有白名单|
+| %multilogin_yggdrasilname%  | 玩家所在的 Yggdrasil 账户验证服务器的名字|
+| %multilogin_yggdrasilpath% | 玩家所在的 Yggdrasil 账户验证服务器的路径|
+
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
 群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)

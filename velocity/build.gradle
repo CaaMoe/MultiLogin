@@ -1,0 +1,39 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+repositories {
+    maven { url "https://nexus.velocitypowered.com/repository/maven-public" }
+}
+
+dependencies {
+    implementation project(":core")
+    compileOnly project(":velocity:loader")
+    compileOnly project(":core:loader")
+    compileOnly 'com.velocitypowered:velocity-api:3.0.1'
+    annotationProcessor 'com.velocitypowered:velocity-api:3.0.1'
+    compileOnly 'io.netty:netty-all:4.1.68.Final'
+    compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
+
+}
+
+shadowJar {
+    archiveFileName = "MultiLogin-Velocity.JarFile"
+
+    relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
+    relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
+    relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
+    relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
+    relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
+    relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+}
+
+artifacts {
+    archives shadowJar
+}

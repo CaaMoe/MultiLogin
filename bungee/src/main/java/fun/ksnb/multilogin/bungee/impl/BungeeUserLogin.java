@@ -1,6 +1,6 @@
 package fun.ksnb.multilogin.bungee.impl;
 
-import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
+import fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
@@ -52,7 +52,7 @@ public class BungeeUserLogin extends BaseUserLogin {
             NAME.invoke(handler, response.getName());
             FINISH.invoke(handler);
         } catch (Throwable throwable) {
-            handler.disconnect(MultiLoginBungee.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
+            handler.disconnect(MultiLoginBungeePluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred at the end of processing login.", throwable);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "handler: " + handler);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "userLogin: " + this);

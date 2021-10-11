@@ -3,42 +3,56 @@ package moe.caa.multilogin.bukkit.main;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
-import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
-import moe.caa.multilogin.bukkit.impl.BukkitSender;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
-import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
-import moe.caa.multilogin.core.command.CommandArguments;
+import moe.caa.multilogin.bukkit.listener.BukkitListener;
+import moe.caa.multilogin.bukkit.support.expansions.MultiLoginExpansion;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
-public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
+public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap implements IPlugin {
     @Getter
-    private static MultiLoginBukkit instance;
+    private static MultiLoginBukkitPluginBootstrap instance;
+
     @Getter
-    private final MultiCore core = new MultiCore(this);
+    private final MultiCore core;
+
+    private final JavaPlugin vanPlugin;
+    private final Server vanServer;
+    private final BukkitListener listener;
     private IServer server;
+
+    public MultiLoginBukkitPluginBootstrap(JavaPlugin vanPlugin, Server server) {
+        this.vanServer = server;
+        this.vanPlugin = vanPlugin;
+        this.core = new MultiCore(this);
+
+        listener = new BukkitListener(this);
+    }
+
+    @Override
+    public void onLoad() {
+
+    }
 
     @Override
     public void onEnable() {
         instance = this;
-        server = new BukkitServer(getServer(), this);
-        if (!core.init()) setEnabled(false);
+        server = new BukkitServer(vanServer, vanPlugin);
+        if (!core.init()) onDisable();
     }
 
     @Override
@@ -48,14 +62,14 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void initService() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
-        Class<?> craftServerClass = getServer().getClass();
+        Class<?> craftServerClass = vanServer.getClass();
         Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
         Class<?> dedicatedPlayerListClass = craftServerGetHandle.getReturnType();
         Method dedicatedPlayerListGetHandler = dedicatedPlayerListClass.getDeclaredMethod("getServer");
         Class<?> minecraftServerClass = dedicatedPlayerListGetHandler.getReturnType().getSuperclass();
 
         Field field = ReflectUtil.handleAccessible(ReflectUtil.getField(minecraftServerClass, MinecraftSessionService.class), true);
-        Object obj = dedicatedPlayerListGetHandler.invoke(craftServerGetHandle.invoke(getServer()));
+        Object obj = dedicatedPlayerListGetHandler.invoke(craftServerGetHandle.invoke(vanServer));
 
         HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
         MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
@@ -65,26 +79,20 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
 
     @Override
     public void initOther() {
-        getServer().getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            private void onLogin(AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent) {
-                if (asyncPlayerPreLoginEvent.getUniqueId().equals(BukkitAuthCore.getDIRTY_UUID())) {
-                    for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
-                        if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
-                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "喜报\nNMSL" : login.getKickMessage());
-                            return;
-                        }
-                    }
-                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "喜报\nNMSL");
-                }
-            }
-        }, this);
-    }
+        vanServer.getPluginManager().registerEvents(listener, vanPlugin);
+        CommandHandler ch = new CommandHandler(this);
+        vanPlugin.getCommand("multilogin").setExecutor(ch);
+        vanPlugin.getCommand("multilogin").setTabCompleter(ch);
+        vanPlugin.getCommand("whitelist").setExecutor(ch);
+        vanPlugin.getCommand("whitelist").setTabCompleter(ch);
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        core.getCommandHandler().executeAsync(new BukkitSender(sender), new CommandArguments(command.getName(), args));
-        return true;
+        if (vanServer.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            try {
+                new MultiLoginExpansion(this).register();
+            } catch (Throwable t) {
+                core.getLogger().log(LoggerLevel.ERROR, "An error occurred on the registered PlaceholderAPI variable.", t);
+            }
+        }
     }
 
     @Override
@@ -95,7 +103,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         else if (level == LoggerLevel.INFO) vanLevel = Level.INFO;
         else if (level == LoggerLevel.DEBUG) return;
         else vanLevel = Level.INFO;
-        getLogger().log(vanLevel, message, throwable);
+        vanPlugin.getLogger().log(vanLevel, message, throwable);
     }
 
     @Override
@@ -104,7 +112,16 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     }
 
     @Override
+    public File getDataFolder() {
+        return vanPlugin.getDataFolder();
+    }
+
+    @Override
     public String getPluginVersion() {
-        return getDescription().getVersion();
+        return vanPlugin.getDescription().getVersion();
+    }
+
+    public PluginDescriptionFile getDescriptionFile() {
+        return vanPlugin.getDescription();
     }
 }

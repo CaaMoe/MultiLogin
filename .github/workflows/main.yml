@@ -1,17 +1,29 @@
 name: Java CI
+
 on:
-  push: { }
+  push:
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
+
       - name: 'Setup JDK 8'
         uses: AdoptOpenJDK/install-jdk@v1
         with:
           version: '8'
           architecture: x64
+
+      - name: 'Setup JDK 11'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
+          targets: 'JDK_11'
+
       - name: Cache Gradle packages
         uses: actions/cache@v2
         with:
@@ -21,23 +33,21 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Build
         uses: gradle/gradle-command-action@v1
         with:
           arguments: shadowJar
           gradle-version: 7.2
+
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
-      - name: Package Artifact
-        run: |
-          mkdir builds
-          mv bukkit/build/libs/*.jar builds
-          mv bungee/build/libs/*.jar builds
-      - name: Upload to Artifact
-        uses: actions/upload-artifact@v2
+
+      - name: Upload to artifact respectively
+        uses: MuirProject/upload-artifact@v2-beta
         with:
-          name: Package
-          path: builds
+          name: '["Bukkit", "Bungee", "Velocity"]'
+          path: '["bukkit/loader/build/libs/MultiLogin-*.jar", "bungee/loader/build/libs/MultiLogin-*.jar", "velocity/loader/build/libs/MultiLogin-*.jar"]'
           retention-days: 1

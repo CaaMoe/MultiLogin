@@ -7,36 +7,60 @@ import gnu.trove.map.TIntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class MultiLoginBungee extends Plugin implements IPlugin {
+public class MultiLoginBungeePluginBootstrap extends BasePluginBootstrap implements IPlugin {
     @Getter
-    private static MultiLoginBungee instance;
+    private static MultiLoginBungeePluginBootstrap instance;
+
     @Getter
-    private final MultiCore core = new MultiCore(this);
+    private final MultiCore core;
+
+    private final Plugin vanPlugin;
+    private final ProxyServer vanServer;
+
     private IServer server;
+
+    public MultiLoginBungeePluginBootstrap(Plugin vanPlugin, ProxyServer vanServer) {
+        this.vanPlugin = vanPlugin;
+        this.vanServer = vanServer;
+        this.core = new MultiCore(this);
+    }
+
+    @Override
+    public void onLoad() {
+
+    }
 
     @Override
     public void onEnable() {
         instance = this;
-        server = new BungeeServer((BungeeCord) getProxy());
+        server = new BungeeServer(BungeeCord.getInstance());
         if (!core.init()) onDisable();
     }
 
     @Override
-    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
+    public void onDisable() {
+        core.disable();
+    }
+
+    @Override
+    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, UnsupportedException {
         BungeeUserLogin.init();
         MultiLoginEncryptionResponse.init();
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
@@ -59,7 +83,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
                 } else if (constructors instanceof Constructor[]) {
                     constructors[0x01] = MultiLoginEncryptionResponse.class.getDeclaredConstructor();
                 } else {
-
+                    throw new UnsupportedException("Unsupported server.");
                 }
             }
         }
@@ -67,8 +91,8 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void initOther() {
-        getProxy().getPluginManager().registerCommand(this, new MultiLoginCommand("multilogin", null, "login", "ml"));
-        getProxy().getPluginManager().registerCommand(this, new MultiLoginCommand("whitelist", null));
+        vanServer.getPluginManager().registerCommand(vanPlugin, new MultiLoginCommand("multilogin", null, "login", "ml"));
+        vanServer.getPluginManager().registerCommand(vanPlugin, new MultiLoginCommand("whitelist", null));
     }
 
     @Override
@@ -79,7 +103,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         else if (level == LoggerLevel.INFO) vanLevel = Level.INFO;
         else if (level == LoggerLevel.DEBUG) return;
         else vanLevel = Level.INFO;
-        getLogger().log(vanLevel, message, throwable);
+        vanPlugin.getLogger().log(vanLevel, message, throwable);
     }
 
     @Override
@@ -88,7 +112,12 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     }
 
     @Override
+    public File getDataFolder() {
+        return vanPlugin.getDataFolder();
+    }
+
+    @Override
     public String getPluginVersion() {
-        return getDescription().getVersion();
+        return vanPlugin.getDescription().getVersion();
     }
 }

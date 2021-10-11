@@ -1,10 +1,10 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.impl.BaseScheduler;
 import moe.caa.multilogin.core.impl.IPlayerManager;
 import moe.caa.multilogin.core.impl.IServer;
 import org.bukkit.Server;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Bukkit 端的服务器对象
@@ -14,7 +14,7 @@ public class BukkitServer implements IServer {
     private final IPlayerManager playerManager;
     private final BaseScheduler scheduler;
 
-    public BukkitServer(Server server, MultiLoginBukkit plugin) {
+    public BukkitServer(Server server, JavaPlugin plugin) {
         this.server = server;
         this.playerManager = new BukkitPlayerManager(server);
         this.scheduler = new BukkitScheduler(server.getScheduler(), plugin);

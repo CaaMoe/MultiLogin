@@ -104,7 +104,7 @@ public class MultiCore {
         // 读取一般配置文件
         if (!generateConfigFile()) return false;
         // 读取语言文件
-        if (!languageHandler.init(this, "message.properties")) return false;
+        if (!languageHandler.init("message.properties")) return false;
         // 加载 Yggdrasil 账户验证服务器配置
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         // 连接数据库操作
@@ -119,7 +119,7 @@ public class MultiCore {
 
         }
 
-        if(!getPlugin().getRunServer().getPlayerManager().isOnlineMode()){
+        if (!getPlugin().getRunServer().getPlayerManager().isOnlineMode()) {
             logger.log(LoggerLevel.WARN, "正版验证处于关闭状态，插件不能正常运行");
             logger.log(LoggerLevel.WARN, "请开启它");
             return false;

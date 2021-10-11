@@ -27,17 +27,12 @@ public class CacheWhitelistDataHandler implements IDataHandler {
         this.sqlManager = sqlManager;
     }
 
-    /**
-     * 建表操作
-     *
-     * @param statement 链接
-     * @throws SQLException 创表异常
-     */
     @Override
-    public void createIfNotExists(Statement statement) throws SQLException {
-        statement.executeUpdate("" +
-                "CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
-                sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign() + " VARCHAR(100) PRIMARY KEY NOT NULL)");
+    public void createIfNotExists(Connection connection) throws SQLException {
+        try (PreparedStatement ps = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + CACHE_WHITELIST_TABLE_NAME + "( " +
+                sqlManager.getCore().getSetting().getDatabase_cache_whitelist_table_field_sign() + " VARCHAR(100) PRIMARY KEY NOT NULL)")) {
+            ps.executeUpdate();
+        }
     }
 
     /**
@@ -47,10 +42,9 @@ public class CacheWhitelistDataHandler implements IDataHandler {
      * @throws SQLException 查询异常
      */
     public List<String> getAllCacheWhitelist() throws SQLException {
-        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s",
-                CACHE_WHITELIST_TABLE_NAME
-        ))) {
-            ResultSet resultSet = ps.executeQuery();
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s", CACHE_WHITELIST_TABLE_NAME));
+             ResultSet resultSet = ps.executeQuery()) {
             List<String> ret = new ArrayList<>();
             while (resultSet.next()) {
                 ret.add(resultSet.getString(1));
