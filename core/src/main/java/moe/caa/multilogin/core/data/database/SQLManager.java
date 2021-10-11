@@ -76,6 +76,7 @@ public class SQLManager {
                         FormatContent.FormatEntry.builder().name("database").content(database).build()
                 ));
                 MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Database url(%s): %s", backend.name(), url));
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 pool = new MysqlConnectionPool(url, username, password);
                 MultiLogger.getLogger().log(LoggerLevel.INFO, String.format("成功连接到 %s 数据库", backend.name()));
             } else if (backend == SQLBackendEnum.H2) {
