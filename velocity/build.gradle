@@ -26,6 +26,7 @@ dependencies {
 shadowJar {
     archiveFileName = "MultiLogin-Velocity.JarFile"
 
+    relocate 'com.mysql', 'moe.caa.multilogin.lib.com.mysql'
     relocate 'com.zaxxer.hikari', 'moe.caa.multilogin.lib.com.zaxxer.hikari'
     relocate 'com.google.gson', 'moe.caa.multilogin.lib.com.google.gson'
     relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
