@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 
 import java.util.logging.Level;
@@ -23,7 +24,7 @@ public class MultiLoginBungeeLoader extends Plugin implements IPluginLoader {
             }
             pluginBootstrap = coreLoader.loadBootstrap(
                     "fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap",
-                    new Class[]{}, new Object[]{});
+                    new Class[]{Plugin.class, ProxyServer.class}, new Object[]{this, getProxy()});
             pluginBootstrap.onLoad();
         } catch (Throwable throwable) {
             loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);
