@@ -5,6 +5,7 @@ plugins {
 repositories {
     maven { url "https://hub.spigotmc.org/nexus/content/groups/public/" }
     maven { url "https://repo.codemc.io/repository/nms/" }
+    maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
 }
 
 dependencies {
@@ -13,7 +14,8 @@ dependencies {
     compileOnly project(":core:loader")
     compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
 
-
+    // support
+    compileOnly 'me.clip:placeholderapi:2.10.10'
 }
 
 shadowJar {

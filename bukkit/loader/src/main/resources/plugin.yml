@@ -3,6 +3,7 @@ version: @version@
 main: moe.caa.multilogin.bukkit.loader.main.MultiLoginBukkitLoader
 author: @author@
 api-version: 1.13
+softdepend: [ PlaceholderAPI ]
 commands:
   multilogin:
   whitelist:

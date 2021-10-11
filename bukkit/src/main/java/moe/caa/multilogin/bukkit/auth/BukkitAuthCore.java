@@ -8,16 +8,26 @@ import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.CachedHashSet;
 
 import java.net.InetAddress;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 public class BukkitAuthCore {
     @Getter
     private static final CachedHashSet<BukkitUserLogin> loginCachedHashSet = new CachedHashSet<>(10000);
+
+    // 这里放置的是正式登入成功后尚未编入系统的用户实例
+    @Getter
+    private static final CachedHashSet<User> bufferUsers = new CachedHashSet<>(10000);
+
+    @Getter
+    private static final Set<User> users = new HashSet<>();
 
     @Getter
     private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
@@ -29,6 +39,7 @@ public class BukkitAuthCore {
             MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
             latch.await();
             loginCachedHashSet.add(login);
+            bufferUsers.add(login.getUser());
             return generate(login.getResponse(), user.getName());
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
