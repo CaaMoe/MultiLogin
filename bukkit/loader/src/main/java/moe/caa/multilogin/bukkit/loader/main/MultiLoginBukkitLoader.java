@@ -26,7 +26,7 @@ public class MultiLoginBukkitLoader extends JavaPlugin implements IPluginLoader 
 
             pluginBootstrap = coreLoader.loadBootstrap(
                     "moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap",
-                    new Class[]{MultiLoginBukkitLoader.class, Server.class}, new Object[]{this, getServer()});
+                    new Class[]{JavaPlugin.class, Server.class}, new Object[]{this, getServer()});
             pluginBootstrap.onLoad();
         } catch (Throwable throwable) {
             loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);

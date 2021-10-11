@@ -38,7 +38,7 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
 
     private IServer server;
 
-    public MultiLoginBukkitPluginBootstrap(MultiLoginBukkitLoader vanPlugin, Server server) {
+    public MultiLoginBukkitPluginBootstrap(JavaPlugin vanPlugin, Server server) {
         this.vanServer = server;
         this.vanPlugin = vanPlugin;
         this.core = new MultiCore(this);
