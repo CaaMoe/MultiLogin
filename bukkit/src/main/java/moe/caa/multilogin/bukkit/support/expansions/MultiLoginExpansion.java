@@ -54,12 +54,13 @@ public class MultiLoginExpansion extends PlaceholderExpansion {
             } else if (params.equalsIgnoreCase("whitelist")) {
                 ret = String.valueOf(entry.isWhitelist());
             } else if (params.equalsIgnoreCase("yggdrasilname")) {
-                ret = entry.getYggdrasilService();
-            } else if (params.equalsIgnoreCase("yggdrasilpath")) {
                 ret = bootstrap.getCore().getYggdrasilServicesHandler().getYggdrasilService(entry.getYggdrasilService()).getName();
+            } else if (params.equalsIgnoreCase("yggdrasilpath")) {
+                ret = entry.getYggdrasilService();
             }
         } catch (Exception e) {
-            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "", e);
+            MultiLogger.getLogger().log(LoggerLevel.DEBUG, "Variable error.", e);
+            ret = "VAR ERR";
         }
         return ret;
     }

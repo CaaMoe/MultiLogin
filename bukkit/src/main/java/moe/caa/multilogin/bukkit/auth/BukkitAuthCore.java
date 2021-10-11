@@ -39,7 +39,8 @@ public class BukkitAuthCore {
             MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
             latch.await();
             loginCachedHashSet.add(login);
-            bufferUsers.add(login.getUser());
+            if (login.getUser() != null)
+                bufferUsers.add(login.getUser());
             return generate(login.getResponse(), user.getName());
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
