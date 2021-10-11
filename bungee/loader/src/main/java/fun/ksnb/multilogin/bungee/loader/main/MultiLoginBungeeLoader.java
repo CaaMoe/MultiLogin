@@ -2,7 +2,7 @@ package fun.ksnb.multilogin.bungee.loader.main;
 
 import fun.ksnb.multilogin.bungee.loader.impl.BaseBungeePlugin;
 import lombok.SneakyThrows;
-import moe.caa.multilogin.core.loader.impl.ISectionLoader;
+import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -10,7 +10,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
-public class MultiLoginBungeeLoader extends Plugin implements ISectionLoader {
+public class MultiLoginBungeeLoader extends Plugin implements IPluginLoader {
     private MultiLoginCoreLoader coreLoader;
     private BaseBungeePlugin baseBungeePlugin;
 

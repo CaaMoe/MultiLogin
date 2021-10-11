@@ -7,7 +7,7 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
-import moe.caa.multilogin.core.loader.impl.ISectionLoader;
+import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
 import org.slf4j.Logger;
 
@@ -16,7 +16,7 @@ import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
-public class MultiLoginVelocityLoader implements ISectionLoader {
+public class MultiLoginVelocityLoader implements IPluginLoader {
     private final Logger logger;
     private final File dataDirectory;
     private BaseVelocityPlugin plugin;

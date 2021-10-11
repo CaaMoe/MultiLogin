@@ -1,56 +1,64 @@
 package moe.caa.multilogin.bukkit.loader.main;
 
-import lombok.SneakyThrows;
-import moe.caa.multilogin.bukkit.loader.impl.BaseBukkitPlugin;
-import moe.caa.multilogin.core.loader.impl.ISectionLoader;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
+import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
-import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
-public class MultiLoginBukkitLoader extends JavaPlugin implements ISectionLoader {
+/**
+ * Bukkit 插件引导程序
+ */
+public class MultiLoginBukkitLoader extends JavaPlugin implements IPluginLoader {
     private MultiLoginCoreLoader coreLoader;
-    private BaseBukkitPlugin baseBukkitPlugin;
+    private BasePluginBootstrap pluginBootstrap;
 
-    @SneakyThrows
     @Override
     public void onLoad() {
-        coreLoader = new MultiLoginCoreLoader(this);
-        boolean b = coreLoader.start("MultiLogin-Bukkit.JarFile");
-        if (!b) {
-            setEnable(false);
-            Bukkit.shutdown();
-            return;
+        try {
+            coreLoader = new MultiLoginCoreLoader(this);
+            if (!coreLoader.start()) {
+                shutdown();
+                return;
+            }
+
+            pluginBootstrap = coreLoader.loadBootstrap(
+                    "moe.caa.multilogin.bukkit.main.MultiLoginBukkit",
+                    new Class[]{MultiLoginBukkitLoader.class, Server.class}, new Object[]{this, getServer()});
+            pluginBootstrap.onLoad();
+        } catch (Throwable throwable) {
+            loggerLog(Level.SEVERE, "", throwable);
+            onDisable();
         }
-
-        Class<?> baseBukkitPluginClass = Class.forName("moe.caa.multilogin.bukkit.main.MultiLoginBukkit", true, coreLoader.getCurrentUrlClassLoader());
-        Constructor<?> constructor = baseBukkitPluginClass.getConstructor(MultiLoginBukkitLoader.class, Server.class);
-        this.baseBukkitPlugin = (BaseBukkitPlugin) constructor.newInstance(this, getServer());
-
-        baseBukkitPlugin.onLoad();
     }
 
     @Override
     public void onEnable() {
-        if (baseBukkitPlugin != null) baseBukkitPlugin.onEnable();
+        if (pluginBootstrap != null) pluginBootstrap.onEnable();
     }
 
     @Override
     public void onDisable() {
-        if (baseBukkitPlugin != null) baseBukkitPlugin.onDisable();
-        baseBukkitPlugin = null;
+        if (pluginBootstrap != null) pluginBootstrap.onDisable();
+        pluginBootstrap = null;
         coreLoader.close();
+        getServer().shutdown();
+    }
+
+    @Override
+    public String getSectionJarFileName() {
+        return "MultiLogin-Bukkit.JarFile";
+    }
+
+    @Override
+    public void shutdown() {
+        getServer().shutdown();
     }
 
     @Override
     public void loggerLog(Level level, String message, Throwable throwable) {
         getLogger().log(level, message, throwable);
-    }
-
-    public void setEnable(boolean enable) {
-        super.setEnabled(enable);
     }
 }

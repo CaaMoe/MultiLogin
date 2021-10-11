@@ -3,7 +3,7 @@ package moe.caa.multilogin.bukkit.auth;
 import com.mojang.authlib.GameProfile;
 import lombok.Getter;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
-import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -27,8 +27,8 @@ public class BukkitAuthCore {
         try {
             CountDownLatch latch = new CountDownLatch(1);
             BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress(), latch);
-            MultiLoginBukkit.getInstance().getCore().getAuthCore().doAuth(login);
-            latch.await(MultiLoginBukkit.getInstance().getCore().getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS);
+            MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
+            latch.await(MultiLoginBukkitPluginBootstrap.getInstance().getCore().getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS);
             loginCachedHashSet.add(login);
             return generate(login.getResponse(), user.getName());
         } catch (Exception e) {

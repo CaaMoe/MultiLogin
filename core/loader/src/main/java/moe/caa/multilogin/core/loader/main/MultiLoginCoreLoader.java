@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.loader.main;
 
-import lombok.Getter;
-import moe.caa.multilogin.core.loader.impl.ISectionLoader;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
+import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.libraries.Library;
 import moe.caa.multilogin.core.loader.util.HttpUtil;
 
@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -25,13 +27,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
- * 核心部分加载器
+ * 插件加载器
  */
 public class MultiLoginCoreLoader {
-    private final ISectionLoader sectionLoader;
+    private final IPluginLoader sectionLoader;
     private final File librariesFolder;
-
-    @Getter
     private URLClassLoader currentUrlClassLoader;
 
     /**
@@ -39,32 +39,30 @@ public class MultiLoginCoreLoader {
      *
      * @param sectionLoader 部分加载器
      */
-    public MultiLoginCoreLoader(ISectionLoader sectionLoader) {
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader) {
         this.sectionLoader = sectionLoader;
         librariesFolder = new File(sectionLoader.getDataFolder(), "libraries");
     }
 
     /**
      * 开始加载这群依赖项目
-     *
-     * @param sectionJarFileName 部分需要加载的流名称
      */
-    public boolean start(String sectionJarFileName) {
+    public boolean start() {
         try {
-            start0(sectionJarFileName);
+            start0();
             return true;
         } catch (Throwable e) {
             sectionLoader.loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED WHILE PROCESSING A DEPENDENCY", e);
+            sectionLoader.shutdown();
             return false;
         }
     }
 
     /**
      * 开始加载这群依赖项目
-     *
-     * @param sectionJarFileName 部分需要加载的流名称
      */
-    private void start0(String sectionJarFileName) throws Throwable {
+    private void start0() throws Throwable {
+        sectionLoader.loggerLog(Level.INFO, "Loading libraries...", null);
         // 生成放置依赖的文件夹
         generateLibrariesFolder();
         // 需要加载的依赖
@@ -133,10 +131,10 @@ public class MultiLoginCoreLoader {
         }
 
         // 释放本体文件
-        File fbt = File.createTempFile("MultiLogin-", "-" + sectionJarFileName + ".jar");
+        File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar");
         fbt.deleteOnExit();
 
-        try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionJarFileName)
+        try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionLoader.getSectionJarFileName())
                 , "sectionJarFileName is null.");
              FileOutputStream output = new FileOutputStream(fbt)) {
             byte[] buff = new byte[1024];
@@ -157,7 +155,21 @@ public class MultiLoginCoreLoader {
     }
 
     /**
-     * 注销
+     * 获得插件引导类实例
+     *
+     * @param bootStrapClassName 插件引导类名称
+     * @param argTypes           插件引导类构造方法参数列表
+     * @param args               插件引导类构造方法参数
+     * @return 插件引导类
+     */
+    public BasePluginBootstrap loadBootstrap(String bootStrapClassName, Class<?>[] argTypes, Object[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
+        Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
+        return (BasePluginBootstrap) constructor.newInstance(args);
+    }
+
+    /**
+     * 注销资源
      */
     public void close() {
         try {
@@ -201,15 +213,12 @@ public class MultiLoginCoreLoader {
             RuntimeException exception = new RuntimeException("ONE OR MORE MISSING FILES FAILED TO DOWNLOAD.");
             sectionLoader.loggerLog(Level.SEVERE, "ONE OR MORE MISSING FILES FAILED TO DOWNLOAD.", exception);
             throw exception;
-
-
         }
     }
 
     /**
      * 生成放置依赖的文件夹
      */
-    @SuppressWarnings("all")
     private void generateLibrariesFolder() {
         if (!librariesFolder.exists()) {
             librariesFolder.mkdirs();

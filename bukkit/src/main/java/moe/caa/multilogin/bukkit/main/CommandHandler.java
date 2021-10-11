@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CommandHandler implements TabCompleter, CommandExecutor {
-    private final MultiLoginBukkit plugin;
+    private final MultiLoginBukkitPluginBootstrap plugin;
 
-    public CommandHandler(MultiLoginBukkit plugin) {
+    public CommandHandler(MultiLoginBukkitPluginBootstrap plugin) {
         this.plugin = plugin;
     }
 

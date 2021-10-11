@@ -6,7 +6,19 @@ import java.util.logging.Level;
 /**
  * 子端加载器对象
  */
-public interface ISectionLoader {
+public interface IPluginLoader {
+
+    /**
+     * 获得待加载的 Jar in Jar 名字
+     *
+     * @return 待加载的 Jar in Jar 在 Jar 包内的路径
+     */
+    String getSectionJarFileName();
+
+    /**
+     * 关机
+     */
+    void shutdown();
 
     /**
      * 写入一条日志
