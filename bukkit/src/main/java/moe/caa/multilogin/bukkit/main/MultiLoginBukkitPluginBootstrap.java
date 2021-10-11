@@ -7,7 +7,6 @@ import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
-import moe.caa.multilogin.bukkit.loader.main.MultiLoginBukkitLoader;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
