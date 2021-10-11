@@ -8,7 +8,7 @@ import com.velocitypowered.proxy.connection.client.LoginSessionHandler;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import fun.ksnb.multilogin.velocity.impl.VelocityUserLogin;
-import fun.ksnb.multilogin.velocity.main.MultiLoginVelocity;
+import fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -45,7 +45,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private InitialInboundConnection inbound;
 
     public MultiLoginEncryptionResponse() {
-        server = (VelocityServer) MultiLoginVelocity.getInstance().getServer();
+        server = (VelocityServer) MultiLoginVelocityPluginBootstrap.getInstance().getServer();
     }
 
     public static void init() throws IllegalAccessException, NoSuchFieldException {
@@ -83,8 +83,8 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         String playerIp = ((InetSocketAddress) mcConnection.getRemoteAddress()).getHostString();
 
         BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, inbound);
-        MultiLoginVelocity.getInstance().getRunServer().getScheduler().runTaskAsync(() ->
-                MultiLoginVelocity.getInstance().getCore().getAuthCore().doAuth(userLogin));
+        MultiLoginVelocityPluginBootstrap.getInstance().getRunServer().getScheduler().runTaskAsync(() ->
+                MultiLoginVelocityPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(userLogin));
 
         return true;
     }

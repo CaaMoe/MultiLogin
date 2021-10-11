@@ -7,48 +7,57 @@ import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.logging.Level;
 
 public class MultiLoginVelocityLoader implements IPluginLoader {
-    private final Logger logger;
-    private final File dataDirectory;
-    private BaseVelocityPlugin plugin;
-
     @Getter
+    private final ProxyServer server;
+    private final Logger logger;
+    @Getter
+    private final Path dataDirectory;
     private MultiLoginCoreLoader coreLoader;
+    private BasePluginBootstrap pluginBootstrap;
 
     @Inject
     public MultiLoginVelocityLoader(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+        this.server = server;
         this.logger = logger;
-        this.dataDirectory = dataDirectory.toFile();
-
+        this.dataDirectory = dataDirectory;
         try {
             coreLoader = new MultiLoginCoreLoader(this);
-            boolean b = coreLoader.start("MultiLogin-Velocity.JarFile");
-            if (!b) {
-                server.shutdown();
+            if (!coreLoader.start()) {
+                shutdown();
                 return;
             }
-
-            Class<?> baseBungeePluginClass = Class.forName("fun.ksnb.multilogin.velocity.main.MultiLoginVelocity", true, coreLoader.getCurrentUrlClassLoader());
-            Class.forName("com.mysql.cj.jdbc.Driver", true, coreLoader.getCurrentUrlClassLoader());
-            Constructor<?> constructor = baseBungeePluginClass.getConstructor(ProxyServer.class, Logger.class, File.class);
-            plugin = (BaseVelocityPlugin) constructor.newInstance(server, logger, this.dataDirectory);
+            pluginBootstrap = coreLoader.loadBootstrap(
+                    "fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap",
+                    new Class[]{}, new Object[]{});
+            pluginBootstrap.onLoad();
         } catch (Throwable throwable) {
-            logger.error("FATAL ERROR PROCESSING DEPENDENCY.", throwable);
-            server.shutdown();
+            loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);
+            onDisable(null);
         }
     }
 
     public Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public String getSectionJarFileName() {
+        return "MultiLogin-Velocity.JarFile";
+    }
+
+    @Override
+    public void shutdown() {
+        server.shutdown();
     }
 
     @Override
@@ -61,24 +70,26 @@ public class MultiLoginVelocityLoader implements IPluginLoader {
 
     @Override
     public File getDataFolder() {
-        return dataDirectory;
+        return dataDirectory.toFile();
     }
 
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
-        if (plugin != null) {
-//            启动失败关闭
-            plugin.onInitialize();
+        if (pluginBootstrap != null) {
+            pluginBootstrap.onLoad();
+            pluginBootstrap.onEnable();
         }
+    }
+
+    public void disable() {
+        if (pluginBootstrap != null) pluginBootstrap.onDisable();
+        pluginBootstrap = null;
+        coreLoader.close();
+        shutdown();
     }
 
     @Subscribe
     public void onDisable(ProxyShutdownEvent event) {
-        if (plugin != null) {
-            plugin.onDisable();
-
-        }
-        coreLoader.close();
-//        关闭事件
+        disable();
     }
 }

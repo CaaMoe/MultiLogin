@@ -8,9 +8,9 @@ import moe.caa.multilogin.core.command.CommandArguments;
 import java.util.List;
 
 public class MultiLoginCommand implements SimpleCommand {
-    private final MultiLoginVelocity plugin;
+    private final MultiLoginVelocityPluginBootstrap plugin;
 
-    public MultiLoginCommand(MultiLoginVelocity plugin) {
+    public MultiLoginCommand(MultiLoginVelocityPluginBootstrap plugin) {
         this.plugin = plugin;
     }
 

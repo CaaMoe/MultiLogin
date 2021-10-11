@@ -56,7 +56,7 @@ public class MultiLoginBungeePluginBootstrap extends BasePluginBootstrap impleme
 
     @Override
     public void onDisable() {
-
+        core.disable();
     }
 
     @Override

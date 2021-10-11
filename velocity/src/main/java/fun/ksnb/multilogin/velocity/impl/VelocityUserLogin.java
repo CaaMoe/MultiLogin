@@ -3,7 +3,7 @@ package fun.ksnb.multilogin.velocity.impl;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.connection.client.InitialInboundConnection;
 import com.velocitypowered.proxy.connection.client.LoginSessionHandler;
-import fun.ksnb.multilogin.velocity.main.MultiLoginVelocity;
+import fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
@@ -45,7 +45,7 @@ public class VelocityUserLogin extends BaseUserLogin {
             INITIALIZE_PLAYER_METHOD.invoke(sessionHandler, generateLoginResult(response), true);
         } catch (Throwable e) {
             connection.disconnect(
-                    Component.text(MultiLoginVelocity.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()))
+                    Component.text(MultiLoginVelocityPluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()))
             );
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred at the end of processing login.", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "sessionHandler: " + sessionHandler);
