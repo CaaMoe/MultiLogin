@@ -80,10 +80,10 @@ public class MultiLoginVelocity implements IPlugin {
     @Override
     public void loggerLog(LoggerLevel level, String message, Throwable throwable) {
         if (level == LoggerLevel.ERROR) logger.error(message, throwable);
-        else if (level == LoggerLevel.WARN)  logger.warn(message, throwable);
-        else if (level == LoggerLevel.INFO)  logger.info(message, throwable);
+        else if (level == LoggerLevel.WARN) logger.warn(message, throwable);
+        else if (level == LoggerLevel.INFO) logger.info(message, throwable);
         else if (level == LoggerLevel.DEBUG) {
-        } else  logger.info(message, throwable);
+        } else logger.info(message, throwable);
     }
 
     @Override
