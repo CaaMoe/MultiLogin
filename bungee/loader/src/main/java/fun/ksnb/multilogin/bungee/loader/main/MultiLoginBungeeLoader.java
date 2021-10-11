@@ -1,48 +1,59 @@
 package fun.ksnb.multilogin.bungee.loader.main;
 
-import fun.ksnb.multilogin.bungee.loader.impl.BaseBungeePlugin;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.lang.reflect.Constructor;
 import java.util.logging.Level;
 
 public class MultiLoginBungeeLoader extends Plugin implements IPluginLoader {
     private MultiLoginCoreLoader coreLoader;
-    private BaseBungeePlugin baseBungeePlugin;
+    private BasePluginBootstrap pluginBootstrap;
 
     @SneakyThrows
     @Override
     public void onLoad() {
-        coreLoader = new MultiLoginCoreLoader(this);
-        boolean b = coreLoader.start("MultiLogin-Bungee.JarFile");
-        if (!b) {
-            BungeeCord.getInstance().stop();
-            return;
+        try {
+            coreLoader = new MultiLoginCoreLoader(this);
+            if (!coreLoader.start()) {
+                shutdown();
+                return;
+            }
+            pluginBootstrap = coreLoader.loadBootstrap(
+                    "fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap",
+                    new Class[]{}, new Object[]{});
+            pluginBootstrap.onLoad();
+        } catch (Throwable throwable) {
+            loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);
+            onDisable();
         }
-
-        Class<?> baseBungeePluginClass = Class.forName("fun.ksnb.multilogin.bungee.main.MultiLoginBungee", true, coreLoader.getCurrentUrlClassLoader());
-        Constructor<?> constructor = baseBungeePluginClass.getConstructor(MultiLoginBungeeLoader.class);
-        this.baseBungeePlugin = (BaseBungeePlugin) constructor.newInstance(this);
-
-        baseBungeePlugin.onLoad();
     }
 
     @Override
     public void onEnable() {
-        if (baseBungeePlugin != null) baseBungeePlugin.onEnable();
+        if (pluginBootstrap != null) pluginBootstrap.onEnable();
     }
 
     @Override
     public void onDisable() {
-        if (baseBungeePlugin != null) baseBungeePlugin.onDisable();
-        baseBungeePlugin = null;
+        if (pluginBootstrap != null) pluginBootstrap.onDisable();
+        pluginBootstrap = null;
         coreLoader.close();
+        shutdown();
     }
 
+
+    @Override
+    public String getSectionJarFileName() {
+        return "MultiLogin-Bungee.JarFile";
+    }
+
+    @Override
+    public void shutdown() {
+        getProxy().stop();
+    }
 
     @Override
     public void loggerLog(Level level, String message, Throwable throwable) {

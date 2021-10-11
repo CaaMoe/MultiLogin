@@ -3,16 +3,18 @@ package fun.ksnb.multilogin.bungee.main;
 import fun.ksnb.multilogin.bungee.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.bungee.impl.BungeeServer;
 import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
-import fun.ksnb.multilogin.bungee.loader.impl.BaseBungeePlugin;
 import fun.ksnb.multilogin.bungee.loader.main.MultiLoginBungeeLoader;
 import gnu.trove.map.TIntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
+import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
@@ -23,15 +25,22 @@ import java.lang.reflect.Field;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 
-public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
+public class MultiLoginBungeePluginBootstrap extends BasePluginBootstrap implements IPlugin {
     @Getter
-    private static MultiLoginBungee instance;
+    private static MultiLoginBungeePluginBootstrap instance;
+
     @Getter
-    private final MultiCore core = new MultiCore(this);
+    private final MultiCore core;
+
+    private final Plugin vanPlugin;
+    private final ProxyServer vanServer;
+
     private IServer server;
 
-    public MultiLoginBungee(MultiLoginBungeeLoader loader) {
-        super(loader);
+    public MultiLoginBungeePluginBootstrap(Plugin vanPlugin, ProxyServer vanServer) {
+        this.vanPlugin = vanPlugin;
+        this.vanServer = vanServer;
+        this.core = new MultiCore(this);
     }
 
     @Override
@@ -42,7 +51,7 @@ public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        server = new BungeeServer((BungeeCord) getThis().getProxy());
+        server = new BungeeServer(BungeeCord.getInstance());
         if (!core.init()) onDisable();
     }
 
@@ -83,8 +92,8 @@ public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
 
     @Override
     public void initOther() {
-        getThis().getProxy().getPluginManager().registerCommand(getThis(), new MultiLoginCommand("multilogin", null, "login", "ml"));
-        getThis().getProxy().getPluginManager().registerCommand(getThis(), new MultiLoginCommand("whitelist", null));
+        vanServer.getPluginManager().registerCommand(vanPlugin, new MultiLoginCommand("multilogin", null, "login", "ml"));
+        vanServer.getPluginManager().registerCommand(vanPlugin, new MultiLoginCommand("whitelist", null));
     }
 
     @Override
@@ -95,7 +104,7 @@ public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
         else if (level == LoggerLevel.INFO) vanLevel = Level.INFO;
         else if (level == LoggerLevel.DEBUG) return;
         else vanLevel = Level.INFO;
-        getThis().getLogger().log(vanLevel, message, throwable);
+        vanPlugin.getLogger().log(vanLevel, message, throwable);
     }
 
     @Override
@@ -105,11 +114,11 @@ public class MultiLoginBungee extends BaseBungeePlugin implements IPlugin {
 
     @Override
     public File getDataFolder() {
-        return getThis().getDataFolder();
+        return vanPlugin.getDataFolder();
     }
 
     @Override
     public String getPluginVersion() {
-        return getDescription().getVersion();
+        return vanPlugin.getDescription().getVersion();
     }
 }

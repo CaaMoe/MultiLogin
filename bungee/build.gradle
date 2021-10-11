@@ -10,6 +10,7 @@ repositories {
 dependencies {
     compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.16-R0.5-20210527.222654-29'
     compileOnly project(":bungee:loader")
+    compileOnly project(":core:loader")
     implementation project(":core")
 }
 
