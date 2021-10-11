@@ -79,16 +79,16 @@ public class YggdrasilAuthCore {
                     currentAuthTasks.remove(task);
                     if (currentAuthTasks.isEmpty()) latch.countDown();
                 };
+                boolean zs = false;
                 // 执行线程的
                 for (YggdrasilService service : crtService) {
                     var authTask = new YggdrasilAuthTask(core, service, user, callback);
                     currentAuthTasks.add(authTask);
                     authExecutor.execute(authTask);
+                    zs = true;
                 }
                 //阻塞
-                if (!latch.await(core.getConfig().getServicesTimeOut() * 3, TimeUnit.MILLISECONDS)) {
-                    down.set(true);
-                }
+                if(zs) latch.await();
                 YggdrasilAuthTask task = succeed.get();
                 if (task == null) continue;
                 // 直接返回

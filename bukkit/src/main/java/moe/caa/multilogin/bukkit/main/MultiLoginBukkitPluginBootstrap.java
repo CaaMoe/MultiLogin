@@ -85,11 +85,11 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
                 if (asyncPlayerPreLoginEvent.getUniqueId().equals(BukkitAuthCore.getDIRTY_UUID())) {
                     for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
                         if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
-                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "喜报\nNMSL" : login.getKickMessage());
+                            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "" : login.getKickMessage());
                             return;
                         }
                     }
-                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "喜报\nNMSL");
+                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "请勿使用 UUID 为 " + BukkitAuthCore.getDIRTY_UUID() + " 的账户登入游戏");
                 }
             }
         }, vanPlugin);

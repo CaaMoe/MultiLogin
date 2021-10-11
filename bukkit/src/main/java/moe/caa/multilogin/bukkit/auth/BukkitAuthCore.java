@@ -14,7 +14,6 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class BukkitAuthCore {
     @Getter
@@ -28,7 +27,7 @@ public class BukkitAuthCore {
             CountDownLatch latch = new CountDownLatch(1);
             BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress(), latch);
             MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
-            latch.await(MultiLoginBukkitPluginBootstrap.getInstance().getCore().getConfig().getServicesTimeOut(), TimeUnit.MILLISECONDS);
+            latch.await();
             loginCachedHashSet.add(login);
             return generate(login.getResponse(), user.getName());
         } catch (Exception e) {
