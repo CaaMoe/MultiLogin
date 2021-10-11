@@ -2,9 +2,6 @@ package fun.ksnb.multilogin.velocity.main;
 
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
-import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.PluginDescription;
@@ -14,6 +11,7 @@ import com.velocitypowered.proxy.protocol.StateRegistry;
 import fun.ksnb.multilogin.velocity.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.impl.VelocityUserLogin;
+import fun.ksnb.multilogin.velocity.loader.main.BaseVelocityPlugin;
 import io.netty.util.collection.IntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -28,7 +26,7 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.function.Supplier;
 
-public class MultiLoginVelocity implements IPlugin {
+public class MultiLoginVelocity extends BaseVelocityPlugin implements IPlugin {
     @Getter
     private static MultiLoginVelocity instance;
 
@@ -68,6 +66,7 @@ public class MultiLoginVelocity implements IPlugin {
         }
     }
 
+
     @Override
     public void initOther() {
         CommandManager commandManager = server.getCommandManager();
@@ -75,6 +74,8 @@ public class MultiLoginVelocity implements IPlugin {
                 .aliases("whitelist")
                 .build();
         commandManager.register(meta, new MultiLoginCommand(this));
+
+
     }
 
     @Override
@@ -108,17 +109,16 @@ public class MultiLoginVelocity implements IPlugin {
         return server;
     }
 
-    @Subscribe
-    public void onInitialize(ProxyInitializeEvent event) {
+    @Override
+    public void onInitialize() {
         if (!core.init()) {
 //            启动失败关闭
             core.disable();
         }
     }
 
-    @Subscribe
-    public void onDisable(ProxyShutdownEvent event) {
-//        关闭事件
+    @Override
+    public void onDisable() {
         core.disable();
     }
 }

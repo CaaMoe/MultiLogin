@@ -1,6 +1,9 @@
 package fun.ksnb.multilogin.velocity.loader.main;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import moe.caa.multilogin.core.loader.impl.ISectionLoader;
@@ -15,6 +18,7 @@ import java.util.logging.Level;
 public class MultiLoginVelocityLoader implements ISectionLoader {
     private final Logger logger;
     private final File dataDirectory;
+    private BaseVelocityPlugin plugin;
 
     @Inject
     public MultiLoginVelocityLoader(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
@@ -31,8 +35,7 @@ public class MultiLoginVelocityLoader implements ISectionLoader {
 
             Class<?> baseBungeePluginClass = Class.forName("fun.ksnb.multilogin.velocity.main.MultiLoginVelocity", true, coreLoader.getCurrentUrlClassLoader());
             Constructor<?> constructor = baseBungeePluginClass.getConstructor(ProxyServer.class, Logger.class, File.class);
-            Object o = constructor.newInstance(server, logger, this.dataDirectory);
-            server.getEventManager().register(this, o);
+            plugin = (BaseVelocityPlugin) constructor.newInstance(server, logger, this.dataDirectory);
         } catch (Throwable throwable) {
             logger.error("FATAL ERROR PROCESSING DEPENDENCY.", throwable);
             server.shutdown();
@@ -54,5 +57,22 @@ public class MultiLoginVelocityLoader implements ISectionLoader {
     @Override
     public File getDataFolder() {
         return dataDirectory;
+    }
+
+    @Subscribe
+    public void onInitialize(ProxyInitializeEvent event) {
+        if (plugin != null) {
+//            启动失败关闭
+            plugin.onInitialize();
+        }
+    }
+
+    @Subscribe
+    public void onDisable(ProxyShutdownEvent event) {
+        if (plugin != null) {
+            plugin.onDisable();
+        }
+//        关闭事件
+
     }
 }
