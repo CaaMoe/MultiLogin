@@ -1,7 +1,7 @@
 # MultiLogin
 
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
-[![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+[![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
 支持多 Yggdrasil 混合验证共存的外置登入插件
 
@@ -212,4 +212,4 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
 | %multilogin_yggdrasilpath% | 玩家所在的 Yggdrasil 账户验证服务器的路径|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
-群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+群互相讨论: [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
