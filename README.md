@@ -1,49 +1,52 @@
 # MultiLogin
 
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
-[![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+[![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 
-支持多 Yggdrasil 混合验证共存的外置登入插件
+## 什么是外置登录和多外置登录共存？
+
+外置登录其实就是正版登录，在连接和登入服务器时验证账户身份，而不用在游戏内输入 “/login password” 和 “/register password confirm”
+来注册和登入。（详见 [authlib-injector 开源的游戏外登录规范](https://github.com/yushijinhun/authlib-injector)）
+
+多外置登录共存是能让一个服务器能支持使用多种不同的外置登录方式进行游戏的一种机制，比如某个服务器可以同时支持正版登录、统一通行证、皮肤战登录，从而不需要所谓的**一刀切**，强制用户注册更多的、不必要的账户。
 
 ## 功能特性
 
-* 多 Yggdrasil 共存
-* 高度可配置的 Yggdrasil 方式， 支持市面上几乎所有类型的 Yggdrasil 账户验证服务器
-* 账户安全机制
-    * 二次验证
-        * 限制只使用一种 Yggdrasil 登入方式，杜绝可能出现的重复 UUID 问题
-    * 用户名核查
-        * 阻止服务器内出现同名账户
-        * 可设置部分账户验证服务器下的玩家跳过重名检查
-        * 多 Yggdrasil 下分组设置的用户名正则匹配检查
-    * 支持多 Yggdrasil 下分组管理的白名系统
-    * 可设置占线登入机制
-* 可控制和生成玩家在游戏内的 UUID
-* PlaceholderAPI 变量支持 (Bukkit)
-* 自动修复多 Yggdrasil 情况下出现的皮肤问题
-
-## BStats 数据
-
-![BStats](https://bstats.org/signatures/bukkit/MultiLoginR.svg)
+* **多 Yggdrasil 共存** 支持更多的 Yggdrasil 账户验证服务器共存，比 YOP 的还要多
+* **高度可配置的 Yggdrasil 方式** 支持市面上几乎所有类型的 Yggdrasil 账户验证服务器
+* **账户安全机制** 限制只使用其中一种 Yggdrasil 登入方式，杜绝可能出现的重复 UUID 问题
+* **用户名核查** 阻止服务器内出现同名账户。
+* **抢注机制** 设置某一验证服务器下的玩家可以使用已被记录的用户名强制登入游戏
+* **正则检查** 多 Yggdrasil 下分组设置的用户名正则匹配检查
+* **高级白名单系统** 多 Yggdrasil 下分组管理的白名单系统
+* **重复登入机制** 可设置掉线或强登
+* **控制玩家在游戏内的 UUID** 一把锁，两把钥匙
+* **PlaceholderAPI 变量支持** Bukkit Only
+* **皮肤问题修复** 使正版在不装 CSL 的情况下也能看到外置登入的皮肤
+* **多端支持、超高兼容性** 支持 Velocity、Bungee、Bukkit甚至 Fabric 和插件模组端Arclight、CatServer [1.8+]
 
 ## 关于混合验证登入下的账户安全问题
 
-混合验证登入下有可能会出现同 UUID 账户， 而原版机制下的服务器程序只认 UUID， 一旦出现这种情况将会导致玩家间数据混乱和丢失，并且极难排查原因。
+由于 Minecraft 原版机制，玩家数据都是使用从外置登录传来的 UUID 作为主键进行读取和保存的，即一个外置服务器下是绝不可能存在有两个相同 UUID 的账户。 而多个外置服务器下是很有可能存在有两个相同 UUID
+的账户，这就使得**一旦出现这些账户，数据安全将难以保证，并且极难排查，这将是个毁灭性的后果。**
 
-MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩家只能通过其中一种 Yggdrasil 验证方式登入游戏， 杜绝了可能出现的重复 UUID 的问题，极大程度上保证了账户安全，理论上不会存在安全问题。
+MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置登入服务器的path**来判断是否允许登入游戏，这就使得重复 UUID 的两个账户杀一个留一个，从而极大的保证了数据安全。 比如 正版账户A 与 外置账户B 的 UUID
+重复，且 A 和 B 从未登入过服务器，当 A 抢先一步登入系统后，B 尝试登入时将会被踢出并且提示 `您只能通过 ‘正版’ 的登入方式进入游戏。`
 
-## 如何使用
+能不能让两个重复 UUID 的账户也能登入游戏并且又能保证数据安全呢？这当然可以，控制玩家在游戏内的 UUID 也是插件的一大特色功能。但是安全性等待考量，所以现在不行
 
-### 安装
+关于服务器内可能会出现同名问题，MultiLogin 当然也有考虑到（阻止服务器内出现同名账户）。并且还附加了一些有关用户名的实用功能，具体请看配置文件注释
+
+## 如何使用？
 
 与同类型程序相比，MultiLogin 不需要修改或添加任何服务端启动参数（不需要安装任何 authlib-injector 以及同类型前置 javaagent 程序）， 只需将适合服务端的插件本体丢入 plugins(mods)
 文件夹下即可。
 
-### 添加一个 Yggdrasil 账户验证服务器
+## 外置配置模板和添加一个外置服务器
 
 插件现在支持添加几乎所有类型的 Yggdrasil 账户验证服务器，具体设置方法如下：
 
-#### 模板：
+### 模板：
 
     # 这是一个示例配置：
     # 节点名称 'demo' 作为混合验证系统区分 Yggdrasil 验证服务器唯一性的凭据，设置好后请不要随意的去改动它，
@@ -163,7 +166,7 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
         # 默认值: 2
         skinRestorerRetry: 2
 
-#### 例子
+### 例子
 
 * 添加 Minecraft 原版验证服务器
 
@@ -212,4 +215,4 @@ MultiLogin 的二次验证就是专门来解决这个问题的，它能限制玩
 | %multilogin_yggdrasilpath% | 玩家所在的 Yggdrasil 账户验证服务器的路径|
 
 如果你在使用这个插件时有任何的疑问或建议，欢迎加入我们的 QQ
-群互相讨论: [![GitHub license](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+群互相讨论: [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
