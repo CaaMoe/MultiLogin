@@ -99,36 +99,6 @@ public class HttpUtil {
     }
 
     /**
-     * 编码下载链接
-     *
-     * @param url URL 字符串
-     * @return 编码后链接
-     * @throws UnsupportedEncodingException 编码异常
-     */
-    private static String urlEncode(String url) throws UnsupportedEncodingException {
-        StringBuilder sb;
-        if (url.startsWith("http://")) {
-            url = url.substring(7);
-            sb = new StringBuilder("http://");
-        } else if (url.startsWith("https://")) {
-            url = url.substring(8);
-            sb = new StringBuilder("https://");
-        } else {
-            sb = new StringBuilder();
-        }
-        var urls = url.split("/");
-        for (int i = 0; i < urls.length; i++) {
-            String ns = urls[i];
-            if (i != 0) ns = URLEncoder.encode(ns, "UTF-8");
-
-            sb.append(ns);
-            if (i != urls.length - 1)
-                sb.append("/");
-        }
-        return sb.toString();
-    }
-
-    /**
      * 向目标 URL 发起 HTTP POST 请求
      *
      * @param url         目标 URL

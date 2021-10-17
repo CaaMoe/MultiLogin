@@ -9,7 +9,7 @@ import moe.caa.multilogin.core.util.HttpUtil;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.net.URLEncoder;
 
 /**
  * 代表一个验证请求的线程
@@ -20,9 +20,7 @@ public class YggdrasilAuthTask implements Runnable {
     private final YggdrasilService service;
     private final BaseUserLogin user;
     private final Callback<YggdrasilAuthTask> callback;
-    private final AtomicBoolean isCancel = new AtomicBoolean(false);
     private final MultiCore core;
-    private boolean done = false;
     @Getter
     private HasJoinedResponse response;
 
@@ -45,15 +43,6 @@ public class YggdrasilAuthTask implements Runnable {
     }
 
     /**
-     * 设置执行后是否回调
-     *
-     * @param cancel 是否回调
-     */
-    public void setCancel(boolean cancel) {
-        this.isCancel.set(cancel);
-    }
-
-    /**
      * 开始进行网络验证
      */
     @Override
@@ -63,18 +52,8 @@ public class YggdrasilAuthTask implements Runnable {
         } catch (Throwable e) {
             throwable = e;
         } finally {
-            done = true;
-            if (!isCancel.get()) callback.solve(this);
+            callback.solve(this);
         }
-    }
-
-    /**
-     * 判断任务是否已经完成
-     *
-     * @return 任务是否已经完成
-     */
-    public boolean isDone() {
-        return done;
     }
 
     /**
@@ -96,7 +75,7 @@ public class YggdrasilAuthTask implements Runnable {
         );
         return MultiCore.getGson().fromJson(
                 HttpUtil.httpGet(
-                        new URL(service.buildUrl(user.getUsername(), user.getServerId(), user.getIp())),
+                        new URL(service.buildUrl(URLEncoder.encode(user.getUsername(), "UTF-8"), user.getServerId(), user.getIp())),
                         (int) core.getConfig().getServicesTimeOut(),
                         service.getAuthRetry()
                 ),
