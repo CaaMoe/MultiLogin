@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 public class BukkitAuthCore {
     @Getter
@@ -34,11 +33,10 @@ public class BukkitAuthCore {
 
     public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
         try {
-            CountDownLatch latch = new CountDownLatch(1);
-            BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress(), latch);
+            BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress());
             MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
-            latch.await();
             loginCachedHashSet.add(login);
+            loginCachedHashSet.clearInValid();
             if (login.getUser() != null)
                 bufferUsers.add(login.getUser());
             return generate(login.getResponse(), user.getName());
