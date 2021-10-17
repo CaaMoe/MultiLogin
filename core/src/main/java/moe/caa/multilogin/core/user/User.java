@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -10,13 +10,21 @@ import java.util.UUID;
  * 代表一位玩家的数据
  */
 @Data
-@AllArgsConstructor
 public class User {
     private final UUID onlineUuid;
     private String currentName;
     private UUID redirectUuid;
     private String yggdrasilService;
     private boolean whitelist;
+    private transient YggdrasilService service;
+
+    public User(UUID onlineUuid, String currentName, UUID redirectUuid, String yggdrasilService, boolean whitelist) {
+        this.onlineUuid = onlineUuid;
+        this.currentName = currentName;
+        this.redirectUuid = redirectUuid;
+        this.yggdrasilService = yggdrasilService;
+        this.whitelist = whitelist;
+    }
 
     @Override
     public boolean equals(Object o) {

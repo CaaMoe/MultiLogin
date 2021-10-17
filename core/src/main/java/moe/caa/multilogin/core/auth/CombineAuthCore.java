@@ -70,6 +70,7 @@ public class CombineAuthCore {
             return;
         }
         User user = verifyAuthResult.getUser();
+        user.setService(yggdrasilAuthResult.getService());
         core.getLogger().log(LoggerLevel.INFO, String.format("Authentication passed, login allowed. (user: %s, in game uuid: %s, online uuid: %s, yggdrasil: %s)",
                 user.getCurrentName(), user.getRedirectUuid(), user.getOnlineUuid(), user.getYggdrasilService()));
         HasJoinedResponse response = generateHasJoinedGameProfile(yggdrasilAuthResult, verifyAuthResult);

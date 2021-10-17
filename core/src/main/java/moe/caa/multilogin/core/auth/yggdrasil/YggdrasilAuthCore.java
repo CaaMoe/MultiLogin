@@ -56,9 +56,7 @@ public class YggdrasilAuthCore {
                 var callback = (Callback<YggdrasilAuthTask>) (task) -> {
                     if (task.getThrowable() != null) {
                         down.set(true);
-                        return;
-                    }
-                    if (task.getResponse() != null && task.getResponse().isSucceed()) {
+                    } else if (task.getResponse() != null && task.getResponse().isSucceed()) {
                         // 有两个登入验证凭据?
                         // 不，这绝对不可能
                         // 除非是使用了重复的或是不安全的 Yggdrasil 账户验证服务器
@@ -74,6 +72,7 @@ public class YggdrasilAuthCore {
                         succeed.set(task);
                         // 有结果后立刻释放执行线程
                         latch.countDown();
+                        return;
                     }
                     currentAuthTasks.remove(task);
                     if (currentAuthTasks.isEmpty()) latch.countDown();
