@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +87,11 @@ public class YggdrasilAuthCore {
                     zs = true;
                 }
                 //阻塞
-                if (zs) latch.await();
+                if (zs) {
+                    if (!latch.await(1000 * 60, TimeUnit.MILLISECONDS)) {
+                        return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.SERVER_DOWN, null, null);
+                    }
+                }
                 YggdrasilAuthTask task = succeed.get();
                 if (task == null) continue;
                 // 直接返回
