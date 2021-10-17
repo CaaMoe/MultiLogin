@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
