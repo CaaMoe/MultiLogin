@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
@@ -18,6 +19,7 @@ public class YggdrasilAuthTask implements Runnable {
 
     @Getter
     private final YggdrasilService service;
+    @Getter(value = AccessLevel.PROTECTED)
     private final BaseUserLogin user;
     private final Callback<YggdrasilAuthTask> callback;
     private final MultiCore core;

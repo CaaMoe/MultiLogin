@@ -42,6 +42,8 @@ public class CombineAuthCore {
         // 进行 Yggdrasil 在线验证
         var yggdrasilAuthResult = yggdrasilAuthCore.yggdrasilAuth(userLogin);
         // Yggdrasil 在线验证失败的处置
+
+        // TODO: 2021/10/19 user.name != ygg result name 
         if (!yggdrasilAuthResult.isSuccess()) {
             if (yggdrasilAuthResult.getReason() == YggdrasilAuthReasonEnum.SERVER_DOWN) {
                 userLogin.disconnect(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_server_down", FormatContent.empty()));

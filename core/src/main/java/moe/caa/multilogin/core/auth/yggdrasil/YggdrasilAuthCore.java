@@ -56,6 +56,9 @@ public class YggdrasilAuthCore {
                 // 回调器
                 var callback = (Callback<YggdrasilAuthTask>) (task) -> {
                     if (task.getThrowable() != null) {
+                        core.getLogger().log(LoggerLevel.DEBUG, "An exception was encountered during validation.", task.getThrowable());
+                        core.getLogger().log(LoggerLevel.DEBUG, "user: " + task.getUser());
+                        core.getLogger().log(LoggerLevel.DEBUG, "service: " + task.getService().getPath());
                         down.set(true);
                     } else if (task.getResponse() != null && task.getResponse().isSucceed()) {
                         // 有两个登入验证凭据?
@@ -64,7 +67,7 @@ public class YggdrasilAuthCore {
                         synchronized (succeed) {
                             if (succeed.get() != null) {
                                 core.getLogger().log(LoggerLevel.WARN, "Maybe you have one or more Yggdrasil servers with duplicate configurations?");
-                                core.getLogger().log(LoggerLevel.WARN, String.format("Because %s has multiple login credentials.", task.getResponse().getName()));
+                                core.getLogger().log(LoggerLevel.WARN, String.format("Because %s has multiple login credentials.", task.getUser().getUsername()));
                                 core.getLogger().log(LoggerLevel.WARN, "DON'T IGNORE THIS WARNING.");
                                 return;
                             }

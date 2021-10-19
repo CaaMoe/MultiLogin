@@ -27,7 +27,8 @@ public class HasJoinedResponseSerializer implements JsonSerializer<HasJoinedResp
         if (json.isJsonObject()) {
             var root = json.getAsJsonObject();
             ret.setId(ValueUtil.getUuidOrNull(root.get("id").getAsString()));
-            ret.setName(root.get("name").getAsString());
+            if (root.has("name"))
+                ret.setName(root.get("name").getAsString());
             var propertiesJsonElement = root.get("properties");
             if (propertiesJsonElement.isJsonObject()) {
                 JsonObject object = propertiesJsonElement.getAsJsonObject();
