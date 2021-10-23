@@ -7,11 +7,14 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import moe.caa.multilogin.core.command.SecondaryConfirmationHandler;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 
 @AllArgsConstructor
 public abstract class BaseCommand {
+    @Getter(AccessLevel.PROTECTED)
+    private static final SecondaryConfirmationHandler secondaryConfirmationHandler = new SecondaryConfirmationHandler();
 
     @Getter(AccessLevel.PROTECTED)
     private final MultiCore core;

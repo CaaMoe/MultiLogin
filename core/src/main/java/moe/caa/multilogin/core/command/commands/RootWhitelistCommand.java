@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.arguments.StringArgumentType;
+import moe.caa.multilogin.core.impl.CallbackTransmit;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.user.User;
@@ -40,7 +41,27 @@ public class RootWhitelistCommand extends BaseCommand {
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_WHITELIST_LIST))
                                 .executes(this::executeList)
                         )
+                        .then(literal("clearCache")
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_WHITELIST_CLEAR_CACHE))
+                                .executes(this::executeClearCache)
+                        )
         );
+    }
+
+    private int executeClearCache(CommandContext<ISender> context) {
+        context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_secondary_confirmation", FormatContent.createContent(
+                FormatContent.FormatEntry.builder().name("confirm").content(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_clear_confirm", FormatContent.empty())).build()
+        )));
+
+        CallbackTransmit<Void> cb = value -> {
+            int i = getCore().getSqlManager().getCacheWhitelistDataHandler().removeAllCacheWhitelist();
+            context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_cleared", FormatContent.createContent(
+                    FormatContent.FormatEntry.builder().name("count").content(i).build()
+            )));
+        };
+
+        getSecondaryConfirmationHandler().submit(context.getSource(), cb);
+        return 0;
     }
 
     @SneakyThrows

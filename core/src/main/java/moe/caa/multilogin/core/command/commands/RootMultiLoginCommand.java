@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
+import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -26,7 +27,19 @@ public class RootMultiLoginCommand extends BaseCommand {
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_UPDATE))
                                 .executes(this::executeUpdate)
                         )
+                        .then(literal("confirm")
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
+                                .executes(this::executeConfirm)
+                        )
         );
+    }
+
+    @SneakyThrows
+    private int executeConfirm(CommandContext<ISender> context) {
+        if (!getSecondaryConfirmationHandler().confirm(context.getSource())) {
+            context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_secondary_confirmation_unknown", FormatContent.empty()));
+        }
+        return 0;
     }
 
     private int executeUpdate(CommandContext<ISender> context) {
