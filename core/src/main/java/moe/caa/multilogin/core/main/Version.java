@@ -15,15 +15,15 @@ public class Version {
     private final Type greekAlphabet;
     private final int phaseVersion;
 
-    public static Version fromString(String input){
+    public static Version fromString(String input) {
         int majorVersion;
         int minorVersion;
         Type greekAlphabet;
         int phaseVersion;
         String[] args = input.split("\\.");
-        if(args.length < 2) throw new IllegalArgumentException(input);
+        if (args.length < 2) throw new IllegalArgumentException(input);
         majorVersion = Integer.parseInt(args[0]);
-        if(!args[1].contains("-")) {
+        if (!args[1].contains("-")) {
             minorVersion = Integer.parseInt(args[1]);
             return new Version(majorVersion, minorVersion, Type.RELEASE, -1);
         }
@@ -51,19 +51,19 @@ public class Version {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(majorVersion).append('.').append(minorVersion);
-        if(greekAlphabet != Type.RELEASE){
+        if (greekAlphabet != Type.RELEASE) {
             sb.append('-').append(greekAlphabet.name()).append('.').append(phaseVersion);
         }
         return sb.toString();
     }
 
-    public boolean shouldUpdate(Version version){
-        if(version.majorVersion > majorVersion) return true;
-        if(version.majorVersion < majorVersion) return false;
-        if(version.minorVersion > minorVersion) return true;
-        if(version.minorVersion < minorVersion) return false;
-        if(version.greekAlphabet.level > greekAlphabet.level) return true;
-        if(version.greekAlphabet.level < greekAlphabet.level) return false;
+    public boolean shouldUpdate(Version version) {
+        if (version.majorVersion > majorVersion) return true;
+        if (version.majorVersion < majorVersion) return false;
+        if (version.minorVersion > minorVersion) return true;
+        if (version.minorVersion < minorVersion) return false;
+        if (version.greekAlphabet.level > greekAlphabet.level) return true;
+        if (version.greekAlphabet.level < greekAlphabet.level) return false;
         return version.phaseVersion > phaseVersion;
     }
 
@@ -74,7 +74,8 @@ public class Version {
         RELEASE(4);
 
         private final int level;
-        Type(int level){
+
+        Type(int level) {
             this.level = level;
         }
     }

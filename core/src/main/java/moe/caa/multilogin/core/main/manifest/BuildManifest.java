@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
+import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.Date;
 import java.util.Locale;
@@ -21,7 +22,7 @@ public class BuildManifest {
     private final String buildTimestamp = "@Build-Timestamp@";
     private final String version = "@MultiLogin-Version@";
 
-    public void read() throws InterruptedException {
+    public void read(MultiCore core) throws InterruptedException {
         BuildType type = BuildType.valueOf(buildType.toUpperCase(Locale.ROOT));
         Date date = new Date(Long.parseLong(buildTimestamp));
         if (type != FINAL) {
@@ -35,6 +36,9 @@ public class BuildManifest {
             MultiLogger.getLogger().log(LoggerLevel.WARN, "################################################");
             if (type == FAST) return;
             MultiLogger.getLogger().log(LoggerLevel.WARN, "服务器将在 15 秒后继续启动");
+            core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
+                core.getUpdater().check();
+            });
             Thread.sleep(15 * 1000);
         }
     }

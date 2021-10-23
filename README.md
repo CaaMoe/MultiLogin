@@ -199,6 +199,7 @@ MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置�
 | 命令 | 权限 | 简介 |
 |  ----  | ----  | --- |
 | /multilogin reload   | command.multilogin.reload| 重新加载配置文件|
+| /multilogin update   | command.multilogin.update| 检查更新版本|
 | /whitelist add &lt;name&#124;uuid&gt;     | command.multilogin.whitelist.add| 将 target 添加到白名单中|
 | /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
 | /whitelist list         | command.multilogin.whitelist.list| 获得白名单列表|

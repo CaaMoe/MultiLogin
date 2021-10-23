@@ -89,8 +89,9 @@ public class MultiCore {
      * @return 初始化是否成功
      */
     private boolean init0() throws Throwable {
+        updater = new CheckUpdater(this);
         try {
-            new BuildManifest().read();
+            new BuildManifest().read(this);
         } catch (Exception e) {
             getLogger().log(LoggerLevel.ERROR, "FAILED TO READ ARCHIVES ENTRY.", e);
         }
@@ -128,8 +129,7 @@ public class MultiCore {
         }
 
         metricsLite = new MetricsLite(plugin);
-        updater = new CheckUpdater(this);
-        plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 0, 1000 * 60 * 60 * 24);
+        plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 1000 * 60 * 60 * 24, 1000 * 60 * 60 * 24);
 
 
         logger.log(LoggerLevel.INFO, "插件加载完毕");

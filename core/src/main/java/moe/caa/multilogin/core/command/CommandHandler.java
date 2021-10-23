@@ -34,7 +34,7 @@ public class CommandHandler {
     }
 
     public void execute(ISender sender, String[] args) {
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Executing command: %s. (%s)", String.join("", args), sender.getName()));
+        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Executing command: %s. (%s)", String.join(" ", args), sender.getName()));
         core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
             try {
                 dispatcher.execute(String.join(" ", args), sender);
