@@ -7,6 +7,7 @@ allprojects {
 subprojects {
     repositories {
         maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://libraries.minecraft.net" }
         mavenCentral()
     }
 

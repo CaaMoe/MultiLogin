@@ -23,6 +23,7 @@ shadowJar {
     relocate 'com.google.protobuf', 'moe.caa.multilogin.lib.com.google.protobuf'
     relocate 'google.protobuf', 'moe.caa.multilogin.lib.google.protobuf'
     relocate 'org.yaml.snakeyaml', 'moe.caa.multilogin.lib.org.yaml.snakeyaml'
+    relocate 'com.mojang.brigadier', 'moe.caa.multilogin.lib.com.mojang.brigadier'
 }
 
 artifacts {

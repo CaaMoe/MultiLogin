@@ -80,6 +80,15 @@ public class Library {
                         .mainClass("org.yaml.snakeyaml.DumperOptions")
                         .forwardPackage("org.yaml.snakeyaml")
                         .relocate("moe.caa.multilogin.lib.org.yaml.snakeyaml")
+                        .build(),
+                Library.builder()
+                        .group("com.mojang")
+                        .name("brigadier")
+                        .version("1.0.18")
+                        .mainClass("com.mojang.brigadier.CommandDispatcher")
+                        .forwardPackage("com.mojang.brigadier")
+                        .relocate("moe.caa.multilogin.lib.com.mojang.brigadier")
+                        .downloadUrl("https://libraries.minecraft.net/com/mojang/brigadier/1.0.18/brigadier-1.0.18.jar")
                         .build()
         );
         JAR_RELOCATOR_LIBRARIES = Arrays.asList(
@@ -144,6 +153,11 @@ public class Library {
     private final String startsPackName;
 
     /**
+     * 指定下载链接
+     */
+    private String downloadUrl;
+
+    /**
      * 生成 Jar 包名称
      *
      * @return Jar 包名称
@@ -205,6 +219,9 @@ public class Library {
      * @return 下载链接
      */
     public String generateDownloadUrl() {
+        if(downloadUrl != null && !downloadUrl.isEmpty()){
+            return downloadUrl;
+        }
         // 例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
         StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
         String[] groupSplit = group.split("\\.");
