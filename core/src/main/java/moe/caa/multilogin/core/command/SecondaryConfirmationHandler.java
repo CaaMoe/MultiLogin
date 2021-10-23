@@ -13,22 +13,26 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SecondaryConfirmationHandler {
     private final ConcurrentHashMap<Sender, Entry> concurrentHashMap = new ConcurrentHashMap<>();
 
-    public void submit(ISender sender, CallbackTransmit<Void> callbackTransmit){
+    public void submit(ISender sender, CallbackTransmit<Void> callbackTransmit) {
         concurrentHashMap.put(new Sender(sender), new Entry(callbackTransmit));
     }
 
     public boolean confirm(ISender sender) throws Exception {
         Entry entry = concurrentHashMap.get(new Sender(sender));
-        if(entry == null) return false;
-        if(entry.failureTime > System.currentTimeMillis()){
+        if (entry == null) return false;
+        if (entry.failureTime > System.currentTimeMillis()) {
             entry.confirm();
-            concurrentHashMap.remove(new Sender(sender));
+            remove(sender);
             return true;
         }
         return false;
     }
 
-    private static class Sender{
+    public void remove(ISender sender) {
+        concurrentHashMap.remove(new Sender(sender));
+    }
+
+    private static class Sender {
         private final boolean console;
         private final UUID uuid;
 
@@ -37,7 +41,7 @@ public class SecondaryConfirmationHandler {
             this.uuid = uuid;
         }
 
-        private Sender(ISender sender){
+        private Sender(ISender sender) {
             if (!sender.isPlayer()) {
                 console = true;
                 uuid = null;
@@ -52,7 +56,7 @@ public class SecondaryConfirmationHandler {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Sender sender = (Sender) o;
-            if(console && sender.console) return true;
+            if (console && sender.console) return true;
             return console == sender.console && Objects.equals(uuid, sender.uuid);
         }
 
@@ -62,7 +66,7 @@ public class SecondaryConfirmationHandler {
         }
     }
 
-    private static class Entry{
+    private static class Entry {
         private final long failureTime;
         private final CallbackTransmit<Void> callbackTransmit;
 

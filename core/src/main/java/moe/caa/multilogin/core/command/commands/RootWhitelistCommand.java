@@ -55,9 +55,14 @@ public class RootWhitelistCommand extends BaseCommand {
 
         CallbackTransmit<Void> cb = value -> {
             int i = getCore().getSqlManager().getCacheWhitelistDataHandler().removeAllCacheWhitelist();
-            context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_cleared", FormatContent.createContent(
-                    FormatContent.FormatEntry.builder().name("count").content(i).build()
-            )));
+            if (i == 0) {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_clear_empty", FormatContent.empty()));
+            } else {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_cleared", FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("count").content(i).build()
+                )));
+            }
+
         };
 
         getSecondaryConfirmationHandler().submit(context.getSource(), cb);

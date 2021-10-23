@@ -7,9 +7,15 @@ import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.main.Version;
+import moe.caa.multilogin.core.user.User;
 import moe.caa.multilogin.core.util.FormatContent;
+import moe.caa.multilogin.core.util.GroupBurstArrayList;
+import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class RootMultiLoginCommand extends BaseCommand {
     public RootMultiLoginCommand(MultiCore core) {
@@ -31,7 +37,56 @@ public class RootMultiLoginCommand extends BaseCommand {
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
                                 .executes(this::executeConfirm)
                         )
+                        .then(literal("list")
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LIST))
+                                .executes(this::executeList)
+                        )
         );
+    }
+
+    @SneakyThrows
+    private int executeList(CommandContext<ISender> context) {
+        List<User> users = getCore().getSqlManager().getUserDataHandler().getAllUserEntryOrderYggdrasilService();
+        getCore().getPlugin().getRunServer().getScheduler().runTask(() -> {
+            GroupBurstArrayList<User> groupBurstArrayList = new GroupBurstArrayList<>();
+            ArrayList<User> temp = new ArrayList<>();
+            String currentYggdrasilPath = null;
+            YggdrasilService currentYggdrasil = null;
+            for (User user : users) {
+                if (!getCore().getPlugin().getRunServer().getPlayerManager().hasOnline(user.getRedirectUuid()))
+                    continue;
+                if (!user.getYggdrasilService().equals(currentYggdrasilPath)) {
+                    groupBurstArrayList.offer(temp);
+                    temp = new ArrayList<>();
+                    currentYggdrasilPath = user.getYggdrasilService();
+                    currentYggdrasil = getCore().getYggdrasilServicesHandler().getYggdrasilService(currentYggdrasilPath);
+                }
+                user.setService(currentYggdrasil);
+                temp.add(user);
+            }
+            groupBurstArrayList.offer(temp);
+            int size = groupBurstArrayList.size();
+            if (size == 0) {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_list_empty"));
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+                while (groupBurstArrayList.hasNext()) {
+                    ArrayList<User> next = groupBurstArrayList.next();
+                    String list = next.stream().map(User::getCurrentName).map(s -> "§7" + s).collect(Collectors.joining(", "));
+                    String nameOrPath = next.get(0).getService() == null ? next.get(0).getYggdrasilService() : next.get(0).getService().getName();
+                    String pad = getCore().getLanguageHandler().getMessage("command_message_multilogin_entry", FormatContent.createContent(
+                            FormatContent.FormatEntry.builder().name("name_or_path").content(nameOrPath).build(),
+                            FormatContent.FormatEntry.builder().name("list").content(list).build()
+                    ));
+                    stringBuilder.append(pad);
+                }
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_list", FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("count").content(size).build(),
+                        FormatContent.FormatEntry.builder().name("list_entries").content(stringBuilder.toString()).build()
+                )));
+            }
+        });
+        return 0;
     }
 
     @SneakyThrows

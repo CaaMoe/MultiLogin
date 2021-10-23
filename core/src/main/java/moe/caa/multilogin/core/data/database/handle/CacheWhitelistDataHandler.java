@@ -75,7 +75,7 @@ public class CacheWhitelistDataHandler implements IDataHandler {
      * @return 影响的数据量
      * @throws SQLException 移除时异常
      */
-    public int removeAllCacheWhitelist() throws SQLException{
+    public int removeAllCacheWhitelist() throws SQLException {
         try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s",
                 CACHE_WHITELIST_TABLE_NAME
         ))) {

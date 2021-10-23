@@ -13,7 +13,7 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 @AllArgsConstructor
 public abstract class BaseCommand {
-    @Getter(AccessLevel.PROTECTED)
+    @Getter
     private static final SecondaryConfirmationHandler secondaryConfirmationHandler = new SecondaryConfirmationHandler();
 
     @Getter(AccessLevel.PROTECTED)
