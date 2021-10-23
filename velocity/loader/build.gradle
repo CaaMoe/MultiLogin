@@ -16,14 +16,8 @@ dependencies {
     implementation project(":core:loader")
     compileOnly 'com.velocitypowered:velocity-api:3.0.1'
     annotationProcessor 'com.velocitypowered:velocity-api:3.0.1'
-    compileOnly 'io.netty:netty-all:4.1.68.Final'
+    compileOnly 'io.netty:netty-all:4.1.69.Final'
     compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
-
-
-    // VELOCITY
-    implementation group: 'org.ow2.asm', name: 'asm', version: '9.2'
-    implementation group: 'org.ow2.asm', name: 'asm-commons', version: '9.2'
-    implementation group: 'me.lucko', name: 'jar-relocator', version: '1.5'
 }
 
 shadowJar {
@@ -36,10 +30,6 @@ shadowJar {
         archiveVersion.set(ver)
     }
     archiveClassifier.set("")
-
-    // VELOCITY
-    relocate 'org.objectweb.asm', 'moe.caa.multilogin.lib.org.objectweb.asm'
-    relocate 'me.lucko', 'moe.caa.multilogin.lib.me.lucko'
 
     from {
         project(':velocity').tasks.shadowJar.archiveFile

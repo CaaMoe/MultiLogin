@@ -15,10 +15,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -84,8 +81,8 @@ public class MultiLoginCoreLoader {
 
         // 这里的依赖只包含重定向工具库，运行时不需要加载他们
         for (Library library : Library.getJAR_RELOCATOR_LIBRARIES()) {
-            // 服务端有这个库的，略去
-            if (library.isLoaded(getClass().getClassLoader())) continue;
+            // 10/23/21 禁止略去
+            // if (library.isLoaded(getClass().getClassLoader())) continue;
             // 这里不需要也不允许加入到load列表中去
             // needLoad.add(library);
             // 存在且大小不为 0kb 的 Jar 包，略去
@@ -103,10 +100,13 @@ public class MultiLoginCoreLoader {
 
         // 这里使用 URLClassLoader 加载重定向工具库包
         List<URL> urls = new ArrayList<>();
+        // 添加包名作为高优先级
+        Set<String> packageName = new HashSet<>();
         for (Library library : Library.getJAR_RELOCATOR_LIBRARIES()) {
+            packageName.add(library.getStartsPackName());
             urls.add(new File(librariesFolder, library.generateJarName()).toURI().toURL());
         }
-        currentUrlClassLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+        currentUrlClassLoader = new PriorURLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader(), packageName);
 
         // 加载反射值
         Class<?> jarRelocatorClass = Class.forName("me.lucko.jarrelocator.JarRelocator", true, currentUrlClassLoader);
