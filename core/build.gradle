@@ -2,6 +2,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id "net.kyori.blossom" version "1.3.0"
 }
 
 dependencies {
@@ -38,7 +39,7 @@ processResources {
     ]
 }
 
-jar {
+blossom {
     env = System.getProperty("env", "AUTO")
     if (env.toLowerCase() == "final") {
         ver = (project.plugin_version as String)
@@ -46,11 +47,13 @@ jar {
         ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
     }
 
-    manifest.attributes(
-            "Build-Timestamp": System.currentTimeMillis(),
-            "MultiLogin-Version": ver,
-            "MultiLogin-Build-Type": env
-    )
+    replaceTokenIn('src/main/java/moe/caa/multilogin/core/main/manifest/BuildManifest.java')
+    replaceToken '@MultiLogin-Build-Type@', env
+    replaceTokenIn('src/main/java/moe/caa/multilogin/core/main/manifest/BuildManifest.java')
+    replaceToken '@Build-Timestamp@', System.currentTimeMillis()
+    replaceTokenIn('src/main/java/moe/caa/multilogin/core/main/manifest/BuildManifest.java')
+    replaceToken '@MultiLogin-Version@', ver
+
 }
 
 artifacts {

@@ -16,7 +16,7 @@ import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
-import moe.caa.multilogin.core.main.manifest.ManifestReader;
+import moe.caa.multilogin.core.main.manifest.BuildManifest;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.util.IOUtil;
 import moe.caa.multilogin.core.util.YamlReader;
@@ -90,9 +90,9 @@ public class MultiCore {
      */
     private boolean init0() throws Throwable {
         try {
-            new ManifestReader().read();
+            new BuildManifest().read();
         } catch (Exception e) {
-            getLogger().log(LoggerLevel.DEBUG, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
+            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ ARCHIVES ENTRY.", e);
         }
 
         // 初始化和读取高级配置文件
