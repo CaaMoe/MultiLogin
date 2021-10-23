@@ -14,11 +14,11 @@ public class MultiLoginCommand implements SimpleCommand {
 
     @Override
     public void execute(Invocation invocation) {
-        plugin.getCore().getCmdHandler().execute(new VelocitySender(invocation.source()), invocation.alias(), invocation.arguments());
+        plugin.getCore().getCommandHandler().execute(new VelocitySender(invocation.source()), invocation.alias(), invocation.arguments());
     }
 
     @Override
     public List<String> suggest(Invocation invocation) {
-        return plugin.getCore().getCmdHandler().tabComplete(new VelocitySender(invocation.source()), invocation.alias(), invocation.arguments());
+        return plugin.getCore().getCommandHandler().tabComplete(new VelocitySender(invocation.source()), invocation.alias(), invocation.arguments());
     }
 }

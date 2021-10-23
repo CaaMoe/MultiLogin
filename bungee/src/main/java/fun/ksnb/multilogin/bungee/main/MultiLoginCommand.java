@@ -13,11 +13,11 @@ public class MultiLoginCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        MultiLoginBungeePluginBootstrap.getInstance().getCore().getCmdHandler().execute(new BungeeSender(sender), args);
+        MultiLoginBungeePluginBootstrap.getInstance().getCore().getCommandHandler().execute(new BungeeSender(sender), args);
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return MultiLoginBungeePluginBootstrap.getInstance().getCore().getCmdHandler().tabComplete(new BungeeSender(sender), args);
+        return MultiLoginBungeePluginBootstrap.getInstance().getCore().getCommandHandler().tabComplete(new BungeeSender(sender), args);
     }
 }

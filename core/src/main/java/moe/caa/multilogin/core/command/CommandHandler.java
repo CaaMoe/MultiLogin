@@ -2,6 +2,8 @@ package moe.caa.multilogin.core.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
 import moe.caa.multilogin.core.command.commands.RootMultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.RootWhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
@@ -10,14 +12,18 @@ import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class CMDHandler {
+/**
+ * 命令处理程序
+ */
+public class CommandHandler {
     private final CommandDispatcher<ISender> dispatcher = new CommandDispatcher<>();
     private final MultiCore core;
 
-    public CMDHandler(MultiCore core) {
+    public CommandHandler(MultiCore core) {
         this.core = core;
     }
 
@@ -45,7 +51,19 @@ public class CMDHandler {
     }
 
     public List<String> tabComplete(ISender sender, String[] ns) {
-        return Collections.emptyList();
+        CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(String.join(" ", ns), sender));
+        List<String> ret = new ArrayList<>();
+        try {
+            Suggestions suggestions1 = suggestions.get();
+            for (Suggestion suggestion : suggestions1.getList()) {
+                ret.add(suggestion.getText());
+            }
+        } catch (Exception e) {
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while completing the command.", e);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + String.join(" ", ns));
+        }
+        return ret;
     }
 
 

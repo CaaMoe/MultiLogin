@@ -8,6 +8,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * 修复的中文指令参数阅读程序
+ */
 public class StringArgumentType implements ArgumentType<String> {
     private static final Collection<String> EXAMPLES = Arrays.asList(
             "string",

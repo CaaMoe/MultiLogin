@@ -8,6 +8,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
+/**
+ * 自定义消息
+ */
 public class BuiltInExceptions implements BuiltInExceptionProvider {
     private final Dynamic2CommandExceptionType DOUBLE_TOO_SMALL;
     private final Dynamic2CommandExceptionType DOUBLE_TOO_BIG;

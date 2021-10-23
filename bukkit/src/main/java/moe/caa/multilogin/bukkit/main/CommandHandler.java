@@ -17,12 +17,12 @@ public class CommandHandler implements TabCompleter, CommandExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return plugin.getCore().getCmdHandler().tabComplete(new BukkitSender(commandSender), s, strings);
+        return plugin.getCore().getCommandHandler().tabComplete(new BukkitSender(commandSender), s, strings);
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        plugin.getCore().getCmdHandler().execute(new BukkitSender(commandSender), s, strings);
+        plugin.getCore().getCommandHandler().execute(new BukkitSender(commandSender), s, strings);
         return true;
     }
 }

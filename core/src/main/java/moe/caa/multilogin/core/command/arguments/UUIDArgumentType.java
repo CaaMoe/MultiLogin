@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * UUID 参数阅读程序
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UUIDArgumentType implements ArgumentType<UUID> {
     private static final Collection<String> EXAMPLES = Arrays.asList(
