@@ -219,7 +219,7 @@ public class Library {
      * @return 下载链接
      */
     public String generateDownloadUrl() {
-        if(downloadUrl != null && !downloadUrl.isEmpty()){
+        if (downloadUrl != null && !downloadUrl.isEmpty()) {
             return downloadUrl;
         }
         // 例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar

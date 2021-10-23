@@ -1,7 +1,6 @@
 package fun.ksnb.multilogin.bungee.main;
 
 import fun.ksnb.multilogin.bungee.impl.BungeeSender;
-import moe.caa.multilogin.core.command.CommandArguments;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -14,13 +13,11 @@ public class MultiLoginCommand extends Command implements TabExecutor {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        MultiLoginBungeePluginBootstrap.getInstance().getCore().getCommandHandler()
-                .executeAsync(new BungeeSender(sender), new CommandArguments(getName(), args));
+        MultiLoginBungeePluginBootstrap.getInstance().getCore().getCmdHandler().execute(new BungeeSender(sender), args);
     }
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return MultiLoginBungeePluginBootstrap.getInstance().getCore().getCommandHandler()
-                .tabComplete(new BungeeSender(sender), new CommandArguments(getName(), args));
+        return MultiLoginBungeePluginBootstrap.getInstance().getCore().getCmdHandler().tabComplete(new BungeeSender(sender), args);
     }
 }

@@ -8,7 +8,7 @@ import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
-import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.command.CMDHandler;
 import moe.caa.multilogin.core.data.config.AdvancedSetting;
 import moe.caa.multilogin.core.data.config.GeneralConfig;
 import moe.caa.multilogin.core.data.database.SQLManager;
@@ -44,7 +44,7 @@ public class MultiCore {
 
     private final CombineAuthCore authCore;
     private final SkinRestorerCore restorerCore;
-    private final CommandHandler commandHandler;
+    private final CMDHandler cmdHandler;
 
     private MetricsLite metricsLite;
     private CheckUpdater updater;
@@ -66,7 +66,7 @@ public class MultiCore {
         sqlManager = new SQLManager(this);
         authCore = new CombineAuthCore(this);
         restorerCore = new SkinRestorerCore(this);
-        commandHandler = new CommandHandler(this);
+        cmdHandler = new CMDHandler(this);
     }
 
     /**
@@ -109,6 +109,8 @@ public class MultiCore {
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         // 连接数据库操作
         if (!sqlManager.init(config.getReader().get("sql", YamlReader.class))) return false;
+        // 注册命令
+        cmdHandler.init();
         // 后端实现任务
         plugin.initService();
         plugin.initOther();
