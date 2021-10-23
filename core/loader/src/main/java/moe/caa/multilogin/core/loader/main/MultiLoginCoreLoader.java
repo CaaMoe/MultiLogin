@@ -44,21 +44,22 @@ public class MultiLoginCoreLoader {
     /**
      * 开始加载这群依赖项目
      */
-    public boolean start() {
+    public boolean startLoading() {
         try {
-            start0();
-            return true;
+            startLoading0();
+            return false;
         } catch (Throwable e) {
             sectionLoader.loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED WHILE PROCESSING A DEPENDENCY", e);
+            sectionLoader.loggerLog(Level.SEVERE, String.format("PLEASE DELETE '%s' AND TRY AGAIN.", librariesFolder.getAbsolutePath()), null);
             sectionLoader.shutdown();
-            return false;
+            return true;
         }
     }
 
     /**
      * 开始加载这群依赖项目
      */
-    private void start0() throws Throwable {
+    private void startLoading0() throws Throwable {
         sectionLoader.loggerLog(Level.INFO, "Loading libraries...", null);
         // 生成放置依赖的文件夹
         generateLibrariesFolder();
@@ -198,6 +199,7 @@ public class MultiLoginCoreLoader {
             asyncExecutor.execute(() -> {
                 File output = new File(librariesFolder, library.generateJarName());
                 try {
+                    sectionLoader.loggerLog(Level.INFO, String.format("Downloading: %s", library.generateDownloadUrl()), null);
                     HttpUtil.downloadFile(library.generateDownloadUrl(), output);
                 } catch (Throwable e) {
                     downloadFailed.set(true);

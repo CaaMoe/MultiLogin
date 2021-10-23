@@ -32,7 +32,7 @@ public class MultiLoginVelocityLoader implements IPluginLoader {
         this.dataDirectory = dataDirectory;
         try {
             coreLoader = new MultiLoginCoreLoader(this);
-            if (!coreLoader.start()) {
+            if (coreLoader.startLoading()) {
                 shutdown();
                 return;
             }
