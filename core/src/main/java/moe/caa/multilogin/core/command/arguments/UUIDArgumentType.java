@@ -21,7 +21,7 @@ import java.util.UUID;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UUIDArgumentType implements ArgumentType<UUID> {
-    private static final Collection<String> EXAMPLES = Arrays.asList(
+    protected static final Collection<String> EXAMPLES = Arrays.asList(
             "069a79f4-44e9-4726-a5be-fca90e38aaf5",
             "069a79f444e94726a5befca90e38aaf5"
     );

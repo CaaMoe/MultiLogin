@@ -53,11 +53,11 @@ public class MultiLoginSkinRestorerCommand extends BaseSubCommand {
         UUID uuid = UUIDArgumentType.getUuid(context, "uuid");
         if (getCore().getSqlManager().getSkinRestorerDataHandler().deleteRestorerEntry(uuid)) {
             context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_skin_restorer_removed", FormatContent.createContent(
-                    FormatContent.FormatEntry.builder().name("uuid").content(uuid.toString()).build()
+                    FormatContent.FormatEntry.builder().name("online_uuid").content(uuid.toString()).build()
             )));
         } else {
             context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_skin_restorer_remove_repeat", FormatContent.createContent(
-                    FormatContent.FormatEntry.builder().name("uuid").content(uuid.toString()).build()
+                    FormatContent.FormatEntry.builder().name("online_uuid").content(uuid.toString()).build()
             )));
         }
         return 0;

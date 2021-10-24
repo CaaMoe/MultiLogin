@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.impl;
 
+import moe.caa.multilogin.core.impl.IPlayer;
 import moe.caa.multilogin.core.impl.ISender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,5 +33,10 @@ public class BukkitSender implements ISender {
     @Override
     public String getName() {
         return sender.getName();
+    }
+
+    @Override
+    public IPlayer getAsPlayer() {
+        return new BukkitPlayer((Player) sender);
     }
 }

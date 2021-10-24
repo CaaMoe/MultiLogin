@@ -41,6 +41,7 @@ public class CommandHandler {
             try {
                 dispatcher.execute(String.join(" ", args), sender);
             } catch (CommandSyntaxException e) {
+                MultiLogger.getLogger().log(LoggerLevel.DEBUG, "arguments: " + String.join(" ", args), e);
                 sender.sendMessage(e.getRawMessage().getString());
             } catch (Exception e) {
                 sender.sendMessage(core.getLanguageHandler().getMessage("command_error", FormatContent.empty()));
