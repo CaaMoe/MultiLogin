@@ -198,11 +198,22 @@ MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置�
 
 | 命令 | 权限 | 简介 |
 |  ----  | ----  | --- |
-| /multilogin reload   | command.multilogin.reload| 重新加载配置文件|
-| /multilogin update   | command.multilogin.update| 检查更新版本|
-| /whitelist add &lt;name&#124;uuid&gt;     | command.multilogin.whitelist.add| 将 target 添加到白名单中|
-| /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
-| /whitelist list         | command.multilogin.whitelist.list| 获得白名单列表|
+| /multilogin reload                                                    |  command.multilogin.reload            | 重载插件
+| /multilogin yggdrasil info <yggdrasil_path>                            |  command.multilogin.yggdrasil.info            | 获得 Yggdrasil 信息
+| /multilogin yggdrasil list                                            |  command.multilogin.yggdrasil.list            | 获得 Yggdrasil 列表
+| /multilogin userdata info <online_uuid>                                |  command.multilogin.userdata.info            | 获得一条用户记录
+| /multilogin userdata modify yggdrasil <yggdrasil_path> <online_uuid>    |  command.multilogin.userdata.modify.yggdrasil            | 更改某用户的登入方式
+| /multilogin userdata modify redirect <redirect_uuid> <online_uuid>    |  command.multilogin.userdata.modify.redirectUuid            | 更改某用户的游戏内UUID
+| /multilogin userdata remove <online_uuid>                                |  command.multilogin.userdata.remove            | 移除某用户的记录
+| /multilogin skinrestorer remove <online_uuid>                            |  ommand.multilogin.skinrestorer.remove            | 移除某用户的皮肤修复记录
+| /multilogin skinrestorer removeAll                                    |  command.multilogin.skinrestorer.remove.all            | 移除所有用户的皮肤修复记录
+| /multilogin confirm                                                    |  command.multilogin.confirm            | 确认当前风险操作
+| /multilogin list                                                        |  command.multilogin.list            | 获得玩家列表
+| /multilogin update                                                    |  command.multilogin.update            | 检查更新
+| /whitelist add <name&#124;uuid>                                        |  command.multilogin.whitelist.add            | 白名单添加
+| /whitelist remove <name&#124;uuid>                                    |  command.multilogin.whitelist.remove            | 白名单移除
+| /whitelist list                                                        |  command.multilogin.whitelist.list            | 白名单列表
+| /whitelist clearCache                                                    |  command.multilogin.whitelist.clearCache            | 清除缓存白名单
 
 ## PlaceholderAPI 变量（Bukkit Only）
 
