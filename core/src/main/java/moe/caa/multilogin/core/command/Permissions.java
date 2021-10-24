@@ -18,6 +18,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_SKIN_USERDATA_MODIFY_YGGDRASIL = "command.multilogin.userdata.modify.yggdrasil";
     public static final String COMMAND_MULTI_LOGIN_SKIN_USERDATA_MODIFY_REDIRECT_UUID = "command.multilogin.userdata.modify.redirectUuid";
     public static final String COMMAND_MULTI_LOGIN_SKIN_USERDATA_INFO = "command.multilogin.userdata.info";
+    public static final String COMMAND_MULTI_LOGIN_YGGDRASIL_LIST = "command.multilogin.yggdrasil.list";
     public static final String COMMAND_WHITELIST_ADD = "command.multilogin.whitelist.add";
     public static final String COMMAND_WHITELIST_REMOVE = "command.multilogin.whitelist.remove";
     public static final String COMMAND_WHITELIST_LIST = "command.multilogin.whitelist.list";

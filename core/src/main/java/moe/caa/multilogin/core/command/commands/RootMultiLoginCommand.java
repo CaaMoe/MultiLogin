@@ -7,6 +7,7 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginSkinRestorerCommand;
 import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginUserdataCommand;
+import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginYggdrasilCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.main.Version;
@@ -26,9 +27,8 @@ public class RootMultiLoginCommand extends BaseRootCommand {
     }
 
     public void register(CommandDispatcher<ISender> dispatcher) {
-        LiteralArgumentBuilder<ISender> sub;
         dispatcher.register(
-                sub = literal("multilogin")
+                literal("multilogin")
                         .then(literal("reload")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_RELOAD))
                                 .executes(this::executeReload)
@@ -47,6 +47,7 @@ public class RootMultiLoginCommand extends BaseRootCommand {
                         )
                         .then(new MultiLoginSkinRestorerCommand(getCore()).getSubExecutor())
                         .then(new MultiLoginUserdataCommand(getCore()).getSubExecutor())
+                        .then(new MultiLoginYggdrasilCommand(getCore()).getSubExecutor())
         );
     }
 
