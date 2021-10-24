@@ -14,7 +14,7 @@ import moe.caa.multilogin.core.yggdrasil.YggdrasilService;
 
 import java.util.UUID;
 
-public class MultiLoginUserdataCommand extends BaseSubCommand{
+public class MultiLoginUserdataCommand extends BaseSubCommand {
     public MultiLoginUserdataCommand(MultiCore core) {
         super(core);
     }
@@ -112,7 +112,6 @@ public class MultiLoginUserdataCommand extends BaseSubCommand{
                         FormatContent.FormatEntry.builder().name("new_yggdrasil_path").content(service.getPath()).build()
                 ))).build()
         )));
-
 
 
         getSecondaryConfirmationHandler().submit(context.getSource(), value -> {

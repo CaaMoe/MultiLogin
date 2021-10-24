@@ -49,7 +49,7 @@ public class YggdrasilServiceArgumentType implements ArgumentType<YggdrasilServi
         }
         String path = reader.getString().substring(argBeginning, reader.getCursor());
         YggdrasilService yggdrasilService = CommandHandler.getCore().getYggdrasilServicesHandler().getYggdrasilService(path);
-        if(yggdrasilService == null){
+        if (yggdrasilService == null) {
             throw dynamicCommandExceptionType.create(path);
         }
         return yggdrasilService;
@@ -59,7 +59,7 @@ public class YggdrasilServiceArgumentType implements ArgumentType<YggdrasilServi
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 
         for (YggdrasilService service : CommandHandler.getCore().getYggdrasilServicesHandler().getAllServices()) {
-            if(service.getPath().toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
+            if (service.getPath().toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
                 builder.suggest(service.getPath());
         }
         return builder.buildFuture();

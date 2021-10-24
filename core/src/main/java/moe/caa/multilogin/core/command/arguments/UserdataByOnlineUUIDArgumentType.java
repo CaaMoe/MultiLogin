@@ -35,7 +35,7 @@ public class UserdataByOnlineUUIDArgumentType implements ArgumentType<User> {
     public User parse(StringReader reader) {
         UUID parse = UUIDArgumentType.uuid().parse(reader);
         User userEntryByOnlineUuid = CommandHandler.getCore().getSqlManager().getUserDataHandler().getUserEntryByOnlineUuid(parse);
-        if(userEntryByOnlineUuid == null){
+        if (userEntryByOnlineUuid == null) {
             throw dynamicCommandExceptionType.create(parse.toString());
         }
         return userEntryByOnlineUuid;

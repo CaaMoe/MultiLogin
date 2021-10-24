@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
