@@ -5,7 +5,6 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
-import moe.caa.multilogin.core.command.commands.BaseRootCommand;
 import moe.caa.multilogin.core.command.commands.RootMultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.RootWhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
@@ -48,8 +47,6 @@ public class CommandHandler {
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while executing the command.", e);
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + String.join(" ", args));
-            } finally {
-                BaseRootCommand.getSecondaryConfirmationHandler().remove(sender);
             }
         });
 

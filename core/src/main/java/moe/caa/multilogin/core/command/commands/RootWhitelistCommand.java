@@ -5,7 +5,6 @@ import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.arguments.StringArgumentType;
-import moe.caa.multilogin.core.impl.CallbackTransmit;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.user.User;
@@ -53,7 +52,7 @@ public class RootWhitelistCommand extends BaseRootCommand {
                 FormatContent.FormatEntry.builder().name("confirm").content(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_clear_confirm", FormatContent.empty())).build()
         )));
 
-        CallbackTransmit<Void> cb = value -> {
+        getSecondaryConfirmationHandler().submit(context.getSource(), value -> {
             int i = getCore().getSqlManager().getCacheWhitelistDataHandler().removeAllCacheWhitelist();
             if (i == 0) {
                 context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_whitelist_cache_clear_empty", FormatContent.empty()));
@@ -63,9 +62,7 @@ public class RootWhitelistCommand extends BaseRootCommand {
                 )));
             }
 
-        };
-
-        getSecondaryConfirmationHandler().submit(context.getSource(), cb);
+        });
         return 0;
     }
 

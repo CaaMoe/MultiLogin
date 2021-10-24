@@ -62,7 +62,7 @@ public class SecondaryConfirmationHandler {
 
         @Override
         public int hashCode() {
-            return Objects.hash(console, uuid);
+            return 0;
         }
     }
 

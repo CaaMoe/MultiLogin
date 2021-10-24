@@ -95,8 +95,12 @@ public class RootMultiLoginCommand extends BaseRootCommand {
 
     @SneakyThrows
     private int executeConfirm(CommandContext<ISender> context) {
-        if (!getSecondaryConfirmationHandler().confirm(context.getSource())) {
-            context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_secondary_confirmation_unknown", FormatContent.empty()));
+        try {
+            if (!getSecondaryConfirmationHandler().confirm(context.getSource())) {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_secondary_confirmation_unknown", FormatContent.empty()));
+            }
+        } finally {
+            getSecondaryConfirmationHandler().remove(context.getSource());
         }
         return 0;
     }

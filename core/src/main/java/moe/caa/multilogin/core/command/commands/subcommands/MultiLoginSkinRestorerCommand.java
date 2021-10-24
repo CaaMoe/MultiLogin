@@ -24,7 +24,28 @@ public class MultiLoginSkinRestorerCommand extends BaseSubCommand {
                         .then(argument("uuid", UUIDArgumentType.uuid())
                                 .executes(this::executeRemove)
                         )
+                ).then(literal("removeAll")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_SKIN_RESTORER_REMOVE_ALL))
+                        .executes(this::executeRemoveAll)
                 );
+    }
+
+    private int executeRemoveAll(CommandContext<ISender> context) {
+        context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_secondary_confirmation", FormatContent.createContent(
+                FormatContent.FormatEntry.builder().name("confirm").content(getCore().getLanguageHandler().getMessage("command_message_multilogin_skin_restorer_remove_all_confirm", FormatContent.empty())).build()
+        )));
+
+        getSecondaryConfirmationHandler().submit(context.getSource(), value -> {
+            int i = getCore().getSqlManager().getSkinRestorerDataHandler().deleteAll();
+            if (i == 0) {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_skin_restorer_remove_all_empty", FormatContent.empty()));
+            } else {
+                context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_skin_restorer_remove_all_removed", FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("count").content(i).build()
+                )));
+            }
+        });
+        return 0;
     }
 
     @SneakyThrows
