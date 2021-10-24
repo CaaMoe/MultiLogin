@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginSkinRestorerCommand;
+import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginUserdataCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.main.Version;
@@ -45,6 +46,7 @@ public class RootMultiLoginCommand extends BaseRootCommand {
                                 .executes(this::executeList)
                         )
                         .then(new MultiLoginSkinRestorerCommand(getCore()).getSubExecutor())
+                        .then(new MultiLoginUserdataCommand(getCore()).getSubExecutor())
         );
     }
 
