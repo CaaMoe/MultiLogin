@@ -12,7 +12,7 @@ import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 
 @AllArgsConstructor
-public abstract class BaseCommand {
+public abstract class BaseRootCommand {
     @Getter
     private static final SecondaryConfirmationHandler secondaryConfirmationHandler = new SecondaryConfirmationHandler();
 

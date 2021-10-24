@@ -1,9 +1,11 @@
 package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.command.Permissions;
+import moe.caa.multilogin.core.command.commands.subcommands.MultiLoginSkinRestorerCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.main.Version;
@@ -17,14 +19,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class RootMultiLoginCommand extends BaseCommand {
+public class RootMultiLoginCommand extends BaseRootCommand {
     public RootMultiLoginCommand(MultiCore core) {
         super(core);
     }
 
     public void register(CommandDispatcher<ISender> dispatcher) {
+        LiteralArgumentBuilder<ISender> sub;
         dispatcher.register(
-                literal("multilogin")
+                sub = literal("multilogin")
                         .then(literal("reload")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_RELOAD))
                                 .executes(this::executeReload)
@@ -41,6 +44,7 @@ public class RootMultiLoginCommand extends BaseCommand {
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LIST))
                                 .executes(this::executeList)
                         )
+                        .then(new MultiLoginSkinRestorerCommand(getCore()).getSubExecutor())
         );
     }
 
@@ -72,9 +76,9 @@ public class RootMultiLoginCommand extends BaseCommand {
                 StringBuilder stringBuilder = new StringBuilder();
                 while (groupBurstArrayList.hasNext()) {
                     ArrayList<User> next = groupBurstArrayList.next();
-                    String list = next.stream().map(User::getCurrentName).map(s -> "§7" + s).collect(Collectors.joining(", "));
+                    String list = next.stream().map(User::getCurrentName).map(s -> "§f" + s).collect(Collectors.joining(", "));
                     String nameOrPath = next.get(0).getService() == null ? next.get(0).getYggdrasilService() : next.get(0).getService().getName();
-                    String pad = getCore().getLanguageHandler().getMessage("command_message_multilogin_entry", FormatContent.createContent(
+                    String pad = getCore().getLanguageHandler().getMessage("command_message_multilogin_list_entry", FormatContent.createContent(
                             FormatContent.FormatEntry.builder().name("name_or_path").content(nameOrPath).build(),
                             FormatContent.FormatEntry.builder().name("list").content(list).build()
                     ));

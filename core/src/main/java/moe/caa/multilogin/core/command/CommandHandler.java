@@ -4,7 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import moe.caa.multilogin.core.command.commands.BaseCommand;
+import lombok.Getter;
+import moe.caa.multilogin.core.command.commands.BaseRootCommand;
 import moe.caa.multilogin.core.command.commands.RootMultiLoginCommand;
 import moe.caa.multilogin.core.command.commands.RootWhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
@@ -21,11 +22,12 @@ import java.util.concurrent.CompletableFuture;
  * 命令处理程序
  */
 public class CommandHandler {
+    @Getter()
+    private static MultiCore core;
     private final CommandDispatcher<ISender> dispatcher = new CommandDispatcher<>();
-    private final MultiCore core;
 
     public CommandHandler(MultiCore core) {
-        this.core = core;
+        CommandHandler.core = core;
     }
 
     public void init() {
@@ -47,7 +49,7 @@ public class CommandHandler {
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + String.join(" ", args));
             } finally {
-                BaseCommand.getSecondaryConfirmationHandler().remove(sender);
+                BaseRootCommand.getSecondaryConfirmationHandler().remove(sender);
             }
         });
 

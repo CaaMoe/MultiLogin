@@ -12,6 +12,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_UPDATE = "command.multilogin.update";
     public static final String COMMAND_MULTI_LOGIN_CONFIRM = "command.multilogin.confirm";
     public static final String COMMAND_MULTI_LOGIN_LIST = "command.multilogin.list";
+    public static final String COMMAND_MULTI_LOGIN_SKIN_RESTORER_REMOVE = "command.multilogin.skinrestorer.remove";
     public static final String COMMAND_WHITELIST_ADD = "command.multilogin.whitelist.add";
     public static final String COMMAND_WHITELIST_REMOVE = "command.multilogin.whitelist.remove";
     public static final String COMMAND_WHITELIST_LIST = "command.multilogin.whitelist.list";

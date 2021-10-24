@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.FutureTask;
 
-public class RootWhitelistCommand extends BaseCommand {
+public class RootWhitelistCommand extends BaseRootCommand {
     public RootWhitelistCommand(MultiCore core) {
         super(core);
     }

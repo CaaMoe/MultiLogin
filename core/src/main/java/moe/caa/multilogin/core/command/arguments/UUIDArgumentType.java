@@ -5,9 +5,11 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.util.FormatContent;
 import moe.caa.multilogin.core.util.ValueUtil;
 
 import java.util.Arrays;
@@ -23,6 +25,10 @@ public class UUIDArgumentType implements ArgumentType<UUID> {
             "069a79f4-44e9-4726-a5be-fca90e38aaf5",
             "069a79f444e94726a5befca90e38aaf5"
     );
+
+    private static final DynamicCommandExceptionType dynamicCommandExceptionType = new DynamicCommandExceptionType(value -> new LiteralMessage(CommandHandler.getCore().getLanguageHandler().getMessage("command_exception_reader_invalid_uuid", FormatContent.createContent(
+            FormatContent.FormatEntry.builder().name("value").content(value).build()
+    ))));
 
     public static UUIDArgumentType uuid() {
         return new UUIDArgumentType();
@@ -43,8 +49,9 @@ public class UUIDArgumentType implements ArgumentType<UUID> {
         }
         String uuidString = reader.getString().substring(argBeginning, reader.getCursor());
         UUID ret = ValueUtil.getUuidOrNull(uuidString);
-        if (ret == null)
-            throw new SimpleCommandExceptionType(new LiteralMessage(String.format("输入了一个无效的UUID字串: %s.", uuidString))).createWithContext(reader);
+        if (ret == null) {
+            throw dynamicCommandExceptionType.create(uuidString);
+        }
         return ret;
     }
 
