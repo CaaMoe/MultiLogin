@@ -74,6 +74,7 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
         HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
         MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
         mlymss.setVanService(vanServer);
+        mlymss.setBootstrap(this);
         field.set(obj, mlymss);
     }
 

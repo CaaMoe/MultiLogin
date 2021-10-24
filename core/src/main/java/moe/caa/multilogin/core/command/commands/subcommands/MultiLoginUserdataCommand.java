@@ -79,7 +79,7 @@ public class MultiLoginUserdataCommand extends BaseSubCommand {
                         FormatContent.FormatEntry.builder().name("name").content(user.getCurrentName()).build(),
                         FormatContent.FormatEntry.builder().name("online_uuid").content(user.getOnlineUuid().toString()).build(),
                         FormatContent.FormatEntry.builder().name("old_redirect_uuid").content(old_redirect_uuid.toString()).build(),
-                        FormatContent.FormatEntry.builder().name("new_redirect_uuid").content(user.getRedirectUuid().toString()).build()
+                        FormatContent.FormatEntry.builder().name("new_redirect_uuid").content(uuid.toString()).build()
                 ))).build()
         )));
 

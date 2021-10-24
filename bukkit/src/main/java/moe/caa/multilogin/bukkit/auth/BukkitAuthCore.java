@@ -1,6 +1,7 @@
 package moe.caa.multilogin.bukkit.auth;
 
 import com.mojang.authlib.GameProfile;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap;
@@ -17,7 +18,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@AllArgsConstructor
 public class BukkitAuthCore {
+    private final MultiLoginBukkitPluginBootstrap bootstrap;
+
+    // 登入信息缓存
     @Getter
     private static final CachedHashSet<BukkitUserLogin> loginCachedHashSet = new CachedHashSet<>(10000);
 
@@ -32,8 +37,8 @@ public class BukkitAuthCore {
     private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
 
     public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
+        BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress());
         try {
-            BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress());
             MultiLoginBukkitPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(login);
             loginCachedHashSet.add(login);
             loginCachedHashSet.clearInValid();
@@ -43,6 +48,7 @@ public class BukkitAuthCore {
         } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "GameProfile: " + user);
+            login.disconnect(bootstrap.getCore().getLanguageHandler().getMessage("auth_bukkit_invalid_login"));
             return new GameProfile(DIRTY_UUID, user.getName());
         }
     }
