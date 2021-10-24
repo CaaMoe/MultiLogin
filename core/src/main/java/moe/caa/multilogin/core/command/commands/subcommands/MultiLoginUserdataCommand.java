@@ -28,6 +28,12 @@ public class MultiLoginUserdataCommand extends BaseSubCommand{
                                 .executes(this::executeRemove)
                         )
                 )
+                .then(literal("info")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_SKIN_USERDATA_INFO))
+                        .then(argument("user", UserdataByOnlineUUIDArgumentType.user())
+                                .executes(this::executeInfo)
+                        )
+                )
                 .then(literal("modify")
                         .then(literal("yggdrasil")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_SKIN_USERDATA_MODIFY_YGGDRASIL))
@@ -46,6 +52,21 @@ public class MultiLoginUserdataCommand extends BaseSubCommand{
                                 )
                         )
                 );
+    }
+
+    private int executeInfo(CommandContext<ISender> context) {
+        User user = UserdataByOnlineUUIDArgumentType.getUser(context, "user");
+        user.setService(getCore().getYggdrasilServicesHandler().getYggdrasilService(user.getYggdrasilService()));
+
+        context.getSource().sendMessage(getCore().getLanguageHandler().getMessage("command_message_multilogin_userdata_info", FormatContent.createContent(
+                FormatContent.FormatEntry.builder().name("name").content(user.getCurrentName()).build(),
+                FormatContent.FormatEntry.builder().name("online_uuid").content(user.getOnlineUuid().toString()).build(),
+                FormatContent.FormatEntry.builder().name("redirect_uuid").content(user.getRedirectUuid().toString()).build(),
+                FormatContent.FormatEntry.builder().name("yggdrasil_name").content(user.getService() == null ? "unknown" : user.getService().getName()).build(),
+                FormatContent.FormatEntry.builder().name("yggdrasil_path").content(user.getYggdrasilService()).build(),
+                FormatContent.FormatEntry.builder().name("whitelist").content(user.isWhitelist()).build()
+        )));
+        return 0;
     }
 
     private int executeModifyRedirectUuid(CommandContext<ISender> context) {
