@@ -28,7 +28,7 @@ public class BukkitListener implements Listener {
         } else {
             for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
                 if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
-                    if(login.getKickMessage() != null){
+                    if (login.getKickMessage() != null) {
                         asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage());
                     }
                     return;

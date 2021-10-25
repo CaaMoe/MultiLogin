@@ -38,7 +38,7 @@ public class MultiLoginCoreLoader {
      * 构建这个核心加载器
      *
      * @param sectionLoader 部分加载器
-     * @param loaderType 加载方式
+     * @param loaderType    加载方式
      */
     public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) throws IOException {
         this.loaderType = loaderType;
@@ -149,7 +149,7 @@ public class MultiLoginCoreLoader {
 
         currentUrlClassLoader.close();
 
-        if(loaderType == LoaderType.NEST_JAR){
+        if (loaderType == LoaderType.NEST_JAR) {
             // 释放本体文件
             File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar", tempLibrariesFolder);
             fbt.deleteOnExit();
@@ -182,7 +182,7 @@ public class MultiLoginCoreLoader {
      * @return 插件引导类
      */
     public BasePluginBootstrap loadBootstrap(String bootStrapClassName, Class<?>[] argTypes, Object[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        if(loaderType == LoaderType.NEST_JAR){
+        if (loaderType == LoaderType.NEST_JAR) {
             Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
             Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
             return (BasePluginBootstrap) constructor.newInstance(args);
@@ -253,7 +253,7 @@ public class MultiLoginCoreLoader {
         if (!librariesFolder.exists()) {
             librariesFolder.mkdirs();
         }
-        if(!tempLibrariesFolder.exists()){
+        if (!tempLibrariesFolder.exists()) {
             tempLibrariesFolder.mkdirs();
         }
     }

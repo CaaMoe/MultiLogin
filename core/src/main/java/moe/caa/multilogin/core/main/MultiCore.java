@@ -42,6 +42,8 @@ public class MultiCore {
     private final File generalConfig;
     private final File dataFolder;
 
+    private final File tempFolder;
+
     private final CombineAuthCore authCore;
     private final SkinRestorerCore restorerCore;
     private final CommandHandler commandHandler;
@@ -57,6 +59,7 @@ public class MultiCore {
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
         dataFolder = plugin.getDataFolder();
+        tempFolder = new File(dataFolder, "temp");
         generalConfig = new File(dataFolder, "config.yml");
         setting = new AdvancedSetting();
         config = new GeneralConfig();
@@ -181,5 +184,12 @@ public class MultiCore {
             logger.log(LoggerLevel.ERROR, String.format("Failed to read general configuration file. (%s)", generalConfig.getAbsolutePath()), e);
             return false;
         }
+    }
+
+    public File getTempFolder() {
+        if (!tempFolder.exists()) {
+            tempFolder.mkdirs();
+        }
+        return tempFolder;
     }
 }

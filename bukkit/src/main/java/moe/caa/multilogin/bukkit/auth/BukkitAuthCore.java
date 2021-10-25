@@ -20,21 +20,17 @@ import java.util.UUID;
 
 @AllArgsConstructor
 public class BukkitAuthCore {
-    private final MultiLoginBukkitPluginBootstrap bootstrap;
-
     // 登入信息缓存
     @Getter
     private static final CachedHashSet<BukkitUserLogin> loginCachedHashSet = new CachedHashSet<>(10000);
-
     // 这里放置的是正式登入成功后尚未编入系统的用户实例
     @Getter
     private static final CachedHashSet<User> bufferUsers = new CachedHashSet<>(10000);
-
     @Getter
     private static final Set<User> users = new HashSet<>();
-
     @Getter
     private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+    private final MultiLoginBukkitPluginBootstrap bootstrap;
 
     public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
         BukkitUserLogin login = new BukkitUserLogin(user.getName(), serverId, address == null ? null : address.getHostAddress());

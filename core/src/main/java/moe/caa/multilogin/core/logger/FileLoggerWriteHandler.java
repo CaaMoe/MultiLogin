@@ -31,7 +31,7 @@ public class FileLoggerWriteHandler {
      * @throws IOException 文件存取异常
      */
     protected void init(MultiCore core) throws IOException {
-        var tempFile = File.createTempFile("log4j2-temp", "multilogin");
+        var tempFile = File.createTempFile("log4j2-temp", "multilogin", core.getTempFolder());
         tempFile.deleteOnExit();
         var reader = new LineNumberReader(new InputStreamReader(Objects.requireNonNull(IOUtil.getJarResource("multilogin_log4j2.xml"), String.format("File '%s' was not found in the jar.", "multilogin_log4j2.xml"))));
         var rePlacePath = core.getPlugin().getDataFolder().getAbsolutePath();
