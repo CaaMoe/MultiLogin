@@ -4,6 +4,7 @@ import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.libraries.Library;
 import moe.caa.multilogin.core.loader.util.HttpUtil;
+import moe.caa.multilogin.core.loader.util.ReflectUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,7 +13,9 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -169,7 +172,20 @@ public class MultiLoginCoreLoader {
 
             currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
         } else {
-            // TODO: 2021/10/25 FORCE THE URLClassLoader
+            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            Field theUnsafeField = unsafeClass.getDeclaredField("theUnsafe");
+            theUnsafeField.setAccessible(true);
+            Method theUnsafeGetObjectMethod = unsafeClass.getDeclaredMethod("getObject", Object.class, long.class);
+            Method theUnsafeStaticFieldOffsetMethod = unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class);
+            Object theUnsafe = theUnsafeField.get(null);
+            Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            MethodHandles.Lookup super_look_up = (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, (long)theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            MethodHandle handle = super_look_up.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(), "addURL", false, URL.class));
+            for (URL url : urlList) {
+                handle.invoke(classLoader, url);
+            }
         }
     }
 
