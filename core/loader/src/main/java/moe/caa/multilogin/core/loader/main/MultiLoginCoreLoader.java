@@ -15,6 +15,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -29,16 +30,31 @@ import java.util.logging.Level;
 public class MultiLoginCoreLoader {
     private final IPluginLoader sectionLoader;
     private final File librariesFolder;
+    private final File tempLibrariesFolder;
+    private final LoaderType loaderType;
     private URLClassLoader currentUrlClassLoader;
 
     /**
      * 构建这个核心加载器
      *
      * @param sectionLoader 部分加载器
+     * @param loaderType 加载方式
      */
-    public MultiLoginCoreLoader(IPluginLoader sectionLoader) {
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) throws IOException {
+        this.loaderType = loaderType;
         this.sectionLoader = sectionLoader;
         librariesFolder = new File(sectionLoader.getDataFolder(), "libraries");
+        tempLibrariesFolder = new File(sectionLoader.getDataFolder(), "temp");
+        Files.deleteIfExists(tempLibrariesFolder.toPath());
+    }
+
+    /**
+     * 构建这个核心加载器
+     *
+     * @param sectionLoader 部分加载器
+     */
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader) throws IOException {
+        this(sectionLoader, LoaderType.NEST_JAR);
     }
 
     /**
@@ -121,7 +137,7 @@ public class MultiLoginCoreLoader {
         for (Library library : needLoad) {
             File file = new File(librariesFolder, library.generateJarName());
             if (library.needRelocate()) {
-                File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
+                File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName(), tempLibrariesFolder);
                 outFile.deleteOnExit();
                 Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
                 jarRelocator_runMethod.invoke(o);
@@ -131,28 +147,30 @@ public class MultiLoginCoreLoader {
             }
         }
 
-        // 释放本体文件
-        File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar");
-        fbt.deleteOnExit();
-
-        try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionLoader.getSectionJarFileName())
-                , "sectionJarFileName is null.");
-             FileOutputStream output = new FileOutputStream(fbt)) {
-            byte[] buff = new byte[1024];
-            int b;
-            while ((b = input.read(buff)) != -1) {
-                output.write(buff, 0, b);
-            }
-            output.flush();
-        }
-
-        urlList.add(fbt.toURI().toURL());
-
-        // 释放
         currentUrlClassLoader.close();
 
-        // 加载
-        currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
+        if(loaderType == LoaderType.NEST_JAR){
+            // 释放本体文件
+            File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar", tempLibrariesFolder);
+            fbt.deleteOnExit();
+
+            try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionLoader.getSectionJarFileName())
+                    , "sectionJarFileName is null.");
+                 FileOutputStream output = new FileOutputStream(fbt)) {
+                byte[] buff = new byte[1024];
+                int b;
+                while ((b = input.read(buff)) != -1) {
+                    output.write(buff, 0, b);
+                }
+                output.flush();
+            }
+
+            urlList.add(fbt.toURI().toURL());
+
+            currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
+        } else {
+            // TODO: 2021/10/25 FORCE THE URLClassLoader
+        }
     }
 
     /**
@@ -164,7 +182,12 @@ public class MultiLoginCoreLoader {
      * @return 插件引导类
      */
     public BasePluginBootstrap loadBootstrap(String bootStrapClassName, Class<?>[] argTypes, Object[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
+        if(loaderType == LoaderType.NEST_JAR){
+            Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
+            Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
+            return (BasePluginBootstrap) constructor.newInstance(args);
+        }
+        Class<?> bootstrapClass = Class.forName(bootStrapClassName);
         Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
         return (BasePluginBootstrap) constructor.newInstance(args);
     }
@@ -176,6 +199,11 @@ public class MultiLoginCoreLoader {
         try {
             if (currentUrlClassLoader != null)
                 currentUrlClassLoader.close();
+        } catch (IOException ignored) {
+        }
+
+        try {
+            Files.deleteIfExists(tempLibrariesFolder.toPath());
         } catch (IOException ignored) {
         }
     }
@@ -224,6 +252,9 @@ public class MultiLoginCoreLoader {
     private void generateLibrariesFolder() {
         if (!librariesFolder.exists()) {
             librariesFolder.mkdirs();
+        }
+        if(!tempLibrariesFolder.exists()){
+            tempLibrariesFolder.mkdirs();
         }
     }
 }
