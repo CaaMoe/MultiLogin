@@ -7,7 +7,8 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import lombok.Setter;
-import moe.caa.multilogin.fabric.main.MultiLoginFabricModBootstrap;
+import moe.caa.multilogin.fabric.loader.main.MultiLoginFabricLoader;
+import moe.caa.multilogin.fabric.main.MultiLoginFabricPluginBootstrap;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class MultiLoginYggdrasilMinecraftSessionService  extends HttpMinecraftSe
     private HttpMinecraftSessionService vanService;
 
     @Setter
-    private MultiLoginFabricModBootstrap bootstrap;
+    private MultiLoginFabricPluginBootstrap bootstrap;
 
     public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) {
         super(authenticationService);

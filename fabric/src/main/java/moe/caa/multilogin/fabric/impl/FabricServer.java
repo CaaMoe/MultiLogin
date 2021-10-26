@@ -38,6 +38,6 @@ public class FabricServer implements IServer {
 
     @Override
     public void shutdown() {
-        server.stop(false);
+        server.close();
     }
 }

@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinMinecraftServer_ModifyMinecraftSessionService",
+    "MixinMinecraftServer_ModLoader",
     "MixinMinecraftServer_TickScheduler",
     "MixinServerLoginNetworkHandler_Inject",
     "MixinServerLoginNetworkHandler_OnKey_Authenticator_ModifyHasJoined",

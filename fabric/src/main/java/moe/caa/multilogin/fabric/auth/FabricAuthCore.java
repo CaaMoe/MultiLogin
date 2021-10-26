@@ -2,16 +2,15 @@ package moe.caa.multilogin.fabric.auth;
 
 import com.mojang.authlib.GameProfile;
 import lombok.AllArgsConstructor;
-import moe.caa.multilogin.fabric.impl.FabricUserLogin;
-import moe.caa.multilogin.fabric.main.MultiLoginFabricModBootstrap;
+import moe.caa.multilogin.fabric.main.MultiLoginFabricPluginBootstrap;
 
 import java.net.InetAddress;
 
 @AllArgsConstructor
 public class FabricAuthCore {
-    private final MultiLoginFabricModBootstrap bootstrap;
+    private final MultiLoginFabricPluginBootstrap bootstrap;
 
-    public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
+    public MultiLoginGameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
         //FabricUserLogin login = new FabricUserLogin();
         return null;
     }

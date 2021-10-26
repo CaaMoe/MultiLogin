@@ -1,28 +1,31 @@
-package moe.caa.multilogin.fabric.main;
+package moe.caa.multilogin.fabric.loader.main;
 
-import moe.caa.multilogin.core.impl.IPlugin;
-import moe.caa.multilogin.core.impl.IServer;
+import lombok.Getter;
 import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.main.LoaderType;
 import moe.caa.multilogin.core.loader.main.MultiLoginCoreLoader;
-import moe.caa.multilogin.core.logger.LoggerLevel;
-import net.fabricmc.api.DedicatedServerModInitializer;
+import moe.caa.multilogin.fabric.main.MultiLoginFabricPluginBootstrap;
+import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.logging.Level;
 
-public class MultiLoginFabricModBootstrap extends BasePluginBootstrap implements DedicatedServerModInitializer, IPluginLoader, IPlugin {
+public class MultiLoginFabricLoader extends BasePluginBootstrap implements IPluginLoader{
+
+    @Getter
     private final Logger logger = LogManager.getLogger("MultiLogin");
+    private final MinecraftServer server;
+    private final File dataFolder = new File("config/multilogin");
     private MultiLoginCoreLoader coreLoader;
     private BasePluginBootstrap pluginBootstrap;
 
-    @Override
-    public void onInitializeServer() {
-
+    public MultiLoginFabricLoader(MinecraftServer server) {
+        this.server = server;
     }
+
 
     @Override
     public void onLoad() {
@@ -33,7 +36,7 @@ public class MultiLoginFabricModBootstrap extends BasePluginBootstrap implements
                 return;
             }
 
-
+            pluginBootstrap = new MultiLoginFabricPluginBootstrap(this, server);
             pluginBootstrap.onLoad();
         } catch (Throwable throwable) {
             loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED DURING INITIALIZATION.", throwable);
@@ -43,12 +46,15 @@ public class MultiLoginFabricModBootstrap extends BasePluginBootstrap implements
 
     @Override
     public void onEnable() {
-
+        if (pluginBootstrap != null) pluginBootstrap.onEnable();
     }
 
     @Override
     public void onDisable() {
-
+        if (pluginBootstrap != null) pluginBootstrap.onDisable();
+        pluginBootstrap = null;
+        coreLoader.close();
+        server.close();
     }
 
     @Override
@@ -58,41 +64,19 @@ public class MultiLoginFabricModBootstrap extends BasePluginBootstrap implements
 
     @Override
     public void shutdown() {
-
+        server.close();
     }
 
     @Override
-    public void loggerLog(java.util.logging.Level level, String message, Throwable throwable) {
-
-    }
-
-    @Override
-    public void initService() throws Throwable {
-
-    }
-
-    @Override
-    public void initOther() {
-
-    }
-
-    @Override
-    public void loggerLog(LoggerLevel level, String message, Throwable throwable) {
-
-    }
-
-    @Override
-    public IServer getRunServer() {
-        return null;
+    public void loggerLog(Level level, String message, Throwable throwable) {
+        if (level == Level.SEVERE) logger.error(message, throwable);
+        else if (level == Level.WARNING) logger.warn(message, throwable);
+        else if (level == Level.INFO) logger.info(message, throwable);
+        else logger.info(message, throwable);
     }
 
     @Override
     public File getDataFolder() {
-        return null;
-    }
-
-    @Override
-    public String getPluginVersion() {
-        return null;
+        return dataFolder;
     }
 }

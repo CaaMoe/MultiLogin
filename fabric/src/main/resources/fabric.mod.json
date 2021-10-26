@@ -6,11 +6,6 @@
   "authors": ["@author@"],
   "license": "GPL-3.0",
   "environment": "server",
-  "entrypoints": {
-    "server": [
-      "moe.caa.multilogin.fabric.main.MultiLoginFabricModBootstrap"
-    ]
-  },
   "mixins": [
     "multilogin.mixins.json"
   ]
