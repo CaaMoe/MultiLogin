@@ -46,7 +46,6 @@ public class MultiLoginYggdrasilCommand extends BaseSubCommand {
                 FormatContent.FormatEntry.builder().name("whitelist").content(service.isWhitelist()).build(),
                 FormatContent.FormatEntry.builder().name("refuse_repeated_login").content(service.isRefuseRepeatedLogin()).build(),
                 FormatContent.FormatEntry.builder().name("auth_retry").content(service.getAuthRetry()).build(),
-                FormatContent.FormatEntry.builder().name("safe_id").content(service.isSafeId()).build(),
                 FormatContent.FormatEntry.builder().name("skin_restorer").content(service.getSkinRestorer()).build(),
                 FormatContent.FormatEntry.builder().name("skin_restorer_retry").content(service.getSkinRestorerRetry()).build()
         )));

@@ -71,15 +71,15 @@ public class VerifyAuthCore {
             }
 
             // 重名检查
-            if (!result.getService().isSafeId()) {
-                var repeatedNameUserEntries = core.getSqlManager().getUserDataHandler().getUserEntryByCurrentName(baseUserLogin.getUsername());
-                for (User repeatedNameUserEntry : repeatedNameUserEntries) {
-                    if (repeatedNameUserEntry.equals(user)) continue;
-                    return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_username_repeated", FormatContent.createContent(
-                            FormatContent.FormatEntry.builder().name("current_name").content(baseUserLogin.getUsername()).build()
-                    )));
-                }
+
+            var repeatedNameUserEntries = core.getSqlManager().getUserDataHandler().getUserEntryByCurrentName(baseUserLogin.getUsername());
+            for (User repeatedNameUserEntry : repeatedNameUserEntries) {
+                if (repeatedNameUserEntry.equals(user)) continue;
+                return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_username_repeated", FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("current_name").content(baseUserLogin.getUsername()).build()
+                )));
             }
+
 
             // 是不是新的玩家数据
             boolean newUserData = user == null;
