@@ -43,12 +43,16 @@ public class MultiLoginCoreLoader {
      * @param sectionLoader 部分加载器
      * @param loaderType    加载方式
      */
-    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) throws IOException {
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) {
         this.loaderType = loaderType;
         this.sectionLoader = sectionLoader;
         librariesFolder = new File(sectionLoader.getDataFolder(), "libraries");
         tempLibrariesFolder = new File(sectionLoader.getDataFolder(), "temp");
-        Files.deleteIfExists(tempLibrariesFolder.toPath());
+
+        try {
+            Files.deleteIfExists(tempLibrariesFolder.toPath());
+        } catch (IOException ignored) {
+        }
     }
 
     /**
