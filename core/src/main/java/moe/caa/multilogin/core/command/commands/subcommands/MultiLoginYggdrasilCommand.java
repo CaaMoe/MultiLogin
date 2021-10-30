@@ -73,7 +73,7 @@ public class MultiLoginYggdrasilCommand extends BaseSubCommand {
         if (!enabled.isEmpty()) {
             patEnabled = enabled.stream().map(y -> getCore().getLanguageHandler().getMessage("command_message_yggdrasil_list_item", FormatContent.createContent(
                     FormatContent.FormatEntry.builder().name("yggdrasil_name").content(y.getName()).build(),
-                    FormatContent.FormatEntry.builder().name("yggdrasil_path").content(y.getName()).build()
+                    FormatContent.FormatEntry.builder().name("yggdrasil_path").content(y.getPath()).build()
             ))).collect(Collectors.joining(", "));
 
             patEnabled = getCore().getLanguageHandler().getMessage("command_message_yggdrasil_list_entry", FormatContent.createContent(
@@ -85,7 +85,7 @@ public class MultiLoginYggdrasilCommand extends BaseSubCommand {
         if (!disabled.isEmpty()) {
             patDisabled = disabled.stream().map(y -> getCore().getLanguageHandler().getMessage("command_message_yggdrasil_list_item", FormatContent.createContent(
                     FormatContent.FormatEntry.builder().name("yggdrasil_name").content(y.getName()).build(),
-                    FormatContent.FormatEntry.builder().name("yggdrasil_path").content(y.getName()).build()
+                    FormatContent.FormatEntry.builder().name("yggdrasil_path").content(y.getPath()).build()
             ))).collect(Collectors.joining(", "));
 
             patDisabled = getCore().getLanguageHandler().getMessage("command_message_yggdrasil_list_entry", FormatContent.createContent(
