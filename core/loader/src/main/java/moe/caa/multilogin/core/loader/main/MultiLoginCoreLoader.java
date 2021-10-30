@@ -50,8 +50,8 @@ public class MultiLoginCoreLoader {
         tempLibrariesFolder = new File(sectionLoader.getDataFolder(), "temp");
 
         try {
-            Files.deleteIfExists(tempLibrariesFolder.toPath());
-        } catch (IOException ignored) {
+            deleteDir(tempLibrariesFolder);
+        } catch (Exception ignored) {
         }
     }
 
@@ -219,12 +219,12 @@ public class MultiLoginCoreLoader {
         try {
             if (currentUrlClassLoader != null)
                 currentUrlClassLoader.close();
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
 
         try {
-            Files.deleteIfExists(tempLibrariesFolder.toPath());
-        } catch (IOException ignored) {
+            deleteDir(tempLibrariesFolder);
+        } catch (Exception ignored) {
         }
     }
 
@@ -276,5 +276,20 @@ public class MultiLoginCoreLoader {
         if (!tempLibrariesFolder.exists()) {
             tempLibrariesFolder.mkdirs();
         }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            if(children != null){
+                for (String child : children) {
+                    boolean success = deleteDir(new File(dir, child));
+                    if (!success) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return dir.delete();
     }
 }
