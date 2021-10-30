@@ -1,5 +1,6 @@
 package fun.ksnb.multilogin.bungee.impl;
 
+import moe.caa.multilogin.core.impl.IPlayer;
 import moe.caa.multilogin.core.impl.ISender;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -29,5 +30,10 @@ public class BungeeSender implements ISender {
     @Override
     public String getName() {
         return sender.getName();
+    }
+
+    @Override
+    public IPlayer getAsPlayer() {
+        return new BungeePlayer((ProxiedPlayer) sender);
     }
 }

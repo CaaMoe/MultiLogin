@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.listener;
 
+import lombok.AllArgsConstructor;
 import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap;
@@ -10,24 +11,31 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+@AllArgsConstructor
 public class BukkitListener implements Listener {
     private final MultiLoginBukkitPluginBootstrap bootstrap;
-
-    public BukkitListener(MultiLoginBukkitPluginBootstrap bootstrap) {
-        this.bootstrap = bootstrap;
-    }
 
     @EventHandler
     private void onLogin(AsyncPlayerPreLoginEvent asyncPlayerPreLoginEvent) {
         if (asyncPlayerPreLoginEvent.getUniqueId().equals(BukkitAuthCore.getDIRTY_UUID())) {
             for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
                 if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
-                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "" : login.getKickMessage());
+                    asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage() == null ? "请不要使用以下游戏内 UUID 登入游戏\n该 UUID 作为识别字段，请联系管理员更改掉您的游戏内 UUID\n\n" + BukkitAuthCore.getDIRTY_UUID() : login.getKickMessage());
                     return;
                 }
             }
-            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "请勿使用 UUID 为 " + BukkitAuthCore.getDIRTY_UUID() + " 的账户登入游戏");
+            asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "请不要使用以下游戏内 UUID 登入游戏\n该 UUID 作为识别字段，请联系管理员更改掉您的游戏内 UUID\n\n" + BukkitAuthCore.getDIRTY_UUID());
+        } else {
+            for (BukkitUserLogin login : BukkitAuthCore.getLoginCachedHashSet().getEntrySet()) {
+                if (login.getUsername().equals(asyncPlayerPreLoginEvent.getName())) {
+                    if (login.getKickMessage() != null) {
+                        asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, login.getKickMessage());
+                    }
+                    return;
+                }
+            }
         }
+        asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, bootstrap.getCore().getLanguageHandler().getMessage("auth_bukkit_invalid_login"));
     }
 
     @EventHandler

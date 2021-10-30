@@ -139,4 +139,18 @@ public class SkinRestorerDataHandler implements IDataHandler {
             return ps.executeUpdate() != 0;
         }
     }
+
+    /**
+     * 移除所有皮肤数据
+     *
+     * @return 操作的数据量
+     * @throws SQLException 移除异常
+     */
+    public int deleteAll() throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s",
+                SKIN_RESTORER_TABLE_NAME
+        ))) {
+            return ps.executeUpdate();
+        }
+    }
 }

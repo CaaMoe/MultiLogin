@@ -4,6 +4,7 @@ import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
 import moe.caa.multilogin.core.loader.impl.IPluginLoader;
 import moe.caa.multilogin.core.loader.libraries.Library;
 import moe.caa.multilogin.core.loader.util.HttpUtil;
+import moe.caa.multilogin.core.loader.util.ReflectUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,13 +13,13 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Files;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,36 +33,52 @@ import java.util.logging.Level;
 public class MultiLoginCoreLoader {
     private final IPluginLoader sectionLoader;
     private final File librariesFolder;
+    private final File tempLibrariesFolder;
+    private final LoaderType loaderType;
     private URLClassLoader currentUrlClassLoader;
 
     /**
      * 构建这个核心加载器
      *
      * @param sectionLoader 部分加载器
+     * @param loaderType    加载方式
      */
-    public MultiLoginCoreLoader(IPluginLoader sectionLoader) {
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) throws IOException {
+        this.loaderType = loaderType;
         this.sectionLoader = sectionLoader;
         librariesFolder = new File(sectionLoader.getDataFolder(), "libraries");
+        tempLibrariesFolder = new File(sectionLoader.getDataFolder(), "temp");
+        Files.deleteIfExists(tempLibrariesFolder.toPath());
+    }
+
+    /**
+     * 构建这个核心加载器
+     *
+     * @param sectionLoader 部分加载器
+     */
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader) throws IOException {
+        this(sectionLoader, LoaderType.NEST_JAR);
     }
 
     /**
      * 开始加载这群依赖项目
      */
-    public boolean start() {
+    public boolean startLoading() {
         try {
-            start0();
-            return true;
+            startLoading0();
+            return false;
         } catch (Throwable e) {
             sectionLoader.loggerLog(Level.SEVERE, "A FATAL ERROR OCCURRED WHILE PROCESSING A DEPENDENCY", e);
+            sectionLoader.loggerLog(Level.SEVERE, String.format("PLEASE DELETE '%s' AND TRY AGAIN.", librariesFolder.getAbsolutePath()), null);
             sectionLoader.shutdown();
-            return false;
+            return true;
         }
     }
 
     /**
      * 开始加载这群依赖项目
      */
-    private void start0() throws Throwable {
+    private void startLoading0() throws Throwable {
         sectionLoader.loggerLog(Level.INFO, "Loading libraries...", null);
         // 生成放置依赖的文件夹
         generateLibrariesFolder();
@@ -84,8 +101,8 @@ public class MultiLoginCoreLoader {
 
         // 这里的依赖只包含重定向工具库，运行时不需要加载他们
         for (Library library : Library.getJAR_RELOCATOR_LIBRARIES()) {
-            // 服务端有这个库的，略去
-            if (library.isLoaded(getClass().getClassLoader())) continue;
+            // 10/23/21 禁止略去
+            // if (library.isLoaded(getClass().getClassLoader())) continue;
             // 这里不需要也不允许加入到load列表中去
             // needLoad.add(library);
             // 存在且大小不为 0kb 的 Jar 包，略去
@@ -103,10 +120,13 @@ public class MultiLoginCoreLoader {
 
         // 这里使用 URLClassLoader 加载重定向工具库包
         List<URL> urls = new ArrayList<>();
+        // 添加包名作为高优先级
+        Set<String> packageName = new HashSet<>();
         for (Library library : Library.getJAR_RELOCATOR_LIBRARIES()) {
+            packageName.add(library.getStartsPackName());
             urls.add(new File(librariesFolder, library.generateJarName()).toURI().toURL());
         }
-        currentUrlClassLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());
+        currentUrlClassLoader = new PriorURLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader(), packageName);
 
         // 加载反射值
         Class<?> jarRelocatorClass = Class.forName("me.lucko.jarrelocator.JarRelocator", true, currentUrlClassLoader);
@@ -120,7 +140,7 @@ public class MultiLoginCoreLoader {
         for (Library library : needLoad) {
             File file = new File(librariesFolder, library.generateJarName());
             if (library.needRelocate()) {
-                File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName());
+                File outFile = File.createTempFile("MultiLogin-", "-" + library.generateRemapJarName(), tempLibrariesFolder);
                 outFile.deleteOnExit();
                 Object o = jarRelocatorConstructor.invoke(file, outFile, library.getRelocateRules());
                 jarRelocator_runMethod.invoke(o);
@@ -130,28 +150,43 @@ public class MultiLoginCoreLoader {
             }
         }
 
-        // 释放本体文件
-        File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar");
-        fbt.deleteOnExit();
-
-        try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionLoader.getSectionJarFileName())
-                , "sectionJarFileName is null.");
-             FileOutputStream output = new FileOutputStream(fbt)) {
-            byte[] buff = new byte[1024];
-            int b;
-            while ((b = input.read(buff)) != -1) {
-                output.write(buff, 0, b);
-            }
-            output.flush();
-        }
-
-        urlList.add(fbt.toURI().toURL());
-
-        // 释放
         currentUrlClassLoader.close();
 
-        // 加载
-        currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
+        if (loaderType == LoaderType.NEST_JAR) {
+            // 释放本体文件
+            File fbt = File.createTempFile("MultiLogin-", "-" + sectionLoader.getSectionJarFileName() + ".jar", tempLibrariesFolder);
+            fbt.deleteOnExit();
+
+            try (InputStream input = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(sectionLoader.getSectionJarFileName())
+                    , "sectionJarFileName is null.");
+                 FileOutputStream output = new FileOutputStream(fbt)) {
+                byte[] buff = new byte[1024];
+                int b;
+                while ((b = input.read(buff)) != -1) {
+                    output.write(buff, 0, b);
+                }
+                output.flush();
+            }
+
+            urlList.add(fbt.toURI().toURL());
+
+            currentUrlClassLoader = new URLClassLoader(urlList.toArray(new URL[0]), getClass().getClassLoader());
+        } else {
+            Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+            Field theUnsafeField = unsafeClass.getDeclaredField("theUnsafe");
+            theUnsafeField.setAccessible(true);
+            Method theUnsafeGetObjectMethod = unsafeClass.getDeclaredMethod("getObject", Object.class, long.class);
+            Method theUnsafeStaticFieldOffsetMethod = unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class);
+            Object theUnsafe = theUnsafeField.get(null);
+            Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            MethodHandles.Lookup super_look_up = (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, (long)theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            MethodHandle handle = super_look_up.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(), "addURL", false, URL.class));
+            for (URL url : urlList) {
+                handle.invoke(classLoader, url);
+            }
+        }
     }
 
     /**
@@ -163,7 +198,12 @@ public class MultiLoginCoreLoader {
      * @return 插件引导类
      */
     public BasePluginBootstrap loadBootstrap(String bootStrapClassName, Class<?>[] argTypes, Object[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
+        if (loaderType == LoaderType.NEST_JAR) {
+            Class<?> bootstrapClass = Class.forName(bootStrapClassName, true, currentUrlClassLoader);
+            Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
+            return (BasePluginBootstrap) constructor.newInstance(args);
+        }
+        Class<?> bootstrapClass = Class.forName(bootStrapClassName);
         Constructor<?> constructor = bootstrapClass.getConstructor(argTypes);
         return (BasePluginBootstrap) constructor.newInstance(args);
     }
@@ -175,6 +215,11 @@ public class MultiLoginCoreLoader {
         try {
             if (currentUrlClassLoader != null)
                 currentUrlClassLoader.close();
+        } catch (IOException ignored) {
+        }
+
+        try {
+            Files.deleteIfExists(tempLibrariesFolder.toPath());
         } catch (IOException ignored) {
         }
     }
@@ -198,6 +243,7 @@ public class MultiLoginCoreLoader {
             asyncExecutor.execute(() -> {
                 File output = new File(librariesFolder, library.generateJarName());
                 try {
+                    sectionLoader.loggerLog(Level.INFO, String.format("Downloading: %s", library.generateDownloadUrl()), null);
                     HttpUtil.downloadFile(library.generateDownloadUrl(), output);
                 } catch (Throwable e) {
                     downloadFailed.set(true);
@@ -222,6 +268,9 @@ public class MultiLoginCoreLoader {
     private void generateLibrariesFolder() {
         if (!librariesFolder.exists()) {
             librariesFolder.mkdirs();
+        }
+        if (!tempLibrariesFolder.exists()) {
+            tempLibrariesFolder.mkdirs();
         }
     }
 }

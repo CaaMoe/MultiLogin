@@ -7,6 +7,7 @@ allprojects {
 subprojects {
     repositories {
         maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://libraries.minecraft.net" }
         mavenCentral()
     }
 
@@ -30,22 +31,5 @@ subprojects {
                 "version": ver,
                 "author" : 'ksqeib, CaaMoe',
         ]
-    }
-
-    jar {
-        String env;
-        String ver;
-        env = System.getProperty("env", "AUTO")
-        if (env.toLowerCase() == "final") {
-            ver = (project.plugin_version as String)
-        } else {
-            ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
-        }
-
-        manifest.attributes(
-                "Build-Timestamp": System.currentTimeMillis(),
-                "MultiLogin-Version": ver,
-                "MultiLogin-Build-Type": env
-        )
     }
 }

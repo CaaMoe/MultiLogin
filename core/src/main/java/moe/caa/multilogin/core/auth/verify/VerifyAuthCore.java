@@ -62,38 +62,38 @@ public class VerifyAuthCore {
                 reg = core.getConfig().getNameAllowedRegular();
             }
             if (!ValueUtil.isEmpty(reg)) {
-                if (!Pattern.matches(reg, result.getResult().getName())) {
+                if (!Pattern.matches(reg, baseUserLogin.getUsername())) {
                     return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_username_mismatch", FormatContent.createContent(
-                            FormatContent.FormatEntry.builder().name("current_name").content(result.getResult().getName()).build(),
+                            FormatContent.FormatEntry.builder().name("current_name").content(baseUserLogin.getUsername()).build(),
                             FormatContent.FormatEntry.builder().name("regular").content(reg).build()
                     )));
                 }
             }
 
             // 重名检查
-            if (!result.getService().isSafeId()) {
-                var repeatedNameUserEntries = core.getSqlManager().getUserDataHandler().getUserEntryByCurrentName(result.getResult().getName());
-                for (User repeatedNameUserEntry : repeatedNameUserEntries) {
-                    if (repeatedNameUserEntry.equals(user)) continue;
-                    return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_username_repeated", FormatContent.createContent(
-                            FormatContent.FormatEntry.builder().name("current_name").content(result.getResult().getName()).build()
-                    )));
-                }
+
+            var repeatedNameUserEntries = core.getSqlManager().getUserDataHandler().getUserEntryByCurrentName(baseUserLogin.getUsername());
+            for (User repeatedNameUserEntry : repeatedNameUserEntries) {
+                if (repeatedNameUserEntry.equals(user)) continue;
+                return VerifyAuthResult.generateKickResult(core.getLanguageHandler().getMessage("auth_verify_failed_username_repeated", FormatContent.createContent(
+                        FormatContent.FormatEntry.builder().name("current_name").content(baseUserLogin.getUsername()).build()
+                )));
             }
+
 
             // 是不是新的玩家数据
             boolean newUserData = user == null;
 
             // 新建玩家数据
-            if (newUserData) user = new User(result.getResult().getId(), result.getResult().getName(),
+            if (newUserData) user = new User(result.getResult().getId(), baseUserLogin.getUsername(),
                     result.getService().getConvUuid().getResultUuid(result.getResult().getId(),
-                            result.getResult().getName()), result.getService().getPath(), false);
+                            baseUserLogin.getUsername()), result.getService().getPath(), false);
 
             // 处理玩家改名操作
-            if (!user.getCurrentName().equals(result.getResult().getName())) {
-                user.setCurrentName(result.getResult().getName());
+            if (!user.getCurrentName().equals(baseUserLogin.getUsername())) {
+                user.setCurrentName(baseUserLogin.getUsername());
             }
-            user.setCurrentName(result.getResult().getName());
+            user.setCurrentName(baseUserLogin.getUsername());
 
 
             // 处理新用户 UUID 冲突
@@ -104,7 +104,7 @@ public class VerifyAuthCore {
             // 白名单检查
             if (core.getConfig().isWhitelist() || result.getService().isWhitelist()) {
                 if (!user.isWhitelist()) {
-                    if (core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getName())) {
+                    if (core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(baseUserLogin.getUsername())) {
                         user.setWhitelist(true);
                     }
                     if (core.getSqlManager().getCacheWhitelistDataHandler().removeCacheWhitelist(result.getResult().getId().toString())) {
@@ -126,7 +126,7 @@ public class VerifyAuthCore {
             // 重名踢出（强制登入）
             User finalUser = user;
             FutureTask<IPlayer> task = new FutureTask<>(() -> {
-                for (IPlayer player : core.getPlugin().getRunServer().getPlayerManager().getPlayer(result.getResult().getName())) {
+                for (IPlayer player : core.getPlugin().getRunServer().getPlayerManager().getPlayer(baseUserLogin.getUsername())) {
                     if (!player.getUniqueId().equals(result.getResult().getId())) {
                         player.kickPlayer(core.getLanguageHandler().getMessage("in_game_busy_username", FormatContent.empty()));
                     }

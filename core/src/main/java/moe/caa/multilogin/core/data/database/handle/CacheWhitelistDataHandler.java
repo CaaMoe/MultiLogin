@@ -70,6 +70,20 @@ public class CacheWhitelistDataHandler implements IDataHandler {
     }
 
     /**
+     * 移除所有擦车白名单操作
+     *
+     * @return 影响的数据量
+     * @throws SQLException 移除时异常
+     */
+    public int removeAllCacheWhitelist() throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %s",
+                CACHE_WHITELIST_TABLE_NAME
+        ))) {
+            return ps.executeUpdate();
+        }
+    }
+
+    /**
      * 添加擦车白名单操作
      *
      * @param nameOrUuid 项目

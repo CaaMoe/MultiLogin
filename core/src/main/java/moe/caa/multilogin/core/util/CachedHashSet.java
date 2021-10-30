@@ -43,6 +43,7 @@ public class CachedHashSet<VALUE> {
      * @return 当前元素集合
      */
     public Set<VALUE> getEntrySet() {
+        clearInValid();
         return contents.keySet();
     }
 

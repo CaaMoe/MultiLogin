@@ -16,7 +16,7 @@ public class MultiLoginBungeeLoader extends Plugin implements IPluginLoader {
     public void onLoad() {
         try {
             coreLoader = new MultiLoginCoreLoader(this);
-            if (!coreLoader.start()) {
+            if (coreLoader.startLoading()) {
                 shutdown();
                 return;
             }

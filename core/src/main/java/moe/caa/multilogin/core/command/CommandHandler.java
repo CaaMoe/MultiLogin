@@ -1,88 +1,90 @@
 package moe.caa.multilogin.core.command;
 
-import moe.caa.multilogin.core.command.executes.multilogin.MultiLoginCommandExecutor;
-import moe.caa.multilogin.core.command.executes.whitelist.WhitelistCommandExecutor;
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import lombok.Getter;
+import moe.caa.multilogin.core.command.commands.RootMultiLoginCommand;
+import moe.caa.multilogin.core.command.commands.RootWhitelistCommand;
 import moe.caa.multilogin.core.impl.ISender;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 命令处理程序
  */
 public class CommandHandler {
-    private final MultiCore core;
-    private final ConcurrentHashMap<String, BaseCommandExecutor> rootCommandExecutorConcurrentHashMap = new ConcurrentHashMap<>();
+    @Getter()
+    private static MultiCore core;
+    private final CommandDispatcher<ISender> dispatcher = new CommandDispatcher<>();
 
-    /**
-     * 构建这个命令处理程序
-     *
-     * @param core 插件核心
-     */
     public CommandHandler(MultiCore core) {
-        this.core = core;
-        rootCommandExecutorConcurrentHashMap.put("multilogin", new MultiLoginCommandExecutor(this, core));
-        rootCommandExecutorConcurrentHashMap.put("whitelist", new WhitelistCommandExecutor(this, core));
+        CommandHandler.core = core;
     }
 
-    /**
-     * 异步执行这条指令
-     *
-     * @param sender    命令执行者
-     * @param arguments 命令参数
-     */
-    public void executeAsync(ISender sender, CommandArguments arguments) {
-        core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> execute(sender, arguments));
+    public void init() {
+        new RootMultiLoginCommand(core).register(dispatcher);
+        new RootWhitelistCommand(core).register(dispatcher);
+        CommandSyntaxException.BUILT_IN_EXCEPTIONS = new BuiltInExceptions(core);
     }
 
-    /**
-     * 执行这条指令
-     *
-     * @param sender    命令执行者
-     * @param arguments 命令参数
-     */
-    public void execute(ISender sender, CommandArguments arguments) {
-        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Executing command: %s. (%s)", arguments.toString(), sender.getName()));
-        try {
-            CommandResult result = CommandResult.UNKNOWN_USAGE;
-            if (arguments.getLength() != 0) {
-                BaseCommandExecutor executor = rootCommandExecutorConcurrentHashMap.get(arguments.getIndex(0).toLowerCase(Locale.ROOT));
-                if (executor != null) {
-                    if (executor.getPermission() == null || sender.hasPermission(executor.getPermission())) {
-                        arguments.offset(1);
-                        result = executor.execute(sender, arguments);
-                    } else {
-                        result = CommandResult.NO_PERMISSION;
-                    }
-                }
+    public void execute(ISender sender, String[] args) {
+        MultiLogger.getLogger().log(LoggerLevel.DEBUG, String.format("Executing command: %s. (%s)", String.join(" ", args), sender.getName()));
+        core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
+            try {
+                dispatcher.execute(String.join(" ", args), sender);
+            } catch (CommandSyntaxException e) {
+                MultiLogger.getLogger().log(LoggerLevel.DEBUG, "arguments: " + String.join(" ", args), e);
+                sender.sendMessage(e.getRawMessage().getString());
+            } catch (Exception e) {
+                sender.sendMessage(core.getLanguageHandler().getMessage("command_error", FormatContent.empty()));
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while executing the command.", e);
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
+                MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + String.join(" ", args));
             }
-            if (result == CommandResult.PASS) return;
-            if (result == CommandResult.UNKNOWN_USAGE) {
-                sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_unknown_command", FormatContent.empty()));
-            } else if (result == CommandResult.NO_PERMISSION) {
-                sender.sendMessage(core.getLanguageHandler().getMessage("command_exception_missing_permission", FormatContent.empty()));
+        });
+
+    }
+
+    public List<String> tabComplete(ISender sender, String[] ns) {
+        if(!sender.hasPermission(Permissions.COMMAND_TAB_COMPLETE)){
+            return Collections.emptyList();
+        }
+        CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(String.join(" ", ns), sender));
+        List<String> ret = new ArrayList<>();
+        try {
+            Suggestions suggestions1 = suggestions.get();
+            for (Suggestion suggestion : suggestions1.getList()) {
+                ret.add(suggestion.getText());
             }
         } catch (Exception e) {
-            sender.sendMessage(core.getLanguageHandler().getMessage("command_error", FormatContent.empty()));
-            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while executing the command.", e);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while completing the command.", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "sender: " + sender.getName());
-            MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + arguments);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "arguments: " + String.join(" ", ns));
         }
+        return ret;
     }
 
-    /**
-     * 补全这条指令
-     *
-     * @param sender    命令执行者
-     * @param arguments 命令参数
-     */
-    public List<String> tabComplete(ISender sender, CommandArguments arguments) {
-        return Collections.emptyList();
+
+    public void execute(ISender sender, String name, String[] args) {
+        String[] ns = new String[args.length + 1];
+        System.arraycopy(args, 0, ns, 1, args.length);
+        ns[0] = name;
+        execute(sender, ns);
+    }
+
+    public List<String> tabComplete(ISender sender, String name, String[] args) {
+        String[] ns = new String[args.length + 1];
+        System.arraycopy(args, 0, ns, 1, args.length);
+        ns[0] = name;
+        return tabComplete(sender, ns);
     }
 }

@@ -80,6 +80,15 @@ public class Library {
                         .mainClass("org.yaml.snakeyaml.DumperOptions")
                         .forwardPackage("org.yaml.snakeyaml")
                         .relocate("moe.caa.multilogin.lib.org.yaml.snakeyaml")
+                        .build(),
+                Library.builder()
+                        .group("com.mojang")
+                        .name("brigadier")
+                        .version("1.0.18")
+                        .mainClass("com.mojang.brigadier.CommandDispatcher")
+                        .forwardPackage("com.mojang.brigadier")
+                        .relocate("moe.caa.multilogin.lib.com.mojang.brigadier")
+                        .downloadUrl("https://libraries.minecraft.net/com/mojang/brigadier/1.0.18/brigadier-1.0.18.jar")
                         .build()
         );
         JAR_RELOCATOR_LIBRARIES = Arrays.asList(
@@ -88,18 +97,21 @@ public class Library {
                         .name("jar-relocator")
                         .version("1.5")
                         .mainClass("me.lucko.jarrelocator.JarRelocator")
+                        .startsPackName("me.lucko.jarrelocator")
                         .build(),
                 Library.builder()
                         .group("org.ow2.asm")
                         .name("asm")
                         .version("9.2")
                         .mainClass("org.objectweb.asm.Type")
+                        .startsPackName("org.objectweb.asm")
                         .build(),
                 Library.builder()
                         .group("org.ow2.asm")
                         .name("asm-commons")
                         .version("9.2")
                         .mainClass("org.objectweb.asm.commons.Method")
+                        .startsPackName("org.objectweb.asm")
                         .build()
         );
     }
@@ -134,6 +146,16 @@ public class Library {
      * 重定向后的包名
      */
     private final String relocate;
+
+    /**
+     * 包前缀
+     */
+    private final String startsPackName;
+
+    /**
+     * 指定下载链接
+     */
+    private String downloadUrl;
 
     /**
      * 生成 Jar 包名称
@@ -197,6 +219,9 @@ public class Library {
      * @return 下载链接
      */
     public String generateDownloadUrl() {
+        if (downloadUrl != null && !downloadUrl.isEmpty()) {
+            return downloadUrl;
+        }
         // 例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
         StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
         String[] groupSplit = group.split("\\.");

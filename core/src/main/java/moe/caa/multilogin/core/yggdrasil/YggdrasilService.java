@@ -29,14 +29,13 @@ public class YggdrasilService {
     private final boolean whitelist;
     private final boolean refuseRepeatedLogin;
     private final int authRetry;
-    private final boolean safeId;
     private final SkinRestorerRuleEnum skinRestorer;
     private final int skinRestorerRetry;
 
     private YggdrasilService(String path, boolean enable, String name, String url, boolean postMode, boolean passIp,
                              String passIpContent, String postContent, ConvUuidEnum convUuid, boolean convRepeat,
                              String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin,
-                             int authRetry, boolean safeId, SkinRestorerRuleEnum skinRestorer, int skinRestorerRetry) {
+                             int authRetry, SkinRestorerRuleEnum skinRestorer, int skinRestorerRetry) {
         this.path = Objects.requireNonNull(path, "path is null");
         this.enable = enable;
         this.name = Objects.requireNonNull(name, "name is null");
@@ -51,7 +50,6 @@ public class YggdrasilService {
         this.whitelist = whitelist;
         this.refuseRepeatedLogin = refuseRepeatedLogin;
         this.authRetry = authRetry;
-        this.safeId = safeId;
         this.skinRestorer = Objects.requireNonNull(skinRestorer, "skinRestorer is null");
         this.skinRestorerRetry = skinRestorerRetry;
     }
@@ -81,7 +79,6 @@ public class YggdrasilService {
         var whitelist = config.get("whitelist", Boolean.class, false);
         var refuseRepeatedLogin = config.get("refuseRepeatedLogin", Boolean.class, false);
         var authRetry = config.get("authRetry", Number.class, 1).intValue();
-        var safeId = config.get("safeId", Boolean.class, false);
         var skinRestorer = config.get("skinRestorer", SkinRestorerRuleEnum.class, SkinRestorerRuleEnum.OFF);
         var skinRestorerRetry = config.get("skinRestorerRetry", Number.class, 2).intValue();
 
@@ -101,7 +98,7 @@ public class YggdrasilService {
 
         return new YggdrasilService(
                 path, enable, name, url, postMode, passIp, passIpContent, postContent,
-                convUuid, convRepeat, nameAllowedRegular, whitelist, refuseRepeatedLogin, authRetry, safeId,
+                convUuid, convRepeat, nameAllowedRegular, whitelist, refuseRepeatedLogin, authRetry,
                 skinRestorer, skinRestorerRetry
         );
     }

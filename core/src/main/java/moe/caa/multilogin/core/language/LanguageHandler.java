@@ -86,4 +86,8 @@ public class LanguageHandler {
         }
         return ret;
     }
+
+    public String getMessage(String node) {
+        return getMessage(node, FormatContent.empty());
+    }
 }

@@ -101,7 +101,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     }
 
     public String getUsername(InitialHandler handler) throws UnsupportedEncodingException {
-        return URLEncoder.encode(handler.getName(), "UTF-8");
+        return handler.getName();
     }
 
     public String getIp(InitialHandler handler) {

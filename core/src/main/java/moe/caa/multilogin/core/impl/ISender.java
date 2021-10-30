@@ -38,7 +38,5 @@ public interface ISender {
      *
      * @return 对应的玩家对象
      */
-    default IPlayer getAsPlayer() {
-        return (IPlayer) this;
-    }
+    IPlayer getAsPlayer();
 }

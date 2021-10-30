@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -55,6 +56,9 @@ public class YggdrasilAuthCore {
                 // 回调器
                 var callback = (Callback<YggdrasilAuthTask>) (task) -> {
                     if (task.getThrowable() != null) {
+                        core.getLogger().log(LoggerLevel.DEBUG, "An exception was encountered during validation.", task.getThrowable());
+                        core.getLogger().log(LoggerLevel.DEBUG, "user: " + task.getUser());
+                        core.getLogger().log(LoggerLevel.DEBUG, "service: " + task.getService().getPath());
                         down.set(true);
                     } else if (task.getResponse() != null && task.getResponse().isSucceed()) {
                         // 有两个登入验证凭据?
@@ -63,7 +67,7 @@ public class YggdrasilAuthCore {
                         synchronized (succeed) {
                             if (succeed.get() != null) {
                                 core.getLogger().log(LoggerLevel.WARN, "Maybe you have one or more Yggdrasil servers with duplicate configurations?");
-                                core.getLogger().log(LoggerLevel.WARN, String.format("Because %s has multiple login credentials.", task.getResponse().getName()));
+                                core.getLogger().log(LoggerLevel.WARN, String.format("Because %s has multiple login credentials.", task.getUser().getUsername()));
                                 core.getLogger().log(LoggerLevel.WARN, "DON'T IGNORE THIS WARNING.");
                                 return;
                             }
@@ -86,7 +90,11 @@ public class YggdrasilAuthCore {
                     zs = true;
                 }
                 //阻塞
-                if (zs) latch.await();
+                if (zs) {
+                    if (!latch.await(1000 * 60, TimeUnit.MILLISECONDS)) {
+                        return new YggdrasilAuthResult(YggdrasilAuthReasonEnum.SERVER_DOWN, null, null);
+                    }
+                }
                 YggdrasilAuthTask task = succeed.get();
                 if (task == null) continue;
                 // 直接返回

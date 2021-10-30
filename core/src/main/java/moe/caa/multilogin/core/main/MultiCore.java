@@ -16,7 +16,7 @@ import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
-import moe.caa.multilogin.core.main.manifest.ManifestReader;
+import moe.caa.multilogin.core.main.manifest.BuildManifest;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.util.IOUtil;
 import moe.caa.multilogin.core.util.YamlReader;
@@ -42,6 +42,8 @@ public class MultiCore {
     private final File generalConfig;
     private final File dataFolder;
 
+    private final File tempFolder;
+
     private final CombineAuthCore authCore;
     private final SkinRestorerCore restorerCore;
     private final CommandHandler commandHandler;
@@ -57,6 +59,7 @@ public class MultiCore {
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
         dataFolder = plugin.getDataFolder();
+        tempFolder = new File(dataFolder, "temp");
         generalConfig = new File(dataFolder, "config.yml");
         setting = new AdvancedSetting();
         config = new GeneralConfig();
@@ -89,10 +92,11 @@ public class MultiCore {
      * @return 初始化是否成功
      */
     private boolean init0() throws Throwable {
+        updater = new CheckUpdater(this);
         try {
-            new ManifestReader().read();
+            new BuildManifest().read(this);
         } catch (Exception e) {
-            getLogger().log(LoggerLevel.DEBUG, "FAILED TO READ META-INF/MANIFEST.MF FILE.", e);
+            getLogger().log(LoggerLevel.ERROR, "FAILED TO READ ARCHIVES ENTRY.", e);
         }
 
         // 初始化和读取高级配置文件
@@ -109,6 +113,8 @@ public class MultiCore {
         yggdrasilServicesHandler.reload(config.getReader().get("services", YamlReader.class));
         // 连接数据库操作
         if (!sqlManager.init(config.getReader().get("sql", YamlReader.class))) return false;
+        // 注册命令
+        commandHandler.init();
         // 后端实现任务
         plugin.initService();
         plugin.initOther();
@@ -126,8 +132,7 @@ public class MultiCore {
         }
 
         metricsLite = new MetricsLite(plugin);
-        updater = new CheckUpdater(this);
-        plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 0, 1000 * 60 * 60 * 24);
+        plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 1000 * 60 * 60 * 24, 1000 * 60 * 60 * 24);
 
 
         logger.log(LoggerLevel.INFO, "插件加载完毕");
@@ -179,5 +184,12 @@ public class MultiCore {
             logger.log(LoggerLevel.ERROR, String.format("Failed to read general configuration file. (%s)", generalConfig.getAbsolutePath()), e);
             return false;
         }
+    }
+
+    public File getTempFolder() {
+        if (!tempFolder.exists()) {
+            tempFolder.mkdirs();
+        }
+        return tempFolder;
     }
 }

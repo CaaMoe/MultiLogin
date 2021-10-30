@@ -152,6 +152,23 @@ public class UserDataHandler implements IDataHandler {
     }
 
     /**
+     * 获取所有玩家<br>
+     * 获取到的数据将会以 yggdrasilService 字段排序
+     *
+     * @return 玩家数据对象列表
+     * @throws SQLException 读取异常
+     */
+    public List<User> getAllUserEntryOrderYggdrasilService() throws SQLException {
+        try (Connection conn = sqlManager.getPool().getConnection(); PreparedStatement ps = conn.prepareStatement(String.format("SELECT * FROM %s ORDER BY %s",
+                USER_DATA_TABLE_NAME, sqlManager.getCore().getSetting().getDatabase_user_data_table_field_yggdrasil_service()
+        ))) {
+            try (ResultSet resultSet = ps.executeQuery()) {
+                return getUsers(resultSet);
+            }
+        }
+    }
+
+    /**
      * 通过 currentName 获取 YggdrasilService 实例
      *
      * @param name 当前name

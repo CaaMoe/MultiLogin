@@ -2,8 +2,6 @@ package fun.ksnb.multilogin.velocity.main;
 
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.network.ProtocolVersion;
-import com.velocitypowered.api.plugin.PluginContainer;
-import com.velocitypowered.api.plugin.PluginDescription;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
@@ -107,10 +105,8 @@ public class MultiLoginVelocityPluginBootstrap extends BasePluginBootstrap imple
 
     @Override
     public String getPluginVersion() {
-        return getServer().getPluginManager().getPlugin("MultiLogin")
-                .map(PluginContainer::getDescription)
-                .map(PluginDescription::getVersion)
-                .get().get();
+        return getServer().getPluginManager().getPlugin("multilogin").get()
+                .getDescription().getVersion().get();
     }
 
     public ProxyServer getServer() {

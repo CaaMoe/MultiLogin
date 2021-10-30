@@ -19,7 +19,7 @@ public class MultiLoginBukkitLoader extends JavaPlugin implements IPluginLoader 
     public void onLoad() {
         try {
             coreLoader = new MultiLoginCoreLoader(this);
-            if (!coreLoader.start()) {
+            if (coreLoader.startLoading()) {
                 shutdown();
                 return;
             }

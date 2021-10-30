@@ -16,7 +16,6 @@
 * **高度可配置的 Yggdrasil 方式** 支持市面上几乎所有类型的 Yggdrasil 账户验证服务器
 * **账户安全机制** 限制只使用其中一种 Yggdrasil 登入方式，杜绝可能出现的重复 UUID 问题
 * **用户名核查** 阻止服务器内出现同名账户。
-* **抢注机制** 设置某一验证服务器下的玩家可以使用已被记录的用户名强制登入游戏
 * **正则检查** 多 Yggdrasil 下分组设置的用户名正则匹配检查
 * **高级白名单系统** 多 Yggdrasil 下分组管理的白名单系统
 * **重复登入机制** 可设置掉线或强登
@@ -145,11 +144,6 @@ MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置�
         # 验证错误重试次数
         # 默认值: 1
         authRetry: 1
-    
-        # 绝对的ID使用权限
-        # 若为 'true', 则验证中的玩家将会跳过重名验证检查并且强制占有当前ID。
-        # 默认值 'false'
-        safeId: false
 
         # 皮肤修复规则，用来解决不同 Yggdrasil 账户验证服务器下的皮肤不可见问题。
         #    比如使用 Minecraft 原版验证服务器的玩家无法看到使用第三方外置验证登入玩家的皮肤。
@@ -198,10 +192,23 @@ MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置�
 
 | 命令 | 权限 | 简介 |
 |  ----  | ----  | --- |
-| /multilogin reload   | command.multilogin.reload| 重新加载配置文件|
-| /whitelist add &lt;name&#124;uuid&gt;     | command.multilogin.whitelist.add| 将 target 添加到白名单中|
-| /whitelist remove &lt;name&#124;uuid&gt;    | command.multilogin.whitelist.remove| 移除 target 的白名单|
-| /whitelist list         | command.multilogin.whitelist.list| 获得白名单列表|
+|                                                    |  command.tab.complete            | 补全命令时所需要的权限
+| /multilogin reload                                                    |  command.multilogin.reload            | 重载插件
+| /multilogin yggdrasil info <yggdrasil_path>                            |  command.multilogin.yggdrasil.info            | 获得 Yggdrasil 信息
+| /multilogin yggdrasil list                                            |  command.multilogin.yggdrasil.list            | 获得 Yggdrasil 列表
+| /multilogin userdata info <online_uuid>                                |  command.multilogin.userdata.info            | 获得一条用户记录
+| /multilogin userdata modify yggdrasil <yggdrasil_path> <online_uuid>    |  command.multilogin.userdata.modify.yggdrasil            | 更改某用户的登入方式
+| /multilogin userdata modify redirect <redirect_uuid> <online_uuid>    |  command.multilogin.userdata.modify.redirectUuid            | 更改某用户的游戏内UUID
+| /multilogin userdata remove <online_uuid>                                |  command.multilogin.userdata.remove            | 移除某用户的记录
+| /multilogin skinrestorer remove <online_uuid>                            |  ommand.multilogin.skinrestorer.remove            | 移除某用户的皮肤修复记录
+| /multilogin skinrestorer removeAll                                    |  command.multilogin.skinrestorer.remove.all            | 移除所有用户的皮肤修复记录
+| /multilogin confirm                                                    |  command.multilogin.confirm            | 确认当前风险操作
+| /multilogin list                                                        |  command.multilogin.list            | 获得玩家列表
+| /multilogin update                                                    |  command.multilogin.update            | 检查更新
+| /whitelist add <name&#124;uuid>                                        |  command.multilogin.whitelist.add            | 白名单添加
+| /whitelist remove <name&#124;uuid>                                    |  command.multilogin.whitelist.remove            | 白名单移除
+| /whitelist list                                                        |  command.multilogin.whitelist.list            | 白名单列表
+| /whitelist clearCache                                                    |  command.multilogin.whitelist.clearCache            | 清除缓存白名单
 
 ## PlaceholderAPI 变量（Bukkit Only）
 

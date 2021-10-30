@@ -7,6 +7,7 @@ import com.mojang.authlib.exceptions.AuthenticationUnavailableException;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import lombok.Setter;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap;
 
 import java.net.InetAddress;
 import java.util.Map;
@@ -14,6 +15,9 @@ import java.util.Map;
 public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSessionService {
     @Setter
     private HttpMinecraftSessionService vanService;
+
+    @Setter
+    private MultiLoginBukkitPluginBootstrap bootstrap;
 
     public MultiLoginYggdrasilMinecraftSessionService(HttpAuthenticationService authenticationService) {
         super(authenticationService);
@@ -31,7 +35,7 @@ public class MultiLoginYggdrasilMinecraftSessionService extends HttpMinecraftSes
 
     // 不要注解不要注解不要注解不要注解不要注解不要注解
     public GameProfile hasJoinedServer(GameProfile user, String serverId, InetAddress address) {
-        BukkitAuthCore core = new BukkitAuthCore();
+        BukkitAuthCore core = new BukkitAuthCore(bootstrap);
         return core.doAuth(user, serverId, address);
     }
 

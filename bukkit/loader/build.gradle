@@ -10,11 +10,6 @@ repositories {
 dependencies {
     implementation project(":core:loader")
     compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
-
-    // CAT_SERVER
-    implementation group: 'org.ow2.asm', name: 'asm', version: '9.2'
-    implementation group: 'org.ow2.asm', name: 'asm-commons', version: '9.2'
-    implementation group: 'me.lucko', name: 'jar-relocator', version: '1.5'
 }
 
 shadowJar {
@@ -27,10 +22,6 @@ shadowJar {
         archiveVersion.set(ver)
     }
     archiveClassifier.set("")
-
-    // CAT_SERVER
-    relocate 'org.objectweb.asm', 'moe.caa.multilogin.lib.org.objectweb.asm'
-    relocate 'me.lucko', 'moe.caa.multilogin.lib.me.lucko'
 
     from {
         project(':bukkit').tasks.shadowJar.archiveFile
