@@ -43,12 +43,16 @@ public class MultiLoginCoreLoader {
      * @param sectionLoader 部分加载器
      * @param loaderType    加载方式
      */
-    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) throws IOException {
+    public MultiLoginCoreLoader(IPluginLoader sectionLoader, LoaderType loaderType) {
         this.loaderType = loaderType;
         this.sectionLoader = sectionLoader;
         librariesFolder = new File(sectionLoader.getDataFolder(), "libraries");
         tempLibrariesFolder = new File(sectionLoader.getDataFolder(), "temp");
-        Files.deleteIfExists(tempLibrariesFolder.toPath());
+
+        try {
+            deleteDir(tempLibrariesFolder);
+        } catch (Exception ignored) {
+        }
     }
 
     /**
@@ -215,12 +219,12 @@ public class MultiLoginCoreLoader {
         try {
             if (currentUrlClassLoader != null)
                 currentUrlClassLoader.close();
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
 
         try {
-            Files.deleteIfExists(tempLibrariesFolder.toPath());
-        } catch (IOException ignored) {
+            deleteDir(tempLibrariesFolder);
+        } catch (Exception ignored) {
         }
     }
 
@@ -272,5 +276,20 @@ public class MultiLoginCoreLoader {
         if (!tempLibrariesFolder.exists()) {
             tempLibrariesFolder.mkdirs();
         }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            if(children != null){
+                for (String child : children) {
+                    boolean success = deleteDir(new File(dir, child));
+                    if (!success) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return dir.delete();
     }
 }
