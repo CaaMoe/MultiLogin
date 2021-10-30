@@ -192,6 +192,7 @@ MultiLogin 通过记录和保存玩家第一次登入成功后使用的**外置�
 
 | 命令 | 权限 | 简介 |
 |  ----  | ----  | --- |
+|                                                    |  command.tab.complete            | 补全命令时所需要的权限
 | /multilogin reload                                                    |  command.multilogin.reload            | 重载插件
 | /multilogin yggdrasil info <yggdrasil_path>                            |  command.multilogin.yggdrasil.info            | 获得 Yggdrasil 信息
 | /multilogin yggdrasil list                                            |  command.multilogin.yggdrasil.list            | 获得 Yggdrasil 列表

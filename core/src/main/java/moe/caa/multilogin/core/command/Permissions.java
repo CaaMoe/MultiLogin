@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Permissions {
+    public static final String COMMAND_TAB_COMPLETE = "command.tab.complete";
     public static final String COMMAND_MULTI_LOGIN_RELOAD = "command.multilogin.reload";
     public static final String COMMAND_MULTI_LOGIN_UPDATE = "command.multilogin.update";
     public static final String COMMAND_MULTI_LOGIN_CONFIRM = "command.multilogin.confirm";

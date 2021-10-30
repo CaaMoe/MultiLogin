@@ -14,6 +14,7 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.FormatContent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -54,6 +55,9 @@ public class CommandHandler {
     }
 
     public List<String> tabComplete(ISender sender, String[] ns) {
+        if(!sender.hasPermission(Permissions.COMMAND_TAB_COMPLETE)){
+            return Collections.emptyList();
+        }
         CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(String.join(" ", ns), sender));
         List<String> ret = new ArrayList<>();
         try {
