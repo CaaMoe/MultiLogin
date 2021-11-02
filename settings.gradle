@@ -9,6 +9,7 @@ pluginManagement {
 }
 
 rootProject.name = 'MultiLogin'
+include 'api'
 include 'core'
 include 'bukkit'
 include 'fabric'
