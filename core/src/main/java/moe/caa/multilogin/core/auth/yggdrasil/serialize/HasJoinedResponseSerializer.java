@@ -30,19 +30,21 @@ public class HasJoinedResponseSerializer implements JsonSerializer<HasJoinedResp
             if (root.has("name"))
                 ret.setName(root.get("name").getAsString());
             var propertiesJsonElement = root.get("properties");
-            if (propertiesJsonElement.isJsonObject()) {
-                JsonObject object = propertiesJsonElement.getAsJsonObject();
-                for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
-                    if (entry.getValue().isJsonArray()) {
-                        for (JsonElement ignored : entry.getValue().getAsJsonArray()) {
-                            propertyMap.put(entry.getKey(), context.deserialize(ignored, Property.class));
+            if (propertiesJsonElement != null) {
+                if (propertiesJsonElement.isJsonObject()) {
+                    JsonObject object = propertiesJsonElement.getAsJsonObject();
+                    for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
+                        if (entry.getValue().isJsonArray()) {
+                            for (JsonElement ignored : entry.getValue().getAsJsonArray()) {
+                                propertyMap.put(entry.getKey(), context.deserialize(ignored, Property.class));
+                            }
                         }
                     }
-                }
-            } else if (propertiesJsonElement.isJsonArray()) {
-                for (JsonElement element : propertiesJsonElement.getAsJsonArray()) {
-                    Property value = context.deserialize(element, Property.class);
-                    propertyMap.put(value.getName(), value);
+                } else if (propertiesJsonElement.isJsonArray()) {
+                    for (JsonElement element : propertiesJsonElement.getAsJsonArray()) {
+                        Property value = context.deserialize(element, Property.class);
+                        propertyMap.put(value.getName(), value);
+                    }
                 }
             }
         }
