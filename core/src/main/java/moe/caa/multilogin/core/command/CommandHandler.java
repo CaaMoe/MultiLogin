@@ -55,7 +55,7 @@ public class CommandHandler {
     }
 
     public List<String> tabComplete(ISender sender, String[] ns) {
-        if(!sender.hasPermission(Permissions.COMMAND_TAB_COMPLETE)){
+        if (!sender.hasPermission(Permissions.COMMAND_TAB_COMPLETE)) {
             return Collections.emptyList();
         }
         CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(String.join(" ", ns), sender));

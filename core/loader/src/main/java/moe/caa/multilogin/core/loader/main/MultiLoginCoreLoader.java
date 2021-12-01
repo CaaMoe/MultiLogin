@@ -18,7 +18,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -183,7 +182,7 @@ public class MultiLoginCoreLoader {
             Method theUnsafeStaticFieldOffsetMethod = unsafeClass.getDeclaredMethod("staticFieldOffset", Field.class);
             Object theUnsafe = theUnsafeField.get(null);
             Field implLookup = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
-            MethodHandles.Lookup super_look_up = (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, (long)theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
+            MethodHandles.Lookup super_look_up = (MethodHandles.Lookup) theUnsafeGetObjectMethod.invoke(theUnsafe, MethodHandles.Lookup.class, (long) theUnsafeStaticFieldOffsetMethod.invoke(theUnsafe, implLookup));
 
             ClassLoader classLoader = this.getClass().getClassLoader();
             MethodHandle handle = super_look_up.unreflect(ReflectUtil.getMethodWithParent(classLoader.getClass(), "addURL", false, URL.class));
@@ -281,7 +280,7 @@ public class MultiLoginCoreLoader {
     private boolean deleteDir(File dir) {
         if (dir.isDirectory()) {
             String[] children = dir.list();
-            if(children != null){
+            if (children != null) {
                 for (String child : children) {
                     boolean success = deleteDir(new File(dir, child));
                     if (!success) {

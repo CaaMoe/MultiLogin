@@ -8,7 +8,7 @@ public interface IEnhance_ServerLoginNetworkHandler {
 
     void multiLogin_setProfile(GameProfile profile);
 
-    default ServerLoginNetworkHandler getAsServerLoginNetworkHandler(){
+    default ServerLoginNetworkHandler getAsServerLoginNetworkHandler() {
         return (ServerLoginNetworkHandler) this;
     }
 }

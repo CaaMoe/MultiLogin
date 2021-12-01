@@ -11,7 +11,6 @@ import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.util.ReflectUtil;
 import moe.caa.multilogin.fabric.auth.MultiLoginYggdrasilMinecraftSessionService;
-import moe.caa.multilogin.fabric.impl.FabricSender;
 import moe.caa.multilogin.fabric.impl.FabricServer;
 import moe.caa.multilogin.fabric.loader.main.MultiLoginFabricLoader;
 import net.minecraft.server.MinecraftServer;
@@ -24,13 +23,11 @@ import java.lang.reflect.Field;
 
 import static moe.caa.multilogin.core.util.IOUtil.getJarResource;
 
-public class MultiLoginFabricPluginBootstrap  extends BasePluginBootstrap implements IPlugin {
-    private final Logger logger = LogManager.getLogger("MultiLogin");
-    private final String PLUGIN_VERSION = new JsonParser().parse(new InputStreamReader(getJarResource("fabric.mod.json"))).getAsJsonObject().get("version").getAsString();
-
+public class MultiLoginFabricPluginBootstrap extends BasePluginBootstrap implements IPlugin {
     @Getter
     private static MultiLoginFabricPluginBootstrap instance;
-
+    private final Logger logger = LogManager.getLogger("MultiLogin");
+    private final String PLUGIN_VERSION = new JsonParser().parse(new InputStreamReader(getJarResource("fabric.mod.json"))).getAsJsonObject().get("version").getAsString();
     @Getter
     private final MultiCore core;
 
@@ -38,7 +35,6 @@ public class MultiLoginFabricPluginBootstrap  extends BasePluginBootstrap implem
 
     private final MinecraftServer server;
     private final MultiLoginFabricLoader fabricLoader;
-
 
 
     public MultiLoginFabricPluginBootstrap(MultiLoginFabricLoader fabricLoader, MinecraftServer server) {

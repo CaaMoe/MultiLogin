@@ -25,7 +25,7 @@ public interface YggdrasilManager {
      *
      * @return 被启用的验证服务器数据对象
      */
-    default Set<Yggdrasil> getYggdrasilInEnabled(){
+    default Set<Yggdrasil> getYggdrasilInEnabled() {
         return getAllYggdrasil().stream().filter(Yggdrasil::isEnabled).collect(Collectors.toSet());
     }
 }

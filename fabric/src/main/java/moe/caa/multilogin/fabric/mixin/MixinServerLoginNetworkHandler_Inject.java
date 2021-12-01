@@ -11,7 +11,8 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class MixinServerLoginNetworkHandler_Inject implements IEnhance_ServerLoginNetworkHandler {
 
     @Mutable
-    @Shadow private GameProfile profile;
+    @Shadow
+    private GameProfile profile;
 
     @Override
     public GameProfile multiLogin_getProfile() {

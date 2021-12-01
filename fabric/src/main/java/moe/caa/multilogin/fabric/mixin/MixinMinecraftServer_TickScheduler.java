@@ -13,8 +13,8 @@ import java.util.function.BooleanSupplier;
 public class MixinMinecraftServer_TickScheduler {
 
     @Inject(method = "tickWorlds", at = @At("HEAD"))
-    private void onTickWorld(BooleanSupplier shouldKeepTicking, CallbackInfo ci){
-        if(shouldKeepTicking.getAsBoolean()){
+    private void onTickWorld(BooleanSupplier shouldKeepTicking, CallbackInfo ci) {
+        if (shouldKeepTicking.getAsBoolean()) {
             FabricScheduler.tick();
         }
     }

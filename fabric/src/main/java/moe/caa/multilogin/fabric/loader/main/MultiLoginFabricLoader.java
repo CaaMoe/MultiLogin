@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.logging.Level;
 
-public class MultiLoginFabricLoader extends BasePluginBootstrap implements IPluginLoader{
+public class MultiLoginFabricLoader extends BasePluginBootstrap implements IPluginLoader {
 
     @Getter
     private final Logger logger = LogManager.getLogger("MultiLogin");

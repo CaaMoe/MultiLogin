@@ -61,11 +61,20 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     }
 
     @Override
-    public void initService() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException {
+    public void initService() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException, UnsupportedException {
         Class<?> craftServerClass = vanServer.getClass();
         Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
         Class<?> dedicatedPlayerListClass = craftServerGetHandle.getReturnType();
-        Method dedicatedPlayerListGetHandler = dedicatedPlayerListClass.getDeclaredMethod("getServer");
+        Method dedicatedPlayerListGetHandler = null/*dedicatedPlayerListClass.getDeclaredMethod("getServer")*/;
+        for (Method method : dedicatedPlayerListClass.getMethods()) {
+            if (method.getReturnType().getName().contains("DedicatedServer")) {
+                dedicatedPlayerListGetHandler = method;
+            }
+        }
+        if (dedicatedPlayerListGetHandler == null) {
+            throw new UnsupportedException("Unsupported server.");
+        }
+
         Class<?> minecraftServerClass = dedicatedPlayerListGetHandler.getReturnType().getSuperclass();
 
         Field field = ReflectUtil.handleAccessible(ReflectUtil.getField(minecraftServerClass, MinecraftSessionService.class), true);

@@ -12,20 +12,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinMinecraftServer_ModLoader {
     private MultiLoginFabricLoader multiLoginFabricLoader;
 
-    @Shadow private volatile boolean running;
+    @Shadow
+    private volatile boolean running;
 
     @Inject(method = "loadWorld", at = @At("RETURN"))
-    private void onLoad(CallbackInfo ci){
+    private void onLoad(CallbackInfo ci) {
         multiLoginFabricLoader = new MultiLoginFabricLoader((MinecraftServer) (Object) this);
         multiLoginFabricLoader.onLoad();
-        if(running){
+        if (running) {
             multiLoginFabricLoader.onEnable();
         }
     }
 
     @Inject(method = "shutdown", at = @At("HEAD"))
-    private void onStopping(CallbackInfo ci){
-        if(multiLoginFabricLoader != null){
+    private void onStopping(CallbackInfo ci) {
+        if (multiLoginFabricLoader != null) {
             multiLoginFabricLoader.onDisable();
         }
     }

@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinWhitelistCommand_CommandRegistry {
 
     @Inject(method = "register", at = @At("HEAD"), cancellable = true)
-    private static void onRegister(CommandDispatcher<ServerCommandSource> dispatcher, CallbackInfo ci){
+    private static void onRegister(CommandDispatcher<ServerCommandSource> dispatcher, CallbackInfo ci) {
 
         ci.cancel();
     }

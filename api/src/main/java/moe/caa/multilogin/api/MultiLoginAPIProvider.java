@@ -7,6 +7,7 @@ public interface MultiLoginAPIProvider {
 
     /**
      * 获得 MultiLoginAPI
+     *
      * @return MultiLoginAPI
      */
     MultiLoginAPI getMultiLoginAPI();

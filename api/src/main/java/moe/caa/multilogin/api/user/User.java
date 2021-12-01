@@ -17,6 +17,7 @@ public interface User {
 
     /**
      * 返回用户在数据库中记录的用户名
+     *
      * @return 用户名称
      */
     String getName();
@@ -24,6 +25,7 @@ public interface User {
     /**
      * 设置用户在数据库中缓存的用户名<br>
      * 此操作并不能应用于下次用户登入时所显示的用户名
+     *
      * @param newName 新的用户名
      */
     void setName(String newName);
@@ -46,6 +48,7 @@ public interface User {
 
     /**
      * 返回指定验证该名用户的身份验证服务器路径
+     *
      * @return 指定验证该名用户的身份验证服务器路径
      */
     String getAuthYggdrasilPath();
@@ -67,6 +70,7 @@ public interface User {
 
     /**
      * 设置用户是否具有白名单
+     *
      * @param newWhitelist 新的用户是否具有白名单
      */
     void setWhitelist(boolean newWhitelist);

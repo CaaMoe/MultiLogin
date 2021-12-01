@@ -28,7 +28,7 @@ public class FabricPlayerManager implements IPlayerManager {
     @Override
     public IPlayer getPlayer(UUID uuid) {
         ServerPlayerEntity playerEntity = playerManager.getPlayer(uuid);
-        if(playerEntity != null) return new FabricPlayer(playerEntity);
+        if (playerEntity != null) return new FabricPlayer(playerEntity);
         return null;
     }
 
