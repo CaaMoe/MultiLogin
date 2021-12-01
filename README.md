@@ -50,6 +50,6 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 * [进阶使用](https://github.com/CaaMoe/MultiLogin/wiki#%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8)
 * [API](https://github.com/CaaMoe/MultiLogin/wiki#api)
 
-## 协议许可
+## 开源协议
 
 `MultiLogin`采用 `GPL-3.0`协议开源
