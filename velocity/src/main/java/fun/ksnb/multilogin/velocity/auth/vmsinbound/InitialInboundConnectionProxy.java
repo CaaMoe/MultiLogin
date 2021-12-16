@@ -11,13 +11,13 @@ public class InitialInboundConnectionProxy implements Disconnectable {
         this.connection = connection;
     }
 
+    public static Disconnectable of(Object obj) {
+        return new InitialInboundConnectionProxy((InitialInboundConnection) obj);
+    }
+
     @Override
     public void disconnect(Component reason) {
         connection.disconnect(reason);
-    }
-
-    public static Disconnectable of(Object obj){
-        return new InitialInboundConnectionProxy((InitialInboundConnection) obj);
     }
 
     @Override

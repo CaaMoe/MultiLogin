@@ -1,7 +1,6 @@
 package fun.ksnb.multilogin.velocity.impl;
 
 import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.proxy.connection.client.InitialInboundConnection;
 import com.velocitypowered.proxy.connection.client.LoginSessionHandler;
 import fun.ksnb.multilogin.velocity.auth.Disconnectable;
 import fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap;

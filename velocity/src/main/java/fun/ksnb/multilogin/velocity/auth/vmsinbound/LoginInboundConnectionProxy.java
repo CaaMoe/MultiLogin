@@ -11,13 +11,13 @@ public class LoginInboundConnectionProxy implements Disconnectable {
         this.connection = connection;
     }
 
+    public static Disconnectable of(Object obj) {
+        return new LoginInboundConnectionProxy((LoginInboundConnection) obj);
+    }
+
     @Override
     public void disconnect(Component reason) {
         connection.disconnect(reason);
-    }
-
-    public static Disconnectable of(Object obj){
-        return new LoginInboundConnectionProxy((LoginInboundConnection) obj);
     }
 
     @Override
