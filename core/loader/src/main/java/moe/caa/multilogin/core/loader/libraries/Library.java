@@ -34,13 +34,13 @@ public class Library {
                 Library.builder()
                         .group("org.apache.logging.log4j")
                         .name("log4j-core")
-                        .version("2.14.1")
+                        .version("2.16.0")
                         .mainClass("org.apache.logging.log4j.core.LoggerContext")
                         .build(),
                 Library.builder()
                         .group("org.apache.logging.log4j")
                         .name("log4j-api")
-                        .version("2.14.1")
+                        .version("2.16.0")
                         .mainClass("org.apache.logging.log4j.Level")
                         .build(),
                 Library.builder()
