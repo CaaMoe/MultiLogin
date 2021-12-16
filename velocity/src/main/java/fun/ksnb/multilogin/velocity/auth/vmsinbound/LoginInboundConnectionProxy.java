@@ -1,6 +1,5 @@
 package fun.ksnb.multilogin.velocity.auth.vmsinbound;
 
-import com.velocitypowered.proxy.connection.client.InitialInboundConnection;
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection;
 import fun.ksnb.multilogin.velocity.auth.Disconnectable;
 import net.kyori.adventure.text.Component;
