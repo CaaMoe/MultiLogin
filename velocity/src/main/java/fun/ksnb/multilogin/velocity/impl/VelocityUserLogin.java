@@ -3,6 +3,7 @@ package fun.ksnb.multilogin.velocity.impl;
 import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.connection.client.InitialInboundConnection;
 import com.velocitypowered.proxy.connection.client.LoginSessionHandler;
+import fun.ksnb.multilogin.velocity.auth.Disconnectable;
 import fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
 import moe.caa.multilogin.core.auth.response.Property;
@@ -21,12 +22,12 @@ import java.util.List;
 public class VelocityUserLogin extends BaseUserLogin {
     private static MethodHandle INITIALIZE_PLAYER_METHOD;
     private final LoginSessionHandler sessionHandler;
-    private final InitialInboundConnection connection;
+    private final Disconnectable disconnectable;
 
-    public VelocityUserLogin(String username, String serverId, String ip, LoginSessionHandler sessionHandler, InitialInboundConnection connection) {
+    public VelocityUserLogin(String username, String serverId, String ip, LoginSessionHandler sessionHandler, Disconnectable disconnectable) {
         super(username, serverId, ip);
         this.sessionHandler = sessionHandler;
-        this.connection = connection;
+        this.disconnectable = disconnectable;
     }
 
     public static void init() throws NoSuchMethodException, IllegalAccessException {
@@ -36,7 +37,7 @@ public class VelocityUserLogin extends BaseUserLogin {
 
     @Override
     public void disconnect(String message) {
-        connection.disconnect(Component.text(message));
+        disconnectable.disconnect(Component.text(message));
     }
 
     @Override
@@ -44,12 +45,12 @@ public class VelocityUserLogin extends BaseUserLogin {
         try {
             INITIALIZE_PLAYER_METHOD.invoke(sessionHandler, generateLoginResult(response), true);
         } catch (Throwable e) {
-            connection.disconnect(
+            disconnectable.disconnect(
                     Component.text(MultiLoginVelocityPluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()))
             );
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred at the end of processing login.", e);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "sessionHandler: " + sessionHandler);
-            MultiLogger.getLogger().log(LoggerLevel.ERROR, "connection: " + connection);
+            MultiLogger.getLogger().log(LoggerLevel.ERROR, "connection: " + disconnectable);
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "userLogin: " + this);
         }
     }

@@ -42,7 +42,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private byte[] decryptedSharedSecret = EMPTY_BYTE_ARRAY;
     private KeyPair serverKeyPair;
     private MinecraftConnection mcConnection;
-    private InitialInboundConnection inbound;
+    private Disconnectable disconnectable;
 
     public MultiLoginEncryptionResponse() {
         server = (VelocityServer) MultiLoginVelocityPluginBootstrap.getInstance().getServer();
@@ -82,7 +82,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         String serverId = generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
         String playerIp = ((InetSocketAddress) mcConnection.getRemoteAddress()).getHostString();
 
-        BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, inbound);
+        BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, disconnectable);
         MultiLoginVelocityPluginBootstrap.getInstance().getRunServer().getScheduler().runTaskAsync(() ->
                 MultiLoginVelocityPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(userLogin));
 
@@ -117,7 +117,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             login = (ServerLogin) LOGIN_SESSION_HANDLER_SERVER_LOGIN_FIELD.invoke(loginSessionHandler);
             verify = (byte[]) LOGIN_SESSION_HANDLER_SERVER_VERIFY_FIELD.invoke(loginSessionHandler);
             mcConnection = (MinecraftConnection) LOGIN_SESSION_HANDLER_SERVER_MC_CONNECTION_FIELD.invoke(loginSessionHandler);
-            inbound = (InitialInboundConnection) LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD.invoke(loginSessionHandler);
+            disconnectable = Disconnectable.generateDisconnectable(LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD.invoke(loginSessionHandler));
         } catch (Throwable t) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "Exception during assignment.", t);
         }
