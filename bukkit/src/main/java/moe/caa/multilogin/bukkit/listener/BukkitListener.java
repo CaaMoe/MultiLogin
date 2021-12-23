@@ -5,6 +5,7 @@ import moe.caa.multilogin.bukkit.auth.BukkitAuthCore;
 import moe.caa.multilogin.bukkit.impl.BukkitUserLogin;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkitPluginBootstrap;
 import moe.caa.multilogin.core.impl.IPlayer;
+import moe.caa.multilogin.core.logger.LoggerLevel;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -35,7 +36,8 @@ public class BukkitListener implements Listener {
                 }
             }
         }
-        asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, bootstrap.getCore().getLanguageHandler().getMessage("auth_bukkit_invalid_login"));
+        // asyncPlayerPreLoginEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, bootstrap.getCore().getLanguageHandler().getMessage("auth_bukkit_invalid_login"));
+        bootstrap.getCore().getLogger().log(LoggerLevel.WARN, "Through an illegal user: " + asyncPlayerPreLoginEvent.getUniqueId() + "(" + asyncPlayerPreLoginEvent.getName() + ")");
     }
 
     @EventHandler
