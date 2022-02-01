@@ -1,6 +1,5 @@
-name: Bug report
-description: |
-  报告一个错误以帮助我们改进MultiLogin
+name: 错误报告
+description: 报告一个错误以帮助我们改进MultiLogin
 title: "[错误报告] "
 
 body:
@@ -79,4 +78,4 @@ body:
       确认一遍
     options:
     - label: "我已完成且认真地填写完了报告所需要的信息"
-    - label: "我确保没有重复的报告 [(Use Search)](https://github.com/CaaMoe/MultiLogin/search?q==is%3Aissue)"
+    - label: "我确保没有重复的报告 [(搜索一下)](https://github.com/CaaMoe/MultiLogin/issues?q=is%3Aissue)"

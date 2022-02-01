@@ -78,4 +78,4 @@ body:
       Affected area
     options:
     - label: "I included all information required in the sections above"
-    - label: "I made sure there are no duplicates of this report [(Use Search)](https://github.com/CaaMoe/MultiLogin/search?q==is%3Aissue)"
+    - label: "I made sure there are no duplicates of this report [(Use Search)](https://github.com/CaaMoe/MultiLogin/issues?q=is%3Aissue)"
