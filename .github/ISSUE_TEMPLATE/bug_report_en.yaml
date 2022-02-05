@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a bug to help us improve MultiLogin
+title: "[Bug Report] "
+
+body:
+- type: markdown
+  attributes:
+    value: |
+      Thanks for taking the time to fill out this bug report!
+      Please note that any bug reports that omit important information will be ignored
+- type: textarea
+  id: bug-description
+  attributes:
+    label: |
+      Bug Description
+    description: |
+      Tell us what issues you ran into
+    placeholder: |
+      Include information about what you tried, what you expected to happen, and what actually happened. The more details, the better!
+  validations:
+    required: true
+- type: input
+  id: MultiLogin-version
+  attributes:
+    label: |
+      MultiLogin Version
+    description: |
+      This will be showed when the server is started
+  validations:
+    required: true
+- type: input
+  id: system-architecture
+  attributes:
+    label: |
+      System Architecture
+    description: |
+      Include which architecture you used, such as `linux/amd64`, `windows/amd64`
+  validations:
+    required: true
+- type: textarea
+  id: config
+  attributes:
+    label: |
+      Configurations
+    description: |
+      Include what configurrations you used and ran into this problem
+    placeholder: |
+      Pay attention to hiding the token and password in your output
+      Please note that we recommend that you submit long text to <pastebin.com> to avoid disruption to your experience
+  validations:
+    required: true
+- type: textarea
+  id: log
+  attributes:
+    label: |
+      Logs
+    description: |
+      A log is required for us to help you with your problem
+    placeholder: |
+      Pay attention to hiding the token and password in your output
+      Please note that we recommend that you submit long text to <pastebin.com> to avoid disruption to your experience
+- type: textarea
+  id: steps-to-reproduce
+  attributes:
+    label: |
+      Steps to reproduce
+    description: |
+      If this is the result of an operation, we need to reproduce the steps to better solve your problem
+    value: |
+      1. 
+      2. 
+      3. 
+      ...
+- type: checkboxes
+  id: area
+  attributes:
+    label: |
+      Affected area
+    options:
+    - label: "I included all information required in the sections above"
+    - label: "I made sure there are no duplicates of this report [(Use Search)](https://github.com/CaaMoe/MultiLogin/issues?q=is%3Aissue)"
