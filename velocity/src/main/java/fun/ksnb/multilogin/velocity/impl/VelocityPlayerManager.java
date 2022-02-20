@@ -2,6 +2,8 @@ package fun.ksnb.multilogin.velocity.impl;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.proxy.config.PlayerInfoForwarding;
+import com.velocitypowered.proxy.config.VelocityConfiguration;
 import moe.caa.multilogin.core.impl.IPlayer;
 import moe.caa.multilogin.core.impl.IPlayerManager;
 
@@ -48,5 +50,10 @@ public class VelocityPlayerManager implements IPlayerManager {
     @Override
     public boolean isWhitelist() {
         return false;
+    }
+
+    @Override
+    public boolean isForward() {
+        return ((VelocityConfiguration) server.getConfiguration()).getPlayerInfoForwardingMode() != PlayerInfoForwarding.NONE;
     }
 }

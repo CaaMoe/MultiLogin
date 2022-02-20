@@ -51,4 +51,9 @@ public class BukkitPlayerManager implements IPlayerManager {
     public boolean isWhitelist() {
         return server.hasWhitelist();
     }
+
+    @Override
+    public boolean isForward() {
+        return true;
+    }
 }

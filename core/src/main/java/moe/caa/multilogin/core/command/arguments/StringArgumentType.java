@@ -3,7 +3,6 @@ package moe.caa.multilogin.core.command.arguments;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,7 +25,7 @@ public class StringArgumentType implements ArgumentType<String> {
     }
 
     @Override
-    public String parse(StringReader reader) throws CommandSyntaxException {
+    public String parse(StringReader reader) {
         int argBeginning = reader.getCursor();
         if (!reader.canRead()) {
             reader.skip();

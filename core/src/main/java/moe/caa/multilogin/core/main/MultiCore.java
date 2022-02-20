@@ -131,6 +131,12 @@ public class MultiCore {
             return false;
         }
 
+        if (!getPlugin().getRunServer().getPlayerManager().isForward()) {
+            logger.log(LoggerLevel.WARN, "信息转发处于关闭状态，后端玩家将始终使用离线UUID，将会造成很大的安全问题");
+            logger.log(LoggerLevel.WARN, "请开启它");
+            return false;
+        }
+
         metricsLite = new MetricsLite(plugin);
         plugin.getRunServer().getScheduler().runTaskAsyncTimer(updater::check, 1000 * 60 * 60 * 24, 1000 * 60 * 60 * 24);
 

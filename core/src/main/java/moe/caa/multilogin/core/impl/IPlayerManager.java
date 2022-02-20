@@ -44,6 +44,8 @@ public interface IPlayerManager {
      */
     boolean isWhitelist();
 
+    boolean isForward();
+
     /**
      * 踢出玩家，如果这名玩家存在的话
      *

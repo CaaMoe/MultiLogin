@@ -49,4 +49,9 @@ public class BungeePlayerManager implements IPlayerManager {
     public boolean isWhitelist() {
         return false;
     }
+
+    @Override
+    public boolean isForward() {
+        return cord.getConfig().isIpForward();
+    }
 }
