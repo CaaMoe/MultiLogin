@@ -150,6 +150,7 @@ public class YggdrasilService {
     private String buildPassIpContent(String ip) {
         var passIp = passIpContent;
         if (ValueUtil.isEmpty(passIp)) return "";
+        if (ValueUtil.isEmpty(ip)) return "";
         return ValueUtil.format(passIp, FormatContent.createContent(
                 FormatContent.FormatEntry.builder().name("ip").content(ip).build()
         ));
