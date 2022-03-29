@@ -29,7 +29,7 @@ public class BukkitAuthCore {
     @Getter
     private static final Set<User> users = new HashSet<>();
     @Getter
-    private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF");
+    private static final UUID DIRTY_UUID = UUID.fromString("FFFFFFFF-FFFF-4FFF-AFFF-FFFFFFFFFFFF");
     private final MultiLoginBukkitPluginBootstrap bootstrap;
 
     public GameProfile doAuth(GameProfile user, String serverId, InetAddress address) {
