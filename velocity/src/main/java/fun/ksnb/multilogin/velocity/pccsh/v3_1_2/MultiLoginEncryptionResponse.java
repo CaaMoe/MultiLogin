@@ -1,12 +1,12 @@
-package fun.ksnb.multilogin.velocity.auth;
+package fun.ksnb.multilogin.velocity.pccsh.v3_1_2;
 
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.MinecraftConnection;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
-import com.velocitypowered.proxy.connection.client.LoginSessionHandler;
+import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import fun.ksnb.multilogin.velocity.impl.VelocityUserLogin;
+import fun.ksnb.multilogin.velocity.auth.Disconnectable;
 import fun.ksnb.multilogin.velocity.main.MultiLoginVelocityPluginBootstrap;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
 import moe.caa.multilogin.core.logger.LoggerLevel;
@@ -36,7 +36,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     //    原有
     private ServerLogin login = null;
     private byte[] verify = EMPTY_BYTE_ARRAY;
-    private LoginSessionHandler loginSessionHandler;
+    private InitialLoginSessionHandler loginSessionHandler;
     //    运行中产生
     private byte[] decryptedSharedSecret = EMPTY_BYTE_ARRAY;
     private KeyPair serverKeyPair;
@@ -49,10 +49,10 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
     public static void init() throws IllegalAccessException, NoSuchFieldException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        LOGIN_SESSION_HANDLER_SERVER_LOGIN_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(LoginSessionHandler.class.getDeclaredField("login"), true));
-        LOGIN_SESSION_HANDLER_SERVER_VERIFY_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(LoginSessionHandler.class.getDeclaredField("verify"), true));
-        LOGIN_SESSION_HANDLER_SERVER_MC_CONNECTION_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(LoginSessionHandler.class.getDeclaredField("mcConnection"), true));
-        LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(LoginSessionHandler.class.getDeclaredField("inbound"), true));
+        LOGIN_SESSION_HANDLER_SERVER_LOGIN_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(InitialLoginSessionHandler.class.getDeclaredField("login"), true));
+        LOGIN_SESSION_HANDLER_SERVER_VERIFY_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(InitialLoginSessionHandler.class.getDeclaredField("verify"), true));
+        LOGIN_SESSION_HANDLER_SERVER_MC_CONNECTION_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(InitialLoginSessionHandler.class.getDeclaredField("mcConnection"), true));
+        LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD = lookup.unreflectGetter(ReflectUtil.handleAccessible(InitialLoginSessionHandler.class.getDeclaredField("inbound"), true));
     }
 
     /**
@@ -62,8 +62,8 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     @Override
     public boolean handle(MinecraftSessionHandler handler) {
         // 不合法
-        if (!(handler instanceof LoginSessionHandler)) return true;
-        loginSessionHandler = (LoginSessionHandler) handler;
+        if (!(handler instanceof InitialLoginSessionHandler)) return true;
+        loginSessionHandler = (InitialLoginSessionHandler) handler;
         //初始化全部数值
         getValues();
 
@@ -82,8 +82,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         String playerIp = ((InetSocketAddress) mcConnection.getRemoteAddress()).getHostString();
 
         BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, disconnectable);
-        MultiLoginVelocityPluginBootstrap.getInstance().getRunServer().getScheduler().runTaskAsync(() ->
-                MultiLoginVelocityPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(userLogin));
+        MultiLoginVelocityPluginBootstrap.getInstance().getCore().getAuthCore().doAuth(userLogin);
 
         return true;
     }

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.var;
 import moe.caa.multilogin.core.exception.NoSuchEnumException;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -37,6 +38,11 @@ public class ReflectUtil {
     public static Field handleAccessible(Field field, boolean newAccessible) {
         field.setAccessible(newAccessible);
         return field;
+    }
+
+    public static Constructor<?> handleAccessible(Constructor<?> method, boolean newAccessible) {
+        method.setAccessible(newAccessible);
+        return method;
     }
 
     /**

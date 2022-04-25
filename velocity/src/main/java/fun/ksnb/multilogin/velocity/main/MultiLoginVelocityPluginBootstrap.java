@@ -5,12 +5,12 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
-import fun.ksnb.multilogin.velocity.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
-import fun.ksnb.multilogin.velocity.impl.VelocityUserLogin;
 import fun.ksnb.multilogin.velocity.loader.main.MultiLoginVelocityLoader;
+import fun.ksnb.multilogin.velocity.pccsh.IPccsh;
 import io.netty.util.collection.IntObjectMap;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
 import moe.caa.multilogin.core.loader.impl.BasePluginBootstrap;
@@ -20,6 +20,7 @@ import moe.caa.multilogin.core.util.ReflectUtil;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -57,9 +58,13 @@ public class MultiLoginVelocityPluginBootstrap extends BasePluginBootstrap imple
     }
 
     @Override
-    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
-        MultiLoginEncryptionResponse.init();
-        VelocityUserLogin.init();
+    public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, InvocationTargetException {
+        final String pccshName = IPccsh.getPccshName();
+        Class<?> multiLoginEncryptionResponseClass = Class.forName("fun.ksnb.multilogin.velocity.pccsh." + pccshName + ".MultiLoginEncryptionResponse");
+        Class<?> velocityUserLoginClass = Class.forName("fun.ksnb.multilogin.velocity.pccsh." + pccshName + ".VelocityUserLogin");
+
+        multiLoginEncryptionResponseClass.getMethod("init").invoke(null);
+        velocityUserLoginClass.getMethod("init").invoke(null);
 //        要替换的方向
         StateRegistry.PacketRegistry toReplace = StateRegistry.LOGIN.serverbound;
 
@@ -71,7 +76,13 @@ public class MultiLoginVelocityPluginBootstrap extends BasePluginBootstrap imple
             Field field_packetIdToSupplier = ReflectUtil.handleAccessible(StateRegistry.PacketRegistry.ProtocolRegistry.class.getDeclaredField("packetIdToSupplier"), true);
             IntObjectMap<Supplier<? extends MinecraftPacket>> packetIdToSupplier = (IntObjectMap<Supplier<? extends MinecraftPacket>>) field_packetIdToSupplier.get(protocolRegistry);
 //            至此 替换完成
-            packetIdToSupplier.put(0x01, MultiLoginEncryptionResponse::new);
+            packetIdToSupplier.put(0x01, new Supplier<>() {
+                @Override
+                @SneakyThrows
+                public MinecraftPacket get() {
+                    return (MinecraftPacket) multiLoginEncryptionResponseClass.getConstructor().newInstance();
+                }
+            });
         }
     }
 
