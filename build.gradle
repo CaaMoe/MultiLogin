@@ -1,0 +1,35 @@
+apply from: './constant.gradle'
+
+allprojects {
+    apply plugin: "java"
+}
+
+subprojects {
+    repositories {
+        try (def scanner = new Scanner(file.repositories)) {
+            while (scanner.hasNextLine()) {
+                def line = scanner.nextLine()
+                if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
+                maven {
+                    url line
+                }
+            }
+        }
+    }
+
+    dependencies {
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+
+        try (def scanner = new Scanner(file.libraries)) {
+            while (scanner.hasNextLine()) {
+                def line = scanner.nextLine()
+                if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
+                def args = line.split("\\s+")
+                compileOnly group: args[0], name: args[1], version: args[2]
+            }
+        }
+    }
+}
+
+

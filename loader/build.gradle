@@ -1,0 +1,203 @@
+import java.security.MessageDigest
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+
+apply from: '../constant.gradle'
+
+dependencies {
+    compileOnly project(":flows")
+    compileOnly project(":api")
+
+    // 通过编译的，不作为插件依赖
+    compileOnly 'org.ow2.asm:asm:9.3'
+    compileOnly 'org.ow2.asm:asm-commons:9.3'
+}
+
+processResources {
+    // 存放已计算摘要的依赖列表(value: sha256 as String)
+    def digestList = new HashMap<Dependency, String>()
+    // 存放需要加载的所有依赖
+    def libraryList = new ArrayList<Dependency>()
+    // 存放需要重新计算摘要的依赖
+    def needDigestList = new ArrayList<Dependency>()
+
+    // 扫描并添加所有依赖
+    try (def scanner = new Scanner(file.libraries)) {
+        while (scanner.hasNextLine()) {
+            def line = scanner.nextLine()
+            if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
+            def args = line.split("\\s+")
+            libraryList.add(new Dependency(args[0], args[1], args[2]))
+        }
+    }
+
+    // 如果记录摘要的文件不存在，就新创建一份出来
+    if (!file.digests.exists()) {
+        file.digests.createNewFile()
+    } else {
+        // 否则就把他们全部读出来放着
+        try (def scanner = new Scanner(file.digests)) {
+            while (scanner.hasNextLine()) {
+                def args = scanner.nextLine().split("=")
+                digestList.put(Dependency.of(args[0].trim()), args[1].trim())
+            }
+        }
+    }
+
+    // 计算需要重新计算文件摘要的依赖
+    for (def library in libraryList) {
+        if (!digestList.containsKey(library)) {
+            needDigestList.add(library)
+        }
+    }
+
+    // 计算缺失摘要
+    if (needDigestList.size() != 0) {
+        System.out.println("Completing " + needDigestList.size() + " missing digest values...")
+
+        // 存放Maven仓库根链接
+        def repositoryList = new ArrayList<String>()
+        // 扫描并添加所有仓库根链接
+        try (def scanner = new Scanner(file.repositories)) {
+            while (scanner.hasNextLine()) {
+                def line = scanner.nextLine()
+                if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
+                if (!line.endsWith('/')) line += '/'
+                repositoryList.add(line)
+            }
+        }
+
+        // 遍历需要计算缺失摘要的依赖
+        for (def entry in needDigestList) {
+            def exception
+            def bytes
+            for (def repository in repositoryList) {
+                def downloadUrl = repository + entry.downloadUrl
+                try {
+                    System.out.println("Downloading from " + downloadUrl)
+                    bytes = getBytes(downloadUrl)
+                    break
+                } catch (Exception e) {
+                    e = new Exception("Download from " + downloadUrl + " failed", e)
+                    if (exception == null) {
+                        exception = e
+                    } else {
+                        exception.addSuppressed(e)
+                    }
+                }
+            }
+            if (bytes == null) {
+                throw exception == null ? new RuntimeException(entry.toString()) : exception
+            }
+
+            def result = byteToHex(MessageDigest.getInstance("SHA-256").digest(bytes))
+            System.out.println("The digest of file " + entry.simpleName + " is " + result)
+            digestList.put(entry, result)
+        }
+        try (def fw = new FileWriter(file.digests)) {
+            for (final def e in digestList.entrySet()) {
+                fw.write(e.key.toString() + "=" + e.value)
+                fw.append("\n")
+            }
+        }
+
+
+    }
+    from('../') {
+        include ".digests"
+        include "relocates"
+        include "libraries"
+        include "repositories"
+    }
+}
+
+// 代表一个依赖
+class Dependency {
+    def final group
+    def final name
+    def final version
+
+    Dependency(group, name, version) {
+        this.group = group
+        this.name = name
+        this.version = version
+    }
+
+    static Dependency of(String string) {
+        def args = string.split(":")
+        return new Dependency(args[0].trim(), args[1].trim(), args[2].trim())
+    }
+
+    boolean equals(o) {
+        if (this.is(o)) true
+        if (getClass() != o.class) false
+
+        Dependency that = (Dependency) o
+
+        if (group != that.group) return false
+        if (name != that.name) return false
+        if (version != that.version) return false
+        return true
+    }
+
+    int hashCode() {
+        Arrays.hashCode(group, name, version)
+    }
+
+    String toString() {
+        String.format("%s:%s:%s", group, name, version)
+    }
+
+    String getSimpleName() {
+        return String.format("%s-%s", name, version)
+    }
+
+    String getDownloadUrl() {
+        return group.replace(".", "/") + "/" + name + "/" + version + "/" + name + "-" + version + ".jar"
+    }
+}
+
+static void check(byte[] bytes, String mainClass) {
+    mainClass = mainClass.replace(".", "/") + ".class"
+    ZipInputStream jarFile = new ZipInputStream(new ByteArrayInputStream(bytes))
+    ZipEntry entry
+    while ((entry = jarFile.getNextEntry()) != null) {
+        if (entry.getName() == mainClass) {
+            // ????
+            return
+        }
+    }
+    throw new RuntimeException("Bytes is damaged.")
+}
+
+static byte[] getBytes(def url) {
+    def httpURLConnection = (HttpURLConnection) new URL(url).openConnection()
+    httpURLConnection.setDoInput(true)
+    httpURLConnection.setDoOutput(false)
+    httpURLConnection.connect()
+
+    if (httpURLConnection.getResponseCode() == 200) {
+        try (def input = httpURLConnection.getInputStream();
+             def output = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int n = 0;
+            while ((n = input.read(buffer)) != -1) {
+                output.write(buffer, 0, n);
+            }
+            return output.toByteArray();
+        }
+    }
+    throw new IOException(httpURLConnection.getResponseCode() + "")
+}
+
+static def byteToHex(byte[] bytes) {
+    def sb = new StringBuilder();
+    for (def i = 0; i < bytes.length; i++) {
+        def temp = Integer.toHexString((bytes[i] & 0xFF) as Integer);
+        if (temp.length() == 1) {
+            sb.append("0");
+        }
+        sb.append(temp);
+    }
+    sb.toString()
+}

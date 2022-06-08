@@ -1,0 +1,17 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+dependencies {
+    compileOnly project(":api")
+    compileOnly project(":flows")
+    compileOnly project(":logger")
+}
+
+shadowJar {
+    archiveFileName = 'MultiLogin-Core.JarFile'
+}
+
+artifacts {
+    archives shadowJar
+}

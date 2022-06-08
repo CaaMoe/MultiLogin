@@ -1,0 +1,174 @@
+#####################################################################
+#
+#     配置文件格式为 ‘YAML’，推荐使用 Visual Studio Code 浏览和编辑。
+#          前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
+#
+#          NOTE: 此文件为 Yggdrasil Service 配置模板文件
+#
+#####################################################################
+
+
+# 此值为 Yggdrasil ID，它作为 Yggdrasil 的唯一标识！
+# 中途更改它将会导致部分玩家的数据错乱或丢失，修改请慎重！！！
+# 必须值，此值取值范围为整数 0 ~ 255
+id: 0
+
+# 当前 Yggdrasil 的别称，仅供内容显示，可随意进行更改。
+# 默认值 ‘Unnamed’
+name: 'Unnamed'
+
+# hasJoined 阶段服务端方向验证设置
+hasJoined:
+
+  # Yggdrasil 登录验证链接设置。
+  # 此节点必须指定完整的 hasJoined 请求链接！
+  #
+  # 占位变量列表：
+  #   序号     别称            简介
+  #   {0}      {username}    请求的 username
+  #   {1}      {serverId}    请求的 serverId
+  #   {2}      {ip}          请求的 ip（ipContent 节点值）
+  #
+  # 一些例子:
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
+  #      POST: ‘https://example.com/session/minecraft/hasJoined’
+  # 必须值
+  url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+
+  # 设置请求账户身份验证服务器的方式。
+  #
+  # 请使用以下值:
+  # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
+  # POST     - 此方式被极少数验证服务器采用。
+  # 默认值 ‘GET’
+  method: 'GET'
+
+  # 是否向 Yggdrasil 传递用户 IP 信息，如果此信息被正常获取的话。
+  # 此 IP 一般用于应付 Yggdrasil 的代理检查。
+  # 默认值 ‘true’
+  passIp: true
+
+  # 设置 url 和 postContent 节点 {ip} 变量内容。
+  # 此节点作用是使 ip 信息正常拼接到请求块中去。
+  #
+  # 占位变量列表：
+  #   序号     别称           简介
+  #   {0}     {ip}           请求的 ip（玩家 ip）
+  #
+  # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
+  # 请求的 URL 对大小写敏感，设置需谨慎！
+  # 请留意字符串拼接的特殊值 '&' 和 ', '
+  #
+  # 一些例子:
+  #      GET:  ‘&ip={ip}’
+  #      POST: ‘, "ip":"{0}"’
+  # 默认值 ‘&ip={0}’
+  ipContent: '&ip={0}'
+
+  # 发送 POST 验证请求的内容。
+  # 也许目标验证服务器对请求内容的大小写非常敏感，设置请留意。
+  #
+  # 占位变量列表：
+  #   序号     别称           简介
+  #   {0}      {username}    请求的 username
+  #   {1}      {serverId}    请求的 serverId
+  #   {2}      {ip}          请求的 ip（ipContent 节点值）
+  #
+  # 一些例子:
+  #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
+  #        ‘{"username":"{username}", "serverId":"{serverId}"}’
+  # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
+  postContent: '{"username":"{0}", "serverId":"{1}"}'
+
+  # 设置验证超时时间。
+  # 默认值 ‘10000’
+  timeout: 10000
+
+  # 验证网络错误时的重试次数。
+  # 默认值 ‘0’
+  retry: 0
+
+  # 重试请求延迟。
+  # 过大的值可能会导致登录超时。
+  # 默认值 ‘0’
+  retryDelay: 0
+
+# 设置玩家第一次登录到这个服务器时，系统所分配给玩家的 UUID 生成规则。
+#
+# 请使用以下值:
+#    DEFAULT      - 使用 Yggdrasil 提供的在线 UUID
+#    OFFLINE      - 使用玩家名字获取到的离线 UUID
+#    RANDOM       - 随机 UUID
+#
+# 请谨慎设置和修改此节点，避免增加日后维护的心智负担。
+# 默认值 ‘DEFAULT’
+transformUUID: 'DEFAULT'
+
+# 设置当前 Yggdrasil 下的用户名正则约束。
+# 若不匹配将会拒绝当前玩家的登录请求。
+# 如果此值留空或未设置，则不启用此功能。
+# 默认值 ‘’
+nameAllowedRegular: ''
+
+# 是否为当前 Yggdrasil 单独开启白名单功能。
+# 默认值 ‘false’
+whitelist: false
+
+# 设置占线登录机制。
+# 登录时游戏内存在有相同游戏内 UUID 的玩家时将会进行此项设置操作。
+#
+# 当此值为 ‘false’ 时，将把游戏内的玩家踢出，允许验证中的玩家登录（原版默认）。
+# 当此值为 ‘true’ 时，将拒绝验证中的玩家登录，游戏内的玩家将不受影响。
+# 默认值 ‘false’
+refuseRepeatedLogin: false
+
+# 绝对的用户名占有和使用权限控制。
+#
+# 此值为 ‘true’ 时，当玩家登录验证中，若用户名已被占用，则当前登录的玩家将会强制占有此用户名（放心吧，不会继承数据）。
+# 此值为 ‘false’ 时，当玩家登录验证中，若用户名已被占用，则拒绝当前玩家的登录请求。
+#
+# 请尽量保持此值为 ‘false’，遵循用户名先到先得的规则。
+# 若执意设置为 ‘true’，那可就需要关注一下你的玩家会不会就用户名重复问题干起来了......
+# 注意，尽量保持此功能仅一个或零个验证服务器享有，否则后果负责。
+#
+# 默认值 ‘false’
+compulsoryUsername: false
+
+# 皮肤修复设定。
+skinRestorer:
+
+  # 皮肤修复模式。
+  #
+  # 用来解决不同 Yggdrasil 账户验证服务器下的皮肤不可见问题，
+  # 此功能仅将不含有 Mojang 签名的皮肤使用第三方服务尝试合成含有 Mojang 签名的皮肤来使用。
+  # 请使用以下值:
+  #   OFF       - 关闭这个功能
+  #   LOGIN     - 占用登录时间进行皮肤修复操作（修复时间过长可能会导致登录超时）
+  #   ASYNC     - 登录后修复（修复成功后需要重新连接服务器）
+  # 皮肤修复服务器来自 ‘mineskin.org’
+  # 默认值 ‘OFF’
+  restorer: 'OFF'
+
+  # 皮肤修复方式。
+  #
+  # 请使用以下值:
+  #   URL        - 皮肤修复服务器将会主动获取验证返回的皮肤数据，请确保它能被皮肤修复服务器正确访问。（推荐使用）
+  #   UPLOAD     - 尝试直接上传至皮肤修复服务器，适用于皮肤修复服务器访问皮肤材质受阻的情况。
+  # 默认值 ‘URL’
+  method: 'URL'
+
+  # 设置请求超时时间。
+  # 默认值 ‘10000’
+  timeout: 10000
+
+  # 皮肤修复网络错误时的重试次数。
+  # 默认值 ‘2’
+  retry: 2
+
+  # 皮肤修复重试请求延迟。
+  # 过小的值会被皮肤修复服务器拒绝访问；
+  # 过大的值可能会导致登录超时。
+  # 默认值 ‘5000’
+  retryDelay: 5000

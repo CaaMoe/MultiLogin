@@ -1,0 +1,11 @@
+{
+  "id": "multilogin",
+  "name": "MultiLogin",
+  "version": "0.0",
+  "authors": [
+    "ksqeib",
+    "CaaMoe"
+  ],
+  "dependencies": [],
+  "main": "fun.ksnb.multilogin.velocity.main.MultiLoginVelocity"
+}
