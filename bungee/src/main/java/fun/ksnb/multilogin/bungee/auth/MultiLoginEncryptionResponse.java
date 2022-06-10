@@ -1,7 +1,6 @@
 package fun.ksnb.multilogin.bungee.auth;
 
 import com.google.common.base.Preconditions;
-import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
 import fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -64,7 +63,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
         MultiLoginBungeePluginBootstrap.getInstance().getRunServer().getScheduler().runTaskAsync(() -> {
             try {
-                MultiLoginBungeePluginBootstrap.getInstance().getCore().getAuthCore().doAuth(new BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler), (InitialHandler) handler));
+                MultiLoginBungeePluginBootstrap.getInstance().getCore().getAuthCore().doAuth(new fun.ksnb.multilogin.bungee.impl.lrp.v1.BungeeUserLogin(getUsername((InitialHandler) handler), getServerId(), getIp((InitialHandler) handler), (InitialHandler) handler));
             } catch (Exception e) {
                 ((InitialHandler) handler).disconnect(MultiLoginBungeePluginBootstrap.getInstance().getCore().getLanguageHandler().getMessage("auth_error", FormatContent.empty()));
                 MultiLogger.getLogger().log(LoggerLevel.ERROR, "An exception occurred while processing login data.", e);

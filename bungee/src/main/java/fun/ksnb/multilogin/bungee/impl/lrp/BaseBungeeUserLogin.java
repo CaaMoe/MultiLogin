@@ -1,8 +1,7 @@
-package fun.ksnb.multilogin.bungee.impl;
+package fun.ksnb.multilogin.bungee.impl.lrp;
 
 import fun.ksnb.multilogin.bungee.main.MultiLoginBungeePluginBootstrap;
 import moe.caa.multilogin.core.auth.response.HasJoinedResponse;
-import moe.caa.multilogin.core.auth.response.Property;
 import moe.caa.multilogin.core.impl.BaseUserLogin;
 import moe.caa.multilogin.core.logger.LoggerLevel;
 import moe.caa.multilogin.core.logger.MultiLogger;
@@ -13,17 +12,15 @@ import net.md_5.bungee.connection.LoginResult;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.List;
 
-public class BungeeUserLogin extends BaseUserLogin {
+public abstract class BaseBungeeUserLogin extends BaseUserLogin {
     private static MethodHandle LOGIN_PROFILE;
     private static MethodHandle NAME;
     private static MethodHandle UNIQUE_ID;
     private static MethodHandle FINISH;
     private final InitialHandler handler;
 
-    public BungeeUserLogin(String username, String serverId, String ip, InitialHandler handler) {
+    public BaseBungeeUserLogin(String username, String serverId, String ip, InitialHandler handler) {
         super(username, serverId, ip);
         this.handler = handler;
     }
@@ -59,20 +56,5 @@ public class BungeeUserLogin extends BaseUserLogin {
         }
     }
 
-    private LoginResult generateLoginResult(HasJoinedResponse response) {
-        List<Property> values = new ArrayList<>(response.getPropertyMap().values());
-        LoginResult.Property[] properties = new LoginResult.Property[values.size()];
-        for (int i = 0; i < values.size(); i++) {
-            properties[i] = generateProperty(values.get(i));
-        }
-        return new LoginResult(
-                response.getId().toString().replace("-", ""),
-                response.getName(),
-                properties
-        );
-    }
-
-    private LoginResult.Property generateProperty(Property property) {
-        return new LoginResult.Property(property.getName(), property.getValue(), property.getSignature());
-    }
+    protected abstract LoginResult generateLoginResult(HasJoinedResponse response);
 }

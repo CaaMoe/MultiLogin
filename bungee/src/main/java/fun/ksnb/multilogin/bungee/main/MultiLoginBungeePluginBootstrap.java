@@ -2,7 +2,7 @@ package fun.ksnb.multilogin.bungee.main;
 
 import fun.ksnb.multilogin.bungee.auth.MultiLoginEncryptionResponse;
 import fun.ksnb.multilogin.bungee.impl.BungeeServer;
-import fun.ksnb.multilogin.bungee.impl.BungeeUserLogin;
+import fun.ksnb.multilogin.bungee.impl.lrp.BaseBungeeUserLogin;
 import gnu.trove.map.TIntObjectMap;
 import lombok.Getter;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -61,7 +61,7 @@ public class MultiLoginBungeePluginBootstrap extends BasePluginBootstrap impleme
 
     @Override
     public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, UnsupportedException {
-        BungeeUserLogin.init();
+        BaseBungeeUserLogin.init();
         MultiLoginEncryptionResponse.init();
         Class<?> protocol_directionDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
         Class<?> protocol_protocolDataClass = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
