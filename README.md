@@ -52,4 +52,4 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 
 ## 开源协议
 
-`MultiLogin`采用 `GPL-3.0`协议开源
+`MultiLogin`采用 `MIT`协议开源
