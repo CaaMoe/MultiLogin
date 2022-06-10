@@ -91,6 +91,12 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private boolean enableEncrypt() {
         try {
             serverKeyPair = server.getServerKeyPair();
+
+            // TODO: 2022/6/10 ---->
+            // 下行代码在 velocity-3.1.2-SNAPSHOT-153 版本下出错，它仍然是测试版本所以没有对他进行改动，暂时不知道是什么原因...
+            // 会导致没有任何报错，玩家方向连接中止
+            // 在3.1.2版本有追加判断 inbound 的 IdentifiedKey 属性是否为空来进行不同的加密处理，而这个 IdentifiedKey 类在 3.1.2 之前的 v 端是不存在的。
+            // 由于 v3.1.2 还是测试版，最新版还是 v3.1.1，还是等它发布后再改吧...
             byte[] decryptedVerifyToken = decryptRsa(serverKeyPair, getVerifyToken());
             if (!MessageDigest.isEqual(verify, decryptedVerifyToken)) {
                 throw new IllegalStateException("无法成功解密验证令牌。");
