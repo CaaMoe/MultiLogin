@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.main;
 
+import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
@@ -18,8 +19,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,15 +64,65 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     }
 
     @Override
-    public void initService() throws IllegalAccessException, ClassNotFoundException, NoSuchFieldException {
+    public void initService() throws Exception {
+        try {
+            Class<?> serviceClass = Class.forName("net.minecraft.server.Services");
+            final Class<?> signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
+            final Class<?> userCacheClass = Class.forName("net.minecraft.server.players.UserCache");
+
+            final Object[] minecraftServerClassMO = forceGet(vanServer, serviceClass, new HashSet<>());
+
+            Field serviceField = ReflectUtil.handleAccessible((Field) minecraftServerClassMO[1], true);
+            Object serverObj = minecraftServerClassMO[0];
+
+            final Object serviceObj = serviceField.get(serverObj);
+
+            HttpMinecraftSessionService vanSession = null;
+            Object signatureValidator = null;
+            GameProfileRepository gameProfileRepository = null;
+            Object userCache = null;
+
+            for (Field field : serviceObj.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                if (field.getType() == MinecraftSessionService.class) {
+                    vanSession = (HttpMinecraftSessionService) field.get(serviceObj);
+                }
+
+                if (field.getType() == signatureValidatorClass) {
+                    signatureValidator = field.get(serviceObj);
+                }
+
+                if (field.getType() == GameProfileRepository.class) {
+                    gameProfileRepository = (GameProfileRepository) field.get(serviceObj);
+                }
+
+                if (field.getType() == userCacheClass) {
+                    userCache = field.get(serviceObj);
+                }
+            }
+
+
+            MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanSession.getAuthenticationService());
+            mlymss.setVanService(vanSession);
+            mlymss.setBootstrap(this);
+
+            final Constructor<?> declaredConstructor = serviceObj.getClass().getDeclaredConstructor(
+                    MinecraftSessionService.class,
+                    signatureValidatorClass,
+                    GameProfileRepository.class,
+                    userCacheClass
+            );
+
+            final Object o = declaredConstructor.newInstance(mlymss, signatureValidator, gameProfileRepository, userCache);
+
+            serviceField.set(serverObj, o);
+            return;
+        } catch (ClassNotFoundException ignored) {
+
+        }
         final Object[] objects = forceGet(vanServer, MinecraftSessionService.class, new HashSet<>());
         Field field = ReflectUtil.handleAccessible((Field) objects[1], true);
         Object obj = objects[0];
-
-        // java.lang.NoSuchFieldException: modifiers
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
         HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
         MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
