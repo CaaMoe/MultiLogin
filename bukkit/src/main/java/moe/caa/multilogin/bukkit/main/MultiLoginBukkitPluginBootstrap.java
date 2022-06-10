@@ -19,8 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap implements IPlugin {
@@ -61,30 +63,43 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     }
 
     @Override
-    public void initService() throws NoSuchMethodException, NoSuchFieldException, IllegalAccessException, InvocationTargetException, UnsupportedException {
-        Class<?> craftServerClass = vanServer.getClass();
-        Method craftServerGetHandle = craftServerClass.getDeclaredMethod("getHandle");
-        Class<?> dedicatedPlayerListClass = craftServerGetHandle.getReturnType();
-        Method dedicatedPlayerListGetHandler = null/*dedicatedPlayerListClass.getDeclaredMethod("getServer")*/;
-        for (Method method : dedicatedPlayerListClass.getMethods()) {
-            if (method.getReturnType().getName().contains("DedicatedServer")) {
-                dedicatedPlayerListGetHandler = method;
-            }
-        }
-        if (dedicatedPlayerListGetHandler == null) {
-            throw new UnsupportedException("Unsupported server.");
-        }
+    public void initService() throws IllegalAccessException, ClassNotFoundException, NoSuchFieldException {
+        final Object[] objects = forceGet(vanServer, MinecraftSessionService.class, new HashSet<>());
+        Field field = ReflectUtil.handleAccessible((Field) objects[1], true);
+        Object obj = objects[0];
 
-        Class<?> minecraftServerClass = dedicatedPlayerListGetHandler.getReturnType().getSuperclass();
-
-        Field field = ReflectUtil.handleAccessible(ReflectUtil.getField(minecraftServerClass, MinecraftSessionService.class), true);
-        Object obj = dedicatedPlayerListGetHandler.invoke(craftServerGetHandle.invoke(vanServer));
+        // java.lang.NoSuchFieldException: modifiers
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
+        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 
         HttpMinecraftSessionService vanServer = (HttpMinecraftSessionService) field.get(obj);
         MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanServer.getAuthenticationService());
         mlymss.setVanService(vanServer);
         mlymss.setBootstrap(this);
         field.set(obj, mlymss);
+    }
+
+    private Object[] forceGet(Object source, Type needGet, Set<Type> ignore) throws ClassNotFoundException {
+        Class<?> sourceClass = source.getClass();
+        // 双重遍历确保能获取到本类和父类所有的Field
+        do {
+            for (Field declaredField : sourceClass.getDeclaredFields()) {
+                try {
+                    // 类型匹配，返回Field所在的类的实例和Field
+                    if (declaredField.getType() == needGet) {
+                        return new Object[]{source, declaredField};
+                    }
+                    declaredField.setAccessible(true);
+                    final Object o = declaredField.get(source);
+                    if (ignore.add(o.getClass())) return forceGet(o, needGet, ignore);
+
+                } catch (Exception ignored) {
+                }
+            }
+        } while ((sourceClass = sourceClass.getSuperclass()) != null);
+
+        throw new ClassNotFoundException(needGet.getTypeName());
     }
 
     @Override
