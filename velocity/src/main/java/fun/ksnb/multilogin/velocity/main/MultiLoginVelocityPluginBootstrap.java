@@ -7,7 +7,6 @@ import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.loader.main.MultiLoginVelocityLoader;
-import fun.ksnb.multilogin.velocity.pccsh.IPccsh;
 import io.netty.util.collection.IntObjectMap;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -59,7 +58,7 @@ public class MultiLoginVelocityPluginBootstrap extends BasePluginBootstrap imple
 
     @Override
     public void initService() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException, InvocationTargetException {
-        final String pccshName = IPccsh.getPccshName();
+        final String pccshName = "v3_1_2";
         Class<?> multiLoginEncryptionResponseClass = Class.forName("fun.ksnb.multilogin.velocity.pccsh." + pccshName + ".MultiLoginEncryptionResponse");
         Class<?> velocityUserLoginClass = Class.forName("fun.ksnb.multilogin.velocity.pccsh." + pccshName + ".VelocityUserLogin");
 

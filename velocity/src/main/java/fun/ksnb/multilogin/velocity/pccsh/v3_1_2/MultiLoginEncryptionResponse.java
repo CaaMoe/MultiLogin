@@ -1,9 +1,12 @@
 package fun.ksnb.multilogin.velocity.pccsh.v3_1_2;
 
+import com.google.common.primitives.Longs;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.MinecraftConnection;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
+import com.velocitypowered.proxy.connection.client.LoginInboundConnection;
+import com.velocitypowered.proxy.crypto.EncryptionUtils;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import fun.ksnb.multilogin.velocity.auth.Disconnectable;
@@ -21,8 +24,6 @@ import java.security.KeyPair;
 import java.security.MessageDigest;
 
 import static com.velocitypowered.proxy.connection.VelocityConstants.EMPTY_BYTE_ARRAY;
-import static com.velocitypowered.proxy.util.EncryptionUtils.decryptRsa;
-import static com.velocitypowered.proxy.util.EncryptionUtils.generateServerId;
 
 public class MultiLoginEncryptionResponse extends EncryptionResponse {
 
@@ -37,6 +38,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private ServerLogin login = null;
     private byte[] verify = EMPTY_BYTE_ARRAY;
     private InitialLoginSessionHandler loginSessionHandler;
+    private LoginInboundConnection inbound;
     //    运行中产生
     private byte[] decryptedSharedSecret = EMPTY_BYTE_ARRAY;
     private KeyPair serverKeyPair;
@@ -78,7 +80,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
         if (!enableEncrypt()) return true;
 
         String username = login.getUsername();
-        String serverId = generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
+        String serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
         String playerIp = ((InetSocketAddress) mcConnection.getRemoteAddress()).getHostString();
 
         BaseUserLogin userLogin = new VelocityUserLogin(username, serverId, playerIp, loginSessionHandler, disconnectable);
@@ -91,24 +93,24 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
     private boolean enableEncrypt() {
         try {
             serverKeyPair = server.getServerKeyPair();
-
-            // TODO: 2022/6/10 ---->
-            // 下行代码在 velocity-3.1.2-SNAPSHOT-153 版本下出错，它仍然是测试版本所以没有对他进行改动，暂时不知道是什么原因...
-            // 会导致没有任何报错，玩家方向连接中止
-            // 在3.1.2版本有追加判断 inbound 的 IdentifiedKey 属性是否为空来进行不同的加密处理，而这个 IdentifiedKey 类在 3.1.2 之前的 v 端是不存在的。
-            // 由于 v3.1.2 还是测试版，最新版还是 v3.1.1，还是等它发布后再改吧...
-            byte[] decryptedVerifyToken = decryptRsa(serverKeyPair, getVerifyToken());
-            if (!MessageDigest.isEqual(verify, decryptedVerifyToken)) {
-                throw new IllegalStateException("无法成功解密验证令牌。");
+            if (this.inbound.getIdentifiedKey() != null) {
+                if (!this.inbound.getIdentifiedKey().verifyDataSignature(getVerifyToken(), this.verify, Longs.toByteArray(getSalt()))) {
+                    throw new IllegalStateException("Invalid client public signature.");
+                }
+            } else {
+                decryptedSharedSecret = EncryptionUtils.decryptRsa(serverKeyPair, getVerifyToken());
+                if (!MessageDigest.isEqual(this.verify, decryptedSharedSecret)) {
+                    throw new IllegalStateException("Unable to successfully decrypt the verification token.");
+                }
             }
-            if (mcConnection.isClosed()) return false;
-            decryptedSharedSecret = decryptRsa(serverKeyPair, getSharedSecret());
+            decryptedSharedSecret = EncryptionUtils.decryptRsa(serverKeyPair, getSharedSecret());
+
             try {
                 mcConnection.enableEncryption(decryptedSharedSecret);
             } catch (GeneralSecurityException e) {
                 throw new RuntimeException(e);
             }
-        } catch (GeneralSecurityException e) {
+        } catch (Exception e) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "Unable to enable encryption.", e);
             mcConnection.close(true);
             return false;
@@ -121,7 +123,7 @@ public class MultiLoginEncryptionResponse extends EncryptionResponse {
             login = (ServerLogin) LOGIN_SESSION_HANDLER_SERVER_LOGIN_FIELD.invoke(loginSessionHandler);
             verify = (byte[]) LOGIN_SESSION_HANDLER_SERVER_VERIFY_FIELD.invoke(loginSessionHandler);
             mcConnection = (MinecraftConnection) LOGIN_SESSION_HANDLER_SERVER_MC_CONNECTION_FIELD.invoke(loginSessionHandler);
-            disconnectable = Disconnectable.generateDisconnectable(LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD.invoke(loginSessionHandler));
+            disconnectable = Disconnectable.generateDisconnectable(inbound = (LoginInboundConnection) LOGIN_SESSION_HANDLER_SERVER_INBOUND_FIELD.invoke(loginSessionHandler));
         } catch (Throwable t) {
             MultiLogger.getLogger().log(LoggerLevel.ERROR, "Exception during assignment.", t);
         }
