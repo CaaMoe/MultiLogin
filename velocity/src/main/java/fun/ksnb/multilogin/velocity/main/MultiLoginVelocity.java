@@ -35,7 +35,7 @@ public class MultiLoginVelocity implements IPlugin {
         try {
             pluginLoader.load();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -44,7 +44,7 @@ public class MultiLoginVelocity implements IPlugin {
         try {
             pluginLoader.getCoreObject().load();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -53,7 +53,7 @@ public class MultiLoginVelocity implements IPlugin {
         try {
             pluginLoader.close();
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

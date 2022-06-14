@@ -31,9 +31,9 @@ public class UserDataTable {
                         "{1} BINARY(16) NOT NULL, " +
                         "{2} TINYINT NOT NULL, " +
                         "{3} BINARY(16) DEFAULT NULL, " +
-                        "PRIMARY KEY ( {1}, {2} ))"
+                        "PRIMARY KEY ( {1}, {2} ), " +
+                        "FOREIGN KEY ( {3} ) REFERENCES {4} ({5}))"
                 , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid, inGameProfileTableName, InGameProfileTable.fieldInGameUuid);
-        // TODO: FOREIGN KEY ???
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();

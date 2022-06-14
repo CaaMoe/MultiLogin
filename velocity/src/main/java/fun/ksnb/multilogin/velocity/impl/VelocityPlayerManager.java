@@ -5,7 +5,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.IPlayerManager;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,14 +18,8 @@ public class VelocityPlayerManager implements IPlayerManager {
     }
 
     @Override
-    public Set<IPlayer> getPlayer(String name) {
-        Set<IPlayer> ret = new HashSet<>();
-        for (Player player : server.getAllPlayers()) {
-            if (player.getUsername().equalsIgnoreCase(name)) {
-                ret.add(new VelocityPlayer(player));
-            }
-        }
-        return ret;
+    public Set<IPlayer> getPlayers(String name) {
+        return server.getAllPlayers().stream().filter(p -> p.getUsername().equalsIgnoreCase(name)).map(VelocityPlayer::new).collect(Collectors.toSet());
     }
 
     @Override
