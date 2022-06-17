@@ -17,12 +17,10 @@ public class UserDataTable {
     private static final String fieldInGameProfileUuid = "in_game_profile_uuid";
     private final SQLManager sqlManager;
     private final String tableName;
-    private final String inGameProfileTableName;
 
-    public UserDataTable(SQLManager sqlManager, String tableName, String inGameProfileTableName) {
+    public UserDataTable(SQLManager sqlManager, String tableName) {
         this.sqlManager = sqlManager;
         this.tableName = tableName;
-        this.inGameProfileTableName = inGameProfileTableName;
     }
 
     public void init() throws SQLException {
@@ -31,9 +29,8 @@ public class UserDataTable {
                         "{1} BINARY(16) NOT NULL, " +
                         "{2} TINYINT NOT NULL, " +
                         "{3} BINARY(16) DEFAULT NULL, " +
-                        "PRIMARY KEY ( {1}, {2} ), " +
-                        "FOREIGN KEY ( {3} ) REFERENCES {4} ({5}))"
-                , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid, inGameProfileTableName, InGameProfileTable.fieldInGameUuid);
+                        "PRIMARY KEY ( {1}, {2} ))"
+                , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid);
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();

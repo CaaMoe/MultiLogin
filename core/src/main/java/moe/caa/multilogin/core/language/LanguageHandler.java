@@ -1,13 +1,13 @@
 package moe.caa.multilogin.core.language;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -58,11 +58,11 @@ public class LanguageHandler {
      * @param papi 占位参数
      * @return 可读文本字符串对象
      */
-    public String getMessage(String node, Map<String, Object> papi) {
+    public String getMessage(String node, Pair<String, Object>... pairs) {
         if (outside != null && outside.containsKey(node)) {
-            return ValueUtil.transPapi(outside.getProperty(node), papi);
+            return ValueUtil.transPapi(outside.getProperty(node), pairs);
         } else {
-            return ValueUtil.transPapi(inside.getProperty(node), papi);
+            return ValueUtil.transPapi(inside.getProperty(node), pairs);
         }
     }
 

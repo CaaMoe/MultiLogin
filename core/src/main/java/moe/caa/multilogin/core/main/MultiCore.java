@@ -1,9 +1,15 @@
 package moe.caa.multilogin.core.main;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import lombok.Getter;
+import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
+import moe.caa.multilogin.api.auth.yggdrasil.response.Property;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.core.auth.AuthHandler;
+import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
+import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.database.SQLManager;
@@ -28,6 +34,8 @@ public class MultiCore implements MultiCoreAPI {
     private final CommandHandler commandHandler;
     @Getter
     private final LanguageHandler languageHandler;
+    @Getter
+    private final Gson gson;
 
     /**
      * 构建猫踢核心，这个方法将会被反射调用
@@ -39,6 +47,9 @@ public class MultiCore implements MultiCoreAPI {
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
         this.languageHandler = new LanguageHandler(this);
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(HasJoinedResponse.class, new HasJoinedResponseSerializer())
+                .registerTypeAdapter(Property.class, new PropertySerializer()).create();
     }
 
     /**

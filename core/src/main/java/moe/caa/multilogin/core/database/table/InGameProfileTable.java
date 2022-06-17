@@ -41,6 +41,24 @@ public class InGameProfileTable {
         }
     }
 
+    public UUID getInGameUUID(String currentUsername) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
+                , fieldInGameUuid, tableName, fieldCurrentUsername
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, currentUsername);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return ValueUtil.bytesToUuid(resultSet.getBytes(1));
+                }
+            }
+        }
+        return null;
+    }
+
     public String getCurrentUsername(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE %s = ? LIMIT 1"

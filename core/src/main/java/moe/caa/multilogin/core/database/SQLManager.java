@@ -44,7 +44,7 @@ public class SQLManager {
         final String inGameProfileTableName = tablePrefix + "in_game_profile_v2";
         final String userDataTableName = tablePrefix + "user_data_v2";
         inGameProfileTable = new InGameProfileTable(this, inGameProfileTableName);
-        userDataTable = new UserDataTable(this, userDataTableName, inGameProfileTableName);
+        userDataTable = new UserDataTable(this, userDataTableName);
         inGameProfileTable.init();
         userDataTable.init();
     }

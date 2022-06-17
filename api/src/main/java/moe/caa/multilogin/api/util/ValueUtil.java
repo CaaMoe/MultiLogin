@@ -2,7 +2,7 @@ package moe.caa.multilogin.api.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 public class ValueUtil {
@@ -38,9 +38,44 @@ public class ValueUtil {
         return new UUID(msl, lsl);
     }
 
-    public static String transPapi(String s, Map<String, Object> papi) {
-        for (Map.Entry<String, Object> entry : papi.entrySet()) {
-            s = s.replace(entry.getKey(), entry.getValue().toString());
+    /**
+     * 通过字符串生成 UUID
+     *
+     * @param uuid 字符串
+     * @return 匹配的 uuid， 否则为空
+     */
+    public static UUID getUuidOrNull(String uuid) {
+        UUID ret = null;
+        try {
+            ret = UUID.fromString(uuid.replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+        } catch (Exception ignored) {
+        }
+        return ret;
+    }
+
+    /**
+     * 判断字符串是否为空
+     *
+     * @param str 需要判断的字符串
+     * @return 字符串是否为空
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || str.length() == 0;
+    }
+
+    @SafeVarargs
+    public static String transPapi(String s, Pair<String, Object>... pairs) {
+        for (int i = 0; i < pairs.length; i++) {
+            s = s.replace("{" + pairs[i].getValue1() + "}", pairs[i].getValue2().toString());
+            s = s.replace("{" + i + "}", pairs[i].getValue2().toString());
+        }
+        return s;
+    }
+
+    public static String transPapi(String s, List<Pair<String, Object>> pairs) {
+        for (int i = 0; i < pairs.size(); i++) {
+            s = s.replace("{" + pairs.get(i).getValue1() + "}", pairs.get(i).getValue2().toString());
+            s = s.replace("{" + i + "}", pairs.get(i).getValue2().toString());
         }
         return s;
     }
