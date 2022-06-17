@@ -54,7 +54,10 @@ public class PluginConfig {
                 try {
                     YggdrasilServiceConfig config = YamlConfigurationLoader.builder()
                             .path(path)
-                            .defaultOptions(opts -> opts.serializers(builder -> builder.register(YggdrasilServiceConfig.class, YggdrasilServiceConfig.YggdrasilServiceConfigSerializers.getInstance())))
+                            .defaultOptions(opts -> opts.serializers(builder -> {
+                                builder.register(YggdrasilServiceConfig.class, YggdrasilServiceConfig.YggdrasilServiceConfigSerializers.getInstance());
+                                builder.register(ProxyConfig.class, ProxyConfig.ProxyConfigSerializers.getInstance());
+                            }))
                             .build().load().get(YggdrasilServiceConfig.class);
                     tmpServices.add(config);
                 } catch (Exception e) {

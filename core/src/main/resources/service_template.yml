@@ -95,6 +95,22 @@ hasJoined:
   # 默认值 ‘0’
   retryDelay: 0
 
+  # 请求代理设置
+  proxy:
+
+    # 设置代理类型
+    #
+    # 请使用以下值:
+    #     DIRECT      - 直接连接、或没有代理
+    #     HTTP        - Represents proxy for high level protocols such as HTTP or FTP.
+    #     SOCKS       - Represents a SOCKS (V4 or V5) proxy.
+    #
+    # 默认值 ‘DIRECT’
+    type: "DIRECT"
+
+    hostname: "127.0.0.1"
+    port: 1080
+
 # 设置玩家第一次登录到这个服务器时，系统所分配给玩家的 UUID 生成规则。
 #
 # 请使用以下值:

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.configuration.yggdrasil;
 
 import lombok.*;
+import moe.caa.multilogin.core.configuration.ProxyConfig;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
@@ -34,6 +35,7 @@ public class YggdrasilServiceConfig {
         private final int timeout;
         private final int retry;
         private final int retryDelay;
+        private final ProxyConfig proxy;
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -73,7 +75,13 @@ public class YggdrasilServiceConfig {
                 int timeout = hasJoinedNode.node("timeout").getInt(10000);
                 int retry = hasJoinedNode.node("retry").getInt(0);
                 int retryDelay = hasJoinedNode.node("retryDelay").getInt(0);
-                hasJoined = new HasJoinedConfig(url, method, passIp, ipContent, postContent, timeout, retry, retryDelay);
+
+                ProxyConfig proxy;
+                {
+                    proxy = node.node("proxy").get(ProxyConfig.class);
+                }
+
+                hasJoined = new HasJoinedConfig(url, method, passIp, ipContent, postContent, timeout, retry, retryDelay, proxy);
             }
 
             TransformUUID transformUUID = node.node("transformUUID").get(TransformUUID.class, TransformUUID.DEFAULT);
