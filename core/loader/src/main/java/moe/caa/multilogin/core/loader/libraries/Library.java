@@ -223,7 +223,7 @@ public class Library {
             return downloadUrl;
         }
         // 例子 方便生成URL   https://repo1.maven.org/maven2/com/zaxxer/HikariCP/4.0.2/HikariCP-4.0.2.jar
-        StringBuilder sb = new StringBuilder("https://repo1.maven.org/maven2/");
+        StringBuilder sb = new StringBuilder("https://maven.aliyun.com/repository/public/");
         String[] groupSplit = group.split("\\.");
         for (String s : groupSplit) {
             sb.append(s).append('/');
