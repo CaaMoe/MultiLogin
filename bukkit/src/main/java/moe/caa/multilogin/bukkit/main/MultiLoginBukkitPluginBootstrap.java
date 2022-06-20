@@ -139,7 +139,9 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
                 try {
                     // 类型匹配，返回Field所在的类的实例和Field
                     if (declaredField.getType() == needGet) {
-                        return new Object[]{source, declaredField};
+                        if (sourceClass.getName().startsWith("net.minecraft.")) {
+                            return new Object[]{source, declaredField};
+                        }
                     }
                     declaredField.setAccessible(true);
                     final Object o = declaredField.get(source);
