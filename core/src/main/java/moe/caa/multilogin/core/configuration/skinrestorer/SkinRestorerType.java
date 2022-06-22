@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.configuration.yggdrasil;
+package moe.caa.multilogin.core.configuration.skinrestorer;
 
 public enum SkinRestorerType {
     OFF,
