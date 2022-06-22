@@ -1,14 +1,11 @@
 #####################################################################
 #
-#     配置文件格式为 ‘YAML’，推荐使用 Visual Studio Code 浏览和编辑。
-#          前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
-#
-#          NOTE: 此文件为 Yggdrasil Service 配置模板文件
+#  配置文件格式为 ‘YAML’，前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
+#         NOTE: 此文件为 Yggdrasil Service 配置模板文件
 #
 #####################################################################
 
-
-# 此值为 Yggdrasil ID，它作为 Yggdrasil 的唯一标识！
+# 此值为 Yggdrasil ID，它将作为 Yggdrasil 的唯一标识！
 # 中途更改它将会导致部分玩家的数据错乱或丢失，修改请慎重！！！
 # 必须值，此值取值范围为整数 0 ~ 255
 id: 0
@@ -118,6 +115,17 @@ hasJoined:
     # 默认值 ‘1080’
     port: 1080
 
+    # 代理鉴权用户名。
+    # 留空则不进行鉴权
+    #
+    # 默认值 ‘’
+    username: ""
+
+    # 代理鉴权密码。
+    #
+    # 默认值 ‘’
+    password: ""
+
 # 设置玩家第一次登录到这个服务器时，系统所分配给玩家的 UUID 生成规则。
 #
 # 请使用以下值:
@@ -127,7 +135,7 @@ hasJoined:
 #
 # 请谨慎设置和修改此节点，避免增加日后维护的心智负担。
 # 默认值 ‘DEFAULT’
-transformUUID: 'DEFAULT'
+initUUID: 'DEFAULT'
 
 # 设置当前 Yggdrasil 下的用户名正则约束。
 # 若不匹配将会拒绝当前玩家的登录请求。
@@ -195,3 +203,36 @@ skinRestorer:
   # 过大的值可能会导致登录超时。
   # 默认值 ‘5000’
   retryDelay: 5000
+
+  # 请求代理设置
+  proxy:
+    # 设置代理类型
+    #
+    # 请使用以下值:
+    #     DIRECT      - 直接连接、或没有代理
+    #     HTTP        - Represents proxy for high level protocols such as HTTP or FTP.
+    #     SOCKS       - Represents a SOCKS (V4 or V5) proxy.
+    #
+    # 默认值 ‘DIRECT’
+    type: "DIRECT"
+
+    # 代理服务器地址
+    #
+    # 默认值 ‘127.0.0.1’
+    hostname: "127.0.0.1"
+
+    # 代理服务器端口
+    #
+    # 默认值 ‘1080’
+    port: 1080
+
+    # 代理鉴权用户名。
+    # 留空则不进行鉴权
+    #
+    # 默认值 ‘’
+    username: ""
+
+    # 代理鉴权密码。
+    #
+    # 默认值 ‘’
+    password: ""
