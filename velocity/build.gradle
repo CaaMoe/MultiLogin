@@ -7,6 +7,7 @@ repositories {
         name 'papermc'
         url 'https://repo.papermc.io/repository/maven-public/'
     }
+    mavenCentral()
 }
 
 dependencies {
@@ -15,7 +16,7 @@ dependencies {
     implementation project(":loader")
 
     compileOnly fileTree(dir: 'libraries', include: ['*.jar'])
-    compileOnly 'io.netty:netty-all:4.1.72.Final'
+    compileOnly 'io.netty:netty-all:4.1.77.Final'
 
     compileOnly 'com.velocitypowered:velocity-api:3.1.0'
     annotationProcessor 'com.velocitypowered:velocity-api:3.1.0'
