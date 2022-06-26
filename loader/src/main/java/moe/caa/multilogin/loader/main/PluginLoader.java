@@ -91,7 +91,7 @@ public class PluginLoader {
     /**
      * 开始加载
      */
-    public synchronized void load() throws Exception {
+    public synchronized void load(String... additions) throws Exception {
         if (loaded.getAndSet(true)) {
             throw new UnsupportedOperationException("Repeated call.");
         }
@@ -148,20 +148,38 @@ public class PluginLoader {
             );
         }
 
-        // 提取 nest jar
-        final File output = File.createTempFile(nestJarName + ".", ".jar", plugin.getTempFolder());
-        if (!output.exists()) {
-            Files.createFile(output.toPath());
+        {
+            // 提取 nest jar
+            final File output = File.createTempFile(nestJarName + ".", ".jar", plugin.getTempFolder());
+            if (!output.exists()) {
+                Files.createFile(output.toPath());
+            }
+            output.deleteOnExit();
+            try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(nestJarName);
+                 FileOutputStream fos = new FileOutputStream(output);
+            ) {
+                IOUtil.copy(Objects.requireNonNull(is, nestJarName), fos);
+                fos.flush();
+            }
+            pluginClassLoader.addURL(output.toURI().toURL());
         }
-        output.deleteOnExit();
-        try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(nestJarName);
-             FileOutputStream fos = new FileOutputStream(output);
-        ) {
-            IOUtil.copy(is, fos);
-            fos.flush();
+        {
+            for (String addition : additions) {
+                final File output = File.createTempFile(addition + ".", ".jar", plugin.getTempFolder());
+                if (!output.exists()) {
+                    Files.createFile(output.toPath());
+                }
+                output.deleteOnExit();
+                try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(addition);
+                     FileOutputStream fos = new FileOutputStream(output);
+                ) {
+                    IOUtil.copy(Objects.requireNonNull(is, addition), fos);
+                    fos.flush();
+                }
+                pluginClassLoader.addURL(output.toURI().toURL());
+            }
         }
 
-        pluginClassLoader.addURL(output.toURI().toURL());
         loadCore();
     }
 

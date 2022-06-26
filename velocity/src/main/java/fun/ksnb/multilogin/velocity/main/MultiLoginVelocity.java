@@ -39,6 +39,7 @@ public class MultiLoginVelocity implements IPlugin {
             pluginLoader.load();
         } catch (Exception e) {
             e.printStackTrace();
+            server.shutdown();
         }
     }
 
@@ -50,6 +51,7 @@ public class MultiLoginVelocity implements IPlugin {
             new MultiInjTask(multiCoreAPI).run();
         } catch (Exception e) {
             e.printStackTrace();
+            server.shutdown();
         }
     }
 
@@ -61,6 +63,7 @@ public class MultiLoginVelocity implements IPlugin {
             e.printStackTrace();
         } finally {
             multiCoreAPI = null;
+            server.shutdown();
         }
     }
 

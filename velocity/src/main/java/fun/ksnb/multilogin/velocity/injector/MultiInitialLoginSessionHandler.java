@@ -29,12 +29,19 @@ import java.security.MessageDigest;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * 接管 InitialLoginSessionHandler 类的其中一个方法
+ */
 @Getter(value = AccessLevel.PROTECTED)
 public class MultiInitialLoginSessionHandler {
+
+    // LoginStateEnum 的枚举
     private static Enum<?> initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_EXPECTED;
     private static Enum<?> initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_RECEIVED;
     private static Enum<?> initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT;
     private static Enum<?> initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED;
+
+    // 一些函数和字段的引用
     private static MethodHandle initialLoginSessionHandler_assertStateMethod;
     private static MethodHandle initialLoginSessionHandler_setCurrentStateField;
     private static MethodHandle initialLoginSessionHandler_getLoginField;
@@ -44,14 +51,16 @@ public class MultiInitialLoginSessionHandler {
     private static MethodHandle initialLoginSessionHandler_getMcConnectionField;
     private static MethodHandle initialLoginSessionHandler_getCurrentStateField;
     private static MethodHandle authSessionHandler_allArgsConstructor;
+    // 类体常量
     private final InitialLoginSessionHandler initialLoginSessionHandler;
-    private final MultiCoreAPI multiCoreAPI;
+    private final MultiCoreAPI multiCoreAPI; // 这个不是
     private final VelocityServer server;
     private final MinecraftConnection mcConnection;
     private final LoginInboundConnection inbound;
+    // 运行时改动的实例
     private ServerLogin login;
     private byte[] verify;
-    // 自己的对象
+    // 自己的对象，表示是否通过加密
     private boolean encrypted = false;
 
     protected MultiInitialLoginSessionHandler(InitialLoginSessionHandler initialLoginSessionHandler, MultiCoreAPI multiCoreAPI) {
@@ -139,11 +148,12 @@ public class MultiInitialLoginSessionHandler {
     private void initValues() throws Throwable {
         this.login = (ServerLogin) initialLoginSessionHandler_getLoginField.invoke(initialLoginSessionHandler);
         this.verify = (byte[]) initialLoginSessionHandler_getVerifyField.invoke(initialLoginSessionHandler);
-        Enum<?> currentState = (Enum<?>) initialLoginSessionHandler_getCurrentStateField.invoke(initialLoginSessionHandler);
     }
 
     public void handle(EncryptionResponse packet) throws Throwable {
         initValues();
+
+        // 模拟常规流程
         initialLoginSessionHandler_assertStateMethod.invoke(initialLoginSessionHandler, initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT);
         initialLoginSessionHandler_setCurrentStateField.invoke(initialLoginSessionHandler, initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED);
 
@@ -156,6 +166,8 @@ public class MultiInitialLoginSessionHandler {
         }
 
         try {
+
+            // 加密部分
             KeyPair serverKeyPair = this.server.getServerKeyPair();
             if (this.inbound.getIdentifiedKey() != null) {
                 IdentifiedKey playerKey = this.inbound.getIdentifiedKey();
@@ -172,6 +184,7 @@ public class MultiInitialLoginSessionHandler {
             byte[] decryptedSharedSecret = EncryptionUtils.decryptRsa(serverKeyPair, packet.getSharedSecret());
 
             encrypted = true;
+            // 验证
             String username = login.getUsername();
             String serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
             String playerIp = ((InetSocketAddress) this.mcConnection.getRemoteAddress()).getHostString();

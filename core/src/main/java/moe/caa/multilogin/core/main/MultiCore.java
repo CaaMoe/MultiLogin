@@ -59,6 +59,7 @@ public class MultiCore implements MultiCoreAPI {
     public void load() throws IOException, SQLException, ClassNotFoundException {
         pluginConfig.reload();
         sqlManager.init();
+        languageHandler.init();
     }
 
     /**

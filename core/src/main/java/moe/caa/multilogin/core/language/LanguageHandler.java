@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.language;
 
+import moe.caa.multilogin.api.language.LanguageAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
@@ -13,7 +14,7 @@ import java.util.Properties;
 /**
  * 代表可读文本处理程序
  */
-public class LanguageHandler {
+public class LanguageHandler implements LanguageAPI {
     private final MultiCore core;
     private Properties inside;
     private Properties outside;
@@ -25,23 +26,24 @@ public class LanguageHandler {
     /**
      * 初始化这个可读文本处理程序
      */
-    public void init(String fileName) throws IOException {
+    public void init() throws IOException {
         inside = new Properties();
-        try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + fileName))) {
+        try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"))) {
             inside.load(new InputStreamReader(is, StandardCharsets.UTF_8));
         }
-        reloadOutside(fileName);
+        reloadOutside();
     }
 
     /**
      * 重新加载外置语言仓库
      */
-    public void reloadOutside(String fileName) {
-        var outsideFile = new File(core.getPlugin().getDataFolder(), fileName);
+    public void reloadOutside() {
+        File outsideFile = new File(core.getPlugin().getDataFolder(), "message.properties");
         if (outsideFile.exists()) {
             outside = new Properties();
             try {
                 outside.load(new InputStreamReader(new FileInputStream(outsideFile), StandardCharsets.UTF_8));
+                LoggerProvider.getLogger().info("Use outside language properties.");
             } catch (IOException e) {
                 LoggerProvider.getLogger().error(String.format("Unable to load outside message file. (%s)", outsideFile.getAbsolutePath()), e);
             }
@@ -50,14 +52,7 @@ public class LanguageHandler {
         }
     }
 
-    /**
-     * 通过 节点 和 参数 构建这个可读文本字符串对象
-     *
-     * @param node 节点
-     * @return 可读文本字符串对象
-     */
-    @SafeVarargs
-    public final String getMessage(String node, Pair<String, Object>... pairs) {
+    public final String getMessage(String node, Pair<?, ?>... pairs) {
         if (outside != null && outside.containsKey(node)) {
             return ValueUtil.transPapi(outside.getProperty(node), pairs);
         } else {

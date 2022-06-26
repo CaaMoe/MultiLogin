@@ -63,8 +63,7 @@ public class ValueUtil {
         return str == null || str.length() == 0;
     }
 
-    @SafeVarargs
-    public static String transPapi(String s, Pair<String, Object>... pairs) {
+    public static String transPapi(String s, Pair<?, ?>... pairs) {
         for (int i = 0; i < pairs.length; i++) {
             s = s.replace("{" + pairs[i].getValue1() + "}", pairs[i].getValue2().toString());
             s = s.replace("{" + i + "}", pairs[i].getValue2().toString());
@@ -72,7 +71,7 @@ public class ValueUtil {
         return s;
     }
 
-    public static String transPapi(String s, List<Pair<String, Object>> pairs) {
+    public static String transPapi(String s, List<Pair<?, ?>> pairs) {
         for (int i = 0; i < pairs.size(); i++) {
             s = s.replace("{" + pairs.get(i).getValue1() + "}", pairs.get(i).getValue2().toString());
             s = s.replace("{" + i + "}", pairs.get(i).getValue2().toString());
