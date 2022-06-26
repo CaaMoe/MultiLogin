@@ -7,7 +7,6 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -55,18 +54,14 @@ public class LanguageHandler {
      * 通过 节点 和 参数 构建这个可读文本字符串对象
      *
      * @param node 节点
-     * @param papi 占位参数
      * @return 可读文本字符串对象
      */
-    public String getMessage(String node, Pair<String, Object>... pairs) {
+    @SafeVarargs
+    public final String getMessage(String node, Pair<String, Object>... pairs) {
         if (outside != null && outside.containsKey(node)) {
             return ValueUtil.transPapi(outside.getProperty(node), pairs);
         } else {
             return ValueUtil.transPapi(inside.getProperty(node), pairs);
         }
-    }
-
-    public String getMessage(String node) {
-        return getMessage(node, Collections.emptyMap());
     }
 }
