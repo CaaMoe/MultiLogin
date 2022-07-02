@@ -1,0 +1,48 @@
+name: Java CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Setup JDK 11'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
+          targets: 'JDK_11'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build
+        uses: gradle/gradle-command-action@v1
+        with:
+          arguments: shadowJar
+          gradle-version: 7.2
+
+      - name: Cleanup Gradle Cache
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+
+      - name: Upload to artifact respectively
+        uses: MuirProject/upload-artifact@v2-beta
+        with:
+          name: '["Bukkit", "Bungee", "Velocity"]'
+          path: '["bukkit/loader/build/libs/MultiLogin-*.jar", "bungee/loader/build/libs/MultiLogin-*.jar", "velocity/loader/build/libs/MultiLogin-*.jar"]'
+          retention-days: 1
