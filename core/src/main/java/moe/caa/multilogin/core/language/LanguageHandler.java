@@ -35,9 +35,8 @@ public class LanguageHandler implements LanguageAPI {
 
             LoggerProvider.getLogger().info("Extracting message.properties.");
             File languageFile = new File(core.getPlugin().getDataFolder(), "message.properties");
-            languageFile.createNewFile();
             OutputStream outputStream = new FileOutputStream(languageFile);
-            IOUtil.copy(inputStream, outputStream);
+            outputStream.write(getClass().getResourceAsStream("/message.properties").readAllBytes());
             outputStream.flush();
             outputStream.close();
         } else {
