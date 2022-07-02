@@ -159,7 +159,6 @@ public class PluginLoader {
                  FileOutputStream fos = new FileOutputStream(output);
             ) {
                 IOUtil.copy(Objects.requireNonNull(is, nestJarName), fos);
-                fos.flush();
             }
             pluginClassLoader.addURL(output.toURI().toURL());
         }
@@ -174,7 +173,6 @@ public class PluginLoader {
                      FileOutputStream fos = new FileOutputStream(output);
                 ) {
                     IOUtil.copy(Objects.requireNonNull(is, addition), fos);
-                    fos.flush();
                 }
                 pluginClassLoader.addURL(output.toURI().toURL());
             }
