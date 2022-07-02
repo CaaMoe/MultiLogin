@@ -12,7 +12,7 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 * 支持两种以上的 Yggdrasil 共存，比 [YggdrasilOfficialProxy](https://github.com/YggdrasilOfficialProxy/YggdrasilOfficialProxy) 的还要多
 * 支持配置市面上几乎所有类型的 Yggdrasil 服务器
     * 支持添加 [authlib-injector](https://github.com/to2mbn/authlib-injector) 所规范的 Yggdrasil 服务器
-    * 支持添加 [统一通行证](https://login2.nide8.com:233/) Yggdrasil 服务器
+    * 支持添加 [统一通行证](https://login.mc-user.com:233/) Yggdrasil 服务器
     * 支持添加畸形 Yggdrasil 服务器
 * 限制账户仅能使用其中一种验证方式，杜绝重复 UUID 所造成的危害，保护账号安全
 * 阻止服务器内出现重名账户
