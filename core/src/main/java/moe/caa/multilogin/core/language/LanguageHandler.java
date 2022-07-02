@@ -9,6 +9,8 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -27,23 +29,28 @@ public class LanguageHandler implements LanguageAPI {
      */
     public void init() throws IOException {
         language = new Properties();
-        if (!new File(core.getPlugin().getDataFolder(), "message.properties").exists()) {
-
-            LoggerProvider.getLogger().info("Loading default messages.");
-            InputStream inputStream = getClass().getResourceAsStream("/message.properties");
-            language.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-
+        final File messagePropertiesFile = new File(core.getPlugin().getDataFolder(), "message.properties");
+        if (!messagePropertiesFile.exists()) {
             LoggerProvider.getLogger().info("Extracting message.properties.");
-            File languageFile = new File(core.getPlugin().getDataFolder(), "message.properties");
-            OutputStream outputStream = new FileOutputStream(languageFile);
-            outputStream.write(getClass().getResourceAsStream("/message.properties").readAllBytes());
-            outputStream.flush();
-            outputStream.close();
-        } else {
-            LoggerProvider.getLogger().info("Loading custom messages.");
-            InputStream inputStream = new FileInputStream(new File(core.getPlugin().getDataFolder(), "message.properties"));
-            language.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            try (OutputStream outputStream = new FileOutputStream(messagePropertiesFile);
+                 InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"))
+            ) {
+                IOUtil.copy(resourceAsStream, outputStream);
+            }
+        }
 
+        InputStream inputStream = new FileInputStream(messagePropertiesFile);
+        language.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+
+        try (InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"))
+        ) {
+            Properties inside = new Properties();
+            inside.load(resourceAsStream);
+            for (Map.Entry<Object, Object> entry : inside.entrySet()) {
+                if (language.containsKey(entry.getKey())) continue;
+                language.setProperty(entry.getKey().toString(), entry.getValue().toString());
+                LoggerProvider.getLogger().warn("Missing message from node " + entry.getKey().toString());
+            }
         }
     }
 
