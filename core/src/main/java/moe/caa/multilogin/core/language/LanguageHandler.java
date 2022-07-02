@@ -2,14 +2,13 @@ package moe.caa.multilogin.core.language;
 
 import moe.caa.multilogin.api.language.LanguageAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.util.IOUtil;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.main.MultiCore;
-import org.h2.util.IOUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -38,7 +37,7 @@ public class LanguageHandler implements LanguageAPI {
             File languageFile = new File(core.getPlugin().getDataFolder(), "message.properties");
             languageFile.createNewFile();
             OutputStream outputStream = new FileOutputStream(languageFile);
-            IOUtils.copy(inputStream, outputStream);
+            IOUtil.copy(inputStream, outputStream);
             outputStream.flush();
             outputStream.close();
         } else {
