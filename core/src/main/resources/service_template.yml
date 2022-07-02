@@ -3,22 +3,25 @@
 #  配置文件格式为 ‘YAML’，前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
 #         NOTE: 此文件为 Yggdrasil Service 配置模板文件
 #
+#  BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues  
 #####################################################################
 
-# 此值为 Yggdrasil ID，它将作为 Yggdrasil 的唯一标识！
-# 中途更改它将会导致部分玩家的数据错乱或丢失，修改请慎重！！！
+# Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识。
+#
+# 请不要在中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
 # 必须值，此值取值范围为整数 0 ~ 255
 id: 0
 
-# 当前 Yggdrasil 的别称，仅供内容显示，可随意进行更改。
+# Yggdrasil 的别称，用于内容显示
+# 
 # 默认值 ‘Unnamed’
 name: 'Unnamed'
 
-# hasJoined 阶段服务端方向验证设置
+# 外置 hasJoined 验证配置
 hasJoined:
 
-  # Yggdrasil 登录验证链接设置。
-  # 此节点必须指定完整的 hasJoined 请求链接！
+  # hasJoined 登录验证链接设置。
+  # 此节点需要指定完整的 hasJoined 请求链接。
   #
   # 占位变量列表：
   #   序号     别称            简介
@@ -42,8 +45,9 @@ hasJoined:
   # 默认值 ‘GET’
   method: 'GET'
 
-  # 是否向 Yggdrasil 传递用户 IP 信息，如果此信息被正常获取的话。
-  # 此 IP 一般用于应付 Yggdrasil 的代理检查。
+  # 请求是否追加玩家 IP 信息。
+  #
+  # 此 IP 一般用于 Yggdrasil Service 的防代理检查
   # 默认值 ‘true’
   passIp: true
 
@@ -55,7 +59,7 @@ hasJoined:
   #   {0}     {ip}           请求的 ip（玩家 ip）
   #
   # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
-  # 请求的 URL 对大小写敏感，设置需谨慎！
+  # 请求的 URL 对大小写敏感，请检查。
   # 请留意字符串拼接的特殊值 '&' 和 ', '
   #
   # 一些例子:
@@ -65,7 +69,7 @@ hasJoined:
   ipContent: '&ip={0}'
 
   # 发送 POST 验证请求的内容。
-  # 也许目标验证服务器对请求内容的大小写非常敏感，设置请留意。
+  # 目标验证服务器对请求内容的大小写敏感，请检查。
   #
   # 占位变量列表：
   #   序号     别称           简介
@@ -79,28 +83,31 @@ hasJoined:
   # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
   postContent: '{"username":"{0}", "serverId":"{1}"}'
 
-  # 设置验证超时时间。
+  # 设置 hasJoined 验证超时时间。
+  #
   # 默认值 ‘10000’
   timeout: 10000
 
-  # 验证网络错误时的重试次数。
+  # hasJoined 网络错误时的重试次数。
+  #
   # 默认值 ‘0’
   retry: 0
 
   # 重试请求延迟。
-  # 过大的值可能会导致登录超时。
+  #
+  # 注意，过大的值可能会导致登录超时。
   # 默认值 ‘0’
   retryDelay: 0
 
-  # 请求代理设置
+  # hasJoined 请求代理设置
   proxy:
 
-    # 设置代理类型
+    # 指定代理类型
     #
     # 请使用以下值:
     #     DIRECT      - 直接连接、或没有代理
-    #     HTTP        - Represents proxy for high level protocols such as HTTP or FTP.
-    #     SOCKS       - Represents a SOCKS (V4 or V5) proxy.
+    #     HTTP        - 表示高级协议(如HTTP或FTP)的代理。
+    #     SOCKS       - 表示一个SOCKS (V4或V5)代理。
     #
     # 默认值 ‘DIRECT’
     type: "DIRECT"
@@ -116,8 +123,8 @@ hasJoined:
     port: 1080
 
     # 代理鉴权用户名。
-    # 留空则不进行鉴权
     #
+    # 留空则不进行鉴权
     # 默认值 ‘’
     username: ""
 
