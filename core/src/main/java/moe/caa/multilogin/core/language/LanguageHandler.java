@@ -31,12 +31,12 @@ public class LanguageHandler implements LanguageAPI {
         language = new Properties();
         final File messagePropertiesFile = new File(core.getPlugin().getDataFolder(), "message.properties");
         if (!messagePropertiesFile.exists()) {
-            LoggerProvider.getLogger().info("Extracting message.properties.");
             try (OutputStream outputStream = new FileOutputStream(messagePropertiesFile);
                  InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"))
             ) {
                 IOUtil.copy(resourceAsStream, outputStream);
             }
+            LoggerProvider.getLogger().info("Extract: message.properties");
         }
 
         InputStream inputStream = new FileInputStream(messagePropertiesFile);

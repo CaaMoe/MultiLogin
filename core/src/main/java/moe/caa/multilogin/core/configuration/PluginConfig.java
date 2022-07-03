@@ -39,7 +39,7 @@ public class PluginConfig {
         }
 
         saveResource("backend.yml", false);
-        saveResource("service_template.yml", false);
+        saveResource("service_template.yml", true);
 
         File backendFile = new File(dataFolder, "backend.yml");
         this.backendConfig = YamlConfigurationLoader.builder()
@@ -84,14 +84,20 @@ public class PluginConfig {
 
     public void saveResource(String path, boolean cover) throws IOException {
         File file = new File(dataFolder, path);
-        if (file.exists() && !cover) {
+        boolean exists = file.exists();
+        if (exists && !cover) {
             return;
         } else {
-            Files.createFile(file.toPath());
+            if (!exists) Files.createFile(file.toPath());
         }
         try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + path));
              FileOutputStream fs = new FileOutputStream(file)) {
             IOUtil.copy(is, fs);
+        }
+        if (!exists) {
+            LoggerProvider.getLogger().info("Extract: " + path);
+        } else {
+            LoggerProvider.getLogger().info("Cover: " + path);
         }
     }
 }
