@@ -45,10 +45,10 @@ public class YggdrasilServiceConfig {
         int id = node.node("id").getInt();
         String name = node.node("name").getString("Unnamed");
 
-        String url;
-        HttpRequestMethod method;
-        String ipContent;
-        String postContent;
+        String url = null;
+        HttpRequestMethod method = null;
+        String ipContent = null;
+        String postContent = null;
 
         boolean read = false;
         if (node.node("hasJoined").hasChild("official")) {
@@ -78,7 +78,19 @@ public class YggdrasilServiceConfig {
             postContent = node.node("hasJoined", "custom", "postContent").getString();
             read = true;
         }
+        boolean passIp = node.node("passIp").getBoolean(true);
+        int timeout = node.node("timeout").getInt(10000);
+        int retry = node.node("retry").getInt(0);
+        int retryDelay = node.node("retryDelay").getInt(0);
+        ProxyConfig proxy = ProxyConfig.read(node.node("proxy"));
 
-        return null;
+        InitUUID initUUID = node.node("initUUID").get(InitUUID.class, InitUUID.DEFAULT);
+        String nameAllowedRegular = node.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
+        boolean whitelist = node.node("whitelist").getBoolean(false);
+        boolean refuseRepeatedLogin = node.node("refuseRepeatedLogin").getBoolean(false);
+        boolean compulsoryUsername = node.node("compulsoryUsername").getBoolean(false);
+        SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(node.node("skinRestorer"));
+
+        return new YggdrasilServiceConfig(id, name, url, method, ipContent, postContent, passIp, timeout, retry, retryDelay, proxy, initUUID, nameAllowedRegular, whitelist, refuseRepeatedLogin, compulsoryUsername, skinRestorer);
     }
 }

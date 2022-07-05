@@ -4,8 +4,10 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public class SkinRestorerConfig {
@@ -22,5 +24,16 @@ public class SkinRestorerConfig {
 
     public enum Method {
         URL, UPLOAD
+    }
+
+    public static SkinRestorerConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
+        RestorerType restorer = node.node("restorer").get(RestorerType.class, RestorerType.OFF);
+        Method method = node.node("method").get(Method.class, Method.URL);
+        int timeout = node.node("timeout").getInt(10000);
+        int retry = node.node("retry").getInt(2);
+        int retryDelay = node.node("retryDelay").getInt(5000);
+        ProxyConfig proxy = ProxyConfig.read(node.node("proxy"));
+
+        return new SkinRestorerConfig(restorer, method, timeout, retry, retryDelay, proxy);
     }
 }

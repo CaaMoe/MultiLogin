@@ -112,40 +112,40 @@ hasJoined:
     postContent: '{"username":"{0}", "serverId":"{1}"}'
 
 
-  # 请求是否追加用户 IP 信息。
+# 请求是否追加用户 IP 信息。
+#
+# 此 IP 一般用于 Yggdrasil 的防代理检查
+# 默认值 ‘true’
+passIp: true
+
+# 设置 hasJoined 验证超时时间。
+#
+# 默认值 ‘10000’
+timeout: 10000
+
+# hasJoined 网络错误时的重试次数。
+#
+# 默认值 ‘0’
+retry: 0
+
+# 重试请求延迟。
+#
+# 注意，过大的值可能会导致登录超时。
+# 默认值 ‘0’
+retryDelay: 0
+
+# hasJoined 代理设置
+proxy:
+
+  # 指定代理类型
   #
-  # 此 IP 一般用于 Yggdrasil 的防代理检查
-  # 默认值 ‘true’
-  passIp: true
-
-  # 设置 hasJoined 验证超时时间。
+  # 请使用以下值:
+  #     DIRECT      - 直接连接、或没有代理
+  #     HTTP        - 表示高级协议(如HTTP或FTP)的代理。
+  #     SOCKS       - 表示一个SOCKS (V4或V5)代理。
   #
-  # 默认值 ‘10000’
-  timeout: 10000
-
-  # hasJoined 网络错误时的重试次数。
-  #
-  # 默认值 ‘0’
-  retry: 0
-
-  # 重试请求延迟。
-  #
-  # 注意，过大的值可能会导致登录超时。
-  # 默认值 ‘0’
-  retryDelay: 0
-
-  # hasJoined 代理设置
-  proxy:
-
-    # 指定代理类型
-    #
-    # 请使用以下值:
-    #     DIRECT      - 直接连接、或没有代理
-    #     HTTP        - 表示高级协议(如HTTP或FTP)的代理。
-    #     SOCKS       - 表示一个SOCKS (V4或V5)代理。
-    #
-    # 默认值 ‘DIRECT’
-    type: "DIRECT"
+  # 默认值 ‘DIRECT’
+  type: "DIRECT"
 
     # 代理服务器地址
     #

@@ -7,6 +7,8 @@ import lombok.ToString;
 import moe.caa.multilogin.api.util.ValueUtil;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
@@ -33,5 +35,15 @@ public class ProxyConfig {
                     .header("Proxy-Authorization", credential)
                     .build();
         };
+    }
+
+    public static ProxyConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
+        Proxy.Type type = node.node("type").get(Proxy.Type.class, Proxy.Type.DIRECT);
+        String hostname = node.node("hostname").getString("127.0.0.1");
+        int port = node.node("port").getInt(1080);
+        String username = node.node("username").getString("");
+        String password = node.node("password").getString("");
+
+        return new ProxyConfig(type, hostname, port, username, password);
     }
 }
