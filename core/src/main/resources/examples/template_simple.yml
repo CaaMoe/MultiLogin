@@ -1,0 +1,100 @@
+#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#        除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
+#
+#          请不要在此文件下存放任何重要数据，文件将会自动覆盖
+#
+#         此文件仅为示例文件 使用请复制到services目录下才能生效
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+#####################################################################
+#
+#  配置文件格式为 ‘YAML’，前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
+#         NOTE: 此文件为 Yggdrasil Service 配置模板文件
+#
+#  BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues  
+#####################################################################
+
+# Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识。
+#
+# 请不要在使用中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
+# 此值为必须值，取值范围为整数 0 ~ 255
+id: -1
+
+# Yggdrasil 的别称，用于内容显示
+# 
+# 默认值 ‘Unnamed’
+name: 'Unnamed'
+
+# 设置当前 Yggdrasil 下的用户名正则约束。
+# 若不匹配将会拒绝当前玩家的登录请求。
+# 如果此值留空或未设置，则不启用此功能。
+# 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
+nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
+
+# hasJoined 验证配置
+hasJoined:
+
+  # 此值设置 Yggdrasil 服务器类型为官方 Yggdrasil 服务器。
+  #
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  official: { }
+
+  # 此值设置 Yggdrasil 服务器类型为 Blessing Skin Yggdrasil API 服务器。
+  #
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  blessingSkin:
+
+    # 指定 Blessing Skin Yggdrasil API 地址。
+    #
+    # 必须值
+    apiRoot: 'https://example.com/api/yggdrasil'
+
+  # 此值设置 Yggdrasil 服务器类型为自定义类型，若需要添加的 Yggdrasil 服务器不是官方或 blessingSkin 类型的请使用此高级类型。
+  #
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  custom:
+
+    # hasJoined 登录验证链接设置。
+    # 此节点需要指定完整的 hasJoined 请求链接。
+    #
+    # 占位变量列表：
+    #   序号     别称            简介
+    #   {0}      {username}    请求的 username
+    #   {1}      {serverId}    请求的 serverId
+    #   {2}      {ip}          请求的 ip（ipContent 节点值）
+    #
+    # 一些例子:
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
+    #      POST: ‘https://example.com/session/minecraft/hasJoined’
+    #
+    # 必须值。
+    url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+
+# 皮肤修复设定。
+skinRestorer:
+
+  # 皮肤修复模式。
+  #
+  # 用来解决不同 Yggdrasil 账户验证服务器下的皮肤不可见问题，
+  # 此功能仅将不含有 Mojang 签名的皮肤使用第三方服务尝试合成含有 Mojang 签名的皮肤来使用。
+  # 请使用以下值:
+  #   OFF       - 关闭这个功能
+  #   LOGIN     - 占用登录时间进行皮肤修复操作（修复时间过长可能会导致登录超时）
+  #   ASYNC     - 登录后修复（修复成功后需要重新连接服务器）
+  # 皮肤修复服务器来自 ‘mineskin.org’
+  # 默认值 ‘OFF’
+  restorer: 'ASYNC'
+
+#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#        除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
+#
+#          请不要在此文件下存放任何重要数据，文件将会自动覆盖
+#
+#         此文件仅为示例文件 使用请复制到services目录下才能生效
+#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

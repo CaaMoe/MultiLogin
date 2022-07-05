@@ -4,12 +4,13 @@ import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.IOUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Objects;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class PluginConfig {
     private final File dataFolder;
@@ -31,7 +32,7 @@ public class PluginConfig {
         }
 
         saveResource("config.yml", false);
-        saveResource("service_template.yml", true);
+        saveResourceDir("examples", true);
 
 
     }
@@ -52,6 +53,40 @@ public class PluginConfig {
             LoggerProvider.getLogger().info("Extract: " + path);
         } else {
             LoggerProvider.getLogger().info("Cover: " + path);
+        }
+    }
+
+    public void saveResourceDir(String path, boolean cover) throws IOException {
+        File file = new File(dataFolder, path);
+        if (!file.exists()) Files.createDirectory(file.toPath());
+        try (JarFile jarFile = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().getFile())) {
+            List<JarEntry> jarFiles = jarFile.stream().filter(jarEntry -> jarEntry.getRealName().startsWith(path)).filter(jarEntry -> !jarEntry.getRealName().equals(path + "/")).toList();
+            for (JarEntry je : jarFiles) {
+//                if (je.isDirectory()) {
+//                暂时不考虑目录下目录情况
+//                    预留
+//                } else {
+//                下属文件
+                    String realName=je.getRealName();
+                    String fileName=realName.substring(path.length());
+                    File subFile = new File(file, fileName);
+                    boolean exists = subFile.exists();
+                    if (exists && !cover) {
+                        return;
+                    } else {
+                        if (!exists) Files.createFile(subFile.toPath());
+                    }
+                    try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" +realName));
+                         FileOutputStream fs = new FileOutputStream(subFile)) {
+                        IOUtil.copy(is, fs);
+                    }
+                    if (!exists) {
+                        LoggerProvider.getLogger().info("Extract: " + realName);
+                    } else {
+                        LoggerProvider.getLogger().info("Cover: " + realName);
+                    }
+//                }
+            }
         }
     }
 }
