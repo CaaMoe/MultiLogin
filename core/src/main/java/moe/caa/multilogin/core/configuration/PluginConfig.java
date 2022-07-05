@@ -3,8 +3,13 @@ package moe.caa.multilogin.core.configuration;
 import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.IOUtil;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
@@ -35,6 +40,10 @@ public class PluginConfig {
         saveResource("config.yml", false);
         saveResourceDir("examples", true);
 
+        CommentedConfigurationNode configConfigurationNode =
+                YamlConfigurationLoader.builder().file(new File(dataFolder, "config.yml")).build().load();
+
+        sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
     }
 

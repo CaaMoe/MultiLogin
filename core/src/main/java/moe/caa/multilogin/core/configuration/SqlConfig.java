@@ -4,8 +4,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
+import java.util.Objects;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
 public class SqlConfig {
@@ -20,5 +24,19 @@ public class SqlConfig {
 
     public enum SqlBackend {
         H2, MYSQL
+    }
+
+    public static SqlConfig read(CommentedConfigurationNode node) throws SerializationException {
+        SqlBackend backend = node.node("backend").get(SqlBackend.class, SqlBackend.H2);
+        String ip = node.node("ip").getString("127.0.0.1");
+        int port = node.node("port").getInt(3306);
+        String username = node.node("username").getString("root");
+        String password = node.node("password").getString("root");
+        String database = node.node("database").getString("multilogin");
+        String tablePrefix = node.node("tablePrefix").getString("multilogin");
+        String connectUrl = node.node("connectUrl").getString("");
+        Objects.requireNonNull(backend);
+
+        return new SqlConfig(backend, ip, port, username, password, database, tablePrefix, connectUrl);
     }
 }
