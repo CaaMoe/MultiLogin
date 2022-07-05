@@ -34,7 +34,7 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     public HasJoinedResponse call() throws Exception {
 //        YggdrasilServiceConfig.HasJoinedConfig hasJoinedConfig = core.getPluginConfig().getYggdrasilServiceMap().get(yggdrasilId).getHasJoined();
         YggdrasilServiceConfig config = null;
-        String ipContent = config.getIpContents();
+        String ipContent = config.getIpContent();
         if (!ValueUtil.isEmpty(ipContent)) {
             ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", ip));
         }

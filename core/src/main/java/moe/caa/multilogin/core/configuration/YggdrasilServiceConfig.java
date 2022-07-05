@@ -8,8 +8,6 @@ import moe.caa.multilogin.api.util.ValueUtil;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.util.Objects;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -61,7 +59,9 @@ public class YggdrasilServiceConfig {
         }
         if (node.node("hasJoined").hasChild("blessingSkin")) {
             if (read) throw new ConfException("There can only be one, official, blessingSkin and custom.");
-            String s = Objects.requireNonNull(node.node("hasJoined", "blessingSkin", "apiRoot").getString());
+            String s = node.node("hasJoined", "blessingSkin", "apiRoot").getString("");
+            if (ValueUtil.isEmpty(s))
+                throw new ConfException("BlessingSkin is specified, but apiRoot is empty.");
             if (!s.endsWith("/")) {
                 s = s.concat("/");
             }
@@ -105,13 +105,16 @@ public class YggdrasilServiceConfig {
 
     private static YggdrasilServiceConfig checkValid(YggdrasilServiceConfig config) throws ConfException {
         if (config.id > 255 || config.id < 0)
-            throw new ConfException("Yggdrasil id is out of bounds, The value can only be between 0 and 255.");
+            throw new ConfException(String.format(
+                    "Yggdrasil id %d is out of bounds, The value can only be between 0 and 255."
+                    , config.id
+            ));
         if (ValueUtil.isEmpty(config.url)) throw new ConfException("No url specified.");
         if (config.method == null) throw new ConfException("No http request mode is specified");
         if (config.passIp && ValueUtil.isEmpty(config.ipContent))
             throw new ConfException("PassIp is true, but ipContent is empty.");
         if (config.method == HttpRequestMethod.POST && ValueUtil.isEmpty(config.postContent))
-            throw new ConfException("Specifies an HTTP POST request, but the request content is empty.");
+            throw new ConfException("HTTP POST request is specified, but the request content is empty.");
         return config;
     }
 }

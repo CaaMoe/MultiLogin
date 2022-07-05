@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PluginConfig {
     private final File dataFolder;
@@ -48,6 +48,38 @@ public class PluginConfig {
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
+        Map<Integer, YggdrasilServiceConfig> idMap = new HashMap<>();
+        try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
+            List<YggdrasilServiceConfig> tmp = new ArrayList<>();
+            list.forEach(path -> {
+                try {
+                    tmp.add(YggdrasilServiceConfig.read(YamlConfigurationLoader.builder().path(path).build().load()));
+                } catch (Exception e) {
+                    LoggerProvider.getLogger().error(new ConfException("Unable to read Yggdrasil config under file " + path, e));
+                }
+            });
+
+            for (YggdrasilServiceConfig config : tmp) {
+                if (idMap.containsKey(config.getId())) {
+                    throw new ConfException(String.format("The same yggdrasil id value %d exists.", config.getId()));
+                }
+                idMap.put(config.getId(), config);
+            }
+        }
+
+        idMap.forEach((i, y) -> {
+            LoggerProvider.getLogger().info(String.format(
+                    "Add a yggdrasil service with id %d and name %s.", i, y.getName()
+            ));
+        });
+
+        if (idMap.size() == 0) LoggerProvider.getLogger().warn(
+                "The server has not added any yggdrasil service, which will prevent all players from logging in."
+        );
+        else LoggerProvider.getLogger().info(String.format(
+                "Added %d Yggdrasil services.", idMap.size()
+        ));
+        this.idMap = Collections.unmodifiableMap(idMap);
     }
 
     public void saveResource(String path, boolean cover) throws IOException {
