@@ -1,3 +1,6 @@
+import groovy.json.JsonOutput
+import org.apache.tools.ant.filters.ReplaceTokens
+
 apply from: './constant.gradle'
 
 allprojects {
@@ -29,6 +32,26 @@ subprojects {
                 compileOnly group: args[0], name: args[1], version: args[2]
             }
         }
+    }
+
+    processResources {
+        def contributors = new HashSet<String>()
+        try (def scanner = new Scanner(file.contributors)) {
+            while (scanner.hasNextLine()) {
+                def line = scanner.nextLine()
+                if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
+                contributors.add(line)
+            }
+        }
+
+        setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+        filter ReplaceTokens, tokens: [
+                "contributors_json": JsonOutput.toJson(contributors)
+        ]
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
     }
 }
 
