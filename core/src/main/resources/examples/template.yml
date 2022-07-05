@@ -74,7 +74,7 @@ hasJoined:
     # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
     # POST     - 此方式被极少数验证服务器采用。
     #
-    # 默认值 ‘GET’
+    # 必须值。
     method: 'GET'
 
     # 设置 url 和 postContent 节点 {ip} 变量内容。
@@ -92,7 +92,7 @@ hasJoined:
     #      GET:  ‘&ip={ip}’
     #      POST: ‘, "ip":"{0}"’
     #
-    # 默认值 ‘&ip={0}’
+    # 必须值。
     ipContent: '&ip={0}'
 
     # 发送 POST 验证请求的内容。
@@ -108,7 +108,7 @@ hasJoined:
     #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
     #        ‘{"username":"{username}", "serverId":"{serverId}"}’
     #
-    # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
+    # 必须值。
     postContent: '{"username":"{0}", "serverId":"{1}"}'
 
 

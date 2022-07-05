@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -23,6 +24,8 @@ public class PluginConfig {
 
     @Getter
     private SqlConfig sqlConfig;
+    @Getter
+    private Map<Integer, YggdrasilServiceConfig> idMap;
 
     public PluginConfig(File dataFolder) {
         this.dataFolder = dataFolder;
