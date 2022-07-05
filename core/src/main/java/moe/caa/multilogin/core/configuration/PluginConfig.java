@@ -23,7 +23,7 @@ public class PluginConfig {
         this.dataFolder = dataFolder;
     }
 
-    public void reload() throws IOException {
+    public void reload() throws IOException, URISyntaxException {
         File servicesFolder = new File(dataFolder, "services");
         if (!dataFolder.exists()) {
             Files.createDirectory(dataFolder.toPath());
@@ -57,10 +57,10 @@ public class PluginConfig {
         }
     }
 
-    public void saveResourceDir(String path, boolean cover) throws IOException {
+    public void saveResourceDir(String path, boolean cover) throws IOException, URISyntaxException {
         File file = new File(dataFolder, path);
         if (!file.exists()) Files.createDirectory(file.toPath());
-        try (JarFile jarFile = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().getFile())) {
+        try (JarFile jarFile = new JarFile(new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()))) {
             List<JarEntry> jarFiles = jarFile.stream().filter(jarEntry -> jarEntry.getRealName().startsWith(path)).filter(jarEntry -> !jarEntry.getRealName().equals(path + "/")).collect(Collectors.toList());
             for (JarEntry je : jarFiles) {
 //                if (je.isDirectory()) {

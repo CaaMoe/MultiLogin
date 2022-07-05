@@ -17,6 +17,7 @@ import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.main.manifest.BuildManifest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 
 /**
@@ -57,7 +58,7 @@ public class MultiCore implements MultiCoreAPI {
      * 加载猫踢核心
      */
     @Override
-    public void load() throws IOException, SQLException, ClassNotFoundException, InterruptedException {
+    public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
         new BuildManifest().read();
         languageHandler.init();
         pluginConfig.reload();
