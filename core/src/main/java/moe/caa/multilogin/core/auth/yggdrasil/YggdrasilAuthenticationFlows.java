@@ -3,23 +3,18 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
-import moe.caa.multilogin.core.configuration.yggdrasil.HttpRequestMethod;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 import okhttp3.*;
-import org.checkerframework.checker.units.qual.A;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Objects;
 
 public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     private final MultiCore core;
@@ -37,26 +32,27 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     }
 
     public HasJoinedResponse call() throws Exception {
-        YggdrasilServiceConfig.HasJoinedConfig hasJoinedConfig = core.getPluginConfig().getYggdrasilServiceMap().get(yggdrasilId).getHasJoined();
-        String ipContent = hasJoinedConfig.getIpContent();
+//        YggdrasilServiceConfig.HasJoinedConfig hasJoinedConfig = core.getPluginConfig().getYggdrasilServiceMap().get(yggdrasilId).getHasJoined();
+        YggdrasilServiceConfig config = null;
+        String ipContent = config.getIpContents();
         if (!ValueUtil.isEmpty(ipContent)) {
-            ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", ip == null ? "" : ip));
+            ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", ip));
         }
 
-        String url = ValueUtil.transPapi(hasJoinedConfig.getUrl(),
+        String url = ValueUtil.transPapi(config.getUrl(),
                 new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                 new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
                 new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))
         );
 
-        if (hasJoinedConfig.getMethod() == HttpRequestMethod.GET) {
-            return call0(hasJoinedConfig, new Request.Builder()
+        if (config.getMethod() == YggdrasilServiceConfig.HttpRequestMethod.GET) {
+            return call0(config, new Request.Builder()
                     .get()
                     .url(url)
                     .build());
-        } else if (hasJoinedConfig.getMethod() == HttpRequestMethod.POST) {
-            return call0(hasJoinedConfig, new Request.Builder()
-                    .post(RequestBody.create(ValueUtil.transPapi(hasJoinedConfig.getPostContent(),
+        } else if (config.getMethod() == YggdrasilServiceConfig.HttpRequestMethod.POST) {
+            return call0(config, new Request.Builder()
+                    .post(RequestBody.create(ValueUtil.transPapi(config.getPostContent(),
                             new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                             new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
                             new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))).getBytes(StandardCharsets.UTF_8)))
@@ -67,18 +63,19 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     }
 
 
-    private HasJoinedResponse call0(YggdrasilServiceConfig.HasJoinedConfig config, Request request) throws IOException {
+    private HasJoinedResponse call0(YggdrasilServiceConfig config, Request request) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new RetryInterceptor(config.getRetry(), config.getRetryDelay()))
                 .writeTimeout(Duration.ofMillis(config.getTimeout()))
                 .readTimeout(Duration.ofMillis(config.getTimeout()))
                 .connectTimeout(Duration.ofMillis(config.getTimeout()))
                 .callTimeout(Duration.ofMillis(config.getTimeout()))
-                .proxy(new Proxy(config.getProxy().getType(), new InetSocketAddress(config.getProxy().getHostname(), config.getProxy().getPort())))
+                .proxy(config.getProxy().getProxy())
+                .proxyAuthenticator(config.getProxy().getProxyAuthenticator())
                 .build();
         Call call = client.newCall(request);
         try (Response execute = call.execute()) {
-            return core.getGson().fromJson(execute.body().string(), HasJoinedResponse.class);
+            return core.getGson().fromJson(Objects.requireNonNull(execute.body()).string(), HasJoinedResponse.class);
         }
     }
 

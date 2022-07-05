@@ -20,7 +20,7 @@ public class BuildManifest {
         String version = properties.getProperty("version");
 
         if (!build_type.equalsIgnoreCase("final")) {
-            LoggerProvider.getLogger().warn("####################################################");
+            LoggerProvider.getLogger().warn("######################################################");
             LoggerProvider.getLogger().warn("#   Warning, you are not using a stable version");
             LoggerProvider.getLogger().warn("# and may have some very fatal errors!");
             LoggerProvider.getLogger().warn("#");
@@ -29,7 +29,7 @@ public class BuildManifest {
             LoggerProvider.getLogger().warn("#");
             LoggerProvider.getLogger().warn("#     Build Time : " + date);
             LoggerProvider.getLogger().warn("#     Version    : " + version);
-            LoggerProvider.getLogger().warn("####################################################");
+            LoggerProvider.getLogger().warn("######################################################");
 
             if (!build_type.equalsIgnoreCase("fast")) {
                 LoggerProvider.getLogger().warn("Server will resume running in 7 seconds");

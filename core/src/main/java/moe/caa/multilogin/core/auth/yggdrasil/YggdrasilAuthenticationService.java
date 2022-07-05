@@ -18,7 +18,8 @@ public class YggdrasilAuthenticationService {
     }
 
     public YggdrasilAuthenticationResult hasJoined(String username, String serverId, String ip) throws SQLException {
-        final Set<Integer> ids = core.getPluginConfig().getYggdrasilServiceMap().keySet();
+//        final Set<Integer> ids = core.getPluginConfig().getYggdrasilServiceMap().keySet();
+        final Set<Integer> ids = null;
         if (ids.size() == 0) return YggdrasilAuthenticationResult.ofNoService();
 
 
@@ -63,7 +64,7 @@ public class YggdrasilAuthenticationService {
 
     private YggdrasilAuthenticationResult hasJoined0(String username, String serverId, String ip, Set<Integer> ids) {
         EntrustFlows<HasJoinedContext> flows = new EntrustFlows<>(ids.stream()
-                .filter(i -> core.getPluginConfig().getYggdrasilServiceMap().containsKey(i))
+//                .filter(i -> core.getPluginConfig().getYggdrasilServiceMap().containsKey(i))
                 .map(i -> new YggdrasilAuthenticationFlows(core, username, serverId, ip, i))
                 .collect(Collectors.toList())
         );

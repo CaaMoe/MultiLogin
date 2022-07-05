@@ -1,17 +1,17 @@
 package moe.caa.multilogin.core.configuration;
 
-import lombok.*;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.ConfigurationOptions;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.serialize.TypeSerializer;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+import moe.caa.multilogin.api.util.ValueUtil;
+import okhttp3.Authenticator;
+import okhttp3.Credentials;
 
-import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @ToString
 public class ProxyConfig {
@@ -25,29 +25,13 @@ public class ProxyConfig {
         return new Proxy(type, new InetSocketAddress(hostname, port));
     }
 
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class ProxyConfigSerializers implements TypeSerializer<ProxyConfig> {
-        @Getter
-        private static final ProxyConfigSerializers instance = new ProxyConfigSerializers();
-
-        @Override
-        public ProxyConfig deserialize(Type t, ConfigurationNode node) throws SerializationException {
-            Proxy.Type type = node.node("type").get(Proxy.Type.class, Proxy.Type.DIRECT);
-            String hostname = node.node("hostname").getString("127.0.0.1");
-            int port = node.node("port").getInt(1080);
-            String username = node.node("username").getString("");
-            String password = node.node("username").getString("");
-            return new ProxyConfig(type, hostname, port, username, password);
-        }
-
-        @Override
-        public @Nullable ProxyConfig emptyValue(Type specificType, ConfigurationOptions options) {
-            return new ProxyConfig(Proxy.Type.DIRECT, "127.0.0.1", 1080, "", "");
-        }
-
-        @Override
-        public void serialize(Type type, @Nullable ProxyConfig obj, ConfigurationNode node) throws SerializationException {
-            throw new UnsupportedOperationException();
-        }
+    public Authenticator getProxyAuthenticator() {
+        return (route, response) -> {
+            if (!ValueUtil.isEmpty(username)) return null;
+            String credential = Credentials.basic(username, password);
+            return response.request().newBuilder()
+                    .header("Proxy-Authorization", credential)
+                    .build();
+        };
     }
 }
