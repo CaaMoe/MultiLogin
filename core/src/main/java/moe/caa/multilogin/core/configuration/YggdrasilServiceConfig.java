@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
+import moe.caa.multilogin.api.util.ValueUtil;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -91,6 +92,26 @@ public class YggdrasilServiceConfig {
         boolean compulsoryUsername = node.node("compulsoryUsername").getBoolean(false);
         SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(node.node("skinRestorer"));
 
-        return new YggdrasilServiceConfig(id, name, url, method, ipContent, postContent, passIp, timeout, retry, retryDelay, proxy, initUUID, nameAllowedRegular, whitelist, refuseRepeatedLogin, compulsoryUsername, skinRestorer);
+        return checkValid(
+                new YggdrasilServiceConfig(
+                        id, name,
+                        url, method, ipContent, postContent,
+                        passIp, timeout, retry, retryDelay, proxy,
+                        initUUID, nameAllowedRegular, whitelist,
+                        refuseRepeatedLogin, compulsoryUsername, skinRestorer
+                )
+        );
+    }
+
+    private static YggdrasilServiceConfig checkValid(YggdrasilServiceConfig config) throws ConfException {
+        if (config.id > 255 || config.id < 0)
+            throw new ConfException("Yggdrasil id is out of bounds, The value can only be between 0 and 255.");
+        if (ValueUtil.isEmpty(config.url)) throw new ConfException("No url specified.");
+        if (config.method == null) throw new ConfException("No http request mode is specified");
+        if (config.passIp && ValueUtil.isEmpty(config.ipContent))
+            throw new ConfException("PassIp is true, but ipContent is empty.");
+        if (config.method == HttpRequestMethod.POST && ValueUtil.isEmpty(config.postContent))
+            throw new ConfException("Specifies an HTTP POST request, but the request content is empty.");
+        return config;
     }
 }

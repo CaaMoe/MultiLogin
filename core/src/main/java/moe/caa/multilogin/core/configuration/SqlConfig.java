@@ -7,8 +7,6 @@ import lombok.ToString;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
-import java.util.Objects;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -35,7 +33,6 @@ public class SqlConfig {
         String database = node.node("database").getString("multilogin");
         String tablePrefix = node.node("tablePrefix").getString("multilogin");
         String connectUrl = node.node("connectUrl").getString("");
-        Objects.requireNonNull(backend);
 
         return new SqlConfig(backend, ip, port, username, password, database, tablePrefix, connectUrl);
     }
