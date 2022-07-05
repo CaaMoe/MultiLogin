@@ -28,17 +28,87 @@ name: 'Unnamed'
 # hasJoined 验证配置
 hasJoined:
 
-  # Yggdrasil 服务器类型。
+  # 此值设置 Yggdrasil 服务器类型为官方 Yggdrasil 服务器。
   #
-  # 用于简易配置账户验证服务器
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  official: { }
+
+  # 此值设置 Yggdrasil 服务器类型为 Blessing Skin Yggdrasil API 服务器。
   #
-  # 请使用以下值：
-  # OFFICIAL            - 代表官方 Yggdrasil 服务器
-  # BLESSING_SKIN       - 代表 Blessing Skin Yggdrasil 服务器
-  # CUSTOM              - 不指定类型
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  blessingSkin:
+
+    # 指定 Blessing Skin Yggdrasil API 地址。
+    #
+    # 必须值
+    apiRoot: 'https://example.com/api/yggdrasil'
+
+  # 此值设置 Yggdrasil 服务器类型为自定义类型，若需要添加的 Yggdrasil 服务器不是官方或 blessingSkin 类型的请使用此高级类型。
   #
-  # 默认值 ‘CUSTOM’
-  serviceType: 'CUSTOM'
+  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  custom:
+
+    # hasJoined 登录验证链接设置。
+    # 此节点需要指定完整的 hasJoined 请求链接。
+    #
+    # 占位变量列表：
+    #   序号     别称            简介
+    #   {0}      {username}    请求的 username
+    #   {1}      {serverId}    请求的 serverId
+    #   {2}      {ip}          请求的 ip（ipContent 节点值）
+    #
+    # 一些例子:
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
+    #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
+    #      POST: ‘https://example.com/session/minecraft/hasJoined’
+    #
+    # 必须值。
+    url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+
+    # 设置请求账户身份验证服务器的方式。
+    #
+    # 请使用以下值:
+    # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
+    # POST     - 此方式被极少数验证服务器采用。
+    #
+    # 默认值 ‘GET’
+    method: 'GET'
+
+    # 设置 url 和 postContent 节点 {ip} 变量内容。
+    # 此节点作用是使 ip 信息正常拼接到请求块中去。
+    #
+    # 占位变量列表：
+    #   序号     别称           简介
+    #   {0}     {ip}           请求的 ip（玩家 ip）
+    #
+    # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
+    # 请求的 URL 对大小写敏感，请检查。
+    # 请留意字符串拼接的特殊值 '&' 和 ', '
+    #
+    # 一些例子:
+    #      GET:  ‘&ip={ip}’
+    #      POST: ‘, "ip":"{0}"’
+    #
+    # 默认值 ‘&ip={0}’
+    ipContent: '&ip={0}'
+
+    # 发送 POST 验证请求的内容。
+    # 目标验证服务器对请求内容的大小写敏感，请检查。
+    #
+    # 占位变量列表：
+    #   序号     别称           简介
+    #   {0}      {username}    请求的 username
+    #   {1}      {serverId}    请求的 serverId
+    #   {2}      {ip}          请求的 ip（ipContent 节点值）
+    #
+    # 一些例子:
+    #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
+    #        ‘{"username":"{username}", "serverId":"{serverId}"}’
+    #
+    # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
+    postContent: '{"username":"{0}", "serverId":"{1}"}'
+
 
   # 请求是否追加用户 IP 信息。
   #
@@ -61,74 +131,6 @@ hasJoined:
   # 注意，过大的值可能会导致登录超时。
   # 默认值 ‘0’
   retryDelay: 0
-
-  #
-  # 以下是高级设置
-  #
-
-  # hasJoined 登录验证链接高级设置。
-  # 此节点需要指定完整的 hasJoined 请求链接。
-  #
-  # 占位变量列表：
-  #   序号     别称            简介
-  #   {0}      {username}    请求的 username
-  #   {1}      {serverId}    请求的 serverId
-  #   {2}      {ip}          请求的 ip（ipContent 节点值）
-  #
-  # 一些例子:
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
-  #      POST: ‘https://example.com/session/minecraft/hasJoined’
-  #
-  # 当 serviceType 为 ’CUSTOM‘ 时，此节点为必须值。
-  url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
-
-  # 设置请求账户身份验证服务器的方式。
-  #
-  # 请使用以下值:
-  # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
-  # POST     - 此方式被极少数验证服务器采用。
-  #
-  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
-  # 默认值 ‘GET’
-  method: 'GET'
-
-  # 设置 url 和 postContent 节点 {ip} 变量内容。
-  # 此节点作用是使 ip 信息正常拼接到请求块中去。
-  #
-  # 占位变量列表：
-  #   序号     别称           简介
-  #   {0}     {ip}           请求的 ip（玩家 ip）
-  #
-  # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
-  # 请求的 URL 对大小写敏感，请检查。
-  # 请留意字符串拼接的特殊值 '&' 和 ', '
-  #
-  # 一些例子:
-  #      GET:  ‘&ip={ip}’
-  #      POST: ‘, "ip":"{0}"’
-  #
-  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
-  # 默认值 ‘&ip={0}’
-  ipContent: '&ip={0}'
-
-  # 发送 POST 验证请求的内容。
-  # 目标验证服务器对请求内容的大小写敏感，请检查。
-  #
-  # 占位变量列表：
-  #   序号     别称           简介
-  #   {0}      {username}    请求的 username
-  #   {1}      {serverId}    请求的 serverId
-  #   {2}      {ip}          请求的 ip（ipContent 节点值）
-  #
-  # 一些例子:
-  #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
-  #        ‘{"username":"{username}", "serverId":"{serverId}"}’
-  #
-  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
-  # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
-  postContent: '{"username":"{0}", "serverId":"{1}"}'
 
   # hasJoined 代理设置
   proxy:
