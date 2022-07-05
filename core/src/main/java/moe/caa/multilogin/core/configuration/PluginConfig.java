@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 public class PluginConfig {
     private final File dataFolder;
@@ -60,7 +61,7 @@ public class PluginConfig {
         File file = new File(dataFolder, path);
         if (!file.exists()) Files.createDirectory(file.toPath());
         try (JarFile jarFile = new JarFile(getClass().getProtectionDomain().getCodeSource().getLocation().getFile())) {
-            List<JarEntry> jarFiles = jarFile.stream().filter(jarEntry -> jarEntry.getRealName().startsWith(path)).filter(jarEntry -> !jarEntry.getRealName().equals(path + "/")).toList();
+            List<JarEntry> jarFiles = jarFile.stream().filter(jarEntry -> jarEntry.getRealName().startsWith(path)).filter(jarEntry -> !jarEntry.getRealName().equals(path + "/")).collect(Collectors.toList());
             for (JarEntry je : jarFiles) {
 //                if (je.isDirectory()) {
 //                暂时不考虑目录下目录情况
