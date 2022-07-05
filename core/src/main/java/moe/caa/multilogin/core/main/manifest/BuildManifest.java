@@ -11,7 +11,7 @@ import java.util.Properties;
 @NoArgsConstructor
 @Getter
 public class BuildManifest {
-    public void read() throws IOException, InterruptedException {
+    public void read() throws IOException {
         Properties properties = new Properties();
         properties.load(getClass().getResourceAsStream("/build.properties"));
 
@@ -30,11 +30,6 @@ public class BuildManifest {
             LoggerProvider.getLogger().warn("#     Build Time : " + date);
             LoggerProvider.getLogger().warn("#     Version    : " + version);
             LoggerProvider.getLogger().warn("######################################################");
-
-            if (!build_type.equalsIgnoreCase("fast")) {
-                LoggerProvider.getLogger().warn("Server will resume running in 7 seconds");
-                Thread.sleep(7 * 1000);
-            }
         }
     }
 }
