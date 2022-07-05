@@ -6,82 +6,45 @@
 #  BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues  
 #####################################################################
 
+#####################################################################
+#
+#        除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
+#
+#          请不要在此文件下存放任何重要数据，文件将会自动覆盖
+#
+#####################################################################
+
 # Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识。
 #
-# 请不要在中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
-# 必须值，此值取值范围为整数 0 ~ 255
-id: 0
+# 请不要在使用中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
+# 此值为必须值，取值范围为整数 0 ~ 255
+id: -1
 
 # Yggdrasil 的别称，用于内容显示
 # 
 # 默认值 ‘Unnamed’
 name: 'Unnamed'
 
-# 外置 hasJoined 验证配置
+# hasJoined 验证配置
 hasJoined:
 
-  # hasJoined 登录验证链接设置。
-  # 此节点需要指定完整的 hasJoined 请求链接。
+  # Yggdrasil 服务器类型。
   #
-  # 占位变量列表：
-  #   序号     别称            简介
-  #   {0}      {username}    请求的 username
-  #   {1}      {serverId}    请求的 serverId
-  #   {2}      {ip}          请求的 ip（ipContent 节点值）
+  # 用于简易配置账户验证服务器
   #
-  # 一些例子:
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
-  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
-  #      POST: ‘https://example.com/session/minecraft/hasJoined’
-  # 必须值
-  url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+  # 请使用以下值：
+  # OFFICIAL            - 代表官方 Yggdrasil 服务器
+  # BLESSING_SKIN       - 代表 Blessing Skin Yggdrasil 服务器
+  # CUSTOM              - 不指定类型
+  #
+  # 默认值 ‘CUSTOM’
+  serviceType: 'CUSTOM'
 
-  # 设置请求账户身份验证服务器的方式。
+  # 请求是否追加用户 IP 信息。
   #
-  # 请使用以下值:
-  # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
-  # POST     - 此方式被极少数验证服务器采用。
-  # 默认值 ‘GET’
-  method: 'GET'
-
-  # 请求是否追加玩家 IP 信息。
-  #
-  # 此 IP 一般用于 Yggdrasil Service 的防代理检查
+  # 此 IP 一般用于 Yggdrasil 的防代理检查
   # 默认值 ‘true’
   passIp: true
-
-  # 设置 url 和 postContent 节点 {ip} 变量内容。
-  # 此节点作用是使 ip 信息正常拼接到请求块中去。
-  #
-  # 占位变量列表：
-  #   序号     别称           简介
-  #   {0}     {ip}           请求的 ip（玩家 ip）
-  #
-  # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
-  # 请求的 URL 对大小写敏感，请检查。
-  # 请留意字符串拼接的特殊值 '&' 和 ', '
-  #
-  # 一些例子:
-  #      GET:  ‘&ip={ip}’
-  #      POST: ‘, "ip":"{0}"’
-  # 默认值 ‘&ip={0}’
-  ipContent: '&ip={0}'
-
-  # 发送 POST 验证请求的内容。
-  # 目标验证服务器对请求内容的大小写敏感，请检查。
-  #
-  # 占位变量列表：
-  #   序号     别称           简介
-  #   {0}      {username}    请求的 username
-  #   {1}      {serverId}    请求的 serverId
-  #   {2}      {ip}          请求的 ip（ipContent 节点值）
-  #
-  # 一些例子:
-  #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
-  #        ‘{"username":"{username}", "serverId":"{serverId}"}’
-  # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
-  postContent: '{"username":"{0}", "serverId":"{1}"}'
 
   # 设置 hasJoined 验证超时时间。
   #
@@ -99,7 +62,75 @@ hasJoined:
   # 默认值 ‘0’
   retryDelay: 0
 
-  # hasJoined 请求代理设置
+  #
+  # 以下是高级设置
+  #
+
+  # hasJoined 登录验证链接高级设置。
+  # 此节点需要指定完整的 hasJoined 请求链接。
+  #
+  # 占位变量列表：
+  #   序号     别称            简介
+  #   {0}      {username}    请求的 username
+  #   {1}      {serverId}    请求的 serverId
+  #   {2}      {ip}          请求的 ip（ipContent 节点值）
+  #
+  # 一些例子:
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}{ip}’
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}’
+  #      GET:  ‘https://example.com/session/minecraft/hasJoined?username={username}&serverId={serverId}’
+  #      POST: ‘https://example.com/session/minecraft/hasJoined’
+  #
+  # 当 serviceType 为 ’CUSTOM‘ 时，此节点为必须值。
+  url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+
+  # 设置请求账户身份验证服务器的方式。
+  #
+  # 请使用以下值:
+  # GET      - 此方式被绝大多数验证服务器（包括官方）采用。
+  # POST     - 此方式被极少数验证服务器采用。
+  #
+  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
+  # 默认值 ‘GET’
+  method: 'GET'
+
+  # 设置 url 和 postContent 节点 {ip} 变量内容。
+  # 此节点作用是使 ip 信息正常拼接到请求块中去。
+  #
+  # 占位变量列表：
+  #   序号     别称           简介
+  #   {0}     {ip}           请求的 ip（玩家 ip）
+  #
+  # 请注意，仅当 passIp 节点为 ‘true’ 时此节点有效。
+  # 请求的 URL 对大小写敏感，请检查。
+  # 请留意字符串拼接的特殊值 '&' 和 ', '
+  #
+  # 一些例子:
+  #      GET:  ‘&ip={ip}’
+  #      POST: ‘, "ip":"{0}"’
+  #
+  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
+  # 默认值 ‘&ip={0}’
+  ipContent: '&ip={0}'
+
+  # 发送 POST 验证请求的内容。
+  # 目标验证服务器对请求内容的大小写敏感，请检查。
+  #
+  # 占位变量列表：
+  #   序号     别称           简介
+  #   {0}      {username}    请求的 username
+  #   {1}      {serverId}    请求的 serverId
+  #   {2}      {ip}          请求的 ip（ipContent 节点值）
+  #
+  # 一些例子:
+  #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
+  #        ‘{"username":"{username}", "serverId":"{serverId}"}’
+  #
+  # 当 serviceType 不为 ’CUSTOM‘ 时，此节点无效。
+  # 默认值 ‘{"username":"{username}", "serverId":"{serverId}"}’
+  postContent: '{"username":"{0}", "serverId":"{1}"}'
+
+  # hasJoined 代理设置
   proxy:
 
     # 指定代理类型
@@ -147,8 +178,8 @@ initUUID: 'DEFAULT'
 # 设置当前 Yggdrasil 下的用户名正则约束。
 # 若不匹配将会拒绝当前玩家的登录请求。
 # 如果此值留空或未设置，则不启用此功能。
-# 默认值 ‘’
-nameAllowedRegular: ''
+# 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
+nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
 
 # 是否为当前 Yggdrasil 单独开启白名单功能。
 # 默认值 ‘false’
@@ -159,6 +190,7 @@ whitelist: false
 #
 # 当此值为 ‘false’ 时，将把游戏内的玩家踢出，允许验证中的玩家登录（原版默认）。
 # 当此值为 ‘true’ 时，将拒绝验证中的玩家登录，游戏内的玩家将不受影响。
+#
 # 默认值 ‘false’
 refuseRepeatedLogin: false
 
