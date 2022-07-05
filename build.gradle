@@ -35,6 +35,8 @@ subprojects {
     }
 
     processResources {
+        setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+
         def contributors = new HashSet<String>()
         try (def scanner = new Scanner(file.contributors)) {
             while (scanner.hasNextLine()) {
@@ -44,9 +46,19 @@ subprojects {
             }
         }
 
-        setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+        def ver;
+        def env = System.getProperty("env", "AUTO").toLowerCase()
+        if (env == "final") {
+            ver = (project.plugin_version as String)
+        } else {
+            ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        }
+
         filter ReplaceTokens, tokens: [
-                "contributors_json": JsonOutput.toJson(contributors)
+                "contributors_json": JsonOutput.toJson(contributors),
+                "version"          : ver,
+                "build_type"       : env,
+                "build_timestamp"  : System.currentTimeMillis() as String
         ]
     }
 
