@@ -81,17 +81,17 @@ public class ValueUtil {
         return s;
     }
 
-    public static String join(CharSequence delimiter, CharSequence lastDelimiter, CharSequence... elements) {
+    public static String join(CharSequence delimiter, CharSequence lastDelimiter, Object... elements) {
         if (elements.length == 0) return "";
         if (elements.length == 1) return elements[0].toString();
         StringJoiner joiner = new StringJoiner(delimiter);
         for (int i = 0; i < elements.length - 1; i++) {
-            joiner.add(elements[i]);
+            joiner.add(elements[i].toString());
         }
         return joiner.toString() + lastDelimiter + elements[elements.length - 1];
     }
 
-    public static String join(CharSequence delimiter, CharSequence lastDelimiter, Collection<? extends CharSequence> elements) {
-        return join(delimiter, lastDelimiter, elements.toArray(new CharSequence[0]));
+    public static String join(CharSequence delimiter, CharSequence lastDelimiter, Collection<? extends Object> elements) {
+        return join(delimiter, lastDelimiter, elements.toArray(new Object[0]));
     }
 }

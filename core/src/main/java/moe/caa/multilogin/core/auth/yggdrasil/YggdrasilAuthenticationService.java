@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.EntrustFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
@@ -43,6 +44,12 @@ public class YggdrasilAuthenticationService {
         // 次要的验证服务器ID表
         // 在HasJoined验证时最后开始验证
         Set<Integer> secondaries = ids.stream().filter(i -> !primaries.contains(i)).collect(Collectors.toSet());
+
+        LoggerProvider.getLogger().debug(String.format(
+                "%s's hasJoined verification order: [%s], [%s]", username,
+                ValueUtil.join(", ", ", ", primaries),
+                ValueUtil.join(", ", ", ", secondaries)
+        ));
 
         boolean serverBreakdown = false;
         if (primaries.size() != 0) {

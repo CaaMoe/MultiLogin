@@ -27,7 +27,7 @@ public class UserDataTable {
         String sql = MessageFormat.format(
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(16) NOT NULL, " +
-                        "{2} TINYINT NOT NULL, " +
+                        "{2} BINARY(2) NOT NULL, " +
                         "{3} BINARY(16) DEFAULT NULL, " +
                         "PRIMARY KEY ( {1}, {2} ))"
                 , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid);
