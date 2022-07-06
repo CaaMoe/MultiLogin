@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class MultiLoginVelocity implements IPlugin {
     private final Path dataDirectory;
@@ -75,5 +76,12 @@ public class MultiLoginVelocity implements IPlugin {
     @Override
     public File getTempFolder() {
         return new File(getDataFolder(), "tmp");
+    }
+
+    @Override
+    public String getVersion() {
+        Optional<String> version = server.getPluginManager().getPlugin("multilogin")
+                .flatMap(c -> c.getDescription().getVersion());
+        return version.orElseThrow();
     }
 }

@@ -18,8 +18,7 @@ public class YggdrasilAuthenticationService {
     }
 
     public YggdrasilAuthenticationResult hasJoined(String username, String serverId, String ip) throws SQLException {
-//        final Set<Integer> ids = core.getPluginConfig().getYggdrasilServiceMap().keySet();
-        final Set<Integer> ids = null;
+        final Set<Integer> ids = core.getPluginConfig().getIdMap().keySet();
         if (ids.size() == 0) return YggdrasilAuthenticationResult.ofNoService();
 
 

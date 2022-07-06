@@ -6,6 +6,8 @@ import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
+import java.util.Objects;
+
 public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
     @Getter
     private String url;
@@ -28,5 +30,18 @@ public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
         method = YggdrasilServiceConfig.HttpRequestMethod.GET;
         ipContent = "&ip={0}";
         postContent = "";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlessingSkinHasJoinedConfig that = (BlessingSkinHasJoinedConfig) o;
+        return Objects.equals(url, that.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url);
     }
 }

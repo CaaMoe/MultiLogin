@@ -7,6 +7,8 @@ import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+import java.util.Objects;
+
 public class CustomHasJoinedConfig implements HasJoinedConfig {
     @Getter
     private String url;
@@ -30,5 +32,18 @@ public class CustomHasJoinedConfig implements HasJoinedConfig {
             throw new ConfException("Custom is specified, but method is empty.");
         if (method == YggdrasilServiceConfig.HttpRequestMethod.POST && ValueUtil.isEmpty(postContent))
             throw new ConfException("HTTP POST request is specified, but the request content is empty.");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CustomHasJoinedConfig that = (CustomHasJoinedConfig) o;
+        return Objects.equals(url, that.url) && method == that.method && Objects.equals(ipContent, that.ipContent) && Objects.equals(postContent, that.postContent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url, method, ipContent, postContent);
     }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.IOUtil;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.yggdrasil.hasjoined.HasJoinedConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
@@ -66,6 +67,13 @@ public class PluginConfig {
                 }
                 idMap.put(config.getId(), config);
             }
+        }
+
+        List<HasJoinedConfig> collect = idMap.values().stream().map(YggdrasilServiceConfig::getHasJoined)
+                .collect(Collectors.toMap(e -> e, e -> 1, Integer::sum))
+                .entrySet().stream().filter(e -> e.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toList());
+        for (HasJoinedConfig ignored : collect) {
+            throw new ConfException("There are duplicate configurations of hasJoined.");
         }
 
         idMap.forEach((i, y) -> {

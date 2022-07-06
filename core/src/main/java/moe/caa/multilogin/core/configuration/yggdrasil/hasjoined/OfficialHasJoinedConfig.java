@@ -28,4 +28,14 @@ public class OfficialHasJoinedConfig implements HasJoinedConfig {
     public String getPostContent() {
         return "";
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof OfficialHasJoinedConfig;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

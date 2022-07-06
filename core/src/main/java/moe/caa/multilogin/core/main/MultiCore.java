@@ -59,7 +59,7 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
-        new BuildManifest().read();
+        new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
