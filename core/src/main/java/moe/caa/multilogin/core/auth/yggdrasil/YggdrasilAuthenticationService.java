@@ -63,7 +63,7 @@ public class YggdrasilAuthenticationService {
 
     private YggdrasilAuthenticationResult hasJoined0(String username, String serverId, String ip, Set<Integer> ids) {
         EntrustFlows<HasJoinedContext> flows = new EntrustFlows<>(ids.stream()
-//                .filter(i -> core.getPluginConfig().getYggdrasilServiceMap().containsKey(i))
+                .filter(i -> core.getPluginConfig().getIdMap().containsKey(i))
                 .map(i -> new YggdrasilAuthenticationFlows(core, username, serverId, ip, i))
                 .collect(Collectors.toList())
         );

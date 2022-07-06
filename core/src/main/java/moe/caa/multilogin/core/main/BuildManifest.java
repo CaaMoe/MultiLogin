@@ -1,9 +1,8 @@
-package moe.caa.multilogin.core.main.manifest;
+package moe.caa.multilogin.core.main;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.core.main.MultiCore;
 
 import java.io.IOException;
 import java.util.Date;

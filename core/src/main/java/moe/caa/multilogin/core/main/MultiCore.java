@@ -14,7 +14,7 @@ import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.database.SQLManager;
 import moe.caa.multilogin.core.language.LanguageHandler;
-import moe.caa.multilogin.core.main.manifest.BuildManifest;
+import moe.caa.multilogin.core.semver.SemVersion;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -38,6 +38,8 @@ public class MultiCore implements MultiCoreAPI {
     private final LanguageHandler languageHandler;
     @Getter
     private final Gson gson;
+    @Getter
+    private final SemVersion semVersion;
 
     /**
      * 构建猫踢核心，这个方法将会被反射调用
@@ -49,7 +51,9 @@ public class MultiCore implements MultiCoreAPI {
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
         this.languageHandler = new LanguageHandler(this);
+        this.semVersion = SemVersion.of(plugin.getVersion());
         this.gson = new GsonBuilder()
+                .setPrettyPrinting()
                 .registerTypeAdapter(HasJoinedResponse.class, new HasJoinedResponseSerializer())
                 .registerTypeAdapter(Property.class, new PropertySerializer()).create();
     }
@@ -59,6 +63,7 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
+        new CheckUpdater(this).start();
         new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
