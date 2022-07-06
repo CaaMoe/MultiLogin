@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.ohc;
 
+import moe.caa.multilogin.api.logger.LoggerProvider;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -20,9 +21,18 @@ public class RetryInterceptor implements Interceptor {
     @Override
     public Response intercept(@NotNull Chain chain) throws IOException {
         Request request = chain.request();
-        Response response = chain.proceed(request);
+        Response response;
         int tc = 0;
-        while (!response.isSuccessful() && tc < retry) {
+        while (true) {
+            try {
+                response = chain.proceed(request);
+                if (response.isSuccessful()) {
+                    return response;
+                }
+            } catch (IOException e) {
+                if (tc > retry) throw e;
+            }
+
             try {
                 Thread.sleep(delay);
             } catch (InterruptedException e) {
@@ -30,8 +40,7 @@ public class RetryInterceptor implements Interceptor {
                 throw new InterruptedRetryException(e);
             }
             tc++;
-            response = chain.proceed(request);
+            LoggerProvider.getLogger().debug("--> Retry " + tc);
         }
-        return response;
     }
 }
