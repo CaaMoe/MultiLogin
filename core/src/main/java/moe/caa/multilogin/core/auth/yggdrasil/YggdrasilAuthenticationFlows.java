@@ -3,7 +3,7 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
-import moe.caa.multilogin.core.configuration.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
@@ -34,25 +34,25 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     public HasJoinedResponse call() throws Exception {
 //        YggdrasilServiceConfig.HasJoinedConfig hasJoinedConfig = core.getPluginConfig().getYggdrasilServiceMap().get(yggdrasilId).getHasJoined();
         YggdrasilServiceConfig config = null;
-        String ipContent = config.getIpContent();
+        String ipContent = config.getHasJoined().getIpContent();
         if (!ValueUtil.isEmpty(ipContent)) {
             ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", ip));
         }
 
-        String url = ValueUtil.transPapi(config.getUrl(),
+        String url = ValueUtil.transPapi(config.getHasJoined().getUrl(),
                 new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                 new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
                 new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))
         );
 
-        if (config.getMethod() == YggdrasilServiceConfig.HttpRequestMethod.GET) {
+        if (config.getHasJoined().getMethod() == YggdrasilServiceConfig.HttpRequestMethod.GET) {
             return call0(config, new Request.Builder()
                     .get()
                     .url(url)
                     .build());
-        } else if (config.getMethod() == YggdrasilServiceConfig.HttpRequestMethod.POST) {
+        } else if (config.getHasJoined().getMethod() == YggdrasilServiceConfig.HttpRequestMethod.POST) {
             return call0(config, new Request.Builder()
-                    .post(RequestBody.create(ValueUtil.transPapi(config.getPostContent(),
+                    .post(RequestBody.create(ValueUtil.transPapi(config.getHasJoined().getPostContent(),
                             new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                             new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
                             new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))).getBytes(StandardCharsets.UTF_8)))

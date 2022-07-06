@@ -1,10 +1,14 @@
-package moe.caa.multilogin.core.configuration;
+package moe.caa.multilogin.core.configuration.yggdrasil;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.configuration.ConfException;
+import moe.caa.multilogin.core.configuration.ProxyConfig;
+import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
+import moe.caa.multilogin.core.configuration.yggdrasil.hasjoined.HasJoinedConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
@@ -15,10 +19,7 @@ public class YggdrasilServiceConfig {
     private final int id;
     private final String name;
 
-    private final String url;
-    private final HttpRequestMethod method;
-    private final String ipContent;
-    private final String postContent;
+    private final HasJoinedConfig hasJoined;
     private final boolean passIp;
     private final int timeout;
     private final int retry;
@@ -44,41 +45,8 @@ public class YggdrasilServiceConfig {
         int id = node.node("id").getInt();
         String name = node.node("name").getString("Unnamed");
 
-        String url = null;
-        HttpRequestMethod method = null;
-        String ipContent = null;
-        String postContent = null;
+        HasJoinedConfig hasJoined = HasJoinedConfig.getHasJoinedConfig(node.node("hasJoined"));
 
-        boolean read = false;
-        if (node.node("hasJoined").hasChild("official")) {
-            url = "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}";
-            method = HttpRequestMethod.GET;
-            ipContent = "&ip={0}";
-            postContent = "";
-            read = true;
-        }
-        if (node.node("hasJoined").hasChild("blessingSkin")) {
-            if (read) throw new ConfException("There can only be one, official, blessingSkin and custom.");
-            String s = node.node("hasJoined", "blessingSkin", "apiRoot").getString("");
-            if (ValueUtil.isEmpty(s))
-                throw new ConfException("BlessingSkin is specified, but apiRoot is empty.");
-            if (!s.endsWith("/")) {
-                s = s.concat("/");
-            }
-            url = s.concat("sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}");
-            method = HttpRequestMethod.GET;
-            ipContent = "&ip={0}";
-            postContent = "";
-            read = true;
-        }
-        if (node.node("hasJoined").hasChild("custom")) {
-            if (read) throw new ConfException("There can only be one, official, blessingSkin and custom.");
-            url = node.node("hasJoined", "custom", "url").getString();
-            method = node.node("hasJoined", "custom", "method").get(HttpRequestMethod.class);
-            ipContent = node.node("hasJoined", "custom", "ipContents").getString();
-            postContent = node.node("hasJoined", "custom", "postContent").getString();
-            read = true;
-        }
         boolean passIp = node.node("passIp").getBoolean(true);
         int timeout = node.node("timeout").getInt(10000);
         int retry = node.node("retry").getInt(0);
@@ -94,8 +62,7 @@ public class YggdrasilServiceConfig {
 
         return checkValid(
                 new YggdrasilServiceConfig(
-                        id, name,
-                        url, method, ipContent, postContent,
+                        id, name, hasJoined,
                         passIp, timeout, retry, retryDelay, proxy,
                         initUUID, nameAllowedRegular, whitelist,
                         refuseRepeatedLogin, compulsoryUsername, skinRestorer
@@ -109,12 +76,8 @@ public class YggdrasilServiceConfig {
                     "Yggdrasil id %d is out of bounds, The value can only be between 0 and 255."
                     , config.id
             ));
-        if (ValueUtil.isEmpty(config.url)) throw new ConfException("No url specified.");
-        if (config.method == null) throw new ConfException("No http request mode is specified");
-        if (config.passIp && ValueUtil.isEmpty(config.ipContent))
+        if (config.passIp && ValueUtil.isEmpty(config.hasJoined.getIpContent()))
             throw new ConfException("PassIp is true, but ipContent is empty.");
-        if (config.method == HttpRequestMethod.POST && ValueUtil.isEmpty(config.postContent))
-            throw new ConfException("HTTP POST request is specified, but the request content is empty.");
         return config;
     }
 }

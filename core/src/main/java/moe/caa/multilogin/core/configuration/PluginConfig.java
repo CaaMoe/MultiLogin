@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.configuration;
 import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.IOUtil;
+import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 

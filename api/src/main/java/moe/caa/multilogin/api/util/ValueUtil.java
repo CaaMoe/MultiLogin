@@ -2,7 +2,9 @@ package moe.caa.multilogin.api.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Collection;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 public class ValueUtil {
@@ -77,5 +79,19 @@ public class ValueUtil {
             s = s.replace("{" + i + "}", pairs.get(i).getValue2().toString());
         }
         return s;
+    }
+
+    public static String join(CharSequence delimiter, CharSequence lastDelimiter, CharSequence... elements) {
+        if (elements.length == 0) return "";
+        if (elements.length == 1) return elements[0].toString();
+        StringJoiner joiner = new StringJoiner(delimiter);
+        for (int i = 0; i < elements.length - 1; i++) {
+            joiner.add(elements[i]);
+        }
+        return joiner.toString() + lastDelimiter + elements[elements.length - 1];
+    }
+
+    public static String join(CharSequence delimiter, CharSequence lastDelimiter, Collection<? extends CharSequence> elements) {
+        return join(delimiter, lastDelimiter, elements.toArray(new CharSequence[0]));
     }
 }
