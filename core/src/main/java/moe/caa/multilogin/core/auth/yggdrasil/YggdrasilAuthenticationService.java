@@ -1,11 +1,13 @@
 package moe.caa.multilogin.core.auth.yggdrasil;
 
+import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.EntrustFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -77,6 +79,9 @@ public class YggdrasilAuthenticationService {
             );
         }
         if (context.getServiceUnavailable().size() != 0) {
+            for (Map.Entry<Integer, Throwable> entry : context.getServiceUnavailable().entrySet()) {
+                LoggerProvider.getLogger().debug("An exception occurred during authentication of the yggdrasil service whose ID is " + entry.getKey(), entry.getValue());
+            }
             return YggdrasilAuthenticationResult.ofServerBreakdown();
         }
         return YggdrasilAuthenticationResult.ofValidationFailed();

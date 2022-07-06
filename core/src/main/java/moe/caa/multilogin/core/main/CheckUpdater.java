@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.main;
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import moe.caa.multilogin.core.semver.SemVersion;
 import okhttp3.Call;
@@ -29,6 +30,7 @@ public class CheckUpdater {
 
     public List<SemVersion> getLatestVersionNow() throws IOException {
         OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new RetryInterceptor(3, 10000))
                 .writeTimeout(Duration.ofMillis(10000))
                 .readTimeout(Duration.ofMillis(10000))

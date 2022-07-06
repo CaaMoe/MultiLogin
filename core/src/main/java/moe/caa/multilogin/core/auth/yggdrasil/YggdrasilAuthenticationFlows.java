@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
@@ -65,6 +66,7 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     private HasJoinedResponse call0(YggdrasilServiceConfig config, Request request) throws IOException {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new RetryInterceptor(config.getRetry(), config.getRetryDelay()))
+                .addInterceptor(new LoggingInterceptor())
                 .writeTimeout(Duration.ofMillis(config.getTimeout()))
                 .readTimeout(Duration.ofMillis(config.getTimeout()))
                 .connectTimeout(Duration.ofMillis(config.getTimeout()))
