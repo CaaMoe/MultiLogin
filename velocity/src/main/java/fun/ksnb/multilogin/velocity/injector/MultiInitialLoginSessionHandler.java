@@ -209,7 +209,7 @@ public class MultiInitialLoginSessionHandler {
                 this.inbound.disconnect(Component.text(result.getKickMessage()));
             }
         } catch (GeneralSecurityException var9) {
-            LoggerProvider.getLogger().error("Unable to enable encryption", var9);
+            LoggerProvider.getLogger().error("Unable to enable encryption.", var9);
             this.mcConnection.close(true);
         }
     }

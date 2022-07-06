@@ -190,7 +190,6 @@ public class PluginLoader {
      * 关闭
      */
     public synchronized void close() throws Exception {
-        if (coreObject != null) coreObject.close();
         if (pluginClassLoader != null) pluginClassLoader.self().close();
         coreObject = null;
         pluginClassLoader = null;

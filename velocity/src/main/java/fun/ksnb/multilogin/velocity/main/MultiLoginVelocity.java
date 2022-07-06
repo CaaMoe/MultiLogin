@@ -2,11 +2,14 @@ package fun.ksnb.multilogin.velocity.main;
 
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
+import fun.ksnb.multilogin.velocity.impl.VelocitySender;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.injector.MultiInjTask;
 import fun.ksnb.multilogin.velocity.logger.Slf4jLoggerBridge;
@@ -18,9 +21,9 @@ import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public class MultiLoginVelocity implements IPlugin {
@@ -32,7 +35,7 @@ public class MultiLoginVelocity implements IPlugin {
     private MultiCoreAPI multiCoreAPI;
 
     @Inject
-    public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) throws Exception {
+    public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
         this.server = server;
         this.runServer = new VelocityServer(this.server);
         this.dataDirectory = dataDirectory;
@@ -41,7 +44,7 @@ public class MultiLoginVelocity implements IPlugin {
         try {
             pluginLoader.load();
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             server.shutdown();
         }
     }
@@ -52,18 +55,41 @@ public class MultiLoginVelocity implements IPlugin {
             multiCoreAPI = pluginLoader.getCoreObject();
             multiCoreAPI.load();
             new MultiInjTask(multiCoreAPI).run();
+            CommandManager commandManager = server.getCommandManager();
+            SimpleCommand commandHandler = new SimpleCommand() {
+                @Override
+                public void execute(Invocation invocation) {
+                    String[] arguments = invocation.arguments();
+                    String[] ns = new String[arguments.length + 1];
+                    System.arraycopy(arguments, 0, ns, 1, arguments.length);
+                    ns[0] = invocation.alias();
+                    multiCoreAPI.getCommandHandler().execute(new VelocitySender(invocation.source()), ns);
+                }
+
+                @Override
+                public List<String> suggest(Invocation invocation) {
+                    String[] arguments = invocation.arguments();
+                    String[] ns = new String[arguments.length + 1];
+                    System.arraycopy(arguments, 0, ns, 1, arguments.length);
+                    ns[0] = invocation.alias();
+                    return multiCoreAPI.getCommandHandler().tabComplete(new VelocitySender(invocation.source()), ns);
+                }
+            };
+            commandManager.register(commandManager.metaBuilder("multilogin").build(), commandHandler);
+            commandManager.register(commandManager.metaBuilder("whitelist").build(), commandHandler);
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
         }
     }
 
     @Subscribe
-    public void onDisable(ProxyShutdownEvent event) throws IOException {
+    public void onDisable(ProxyShutdownEvent event) {
         try {
+            multiCoreAPI.close();
             pluginLoader.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggerProvider.getLogger().error("An exception was encountered while close the plugin", e);
         } finally {
             multiCoreAPI = null;
             server.shutdown();

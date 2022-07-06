@@ -22,7 +22,6 @@ public class MultiEncryptionResponse extends EncryptionResponse {
             multiInitialLoginSessionHandler.handle(this);
         } catch (Throwable e) {
             if (multiInitialLoginSessionHandler.isEncrypted()) {
-                // TODO: 2022/6/26 tip
                 multiInitialLoginSessionHandler.getInbound().disconnect(Component.text(multiCoreAPI.getLanguageHandler().getMessage("velocity_encrypt_error")));
             }
             multiInitialLoginSessionHandler.getMcConnection().close(true);

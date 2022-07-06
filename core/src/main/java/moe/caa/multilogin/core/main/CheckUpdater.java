@@ -75,7 +75,7 @@ public class CheckUpdater {
                     }
                 }
             } catch (IOException e) {
-                LoggerProvider.getLogger().warn("Check update failure.", e);
+                LoggerProvider.getLogger().error("Check update failure.", e);
             }
         }, 0, 1000 * 60 * 60 * 24); // 一天一次更新检查
     }
