@@ -42,7 +42,7 @@ public class LoggingInterceptor implements Interceptor {
             BufferedSource source = body.source();
             source.request(Long.MAX_VALUE);
             Buffer buffer = source.getBuffer();
-            LoggerProvider.getLogger().debug(String.format("<-- %s", buffer.clone().readString(StandardCharsets.UTF_8)));
+            LoggerProvider.getLogger().debug(String.format("<-- (%d bytes)", buffer.size()));
         }
 
         return response;
