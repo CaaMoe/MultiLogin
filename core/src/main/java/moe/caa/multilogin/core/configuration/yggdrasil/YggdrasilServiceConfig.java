@@ -63,9 +63,9 @@ public class YggdrasilServiceConfig {
     }
 
     private static YggdrasilServiceConfig checkValid(YggdrasilServiceConfig config) throws ConfException {
-        if (config.id > 255 || config.id < 0)
+        if (config.id > 127 || config.id < 0)
             throw new ConfException(String.format(
-                    "Yggdrasil id %d is out of bounds, The value can only be between 0 and 255."
+                    "Yggdrasil id %d is out of bounds, The value can only be between 0 and 127."
                     , config.id
             ));
         if (config.passIp && ValueUtil.isEmpty(config.hasJoined.getIpContent()))

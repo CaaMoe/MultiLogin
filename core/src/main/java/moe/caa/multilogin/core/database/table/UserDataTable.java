@@ -27,7 +27,7 @@ public class UserDataTable {
         String sql = MessageFormat.format(
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(16) NOT NULL, " +
-                        "{2} BINARY(2) NOT NULL, " +
+                        "{2} BINARY(1) NOT NULL, " +
                         "{3} BINARY(16) DEFAULT NULL, " +
                         "PRIMARY KEY ( {1}, {2} ))"
                 , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid);
@@ -54,6 +54,7 @@ public class UserDataTable {
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
             statement.setInt(2, yggdrasilId);
+
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return ValueUtil.bytesToUuid(resultSet.getBytes(1));
