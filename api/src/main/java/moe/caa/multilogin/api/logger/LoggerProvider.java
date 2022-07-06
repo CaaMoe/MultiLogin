@@ -6,6 +6,6 @@ import moe.caa.multilogin.api.logger.bridges.ConsoleBridge;
 
 public class LoggerProvider {
     @Getter
-    @Setter()
+    @Setter
     private static Logger logger = new ConsoleBridge();
 }

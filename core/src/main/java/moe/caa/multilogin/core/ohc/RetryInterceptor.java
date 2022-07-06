@@ -7,6 +7,7 @@ import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class RetryInterceptor implements Interceptor {
     private final int retry;
@@ -26,21 +27,19 @@ public class RetryInterceptor implements Interceptor {
         while (true) {
             try {
                 response = chain.proceed(request);
-                if (response.isSuccessful()) {
-                    return response;
-                }
+                return response;
             } catch (IOException e) {
-                if (tc > retry) throw e;
+                LoggerProvider.getLogger().debug(tc + " retry failed.", e);
+                if (tc >= retry) throw e;
             }
 
             try {
-                Thread.sleep(delay);
+                TimeUnit.MILLISECONDS.sleep(delay);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
                 throw new InterruptedRetryException(e);
             }
             tc++;
-            LoggerProvider.getLogger().debug("--> Retry " + tc);
+            LoggerProvider.getLogger().debug("--> " + tc + " retry.");
         }
     }
 }

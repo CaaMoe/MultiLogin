@@ -32,10 +32,9 @@ public class CheckUpdater {
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new RetryInterceptor(3, 10000))
-                .writeTimeout(Duration.ofMillis(10000))
-                .readTimeout(Duration.ofMillis(10000))
-                .connectTimeout(Duration.ofMillis(10000))
-                .callTimeout(Duration.ofMillis(10000))
+                .writeTimeout(Duration.ofMillis(2000))
+                .readTimeout(Duration.ofMillis(2000))
+                .connectTimeout(Duration.ofMillis(2000))
                 .build();
         Request build = new Request.Builder().get().url("https://api.github.com/repos/CaaMoe/MultiLogin/contents/latest").build();
         Call call = client.newCall(build);

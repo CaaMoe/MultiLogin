@@ -8,6 +8,12 @@
 #    BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues
 #####################################################################
 
+# 开启插件 DEBUG 日志。
+#
+# 此选项将会把插件内所有 DEBUG 日志转换成 INFO 日志。
+# 默认值 false
+debug: false
+
 # 插件数据设置
 sql:
 

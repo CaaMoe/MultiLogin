@@ -70,7 +70,6 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
                 .writeTimeout(Duration.ofMillis(config.getTimeout()))
                 .readTimeout(Duration.ofMillis(config.getTimeout()))
                 .connectTimeout(Duration.ofMillis(config.getTimeout()))
-                .callTimeout(Duration.ofMillis(config.getTimeout()))
                 .proxy(config.getProxy().getProxy())
                 .proxyAuthenticator(config.getProxy().getProxyAuthenticator())
                 .build();

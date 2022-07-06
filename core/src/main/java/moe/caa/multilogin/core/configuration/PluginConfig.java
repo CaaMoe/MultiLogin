@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.configuration;
 
 import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.logger.bridges.DebugLoggerBridge;
 import moe.caa.multilogin.api.util.IOUtil;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.configuration.yggdrasil.hasjoined.HasJoinedConfig;
@@ -47,6 +48,12 @@ public class PluginConfig {
 
         CommentedConfigurationNode configConfigurationNode =
                 YamlConfigurationLoader.builder().file(new File(dataFolder, "config.yml")).build().load();
+
+        if (configConfigurationNode.node("debug").getBoolean(false)) {
+            DebugLoggerBridge.startDebugMode();
+        } else {
+            DebugLoggerBridge.cancelDebugMode();
+        }
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
