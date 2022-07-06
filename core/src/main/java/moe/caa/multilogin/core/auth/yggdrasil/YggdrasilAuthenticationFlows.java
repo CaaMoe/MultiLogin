@@ -32,17 +32,16 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     }
 
     public HasJoinedResponse call() throws Exception {
-//        YggdrasilServiceConfig.HasJoinedConfig hasJoinedConfig = core.getPluginConfig().getYggdrasilServiceMap().get(yggdrasilId).getHasJoined();
-        YggdrasilServiceConfig config = null;
+        YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
         String ipContent = config.getHasJoined().getIpContent();
         if (!ValueUtil.isEmpty(ipContent)) {
-            ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", ip));
+            ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", URLEncoder.encode(ip, StandardCharsets.UTF_8)));
         }
 
         String url = ValueUtil.transPapi(config.getHasJoined().getUrl(),
                 new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                 new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
-                new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))
+                new Pair<>("ip", ipContent)
         );
 
         if (config.getHasJoined().getMethod() == YggdrasilServiceConfig.HttpRequestMethod.GET) {
@@ -55,7 +54,7 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
                     .post(RequestBody.create(ValueUtil.transPapi(config.getHasJoined().getPostContent(),
                             new Pair<>("username", URLEncoder.encode(username, StandardCharsets.UTF_8)),
                             new Pair<>("serverId", URLEncoder.encode(serverId, StandardCharsets.UTF_8)),
-                            new Pair<>("ip", URLEncoder.encode(ipContent, StandardCharsets.UTF_8))).getBytes(StandardCharsets.UTF_8)))
+                            new Pair<>("ip", ipContent)).getBytes(StandardCharsets.UTF_8)))
                     .url(url)
                     .build());
         }

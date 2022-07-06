@@ -3,10 +3,12 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class YggdrasilAuthenticationResult {
     private final Reason reason;
     private final HasJoinedResponse response;

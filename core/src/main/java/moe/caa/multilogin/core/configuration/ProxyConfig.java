@@ -34,6 +34,7 @@ public class ProxyConfig {
     }
 
     public Proxy getProxy() {
+        if (type == Proxy.Type.DIRECT) return Proxy.NO_PROXY;
         return new Proxy(type, new InetSocketAddress(hostname, port));
     }
 
