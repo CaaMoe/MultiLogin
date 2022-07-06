@@ -113,24 +113,24 @@ public class PluginConfig {
 //                    预留
 //                } else {
 //                下属文件
-                    String realName=je.getRealName();
-                    String fileName=realName.substring(path.length());
-                    File subFile = new File(file, fileName);
-                    boolean exists = subFile.exists();
-                    if (exists && !cover) {
-                        return;
-                    } else {
-                        if (!exists) Files.createFile(subFile.toPath());
-                    }
-                    try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" +realName));
-                         FileOutputStream fs = new FileOutputStream(subFile)) {
-                        IOUtil.copy(is, fs);
-                    }
-                    if (!exists) {
-                        LoggerProvider.getLogger().info("Extract: " + realName);
-                    } else {
-                        LoggerProvider.getLogger().info("Cover: " + realName);
-                    }
+                String realName = je.getRealName();
+                String fileName = realName.substring(path.length());
+                File subFile = new File(file, fileName);
+                boolean exists = subFile.exists();
+                if (exists && !cover) {
+                    return;
+                } else {
+                    if (!exists) Files.createFile(subFile.toPath());
+                }
+                try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + realName));
+                     FileOutputStream fs = new FileOutputStream(subFile)) {
+                    IOUtil.copy(is, fs);
+                }
+                if (!exists) {
+                    LoggerProvider.getLogger().info("Extract: " + realName);
+                } else {
+                    LoggerProvider.getLogger().info("Cover: " + realName);
+                }
 //                }
             }
         }

@@ -1,22 +1,24 @@
-#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#
-#        除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
-#
-#          请不要在此文件下存放任何重要数据，文件将会自动覆盖
-#
-#         此文件仅为示例文件 使用请复制到yggdrasil目录下才能生效
-#
-#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 #####################################################################
 #
 #  配置文件格式为 ‘YAML’，前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
 #         NOTE: 此文件为 Yggdrasil Service 配置模板文件
 #
 #    BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues
+#
 #####################################################################
 
-# Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识。
+#####################################################################
+#
+#       注意，除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
+#
+#          请不要在此文件下存放任何重要数据，文件将会自动覆盖！！
+#         此文件为中文完整示例文件，使用请复制到 services 目录下才能生效
+#
+#####################################################################
+
+
+# Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识.
+# 它不可以是重复的值，重复的值会导致数据错乱或丢失！！！
 #
 # 请不要在使用中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
 # 此值为必须值，取值范围为整数 0 ~ 255
@@ -28,26 +30,21 @@ id: -1
 name: 'Unnamed'
 
 # hasJoined 验证配置
+# 注意，在此之下的节点，仅能存在一个（official、blessingSkin 和 custom 节点只能存在一个）。
 hasJoined:
 
   # 此值设置 Yggdrasil 服务器类型为官方 Yggdrasil 服务器。
-  #
-  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
   official: { }
 
   # 此值设置 Yggdrasil 服务器类型为 Blessing Skin Yggdrasil API 服务器。
-  #
-  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
   blessingSkin:
 
     # 指定 Blessing Skin Yggdrasil API 地址。
     #
-    # 必须值
+    # 必须值。
     apiRoot: 'https://example.com/api/yggdrasil'
 
-  # 此值设置 Yggdrasil 服务器类型为自定义类型，若需要添加的 Yggdrasil 服务器不是官方或 blessingSkin 类型的请使用此高级类型。
-  #
-  # 注意，official、blessingSkin 和 custom 节点只能存在一个。
+  # 此值设置 Yggdrasil 服务器类型为自定义类型。
   custom:
 
     # hasJoined 登录验证链接设置。
@@ -66,7 +63,7 @@ hasJoined:
     #      POST: ‘https://example.com/session/minecraft/hasJoined’
     #
     # 必须值。
-    url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}'
+    url: 'https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}'
 
     # 设置请求账户身份验证服务器的方式。
     #
@@ -108,13 +105,13 @@ hasJoined:
     #        ‘{"username":"{username}", "serverId":"{serverId}"{ip}}’
     #        ‘{"username":"{username}", "serverId":"{serverId}"}’
     #
-    # 必须值。
+    # 当 method 值为 ’POST‘ 时，此值为必须值。
     postContent: '{"username":"{0}", "serverId":"{1}"}'
 
 
 # 请求是否追加用户 IP 信息。
-#
 # 此 IP 一般用于 Yggdrasil 的防代理检查
+#
 # 默认值 ‘true’
 passIp: true
 
@@ -129,8 +126,8 @@ timeout: 10000
 retry: 0
 
 # 重试请求延迟。
-#
 # 注意，过大的值可能会导致登录超时。
+#
 # 默认值 ‘0’
 retryDelay: 0
 
@@ -158,8 +155,8 @@ proxy:
     port: 1080
 
     # 代理鉴权用户名。
-    #
     # 留空则不进行鉴权
+    #
     # 默认值 ‘’
     username: ""
 
@@ -182,10 +179,12 @@ initUUID: 'DEFAULT'
 # 设置当前 Yggdrasil 下的用户名正则约束。
 # 若不匹配将会拒绝当前玩家的登录请求。
 # 如果此值留空或未设置，则不启用此功能。
+#
 # 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
 nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
 
 # 是否为当前 Yggdrasil 单独开启白名单功能。
+#
 # 默认值 ‘false’
 whitelist: false
 
@@ -244,6 +243,7 @@ skinRestorer:
   # 皮肤修复重试请求延迟。
   # 过小的值会被皮肤修复服务器拒绝访问；
   # 过大的值可能会导致登录超时。
+  #
   # 默认值 ‘5000’
   retryDelay: 5000
 
@@ -280,10 +280,11 @@ skinRestorer:
     # 默认值 ‘’
     password: ""
 
-#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#####################################################################
 #
-#        除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
+#       注意，除了布尔值和整数、浮点数之外的配置，请使用引号包裹起来。
 #
-#          请不要在此文件下存放任何重要数据，文件将会自动覆盖
+#          请不要在此文件下存放任何重要数据，文件将会自动覆盖！！
+#         此文件为中文完整示例文件，使用请复制到 services 目录下才能生效
 #
-#!!!!!!!!!!!!!!!!!!!!!!!!!!WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#####################################################################

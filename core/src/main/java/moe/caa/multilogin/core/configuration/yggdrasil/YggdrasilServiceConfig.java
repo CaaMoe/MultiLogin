@@ -33,14 +33,6 @@ public class YggdrasilServiceConfig {
     private final boolean compulsoryUsername;
     private final SkinRestorerConfig skinRestorer;
 
-    public enum HttpRequestMethod {
-        GET, POST
-    }
-
-    public enum InitUUID {
-        DEFAULT, OFFLINE, RANDOM
-    }
-
     public static YggdrasilServiceConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
         int id = node.node("id").getInt();
         String name = node.node("name").getString("Unnamed");
@@ -79,5 +71,13 @@ public class YggdrasilServiceConfig {
         if (config.passIp && ValueUtil.isEmpty(config.hasJoined.getIpContent()))
             throw new ConfException("PassIp is true, but ipContent is empty.");
         return config;
+    }
+
+    public enum HttpRequestMethod {
+        GET, POST
+    }
+
+    public enum InitUUID {
+        DEFAULT, OFFLINE, RANDOM
     }
 }

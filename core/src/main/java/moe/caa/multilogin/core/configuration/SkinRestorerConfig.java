@@ -18,14 +18,6 @@ public class SkinRestorerConfig {
     private final int retryDelay;
     private final ProxyConfig proxy;
 
-    public enum RestorerType {
-        OFF, LOGIN, ASYNC
-    }
-
-    public enum Method {
-        URL, UPLOAD
-    }
-
     public static SkinRestorerConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
         RestorerType restorer = node.node("restorer").get(RestorerType.class, RestorerType.OFF);
         Method method = node.node("method").get(Method.class, Method.URL);
@@ -35,5 +27,13 @@ public class SkinRestorerConfig {
         ProxyConfig proxy = ProxyConfig.read(node.node("proxy"));
 
         return new SkinRestorerConfig(restorer, method, timeout, retry, retryDelay, proxy);
+    }
+
+    public enum RestorerType {
+        OFF, LOGIN, ASYNC
+    }
+
+    public enum Method {
+        URL, UPLOAD
     }
 }
