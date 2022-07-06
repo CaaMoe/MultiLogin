@@ -1,8 +1,10 @@
 package moe.caa.multilogin.core.configuration.yggdrasil.hasjoined;
 
+import lombok.ToString;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
+@ToString
 public class OfficialHasJoinedConfig implements HasJoinedConfig {
 
     @Override

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.configuration.yggdrasil.hasjoined;
 
 import lombok.Getter;
+import lombok.ToString;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
@@ -9,6 +10,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Objects;
 
+@ToString
 public class CustomHasJoinedConfig implements HasJoinedConfig {
     @Getter
     private String url;
@@ -23,7 +25,7 @@ public class CustomHasJoinedConfig implements HasJoinedConfig {
     public void initValue(CommentedConfigurationNode node) throws ConfException, SerializationException {
         url = node.node("url").getString();
         method = node.node("method").get(YggdrasilServiceConfig.HttpRequestMethod.class);
-        ipContent = node.node("ipContents").getString();
+        ipContent = node.node("ipContent").getString();
         postContent = node.node("postContent").getString();
 
         if (ValueUtil.isEmpty(url))

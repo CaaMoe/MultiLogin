@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.configuration.yggdrasil.hasjoined;
 
 import lombok.Getter;
+import lombok.ToString;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
@@ -8,6 +9,7 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 import java.util.Objects;
 
+@ToString
 public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
     @Getter
     private String url;
