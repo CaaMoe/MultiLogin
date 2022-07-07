@@ -53,8 +53,7 @@ public class UserDataTable {
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
-            statement.setInt(2, yggdrasilId);
-
+            statement.setBytes(2, new byte[]{(byte) yggdrasilId});
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return ValueUtil.bytesToUuid(resultSet.getBytes(1));
@@ -84,7 +83,7 @@ public class UserDataTable {
                 if (resultSet.next()) {
                     result.add(new Pair<>(
                             ValueUtil.bytesToUuid(resultSet.getBytes(1)),
-                            resultSet.getInt(2))
+                            ((int) resultSet.getBytes(2)[0]))
                     );
                 }
             }
@@ -109,8 +108,8 @@ public class UserDataTable {
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
             try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    result.add(resultSet.getInt(2));
+                while (resultSet.next()) {
+                    result.add(((int) resultSet.getBytes(1)[0]));
                 }
             }
         }
@@ -135,7 +134,7 @@ public class UserDataTable {
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
             statement.setBytes(2, ValueUtil.uuidToBytes(onlineUUID));
-            statement.setInt(3, yggdrasilId);
+            statement.setBytes(3, new byte[]{(byte) yggdrasilId});
             return statement.executeUpdate();
         }
     }
@@ -157,11 +156,11 @@ public class UserDataTable {
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
-            statement.setInt(2, yggdrasilId);
+            statement.setBytes(2, new byte[]{(byte) yggdrasilId});
             if (inGameUUID == null) {
                 statement.setNull(3, Types.BINARY);
             } else {
-                statement.setBytes(3, ValueUtil.uuidToBytes(onlineUUID));
+                statement.setBytes(3, ValueUtil.uuidToBytes(inGameUUID));
             }
             return statement.executeUpdate();
         }
@@ -183,7 +182,7 @@ public class UserDataTable {
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
-            statement.setInt(2, yggdrasilId);
+            statement.setBytes(2, new byte[]{(byte) yggdrasilId});
             return statement.executeUpdate();
         }
     }

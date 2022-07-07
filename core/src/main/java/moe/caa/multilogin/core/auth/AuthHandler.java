@@ -7,6 +7,9 @@ import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.main.MultiCore;
 
+import java.sql.SQLException;
+import java.util.UUID;
+
 public class AuthHandler implements AuthAPI {
     private final MultiCore core;
     private final YggdrasilAuthenticationService yggdrasilAuthenticationService;
@@ -42,6 +45,20 @@ public class AuthHandler implements AuthAPI {
             LoggerProvider.getLogger().error("An exception occurred while processing the hasJoined request.", e);
             return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_error"));
         }
+
+        UUID inGameUUID = null;
+        try {
+            inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(yggdrasilAuthenticationResult.getResponse().getId(), yggdrasilAuthenticationResult.getYggdrasilId());
+            if(inGameUUID == null){
+                core.getSqlManager().getUserDataTable().insertNewData(
+                        yggdrasilAuthenticationResult.getResponse().getId(),
+                        yggdrasilAuthenticationResult.getYggdrasilId(),
+                        UUID.randomUUID());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
 
         return AuthResult.ofAllowed(yggdrasilAuthenticationResult.getResponse());
     }
