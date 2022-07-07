@@ -14,15 +14,4 @@ public interface AuthAPI {
      * @return 验证结果
      */
     AuthResult auth(String username, String serverId, String ip);
-
-    /**
-     * 进行验证
-     *
-     * @param username 用户名
-     * @param serverId 服务器ID
-     * @return 验证结果
-     */
-    default AuthResult auth(String username, String serverId) {
-        return auth(username, serverId, null);
-    }
 }
