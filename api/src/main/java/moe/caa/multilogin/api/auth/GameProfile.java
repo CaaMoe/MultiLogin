@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 登入 HasJoined 阶段从 Yggdrasil 账户验证服务器获取到的有效的结果
+ * 游戏档案
  */
 @Data
 public class GameProfile {
