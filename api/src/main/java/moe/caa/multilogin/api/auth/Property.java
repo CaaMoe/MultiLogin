@@ -1,4 +1,4 @@
-package moe.caa.multilogin.api.auth.yggdrasil.response;
+package moe.caa.multilogin.api.auth;
 
 import lombok.Data;
 

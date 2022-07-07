@@ -4,17 +4,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
+import moe.caa.multilogin.api.auth.GameProfile;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 public class YggdrasilAuthenticationResult {
     private final Reason reason;
-    private final HasJoinedResponse response;
+    private final GameProfile response;
     private final int yggdrasilId;
 
-    protected static YggdrasilAuthenticationResult ofAllowed(HasJoinedResponse response, int yggdrasilId) {
+    protected static YggdrasilAuthenticationResult ofAllowed(GameProfile response, int yggdrasilId) {
         return new YggdrasilAuthenticationResult(Reason.ALLOWED, response, yggdrasilId);
     }
 

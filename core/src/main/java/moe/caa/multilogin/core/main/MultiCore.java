@@ -3,12 +3,12 @@ package moe.caa.multilogin.core.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
-import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
-import moe.caa.multilogin.api.auth.yggdrasil.response.Property;
+import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.core.auth.AuthHandler;
-import moe.caa.multilogin.core.auth.yggdrasil.serialize.HasJoinedResponseSerializer;
+import moe.caa.multilogin.core.auth.yggdrasil.serialize.GameProfileSerializer;
 import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
@@ -54,7 +54,7 @@ public class MultiCore implements MultiCoreAPI {
         this.semVersion = SemVersion.of(plugin.getVersion());
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
-                .registerTypeAdapter(HasJoinedResponse.class, new HasJoinedResponseSerializer())
+                .registerTypeAdapter(GameProfile.class, new GameProfileSerializer())
                 .registerTypeAdapter(Property.class, new PropertySerializer()).create();
     }
 

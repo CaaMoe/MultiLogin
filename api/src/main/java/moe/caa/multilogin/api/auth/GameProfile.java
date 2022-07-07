@@ -1,4 +1,4 @@
-package moe.caa.multilogin.api.auth.yggdrasil.response;
+package moe.caa.multilogin.api.auth;
 
 import lombok.Data;
 
@@ -10,14 +10,14 @@ import java.util.UUID;
  * 登入 HasJoined 阶段从 Yggdrasil 账户验证服务器获取到的有效的结果
  */
 @Data
-public class HasJoinedResponse {
+public class GameProfile {
     private UUID id;
     private String name;
     private Map<String, Property> propertyMap;
 
     @Override
-    public HasJoinedResponse clone() {
-        HasJoinedResponse response = new HasJoinedResponse();
+    public GameProfile clone() {
+        GameProfile response = new GameProfile();
         response.id = id;
         response.name = name;
         response.propertyMap = new HashMap<>();

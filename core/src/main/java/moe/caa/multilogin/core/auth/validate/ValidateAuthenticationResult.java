@@ -4,17 +4,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
+import moe.caa.multilogin.api.auth.GameProfile;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 public class ValidateAuthenticationResult {
     private final Reason reason;
-    private final HasJoinedResponse inGameProfile;
+    private final GameProfile inGameProfile;
     private final String disallowedMessage;
 
-    public static ValidateAuthenticationResult ofAllowed(HasJoinedResponse response) {
+    public static ValidateAuthenticationResult ofAllowed(GameProfile response) {
         return new ValidateAuthenticationResult(Reason.ALLOWED, response, null);
     }
 

@@ -2,7 +2,6 @@ package fun.ksnb.multilogin.velocity.injector;
 
 import com.google.common.primitives.Longs;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
-import com.velocitypowered.api.util.GameProfile;
 import com.velocitypowered.proxy.VelocityServer;
 import com.velocitypowered.proxy.connection.MinecraftConnection;
 import com.velocitypowered.proxy.connection.client.AuthSessionHandler;
@@ -14,7 +13,7 @@ import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import lombok.AccessLevel;
 import lombok.Getter;
 import moe.caa.multilogin.api.auth.AuthResult;
-import moe.caa.multilogin.api.auth.yggdrasil.response.HasJoinedResponse;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.ReflectUtil;
@@ -139,7 +138,7 @@ public class MultiInitialLoginSessionHandler {
                 AuthSessionHandler.class.getDeclaredConstructor(
                         VelocityServer.class,
                         LoginInboundConnection.class,
-                        GameProfile.class,
+                        com.velocitypowered.api.util.GameProfile.class,
                         boolean.class
                 )
         ));
@@ -214,12 +213,12 @@ public class MultiInitialLoginSessionHandler {
         }
     }
 
-    private GameProfile generateGameProfile(HasJoinedResponse response) {
-        return new GameProfile(
+    private com.velocitypowered.api.util.GameProfile generateGameProfile(GameProfile response) {
+        return new com.velocitypowered.api.util.GameProfile(
                 response.getId(),
                 response.getName(),
                 response.getPropertyMap().values().stream().map(s ->
-                        new GameProfile.Property(s.getName(), s.getValue(), s.getSignature())
+                        new com.velocitypowered.api.util.GameProfile.Property(s.getName(), s.getValue(), s.getSignature())
                 ).collect(Collectors.toList())
         );
     }
