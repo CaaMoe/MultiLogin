@@ -27,6 +27,7 @@ public class DebugLoggerBridge implements Logger {
     public void log(Level level, String message, Throwable throwable) {
         if (level == Level.DEBUG) {
             level = Level.INFO;
+            message = "[DEBUG] " + message;
         }
         logger.log(level, message, throwable);
     }
