@@ -85,7 +85,8 @@ public class YggdrasilAuthenticationService {
         if (run == Signal.PASSED) {
             return YggdrasilAuthenticationResult.ofAllowed(
                     context.getResponse().get().getValue1(),
-                    context.getResponse().get().getValue2()
+                    context.getResponse().get().getValue2().getValue1(),
+                    context.getResponse().get().getValue2().getValue2()
             );
         }
         if (context.getServiceUnavailable().size() != 0) {

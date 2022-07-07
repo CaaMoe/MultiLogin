@@ -8,11 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
  * 游戏内档案表
  */
+
+// current_username 写入和读取需要使用小写！
 public class InGameProfileTable {
     protected static final String fieldInGameUuid = "in_game_uuid";
     private static final String fieldCurrentUsername = "current_username";
@@ -43,13 +46,13 @@ public class InGameProfileTable {
 
     public UUID getInGameUUID(String currentUsername) throws SQLException {
         String sql = String.format(
-                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
+                "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
                 , fieldInGameUuid, tableName, fieldCurrentUsername
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            statement.setString(1, currentUsername);
+            statement.setString(1, currentUsername.toLowerCase(Locale.ROOT));
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return ValueUtil.bytesToUuid(resultSet.getBytes(1));
@@ -59,22 +62,45 @@ public class InGameProfileTable {
         return null;
     }
 
-    public String getCurrentUsername(UUID inGameUUID) throws SQLException {
+    public void insertNewData(UUID inGameUUID) throws SQLException {
         String sql = String.format(
-                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
-                , fieldCurrentUsername, tableName, fieldInGameUuid
+                "INSERT INTO %s (%s) VALUES (?)"
+                , tableName, fieldInGameUuid
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getString(1);
-                }
-            }
+            statement.executeUpdate();
         }
-        return null;
+    }
+
+    public void updateUsername(UUID inGameUUID, String currentUsername) throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s = ? WHERE %s = ?"
+                , tableName, fieldCurrentUsername, fieldInGameUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, currentUsername.toLowerCase(Locale.ROOT));
+            statement.setBytes(2, ValueUtil.uuidToBytes(inGameUUID));
+            statement.executeUpdate();
+        }
+    }
+
+    public int eraseUsername(String currentUsername) throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s = ? WHERE %s = ?"
+                , tableName, fieldCurrentUsername, fieldCurrentUsername
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, null);
+            statement.setString(2, currentUsername.toLowerCase(Locale.ROOT));
+            return statement.executeUpdate();
+        }
     }
 
     public boolean hasWhitelist(UUID inGameUUID) throws SQLException {
@@ -92,52 +118,6 @@ public class InGameProfileTable {
                 }
             }
         }
-        throw new NullPointerException();
-    }
-
-    public boolean hasWhitelist(String currentUsername) throws SQLException {
-        String sql = String.format(
-                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
-                , fieldWhitelist, tableName, fieldCurrentUsername
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setString(1, currentUsername);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getBoolean(1);
-                }
-            }
-        }
-        throw new NullPointerException();
-    }
-
-    public int setCurrentUsername(UUID inGameUUID, String currentUsername) throws SQLException {
-        String sql = String.format(
-                "UPDATE %s SET %s = ? WHERE %s = ?"
-                , tableName, fieldCurrentUsername, fieldInGameUuid
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            statement.setString(2, currentUsername);
-            return statement.executeUpdate();
-        }
-    }
-
-    public int setWhitelist(UUID inGameUUID, boolean whitelist) throws SQLException {
-        String sql = String.format(
-                "UPDATE %s SET %s = ? WHERE %s = ?"
-                , tableName, fieldWhitelist, fieldInGameUuid
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            statement.setBoolean(2, whitelist);
-            return statement.executeUpdate();
-        }
+        return false;
     }
 }

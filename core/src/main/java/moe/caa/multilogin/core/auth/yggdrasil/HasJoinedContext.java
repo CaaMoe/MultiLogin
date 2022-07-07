@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.auth.yggdrasil;
 import lombok.Data;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
 import java.util.Map;
 import java.util.Set;
@@ -19,7 +20,7 @@ public class HasJoinedContext {
     private final String ip;
 
     // 存放成功的标志
-    private final AtomicReference<Pair<GameProfile, Integer>> response = new AtomicReference<>();
+    private final AtomicReference<Pair<GameProfile, Pair<Integer, YggdrasilServiceConfig>>> response = new AtomicReference<>();
 
     // 存放异常的
     private final Map<Integer, Throwable> serviceUnavailable = new ConcurrentHashMap<>();

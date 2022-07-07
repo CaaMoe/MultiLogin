@@ -12,6 +12,10 @@ import moe.caa.multilogin.core.configuration.yggdrasil.hasjoined.HasJoinedConfig
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
+import java.util.function.BiFunction;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -78,6 +82,18 @@ public class YggdrasilServiceConfig {
     }
 
     public enum InitUUID {
-        DEFAULT, OFFLINE, RANDOM
+        DEFAULT((u, n) -> u),
+        OFFLINE((u, n) -> UUID.nameUUIDFromBytes(("OfflinePlayer:" + n).getBytes(StandardCharsets.UTF_8))),
+        RANDOM((u, n) -> UUID.randomUUID());
+
+        private final BiFunction<UUID, String, UUID> biFunction;
+
+        InitUUID(BiFunction<UUID, String, UUID> biFunction) {
+            this.biFunction = biFunction;
+        }
+
+        public UUID generateUUID(UUID onlineUUID, String currentUsername) {
+            return biFunction.apply(onlineUUID, currentUsername);
+        }
     }
 }

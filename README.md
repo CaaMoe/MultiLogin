@@ -11,10 +11,10 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 
 * 支持多达 128 个 Yggdrasil 共存
 * 支持配置市面上几乎所有类型的 Yggdrasil 服务器
-    * 支持添加 [authlib-injector](https://github.com/to2mbn/authlib-injector) 所规范的 Yggdrasil 服务器
-    * 支持添加 [统一通行证](https://login.mc-user.com:233/) Yggdrasil 服务器
-    * 支持添加畸形 Yggdrasil 服务器
-* 内置 UUID 表，多元账号
+  * 支持添加 [authlib-injector](https://github.com/to2mbn/authlib-injector) 所规范的 Yggdrasil 服务器
+  * 支持添加 [统一通行证](https://login.mc-user.com:233/) Yggdrasil 服务器
+  * 支持添加畸形 Yggdrasil 服务器
+* 内置 UUID 表，保护账号安全
   * 可控制任何账号在游戏内的 UUID
   * 可设置服务器内账号拥有多种登录方式，一个宕了可换另外一种登录方式继续登录游戏
   * 可临时指定游戏内 UUID，方便控制别人的账号下的数据
@@ -22,6 +22,7 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 * 阻止服务器内出现重名和抢占名称的账户
 * 可使用正则来约束账户命名方式
 * 可控制的重复登录机制
+* 支持以 Yggdrasil 分组管理的白名单系统
 * 自动修复皮肤签名问题
 
 ## BUG 汇报
