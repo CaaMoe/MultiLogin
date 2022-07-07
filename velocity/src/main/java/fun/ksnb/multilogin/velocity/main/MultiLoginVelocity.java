@@ -76,7 +76,6 @@ public class MultiLoginVelocity implements IPlugin {
                 }
             };
             commandManager.register(commandManager.metaBuilder("multilogin").build(), commandHandler);
-            commandManager.register(commandManager.metaBuilder("whitelist").build(), commandHandler);
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
