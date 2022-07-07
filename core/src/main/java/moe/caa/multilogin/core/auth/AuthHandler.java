@@ -3,27 +3,26 @@ package moe.caa.multilogin.core.auth;
 import moe.caa.multilogin.api.auth.AuthAPI;
 import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationResult;
+import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.sql.SQLException;
-import java.util.UUID;
-
 public class AuthHandler implements AuthAPI {
     private final MultiCore core;
     private final YggdrasilAuthenticationService yggdrasilAuthenticationService;
+    private final ValidateAuthenticationService validateAuthenticationService;
 
 
     public AuthHandler(MultiCore core) {
         this.core = core;
         this.yggdrasilAuthenticationService = new YggdrasilAuthenticationService(core);
+        this.validateAuthenticationService = new ValidateAuthenticationService(core);
     }
 
     @Override
     public AuthResult auth(String username, String serverId, String ip) {
-
-        // HasJoined
         YggdrasilAuthenticationResult yggdrasilAuthenticationResult;
         try {
             yggdrasilAuthenticationResult = yggdrasilAuthenticationService.hasJoined(username, serverId, ip);
@@ -46,20 +45,23 @@ public class AuthHandler implements AuthAPI {
             return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_error"));
         }
 
-        UUID inGameUUID = null;
         try {
-            inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(yggdrasilAuthenticationResult.getResponse().getId(), yggdrasilAuthenticationResult.getYggdrasilId());
-            if(inGameUUID == null){
-                core.getSqlManager().getUserDataTable().insertNewData(
-                        yggdrasilAuthenticationResult.getResponse().getId(),
-                        yggdrasilAuthenticationResult.getYggdrasilId(),
-                        UUID.randomUUID());
+            ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(username, serverId, ip, yggdrasilAuthenticationResult);
+            if (validateAuthenticationResult.getReason() == ValidateAuthenticationResult.Reason.ALLOWED) {
+                LoggerProvider.getLogger().info(
+                        String.format("The in game uuid of player %s is %s, and the online uuid is %s, which comes from the authentication result of yggdrasil id %d.",
+                                validateAuthenticationResult.getInGameProfile().getName(),
+                                validateAuthenticationResult.getInGameProfile().getId().toString(),
+                                yggdrasilAuthenticationResult.getResponse().getId(),
+                                yggdrasilAuthenticationResult.getYggdrasilId()
+                        )
+                );
+                return AuthResult.ofAllowed(validateAuthenticationResult.getInGameProfile());
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+            return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
+        } catch (Exception e){
+            LoggerProvider.getLogger().error("An exception occurred while processing the validation request.", e);
+            return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_validate_error"));
         }
-
-
-        return AuthResult.ofAllowed(yggdrasilAuthenticationResult.getResponse());
     }
 }
