@@ -10,4 +10,13 @@ public class Property {
     private String name;
     private String value;
     private String signature;
+
+    @Override
+    public Property clone() {
+        Property property = new Property();
+        property.name = name;
+        property.value = value;
+        property.signature = signature;
+        return property;
+    }
 }
