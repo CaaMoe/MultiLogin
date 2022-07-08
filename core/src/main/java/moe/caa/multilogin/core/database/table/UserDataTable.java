@@ -37,7 +37,7 @@ public class UserDataTable {
                         "{3} BINARY(16) DEFAULT NULL, " +
                         "{4} BOOL DEFAULT FALSE, " +
                         "PRIMARY KEY ( {1}, {2} ))"
-                , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid);
+                , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid, fieldWhitelist);
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();

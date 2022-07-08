@@ -26,7 +26,7 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
             return Signal.PASSED;
         }
         // 踹了
-        validateContext.setDisallowMessage("auth_validate_failed_no_whitelist");
+        validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_no_whitelist"));
         return Signal.TERMINATED;
     }
 }
