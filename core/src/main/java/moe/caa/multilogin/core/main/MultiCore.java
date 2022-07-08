@@ -14,6 +14,7 @@ import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.database.SQLManager;
 import moe.caa.multilogin.core.language.LanguageHandler;
+import moe.caa.multilogin.core.semver.CheckUpdater;
 import moe.caa.multilogin.core.semver.SemVersion;
 
 import java.io.IOException;
@@ -64,6 +65,7 @@ public class MultiCore implements MultiCoreAPI {
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
         new CheckUpdater(this).start();
+        new MetricsLite(this);
         new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
@@ -75,6 +77,6 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void close() {
-
+        sqlManager.close();
     }
 }

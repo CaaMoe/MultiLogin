@@ -1,11 +1,11 @@
-package moe.caa.multilogin.core.main;
+package moe.caa.multilogin.core.semver;
 
 import com.google.gson.JsonParser;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
-import moe.caa.multilogin.core.semver.SemVersion;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

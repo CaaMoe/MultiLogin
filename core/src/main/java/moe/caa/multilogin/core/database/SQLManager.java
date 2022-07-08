@@ -51,4 +51,8 @@ public class SQLManager {
         inGameProfileTable.init();
         userDataTable.init();
     }
+
+    public void close() {
+        pool.close();
+    }
 }
