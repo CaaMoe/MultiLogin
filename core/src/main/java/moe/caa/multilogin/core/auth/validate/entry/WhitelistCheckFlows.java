@@ -21,7 +21,8 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
             return Signal.PASSED;
         }
         // 如果有白名单
-        if (core.getSqlManager().getInGameProfileTable().hasWhitelist(validateContext.getInGameProfile().getId())) {
+        if (core.getSqlManager().getUserDataTable().hasWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
+                validateContext.getYggdrasilAuthenticationResult().getYggdrasilId())) {
             return Signal.PASSED;
         }
         // 踹了

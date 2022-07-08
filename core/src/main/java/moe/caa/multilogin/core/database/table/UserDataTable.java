@@ -20,6 +20,7 @@ public class UserDataTable {
     private static final String fieldOnlineUUID = "online_uuid";
     private static final String fieldYggdrasilId = "yggdrasil_id";
     private static final String fieldInGameProfileUuid = "in_game_profile_uuid";
+    private static final String fieldWhitelist = "whitelist";
     private final SQLManager sqlManager;
     private final String tableName;
 
@@ -34,6 +35,7 @@ public class UserDataTable {
                         "{1} BINARY(16) NOT NULL, " +
                         "{2} BINARY(1) NOT NULL, " +
                         "{3} BINARY(16) DEFAULT NULL, " +
+                        "{4} BOOL DEFAULT FALSE, " +
                         "PRIMARY KEY ( {1}, {2} ))"
                 , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid);
         try (Connection connection = sqlManager.getPool().getConnection();
@@ -114,5 +116,25 @@ public class UserDataTable {
             statement.setBytes(3, ValueUtil.uuidToBytes(inGameUUID));
             return statement.executeUpdate();
         }
+    }
+
+    public boolean hasWhitelist(UUID onlineUUID, int yggdrasilId) throws SQLException {
+        Set<Integer> result = new HashSet<>();
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
+                , fieldWhitelist, tableName, fieldOnlineUUID, fieldYggdrasilId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setBytes(2, new byte[]{(byte) yggdrasilId});
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBoolean(1);
+                }
+            }
+        }
+        return false;
     }
 }

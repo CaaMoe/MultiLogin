@@ -19,7 +19,6 @@ import java.util.UUID;
 public class InGameProfileTable {
     protected static final String fieldInGameUuid = "in_game_uuid";
     private static final String fieldCurrentUsername = "current_username";
-    private static final String fieldWhitelist = "whitelist";
 
     private final String tableName;
     private final SQLManager sqlManager;
@@ -34,10 +33,9 @@ public class InGameProfileTable {
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(16) NOT NULL, " +
                         "{2} VARCHAR(64) DEFAULT NULL, " +
-                        "{3} BOOL DEFAULT FALSE, " +
                         "CONSTRAINT IGPT_PR PRIMARY KEY ( {1} ), " +
                         "CONSTRAINT IGPT_UN UNIQUE ( {2} ))"
-                , tableName, fieldInGameUuid, fieldCurrentUsername, fieldWhitelist);
+                , tableName, fieldInGameUuid, fieldCurrentUsername);
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
@@ -101,23 +99,5 @@ public class InGameProfileTable {
             statement.setString(2, currentUsername.toLowerCase(Locale.ROOT));
             return statement.executeUpdate();
         }
-    }
-
-    public boolean hasWhitelist(UUID inGameUUID) throws SQLException {
-        String sql = String.format(
-                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
-                , fieldWhitelist, tableName, fieldInGameUuid
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getBoolean(1);
-                }
-            }
-        }
-        return false;
     }
 }
