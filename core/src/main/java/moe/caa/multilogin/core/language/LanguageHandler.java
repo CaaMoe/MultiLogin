@@ -42,10 +42,11 @@ public class LanguageHandler implements LanguageAPI {
         InputStream inputStream = new FileInputStream(messagePropertiesFile);
         language.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
-        try (InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"))
+        try (InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"));
+             InputStreamReader isr = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
         ) {
             Properties inside = new Properties();
-            inside.load(resourceAsStream);
+            inside.load(isr);
             for (Map.Entry<Object, Object> entry : inside.entrySet()) {
                 if (language.containsKey(entry.getKey())) continue;
                 language.setProperty(entry.getKey().toString(), entry.getValue().toString());
