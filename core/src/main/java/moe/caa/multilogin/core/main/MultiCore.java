@@ -47,11 +47,11 @@ public class MultiCore implements MultiCoreAPI {
      */
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
+        this.languageHandler = new LanguageHandler(this);
         this.pluginConfig = new PluginConfig(plugin.getDataFolder());
         this.sqlManager = new SQLManager(this);
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
-        this.languageHandler = new LanguageHandler(this);
         this.semVersion = SemVersion.of(plugin.getVersion());
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
@@ -70,6 +70,7 @@ public class MultiCore implements MultiCoreAPI {
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
+        commandHandler.init();
     }
 
     /**

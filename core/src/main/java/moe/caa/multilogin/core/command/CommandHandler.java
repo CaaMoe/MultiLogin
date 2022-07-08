@@ -30,6 +30,9 @@ public class CommandHandler implements CommandAPI {
     public CommandHandler(MultiCore core) {
         this.core = core;
         this.dispatcher = new CommandDispatcher<>();
+
+    }
+    public void init(){
         new MultiLoginCommand(this).register();
         CommandSyntaxException.BUILT_IN_EXCEPTIONS =
                 CommandHandler.builtInExceptions =
