@@ -24,11 +24,16 @@ public class CommandHandler implements CommandAPI {
     private final MultiCore core;
     @Getter
     private final CommandDispatcher<ISender> dispatcher;
+    @Getter
+    private static BuiltInExceptions builtInExceptions;
 
     public CommandHandler(MultiCore core) {
         this.core = core;
         this.dispatcher = new CommandDispatcher<>();
         new MultiLoginCommand(this).register();
+        CommandSyntaxException.BUILT_IN_EXCEPTIONS =
+                CommandHandler.builtInExceptions =
+                        new BuiltInExceptions(core);
     }
 
     @Override
