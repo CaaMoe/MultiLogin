@@ -35,7 +35,7 @@ public class SkinRestorerResult {
     }
 
     public enum Reason {
-        // 没有开启皮肤修复
+        // 没有开启皮肤修复或档案里面没有皮肤
         NO_RESTORER,
 
         // 皮肤签名有效，无需修复
