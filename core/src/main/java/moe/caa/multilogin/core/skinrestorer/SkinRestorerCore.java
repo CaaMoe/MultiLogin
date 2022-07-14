@@ -5,6 +5,8 @@ import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;
+import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
@@ -15,6 +17,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
@@ -24,7 +28,10 @@ import java.util.Map;
 import java.util.Objects;
 
 public class SkinRestorerCore {
+    private static final String[] ALLOWED_DOMAINS = new String[] { ".minecraft.net", ".mojang.com" };
+    private static final String[] BLOCKED_DOMAINS = new String[] { "bugs.mojang.com", "education.minecraft.net", "feedback.minecraft.net" };
     private static PublicKey publicKey;
+
 
     static {
         try {
@@ -57,6 +64,9 @@ public class SkinRestorerCore {
 
     @SneakyThrows
     public SkinRestorerResult doRestorer() {
+        if (yggdrasilServiceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.OFF) {
+            return SkinRestorerResult.ofNoRestorer();
+        }
         Map<String, Property> propertyMap = profile.getPropertyMap();
         if (propertyMap == null || !propertyMap.containsKey("textures")) {
             return SkinRestorerResult.ofNoSkin();
@@ -64,8 +74,8 @@ public class SkinRestorerCore {
         Property textures = propertyMap.get("textures");
         JsonObject jsonObject = JsonParser.parseString(new String(Base64.getDecoder().decode(textures.getValue()), StandardCharsets.UTF_8)).getAsJsonObject();
         if (!jsonObject.has("textures")
-                && !jsonObject.getAsJsonObject("textures").has("SKIN")
-                && !jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").has("url")
+                || !jsonObject.getAsJsonObject("textures").has("SKIN")
+                || !jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").has("url")
         ) {
             return SkinRestorerResult.ofNoSkin();
         }
@@ -76,8 +86,11 @@ public class SkinRestorerCore {
                 && skinData.getAsJsonObject("metadata").has("model")
                 && skinData.getAsJsonObject("metadata").getAsJsonPrimitive("model").getAsString().equals("slim");
         if (isSignatureValid(textures.getValue(), textures.getSignature())) {
-            // todo 材质域名白名单判断
-            return SkinRestorerResult.ofSignatureValid();
+            if(isAllowedTextureDomain(url)){
+                return SkinRestorerResult.ofSignatureValid();
+            } else {
+                LoggerProvider.getLogger().warn(profile.getName() +  " has a valid skin signature, but the skin URL is invalid.");
+            }
         }
         byte[] bytes;
         try {
@@ -119,5 +132,27 @@ public class SkinRestorerCore {
         signature.initVerify(publicKey);
         signature.update(value.getBytes());
         return signature.verify(Base64.getDecoder().decode(signatureValue));
+    }
+
+    private static boolean isAllowedTextureDomain(String url) {
+        try {
+            String domain = new URI(url).getHost();
+            boolean allowed = false;
+            for (String allowedDomain : ALLOWED_DOMAINS) {
+                if(domain.endsWith(allowedDomain)){
+                    allowed = true;
+                    break;
+                }
+            }
+            if(!allowed) return false;
+            for (String blockedDomain : BLOCKED_DOMAINS) {
+                if (domain.endsWith(blockedDomain)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (URISyntaxException ignored) {
+            throw new IllegalArgumentException("Invalid URL '" + url + "'");
+        }
     }
 }
