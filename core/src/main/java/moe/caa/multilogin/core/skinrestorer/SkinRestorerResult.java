@@ -14,12 +14,20 @@ public class SkinRestorerResult {
     private final GameProfile response;
     private final Throwable throwable;
 
+    public static SkinRestorerResult ofNoSkin(){
+        return new SkinRestorerResult(Reason.NO_SKIN, null, null);
+    }
+
     public static SkinRestorerResult ofNoRestorer(){
         return new SkinRestorerResult(Reason.NO_RESTORER, null, null);
     }
 
     public static SkinRestorerResult ofSignatureValid(){
         return new SkinRestorerResult(Reason.SIGNATURE_VALID, null, null);
+    }
+
+    public static SkinRestorerResult ofUseCache(GameProfile profile){
+        return new SkinRestorerResult(Reason.USE_CACHE, profile, null);
     }
 
     public static SkinRestorerResult ofRestorerSucceed(GameProfile profile){
@@ -35,8 +43,14 @@ public class SkinRestorerResult {
     }
 
     public enum Reason {
-        // 没有开启皮肤修复或档案里面没有皮肤
+        // 档案里面没有皮肤
+        NO_SKIN,
+
+        // 没有开启皮肤修复
         NO_RESTORER,
+
+        // 使用缓存的皮肤修复数据
+        USE_CACHE,
 
         // 皮肤签名有效，无需修复
         SIGNATURE_VALID,
