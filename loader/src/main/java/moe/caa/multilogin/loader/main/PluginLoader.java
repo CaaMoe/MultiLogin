@@ -191,6 +191,7 @@ public class PluginLoader {
      */
     public synchronized void close() throws Exception {
         if (pluginClassLoader != null) pluginClassLoader.self().close();
+        plugin.getRunServer().getScheduler().shutdown();
         coreObject = null;
         pluginClassLoader = null;
         IOUtil.removeAllFiles(plugin.getTempFolder());

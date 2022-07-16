@@ -56,26 +56,7 @@ public class MultiLoginVelocity implements IPlugin {
             multiCoreAPI.load();
             new MultiInjTask(multiCoreAPI).run();
             CommandManager commandManager = server.getCommandManager();
-            SimpleCommand commandHandler = new SimpleCommand() {
-                @Override
-                public void execute(Invocation invocation) {
-                    String[] arguments = invocation.arguments();
-                    String[] ns = new String[arguments.length + 1];
-                    System.arraycopy(arguments, 0, ns, 1, arguments.length);
-                    ns[0] = invocation.alias();
-                    multiCoreAPI.getCommandHandler().execute(new VelocitySender(invocation.source()), ns);
-                }
-
-                @Override
-                public List<String> suggest(Invocation invocation) {
-                    String[] arguments = invocation.arguments();
-                    String[] ns = new String[arguments.length + 1];
-                    System.arraycopy(arguments, 0, ns, 1, arguments.length);
-                    ns[0] = invocation.alias();
-                    return multiCoreAPI.getCommandHandler().tabComplete(new VelocitySender(invocation.source()), ns);
-                }
-            };
-            commandManager.register(commandManager.metaBuilder("multilogin").build(), commandHandler);
+            commandManager.register(commandManager.metaBuilder("multilogin").build(), MultiLoginVelocity.this.new CommandHandler());
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
@@ -110,5 +91,25 @@ public class MultiLoginVelocity implements IPlugin {
         return JsonParser.parseReader(
                 new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream("/velocity-plugin.json")))
         ).getAsJsonObject().getAsJsonPrimitive("version").getAsString();
+    }
+
+    private class CommandHandler implements SimpleCommand {
+        @Override
+        public void execute(Invocation invocation) {
+            String[] arguments = invocation.arguments();
+            String[] ns = new String[arguments.length + 1];
+            System.arraycopy(arguments, 0, ns, 1, arguments.length);
+            ns[0] = invocation.alias();
+            multiCoreAPI.getCommandHandler().execute(new VelocitySender(invocation.source()), ns);
+        }
+
+        @Override
+        public List<String> suggest(Invocation invocation) {
+            String[] arguments = invocation.arguments();
+            String[] ns = new String[arguments.length + 1];
+            System.arraycopy(arguments, 0, ns, 1, arguments.length);
+            ns[0] = invocation.alias();
+            return multiCoreAPI.getCommandHandler().tabComplete(new VelocitySender(invocation.source()), ns);
+        }
     }
 }
