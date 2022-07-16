@@ -26,6 +26,14 @@ public class MultiLoginCommand {
                                 .then(handler.argument("username", StringArgumentType.string())
                                         .executes(this::executeEraseUsername)
                                 )
+                        ).then(handler.literal("whitelist")
+
+                        ).then(handler.literal("query")
+
+                        ).then(handler.literal("merge")
+
+                        ).then(handler.literal("confirm")
+
                         )
         );
 
