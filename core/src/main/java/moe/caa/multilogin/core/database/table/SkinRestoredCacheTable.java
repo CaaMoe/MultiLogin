@@ -1,0 +1,58 @@
+package moe.caa.multilogin.core.database.table;
+
+import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.core.database.SQLManager;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.MessageFormat;
+
+public class SkinRestoredCacheTable {
+    private static final String fieldCurrentSkinUrlSha256 = "current_skin_url_sha256";
+    private static final String fieldCurrentSkinModel = "current_skin_model";
+    private static final String fieldRestorerValue = "restorer_value";
+    private static final String fieldRestorerSignature = "restorer_signature";
+    private final SQLManager sqlManager;
+    private final String tableName;
+
+    public SkinRestoredCacheTable(SQLManager sqlManager, String tableName) {
+        this.sqlManager = sqlManager;
+        this.tableName = tableName;
+    }
+
+    public void init() throws SQLException {
+        String sql = MessageFormat.format(
+                "CREATE TABLE IF NOT EXISTS {0} ( " +
+                        "{1} BINARY(32) NOT NULL, " +
+                        "{2} VARCHAR(16) NOT NULL, " +
+                        "{3} LONGTEXT NOT NULL, " +
+                        "{4} LONGTEXT NOT NULL, " +
+                        "PRIMARY KEY ( {1}, {2} ))"
+                , tableName, fieldCurrentSkinUrlSha256, fieldCurrentSkinModel, fieldRestorerValue, fieldRestorerSignature);
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    public Pair<String, String> getCacheRestored(byte[] urlSha256, String model) throws SQLException {
+        String sql = String.format(
+                "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
+                , fieldRestorerValue, fieldRestorerSignature, tableName, fieldCurrentSkinUrlSha256, fieldCurrentSkinModel
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, urlSha256);
+            statement.setString(2, model);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Pair<>(resultSet.getString(1), resultSet.getString(2));
+                }
+            }
+        }
+        return null;
+    }
+}

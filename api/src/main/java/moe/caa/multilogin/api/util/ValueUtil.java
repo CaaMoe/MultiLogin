@@ -2,6 +2,9 @@ package moe.caa.multilogin.api.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
@@ -93,5 +96,9 @@ public class ValueUtil {
 
     public static String join(CharSequence delimiter, CharSequence lastDelimiter, Collection<? extends Object> elements) {
         return join(delimiter, lastDelimiter, elements.toArray(new Object[0]));
+    }
+
+    public static byte[] sha256(String str) throws NoSuchAlgorithmException {
+        return MessageDigest.getInstance("SHA-256").digest(str.getBytes(StandardCharsets.UTF_8));
     }
 }

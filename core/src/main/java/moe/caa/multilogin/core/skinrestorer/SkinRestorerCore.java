@@ -6,8 +6,11 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import okhttp3.OkHttpClient;
@@ -43,14 +46,23 @@ public class SkinRestorerCore {
         }
     }
 
-    private final YggdrasilServiceConfig yggdrasilServiceConfig;
-    private final OkHttpClient okHttpClient;
-    private final GameProfile profile;
+    private final MultiCore core;
 
-    public SkinRestorerCore(YggdrasilServiceConfig yggdrasilServiceConfig, GameProfile profile) {
-        this.yggdrasilServiceConfig = yggdrasilServiceConfig;
-        this.profile = profile.clone();
-        this.okHttpClient = new OkHttpClient.Builder()
+    public SkinRestorerCore(MultiCore core) {
+        this.core = core;
+    }
+
+    private static boolean isSignatureValid(String value, String signatureValue) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
+        Signature signature = Signature.getInstance("SHA1withRSA");
+        signature.initVerify(publicKey);
+        signature.update(value.getBytes());
+        return signature.verify(Base64.getDecoder().decode(signatureValue));
+    }
+
+    @SneakyThrows
+    public SkinRestorerResult doRestorer(YggdrasilServiceConfig yggdrasilServiceConfig, GameProfile profile) {
+        profile = profile.clone();
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new RetryInterceptor(yggdrasilServiceConfig.getSkinRestorer().getRetry(),
                         yggdrasilServiceConfig.getSkinRestorer().getRetryDelay()))
                 .addInterceptor(new LoggingInterceptor())
@@ -60,10 +72,7 @@ public class SkinRestorerCore {
                 .proxy(yggdrasilServiceConfig.getSkinRestorer().getProxy().getProxy())
                 .proxyAuthenticator(yggdrasilServiceConfig.getSkinRestorer().getProxy().getProxyAuthenticator())
                 .build();
-    }
 
-    @SneakyThrows
-    public SkinRestorerResult doRestorer() {
         if (yggdrasilServiceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.OFF) {
             return SkinRestorerResult.ofNoRestorer();
         }
@@ -81,36 +90,50 @@ public class SkinRestorerCore {
         }
         JsonObject skinData = jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").getAsJsonObject();
         String url = skinData.getAsJsonPrimitive("url").getAsString();
-        // todo 查询缓存
-        boolean slim = skinData.has("metadata")
+        String model = skinData.has("metadata")
                 && skinData.getAsJsonObject("metadata").has("model")
-                && skinData.getAsJsonObject("metadata").getAsJsonPrimitive("model").getAsString().equals("slim");
+                && skinData.getAsJsonObject("metadata").getAsJsonPrimitive("model")
+                .getAsString().equals("slim") ? "slim" : "classic";
+
+        Pair<String, String> cacheRestored =
+                core.getSqlManager().getSkinRestoredCacheTable().getCacheRestored(ValueUtil.sha256(url), model);
+        if (cacheRestored != null) {
+            Property restoredProperty = new Property();
+            restoredProperty.setName("textures");
+            restoredProperty.setValue(cacheRestored.getValue1());
+            restoredProperty.setSignature(cacheRestored.getValue2());
+            profile.getPropertyMap().remove("textures");
+            profile.getPropertyMap().put("textures", restoredProperty);
+            return SkinRestorerResult.ofUseCache(profile);
+        }
+
         if (isSignatureValid(textures.getValue(), textures.getSignature())) {
-            if(isAllowedTextureDomain(url)){
+            if (isAllowedTextureDomain(url)) {
                 return SkinRestorerResult.ofSignatureValid();
             } else {
-                LoggerProvider.getLogger().warn(profile.getName() +  " has a valid skin signature, but the skin URL is invalid.");
+                LoggerProvider.getLogger().warn(profile.getName() + " has a valid skin signature, but the skin URL is invalid.");
             }
         }
         byte[] bytes;
         try {
-            bytes = requireValidSkin(url, slim);
+            bytes = requireValidSkin(okHttpClient, url, model);
+            LoggerProvider.getLogger().debug(String.format("Repair skin: %s (%s)", url, model));
         } catch (Exception e) {
             return SkinRestorerResult.ofBadSkin(e);
         }
         // todo 开始修复
 
-        return SkinRestorerResult.ofNoRestorer();
+        return SkinRestorerResult.ofRestorerFailed(new SkinRestorerException());
     }
 
-    private byte[] requireValidSkin(String skinUrl, boolean slim) throws IOException {
+    private byte[] requireValidSkin(OkHttpClient ohc, String skinUrl, String model) throws IOException {
         Request request = new Request.Builder()
                 .get()
                 .url(skinUrl)
                 .build();
         // 下载皮肤原件
-        byte[] bytes = Objects.requireNonNull(okHttpClient.newCall(request).execute().body()).bytes();
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)){
+        byte[] bytes = Objects.requireNonNull(ohc.newCall(request).execute().body()).bytes();
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
             BufferedImage image = ImageIO.read(bais);
 
             boolean x64 = false; // 1.8 新版皮肤
@@ -125,13 +148,6 @@ public class SkinRestorerCore {
 
             return bytes;
         }
-    }
-
-    private boolean isSignatureValid(String value, String signatureValue) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
-        Signature signature = Signature.getInstance("SHA1withRSA");
-        signature.initVerify(publicKey);
-        signature.update(value.getBytes());
-        return signature.verify(Base64.getDecoder().decode(signatureValue));
     }
 
     private static boolean isAllowedTextureDomain(String url) {

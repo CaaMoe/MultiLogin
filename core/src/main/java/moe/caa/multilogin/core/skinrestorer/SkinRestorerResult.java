@@ -18,23 +18,27 @@ public class SkinRestorerResult {
         return new SkinRestorerResult(Reason.NO_SKIN, null, null);
     }
 
-    public static SkinRestorerResult ofNoRestorer(){
+    public static SkinRestorerResult ofNoRestorer() {
         return new SkinRestorerResult(Reason.NO_RESTORER, null, null);
     }
 
-    public static SkinRestorerResult ofSignatureValid(){
+    public static SkinRestorerResult ofSignatureValid() {
         return new SkinRestorerResult(Reason.SIGNATURE_VALID, null, null);
     }
 
-    public static SkinRestorerResult ofUseCache(GameProfile profile){
+    public static SkinRestorerResult ofRestorerAsync() {
+        return new SkinRestorerResult(Reason.RESTORER_ASYNC, null, null);
+    }
+
+    public static SkinRestorerResult ofUseCache(GameProfile profile) {
         return new SkinRestorerResult(Reason.USE_CACHE, profile, null);
     }
 
-    public static SkinRestorerResult ofRestorerSucceed(GameProfile profile){
+    public static SkinRestorerResult ofRestorerSucceed(GameProfile profile) {
         return new SkinRestorerResult(Reason.RESTORER_SUCCEED, profile, null);
     }
 
-    public static SkinRestorerResult ofBadSkin(Throwable throwable){
+    public static SkinRestorerResult ofBadSkin(Throwable throwable) {
         return new SkinRestorerResult(Reason.BAD_SKIN, null, throwable);
     }
 
@@ -60,6 +64,9 @@ public class SkinRestorerResult {
 
         // 皮肤修复成功
         RESTORER_SUCCEED,
+
+        // 非阻塞式修复
+        RESTORER_ASYNC,
 
         // 皮肤修复失败
         RESTORER_FAILED;

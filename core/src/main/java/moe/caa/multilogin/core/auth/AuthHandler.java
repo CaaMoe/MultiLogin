@@ -8,17 +8,21 @@ import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
+import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 
 public class AuthHandler implements AuthAPI {
     private final MultiCore core;
     private final YggdrasilAuthenticationService yggdrasilAuthenticationService;
     private final ValidateAuthenticationService validateAuthenticationService;
+    private final SkinRestorerCore skinRestorerCore;
 
 
     public AuthHandler(MultiCore core) {
         this.core = core;
         this.yggdrasilAuthenticationService = new YggdrasilAuthenticationService(core);
         this.validateAuthenticationService = new ValidateAuthenticationService(core);
+        this.skinRestorerCore = new SkinRestorerCore(core);
     }
 
     @Override
@@ -56,6 +60,16 @@ public class AuthHandler implements AuthAPI {
                                 yggdrasilAuthenticationResult.getYggdrasilId()
                         )
                 );
+                try {
+                    SkinRestorerResult skinRestorerResult = skinRestorerCore.doRestorer(
+                            yggdrasilAuthenticationResult.getYggdrasilServiceConfig(),
+                            validateAuthenticationResult.getInGameProfile()
+                    );
+                    System.out.println(skinRestorerResult);
+                } catch (Exception e) {
+                    LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", e);
+                }
+
                 return AuthResult.ofAllowed(validateAuthenticationResult.getInGameProfile());
             }
             return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
