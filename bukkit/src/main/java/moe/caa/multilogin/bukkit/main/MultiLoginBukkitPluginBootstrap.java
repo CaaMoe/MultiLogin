@@ -147,7 +147,7 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
                     final Object o = declaredField.get(source);
                     if (ignore.add(o.getClass())) return forceGet(o, needGet, ignore);
 
-                } catch (Exception ignored) {
+                } catch (Throwable ignored) {
                 }
             }
         } while ((sourceClass = sourceClass.getSuperclass()) != null);
