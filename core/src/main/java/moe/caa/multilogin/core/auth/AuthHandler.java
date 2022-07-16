@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.auth;
 
 import moe.caa.multilogin.api.auth.AuthAPI;
 import moe.caa.multilogin.api.auth.AuthResult;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationResult;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
@@ -60,16 +61,25 @@ public class AuthHandler implements AuthAPI {
                                 yggdrasilAuthenticationResult.getYggdrasilId()
                         )
                 );
+                GameProfile restoredSkinProfile = null;
                 try {
                     SkinRestorerResult skinRestorerResult = skinRestorerCore.doRestorer(
                             yggdrasilAuthenticationResult.getYggdrasilServiceConfig(),
                             validateAuthenticationResult.getInGameProfile()
                     );
-                    System.out.println(skinRestorerResult);
+                    SkinRestorerResult.handleSkinRestoreResult(skinRestorerResult);
+                    restoredSkinProfile = skinRestorerResult.getResponse();
+                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), skinRestorerResult.getReason()));
                 } catch (Exception e) {
-                    LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", e);
+                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), "error"));
+                    SkinRestorerResult.handleSkinRestoreResult(e);
                 }
 
+                if (restoredSkinProfile != null) {
+                    System.out.println(restoredSkinProfile);
+                    return AuthResult.ofAllowed(restoredSkinProfile);
+                }
+                System.out.println(validateAuthenticationResult.getInGameProfile());
                 return AuthResult.ofAllowed(validateAuthenticationResult.getInGameProfile());
             }
             return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());

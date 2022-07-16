@@ -7,7 +7,6 @@ import okio.BufferedSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
 public class LoggingInterceptor implements Interceptor {
@@ -22,7 +21,7 @@ public class LoggingInterceptor implements Interceptor {
         if (requestBody != null) {
             Buffer bf = new Buffer();
             requestBody.writeTo(bf);
-            LoggerProvider.getLogger().debug(String.format("--> %s", bf.readString(StandardCharsets.UTF_8)));
+            LoggerProvider.getLogger().debug(String.format("--> (%d bytes)", bf.size()));
         }
 
         long startNs = System.nanoTime();

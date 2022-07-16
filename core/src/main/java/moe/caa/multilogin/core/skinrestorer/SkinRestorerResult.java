@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.logger.LoggerProvider;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -42,8 +43,18 @@ public class SkinRestorerResult {
         return new SkinRestorerResult(Reason.BAD_SKIN, null, throwable);
     }
 
-    public static SkinRestorerResult ofRestorerFailed(Throwable throwable){
+    public static SkinRestorerResult ofRestorerFailed(Throwable throwable) {
         return new SkinRestorerResult(Reason.RESTORER_FAILED, null, throwable);
+    }
+
+    public static void handleSkinRestoreResult(Throwable throwable) {
+        LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", throwable);
+    }
+
+    public static void handleSkinRestoreResult(SkinRestorerResult result) {
+        if (result.getThrowable() != null) {
+            handleSkinRestoreResult(result.getThrowable());
+        }
     }
 
     public enum Reason {

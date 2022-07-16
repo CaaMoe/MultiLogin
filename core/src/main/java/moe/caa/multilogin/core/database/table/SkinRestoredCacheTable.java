@@ -55,4 +55,20 @@ public class SkinRestoredCacheTable {
         }
         return null;
     }
+
+    public void insertNew(byte[] urlSha256, String model, String value, String signature) throws SQLException {
+        String sql = String.format(
+                "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) "
+                , tableName, fieldCurrentSkinUrlSha256, fieldCurrentSkinModel, fieldRestorerValue, fieldRestorerSignature
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, urlSha256);
+            statement.setString(2, model);
+            statement.setString(3, value);
+            statement.setString(4, signature);
+            statement.executeUpdate();
+        }
+    }
 }

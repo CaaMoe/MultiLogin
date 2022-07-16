@@ -14,12 +14,7 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.ohc.LoggingInterceptor;
 import moe.caa.multilogin.core.ohc.RetryInterceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +23,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Objects;
 
 public class SkinRestorerCore {
     private static final String[] ALLOWED_DOMAINS = new String[] { ".minecraft.net", ".mojang.com" };
@@ -114,41 +108,22 @@ public class SkinRestorerCore {
                 LoggerProvider.getLogger().warn(profile.getName() + " has a valid skin signature, but the skin URL is invalid.");
             }
         }
-        byte[] bytes;
-        try {
-            bytes = requireValidSkin(okHttpClient, url, model);
-            LoggerProvider.getLogger().debug(String.format("Repair skin: %s (%s)", url, model));
-        } catch (Exception e) {
-            return SkinRestorerResult.ofBadSkin(e);
-        }
-        // todo 开始修复
 
-        return SkinRestorerResult.ofRestorerFailed(new SkinRestorerException());
+        SkinRestorerFlows srf = new SkinRestorerFlows(core, yggdrasilServiceConfig, okHttpClient, url, model, profile);
+        if (yggdrasilServiceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.ASYNC) {
+            core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
+                try {
+                    SkinRestorerResult.handleSkinRestoreResult(srf.call());
+                } catch (Exception e) {
+                    SkinRestorerResult.handleSkinRestoreResult(e);
+                }
+            });
+            return SkinRestorerResult.ofRestorerAsync();
+        }
+        return srf.call();
     }
 
-    private byte[] requireValidSkin(OkHttpClient ohc, String skinUrl, String model) throws IOException {
-        Request request = new Request.Builder()
-                .get()
-                .url(skinUrl)
-                .build();
-        // 下载皮肤原件
-        byte[] bytes = Objects.requireNonNull(ohc.newCall(request).execute().body()).bytes();
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes)) {
-            BufferedImage image = ImageIO.read(bais);
 
-            boolean x64 = false; // 1.8 新版皮肤
-            if (image.getWidth() != 64) {
-                throw new SkinRestorerException("Skin width is not 64.");
-            }
-            if (!(image.getHeight() == 32 || image.getHeight() == 64)) {
-                throw new SkinRestorerException("Skin height is not 64 or 32.");
-            }
-            x64 = image.getHeight() == 64;
-            // TODO: 2022/7/13 皮肤半透明判断
-
-            return bytes;
-        }
-    }
 
     private static boolean isAllowedTextureDomain(String url) {
         try {
