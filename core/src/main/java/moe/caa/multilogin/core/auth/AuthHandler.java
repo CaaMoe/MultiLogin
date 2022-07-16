@@ -76,10 +76,8 @@ public class AuthHandler implements AuthAPI {
                 }
 
                 if (restoredSkinProfile != null) {
-                    System.out.println(restoredSkinProfile);
                     return AuthResult.ofAllowed(restoredSkinProfile);
                 }
-                System.out.println(validateAuthenticationResult.getInGameProfile());
                 return AuthResult.ofAllowed(validateAuthenticationResult.getInGameProfile());
             }
             return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
