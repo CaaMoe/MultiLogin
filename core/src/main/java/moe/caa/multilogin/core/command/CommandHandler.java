@@ -26,13 +26,16 @@ public class CommandHandler implements CommandAPI {
     private final CommandDispatcher<ISender> dispatcher;
     @Getter
     private static BuiltInExceptions builtInExceptions;
+    @Getter
+    private final SecondaryConfirmationHandler secondaryConfirmationHandler;
 
     public CommandHandler(MultiCore core) {
         this.core = core;
         this.dispatcher = new CommandDispatcher<>();
-
+        this.secondaryConfirmationHandler = new SecondaryConfirmationHandler();
     }
-    public void init(){
+
+    public void init() {
         new MultiLoginCommand(this).register();
         CommandSyntaxException.BUILT_IN_EXCEPTIONS =
                 CommandHandler.builtInExceptions =
