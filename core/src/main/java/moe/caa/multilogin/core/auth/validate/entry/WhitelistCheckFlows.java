@@ -6,7 +6,12 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
+    public static final Set<String> cachedWhitelist = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final MultiCore core;
 
     public WhitelistCheckFlows(MultiCore core) {
@@ -16,6 +21,10 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
+        boolean removed = cachedWhitelist.remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName());
+        if (removed) {
+            core.getSqlManager().getUserDataTable().setWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(), validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(), true);
+        }
         // 如果没有开启白名单验证
         if (!validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().isWhitelist()) {
             return Signal.PASSED;

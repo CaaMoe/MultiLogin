@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.command.commands;
 
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.plugin.ISender;
@@ -8,47 +9,24 @@ import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 
-public class MultiLoginCommand {
+public class RootCommand {
     private final CommandHandler handler;
+    private final MWhitelistCommand mWhitelistCommand;
 
-    public MultiLoginCommand(CommandHandler handler) {
+    public RootCommand(CommandHandler handler) {
         this.handler = handler;
+        this.mWhitelistCommand = new MWhitelistCommand(handler);
     }
 
-    public void register() {
-        handler.getDispatcher().register(handler.literal("multilogin")
-                .then(handler.literal("reload")
+    public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
+        return literalArgumentBuilder.then(handler.literal("reload")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_RELOAD))
                         .executes(this::executeReload))
-                .then(handler.literal("comfirm")
-                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
-                        .executes(this::executeConfirm))
                 .then(handler.literal("eraseUsername")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_USERNAME))
                         .then(handler.argument("username", StringArgumentType.string())
                                 .executes(this::executeEraseUsername)))
-                .then(handler.literal("whitelist")
-                        .then(handler.literal("add"))
-                        .then(handler.literal("remove")))
-                .then(handler.literal("search")
-                        .then(handler.literal("login"))
-                        .then(handler.literal("whitelist"))
-                        .then(handler.literal("inGameUUID")))
-                .then(handler.literal("merge"))
-                .then(handler.literal("mergeTo"))
-                .then(handler.literal("distribute"))
-                .then(handler.literal("distributeTo"))
-        );
-
-    }
-
-    @SneakyThrows
-    private int executeConfirm(CommandContext<ISender> context) {
-        boolean confirm = handler.getSecondaryConfirmationHandler().confirm(context.getSource());
-        if (!confirm) {
-            context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_confirm_not_found"));
-        }
-        return 0;
+                .then(mWhitelistCommand.register(handler.literal("whitelist")));
     }
 
     @SneakyThrows

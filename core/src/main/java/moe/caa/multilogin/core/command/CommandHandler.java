@@ -11,7 +11,7 @@ import lombok.Getter;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.core.command.commands.MultiLoginCommand;
+import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class CommandHandler implements CommandAPI {
     @Getter
     private final MultiCore core;
-    @Getter
+
     private final CommandDispatcher<ISender> dispatcher;
     @Getter
     private static BuiltInExceptions builtInExceptions;
@@ -36,10 +36,9 @@ public class CommandHandler implements CommandAPI {
     }
 
     public void init() {
-        new MultiLoginCommand(this).register();
-        CommandSyntaxException.BUILT_IN_EXCEPTIONS =
-                CommandHandler.builtInExceptions =
-                        new BuiltInExceptions(core);
+        dispatcher.register(new RootCommand(this).register(literal("multilogin")));
+        CommandSyntaxException.BUILT_IN_EXCEPTIONS = CommandHandler.builtInExceptions =
+                new BuiltInExceptions(core);
     }
 
     @Override

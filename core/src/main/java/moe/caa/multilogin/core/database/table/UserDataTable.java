@@ -34,7 +34,7 @@ public class UserDataTable {
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(16) NOT NULL, " +
                         "{2} BINARY(1) NOT NULL, " +
-                        "{3} BINARY(16) DEFAULT NULL, " +
+                        "{3} BINARY(16) NOT NULL, " +
                         "{4} BOOL DEFAULT FALSE, " +
                         "PRIMARY KEY ( {1}, {2} ))"
                 , tableName, fieldOnlineUUID, fieldYggdrasilId, fieldInGameProfileUuid, fieldWhitelist);
@@ -118,8 +118,22 @@ public class UserDataTable {
         }
     }
 
+    public void setWhitelist(UUID onlineUUID, int yggdrasilId, boolean whitelist) throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s = ? WHERE %s = ? AND %s = ? LIMIT 1"
+                , tableName, fieldWhitelist, fieldOnlineUUID, fieldYggdrasilId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBoolean(1, whitelist);
+            statement.setBytes(2, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setBytes(3, new byte[]{(byte) yggdrasilId});
+            statement.executeUpdate();
+        }
+    }
+
     public boolean hasWhitelist(UUID onlineUUID, int yggdrasilId) throws SQLException {
-        Set<Integer> result = new HashSet<>();
         String sql = String.format(
                 "SELECT %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
                 , fieldWhitelist, tableName, fieldOnlineUUID, fieldYggdrasilId
@@ -136,5 +150,37 @@ public class UserDataTable {
             }
         }
         return false;
+    }
+
+    public boolean hasWhitelist(UUID inGameUUID) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
+                , fieldWhitelist, tableName, fieldInGameProfileUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getBoolean(1);
+                }
+            }
+        }
+        return false;
+    }
+
+    public void setWhitelist(UUID inGameUUID, boolean whitelist) throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s = ? WHERE %s = ?LIMIT 1"
+                , tableName, fieldWhitelist, fieldInGameProfileUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBoolean(1, whitelist);
+            statement.setBytes(2, ValueUtil.uuidToBytes(inGameUUID));
+            statement.executeUpdate();
+        }
     }
 }
