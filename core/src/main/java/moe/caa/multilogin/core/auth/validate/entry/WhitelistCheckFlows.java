@@ -7,6 +7,7 @@ import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -21,7 +22,7 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
-        boolean removed = cachedWhitelist.remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName());
+        boolean removed = cachedWhitelist.remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName().toLowerCase(Locale.ROOT));
         if (removed) {
             core.getSqlManager().getUserDataTable().setWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(), validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(), true);
         }

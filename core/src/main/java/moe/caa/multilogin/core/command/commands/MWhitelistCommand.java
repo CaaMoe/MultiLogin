@@ -12,6 +12,7 @@ import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
 
+import java.util.Locale;
 import java.util.UUID;
 
 public class MWhitelistCommand {
@@ -75,7 +76,7 @@ public class MWhitelistCommand {
 
     @SneakyThrows
     private int executeAddUsername(CommandContext<ISender> context) {
-        String username = StringArgumentType.getString(context, "username");
+        String username = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
         boolean have = false;
         UUID inGameUUID = handler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
         if (inGameUUID != null) {
