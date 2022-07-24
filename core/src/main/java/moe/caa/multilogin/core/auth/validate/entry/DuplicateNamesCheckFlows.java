@@ -28,6 +28,15 @@ public class DuplicateNamesCheckFlows extends BaseFlows<ValidateContext> {
             inGameUUID = validateContext.getInGameProfile().getId();
             core.getSqlManager().getInGameProfileTable().
                     updateUsername(inGameUUID, validateContext.getInGameProfile().getName());
+
+            // 更新占用前先踢一下
+            String kickMsg = core.getLanguageHandler().getMessage("in_game_username_occupy",
+                    new Pair<>("current_username", validateContext.getInGameProfile().getName()));
+
+            // 踢出
+            for (IPlayer player : core.getPlugin().getRunServer().getPlayerManager().getPlayers(validateContext.getInGameProfile().getName())) {
+                player.kickPlayer(kickMsg);
+            }
             return Signal.PASSED;
         }
         // 否则，看他有没有权限占用这个用户名

@@ -3,11 +3,14 @@ package moe.caa.multilogin.core.command.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
+
+import java.util.Locale;
 
 public class RootCommand {
     private final CommandHandler handler;
@@ -31,8 +34,15 @@ public class RootCommand {
 
     @SneakyThrows
     private int executeEraseUsername(CommandContext<ISender> context) {
-        String string = StringArgumentType.getString(context, "username");
+        String string = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
         int i = handler.getCore().getSqlManager().getInGameProfileTable().eraseUsername(string);
+        // 更新前先踢一下
+        String kickMsg = handler.getCore().getLanguageHandler().getMessage("in_game_username_occupy",
+                new Pair<>("current_username", string));
+        // 踢出
+        for (IPlayer player : handler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayers(string)) {
+            player.kickPlayer(kickMsg);
+        }
         if (i == 0) {
             context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
                     new Pair<>("current_username", string)
