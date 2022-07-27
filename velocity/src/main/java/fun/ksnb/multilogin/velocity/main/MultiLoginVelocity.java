@@ -28,14 +28,17 @@ import java.util.Objects;
 
 public class MultiLoginVelocity implements IPlugin {
     private final Path dataDirectory;
+    @Getter
     private final ProxyServer server;
     @Getter
     private final VelocityServer runServer;
     private final PluginLoader pluginLoader;
+    @Getter
     private MultiCoreAPI multiCoreAPI;
 
     @Inject
     public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
+
         this.server = server;
         this.runServer = new VelocityServer(this.server);
         this.dataDirectory = dataDirectory;
@@ -46,6 +49,7 @@ public class MultiLoginVelocity implements IPlugin {
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             server.shutdown();
+            return;
         }
     }
 
@@ -60,7 +64,9 @@ public class MultiLoginVelocity implements IPlugin {
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
+            return;
         }
+        new GlobalListener(this).register();
     }
 
     @Subscribe

@@ -38,9 +38,12 @@ public class MultiCore implements MultiCoreAPI {
     @Getter
     private final LanguageHandler languageHandler;
     @Getter
+    private final PlayerCache cache;
+    @Getter
     private final Gson gson;
     @Getter
     private final SemVersion semVersion;
+
 
     /**
      * 构建猫踢核心，这个方法将会被反射调用
@@ -53,6 +56,7 @@ public class MultiCore implements MultiCoreAPI {
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
         this.semVersion = SemVersion.of(plugin.getVersion());
+        this.cache = new PlayerCache();
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(GameProfile.class, new GameProfileSerializer())

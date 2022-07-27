@@ -9,6 +9,7 @@ import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.core.main.PlayerCache;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 
@@ -75,10 +76,18 @@ public class AuthHandler implements AuthAPI {
                     SkinRestorerResult.handleSkinRestoreResult(e);
                 }
 
+                GameProfile finalProfile;
                 if (restoredSkinProfile != null) {
-                    return AuthResult.ofAllowed(restoredSkinProfile);
+                    finalProfile = restoredSkinProfile;
+                } else {
+                    finalProfile = validateAuthenticationResult.getInGameProfile();
                 }
-                return AuthResult.ofAllowed(validateAuthenticationResult.getInGameProfile());
+                core.getCache().getLoginCache().put(finalProfile.getId(), new PlayerCache.Entry(
+                        yggdrasilAuthenticationResult.getResponse().getId(),
+                        yggdrasilAuthenticationResult.getYggdrasilId(),
+                        System.currentTimeMillis()
+                ));
+                return AuthResult.ofAllowed(finalProfile);
             }
             return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
         } catch (Exception e){

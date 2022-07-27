@@ -27,4 +27,6 @@ public interface MultiCoreAPI {
      * 返回混合验证处理程序
      */
     AuthAPI getAuthHandler();
+
+    CacheAPI getCache();
 }
