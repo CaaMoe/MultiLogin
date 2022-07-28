@@ -1,7 +1,7 @@
 # group id               # name               # version
 
 com.zaxxer               HikariCP             5.0.1
-mysql                    mysql-connector-java 8.0.28
+mysql                    mysql-connector-java 8.0.29
 com.h2database           h2                   2.1.212
 com.google.code.gson     gson                 2.9.0
 org.spongepowered        configurate-yaml     4.1.2

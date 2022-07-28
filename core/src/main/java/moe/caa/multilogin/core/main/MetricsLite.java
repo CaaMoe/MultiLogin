@@ -85,7 +85,7 @@ public class MetricsLite {
     public JsonObject getPluginData() {
         JsonObject data = new JsonObject();
 
-        String pluginVersion = core.getPlugin().getVersion() + "-" + core.getPlugin().getRunServer().getName();
+        String pluginVersion = core.getPlugin().getVersion();
 
         data.addProperty("pluginName", "MultiLoginR"); // Append the name of the plugin
         data.addProperty("id", 12130); // Append the id of the plugin
