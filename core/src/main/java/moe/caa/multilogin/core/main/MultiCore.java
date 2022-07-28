@@ -56,7 +56,7 @@ public class MultiCore implements MultiCoreAPI {
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
         this.semVersion = SemVersion.of(plugin.getVersion());
-        this.cache = new PlayerCache();
+        this.cache = new PlayerCache(this);
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(GameProfile.class, new GameProfileSerializer())
@@ -75,6 +75,7 @@ public class MultiCore implements MultiCoreAPI {
         pluginConfig.reload();
         sqlManager.init();
         commandHandler.init();
+        cache.register();
     }
 
     /**

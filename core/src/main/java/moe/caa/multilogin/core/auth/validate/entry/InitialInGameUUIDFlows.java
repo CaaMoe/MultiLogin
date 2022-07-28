@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.auth.validate.entry;
 
 import lombok.SneakyThrows;
-import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.validate.ValidateContext;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
@@ -48,9 +47,6 @@ public class InitialInGameUUIDFlows extends BaseFlows<ValidateContext> {
                     validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
                     inGameUUID
             );
-            LoggerProvider.getLogger().info(String.format("New profile: online uuid: %s, yggdrasil id: %d, in game uuid: %s.", validateContext.getYggdrasilAuthenticationResult().getResponse().getId().toString(),
-                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(), inGameUUID.toString()
-            ));
         } else {
             // 检查一下数据存不存在，不存在就新建
             try {
