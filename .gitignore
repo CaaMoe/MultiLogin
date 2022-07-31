@@ -2,3 +2,4 @@
 .digests
 /.gradle/
 */build/
+/build/
