@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import lombok.Getter;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;
+import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.core.auth.AuthHandler;
@@ -76,6 +77,12 @@ public class MultiCore implements MultiCoreAPI {
         sqlManager.init();
         commandHandler.init();
         cache.register();
+
+        LoggerProvider.getLogger().info(
+                String.format("Loaded, using MultiLogin v%s on %s v%s",
+                        plugin.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
+                )
+        );
     }
 
     /**

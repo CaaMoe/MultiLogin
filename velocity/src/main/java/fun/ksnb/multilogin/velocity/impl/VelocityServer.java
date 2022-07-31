@@ -5,6 +5,7 @@ import com.velocitypowered.proxy.config.PlayerInfoForwarding;
 import com.velocitypowered.proxy.config.VelocityConfiguration;
 import moe.caa.multilogin.api.plugin.BaseScheduler;
 import moe.caa.multilogin.api.plugin.IPlayerManager;
+import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
 
 public class VelocityServer implements IServer {
@@ -56,5 +57,10 @@ public class VelocityServer implements IServer {
     @Override
     public void shutdown() {
         server.shutdown();
+    }
+
+    @Override
+    public ISender getConsoleSender() {
+        return new VelocitySender(server.getConsoleCommandSource());
     }
 }

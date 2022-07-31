@@ -29,7 +29,7 @@ import java.util.Objects;
 public class MultiLoginVelocity implements IPlugin {
     private final Path dataDirectory;
     @Getter
-    private final ProxyServer server;
+    private final com.velocitypowered.proxy.VelocityServer server;
     @Getter
     private final VelocityServer runServer;
     private final PluginLoader pluginLoader;
@@ -39,7 +39,7 @@ public class MultiLoginVelocity implements IPlugin {
     @Inject
     public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
 
-        this.server = server;
+        this.server = (com.velocitypowered.proxy.VelocityServer) server;
         this.runServer = new VelocityServer(this.server);
         this.dataDirectory = dataDirectory;
         LoggerProvider.setLogger(new Slf4jLoggerBridge(logger));

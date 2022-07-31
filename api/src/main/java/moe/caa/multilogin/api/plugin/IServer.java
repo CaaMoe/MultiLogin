@@ -51,4 +51,6 @@ public interface IServer {
      * 关闭服务器
      */
     void shutdown();
+
+    ISender getConsoleSender();
 }
