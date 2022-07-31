@@ -85,6 +85,11 @@ public class MultiCore implements MultiCoreAPI {
         );
     }
 
+    public void reload() throws IOException, URISyntaxException {
+        pluginConfig.reload();
+        languageHandler.reload();
+    }
+
     /**
      * 关闭猫踢核心
      */

@@ -120,7 +120,7 @@ public class RootCommand {
 
     @SneakyThrows
     private int executeReload(CommandContext<ISender> context) {
-        handler.getCore().getPluginConfig().reload();
+        handler.getCore().reload();
         context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_reloaded"));
         return 0;
     }

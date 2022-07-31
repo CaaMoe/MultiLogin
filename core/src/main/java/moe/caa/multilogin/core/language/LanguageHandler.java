@@ -28,7 +28,19 @@ public class LanguageHandler implements LanguageAPI {
      * 初始化这个可读文本处理程序
      */
     public void init() throws IOException {
-        language = new Properties();
+        reload();
+    }
+
+    /**
+     * 重新加载外置语言仓库
+     */
+    public final String getMessage(String node, Pair<?, ?>... pairs) {
+        return ValueUtil.transPapi(language.getProperty(node), pairs);
+    }
+
+    public void reload() throws IOException {
+        Properties tmp = new Properties();
+        // 加载文件
         final File messagePropertiesFile = new File(core.getPlugin().getDataFolder(), "message.properties");
         if (!messagePropertiesFile.exists()) {
             try (OutputStream outputStream = new FileOutputStream(messagePropertiesFile);
@@ -39,26 +51,23 @@ public class LanguageHandler implements LanguageAPI {
             LoggerProvider.getLogger().info("Extract: message.properties");
         }
 
-        InputStream inputStream = new FileInputStream(messagePropertiesFile);
-        language.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        // 加载文件内容
+        try (InputStream inputStream = new FileInputStream(messagePropertiesFile);) {
+            tmp.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        }
 
+        // 补全内容
         try (InputStream resourceAsStream = Objects.requireNonNull(getClass().getResourceAsStream("/message.properties"));
              InputStreamReader isr = new InputStreamReader(resourceAsStream, StandardCharsets.UTF_8);
         ) {
             Properties inside = new Properties();
             inside.load(isr);
             for (Map.Entry<Object, Object> entry : inside.entrySet()) {
-                if (language.containsKey(entry.getKey())) continue;
-                language.setProperty(entry.getKey().toString(), entry.getValue().toString());
+                if (tmp.containsKey(entry.getKey())) continue;
+                tmp.setProperty(entry.getKey().toString(), entry.getValue().toString());
                 LoggerProvider.getLogger().warn("Missing message from node " + entry.getKey().toString());
             }
         }
-    }
-
-    /**
-     * 重新加载外置语言仓库
-     */
-    public final String getMessage(String node, Pair<?, ?>... pairs) {
-        return ValueUtil.transPapi(language.getProperty(node), pairs);
+        language = tmp;
     }
 }
