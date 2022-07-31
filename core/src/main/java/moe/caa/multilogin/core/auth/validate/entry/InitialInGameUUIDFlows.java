@@ -25,7 +25,7 @@ public class InitialInGameUUIDFlows extends BaseFlows<ValidateContext> {
                 validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
                 validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
         );
-        // 如果这个 UUID 不存在，表示是个新玩家。
+        // 如果这个 UUID 不存在，表示是个新玩家或是 游戏内UUID 缺失的玩家（还是新玩家）。
         if (inGameUUID == null) {
 
             inGameUUID = validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().getInitUUID()
@@ -42,11 +42,23 @@ public class InitialInGameUUIDFlows extends BaseFlows<ValidateContext> {
                 }
             } while (!inserted);
 
-            core.getSqlManager().getUserDataTable().insertNewData(
+            if (core.getSqlManager().getUserDataTable().dataExists(
                     validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
-                    inGameUUID
-            );
+                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
+            )) {
+                core.getSqlManager().getUserDataTable().setInGameUUID(
+                        validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
+                        validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
+                        inGameUUID);
+            } else {
+                core.getSqlManager().getUserDataTable().insertNewData(
+                        validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
+                        validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
+                        inGameUUID
+                );
+            }
+
+
         } else {
             // 检查一下数据存不存在，不存在就新建
             try {

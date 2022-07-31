@@ -12,6 +12,7 @@ import moe.caa.multilogin.core.main.MultiCore;
  * 自定义消息
  */
 public class BuiltInExceptions implements BuiltInExceptionProvider {
+    private final DynamicCommandExceptionType YGGDRASIL_ID_NOT_FOUND;
     private final Dynamic2CommandExceptionType DOUBLE_TOO_SMALL;
     private final Dynamic2CommandExceptionType DOUBLE_TOO_BIG;
     private final Dynamic2CommandExceptionType FLOAT_TOO_SMALL;
@@ -119,6 +120,11 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
 
         READER_INVALID_UUID = new DynamicCommandExceptionType(value -> new LiteralMessage(
                 core.getLanguageHandler().getMessage("command_exception_reader_invalid_uuid",
+                        new Pair<>("value", value)
+                )));
+
+        YGGDRASIL_ID_NOT_FOUND = new DynamicCommandExceptionType(value -> new LiteralMessage(
+                core.getLanguageHandler().getMessage("command_exception_yggdrasilid_not_found",
                         new Pair<>("value", value)
                 )));
     }
@@ -260,5 +266,9 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
 
     public DynamicCommandExceptionType readerInvalidUUID() {
         return READER_INVALID_UUID;
+    }
+
+    public DynamicCommandExceptionType yggdrasilidNotFound() {
+        return YGGDRASIL_ID_NOT_FOUND;
     }
 }

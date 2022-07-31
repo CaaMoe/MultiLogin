@@ -38,14 +38,14 @@ public class RootCommand {
     }
 
     private int executeList(CommandContext<ISender> context) {
-        Set<IPlayer> onlinePlayers = handler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers();
+        Set<IPlayer> onlinePlayers = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers();
         if (onlinePlayers.size() == 0) {
-            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_list_no_player"));
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_no_player"));
             return 0;
         }
         Map<Integer, List<String>> identifiedPlayerMap = new HashMap<>();
         for (IPlayer player : onlinePlayers) {
-            Pair<UUID, Integer> profile = handler.getCore().getCache().getPlayerOnlineProfile(player.getUniqueId());
+            Pair<UUID, Integer> profile = CommandHandler.getCore().getCache().getPlayerOnlineProfile(player.getUniqueId());
             int yid = -1;
             if (profile != null) {
                 yid = profile.getValue2();
@@ -55,18 +55,18 @@ public class RootCommand {
             identifiedPlayerMap.put(yid, list);
         }
 
-        String message = handler.getCore().getLanguageHandler().getMessage("command_message_list",
+        String message = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list",
                 new Pair<>("list", identifiedPlayerMap.entrySet().stream().map(entry -> {
                     // 获得 Ygg Name
                     String yggName;
                     if (entry.getKey() == -1) {
                         // 黑户
-                        yggName = handler.getCore().getLanguageHandler().getMessage("command_message_list_unidentified_entry_name");
+                        yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_unidentified_entry_name");
                     } else {
-                        YggdrasilServiceConfig serviceConfig = handler.getCore().getPluginConfig().getIdMap().get(entry.getKey());
+                        YggdrasilServiceConfig serviceConfig = CommandHandler.getCore().getPluginConfig().getIdMap().get(entry.getKey());
                         if (serviceConfig == null) {
                             // 不明的
-                            yggName = handler.getCore().getLanguageHandler().getMessage("command_message_list_unknown_entry_name");
+                            yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_unknown_entry_name");
                         } else {
                             yggName = serviceConfig.getName();
                         }
@@ -74,21 +74,21 @@ public class RootCommand {
 
                     // 玩家列表
                     String playerListString = entry.getValue().stream()
-                            .map(s -> handler.getCore().getLanguageHandler().getMessage("command_message_list_player_entry",
+                            .map(s -> CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_entry",
                                     new Pair<>("player_name", s)
                             ))
                             .collect(Collectors.joining(
-                                            handler.getCore().getLanguageHandler().getMessage("command_message_list_player_delimiter")
+                                            CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_delimiter")
                                     )
                             );
 
-                    return handler.getCore().getLanguageHandler().getMessage("command_message_list_entry",
+                    return CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_entry",
                             new Pair<>("yggdrasil_name", yggName),
                             new Pair<>("yggdrasil_id", entry.getKey()),
                             new Pair<>("player_count", entry.getValue().size()),
                             new Pair<>("player_list", playerListString)
                     );
-                }).collect(Collectors.joining(handler.getCore().getLanguageHandler().getMessage("command_message_list_delimiter")))),
+                }).collect(Collectors.joining(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_delimiter")))),
                 new Pair<>("count", onlinePlayers.size())
         );
         context.getSource().sendMessagePL(message);
@@ -98,20 +98,20 @@ public class RootCommand {
     @SneakyThrows
     private int executeEraseUsername(CommandContext<ISender> context) {
         String string = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
-        int i = handler.getCore().getSqlManager().getInGameProfileTable().eraseUsername(string);
+        int i = CommandHandler.getCore().getSqlManager().getInGameProfileTable().eraseUsername(string);
         // 更新前先踢一下
-        String kickMsg = handler.getCore().getLanguageHandler().getMessage("in_game_username_occupy",
+        String kickMsg = CommandHandler.getCore().getLanguageHandler().getMessage("in_game_username_occupy",
                 new Pair<>("current_username", string));
         // 踢出
-        for (IPlayer player : handler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayers(string)) {
+        for (IPlayer player : CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayers(string)) {
             player.kickPlayer(kickMsg);
         }
         if (i == 0) {
-            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
                     new Pair<>("current_username", string)
             ));
         } else {
-            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_erase_username_done",
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_done",
                     new Pair<>("current_username", string)
             ));
         }
@@ -120,8 +120,8 @@ public class RootCommand {
 
     @SneakyThrows
     private int executeReload(CommandContext<ISender> context) {
-        handler.getCore().reload();
-        context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_reloaded"));
+        CommandHandler.getCore().reload();
+        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_reloaded"));
         return 0;
     }
 }

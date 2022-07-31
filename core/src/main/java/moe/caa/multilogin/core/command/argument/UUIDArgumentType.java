@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.command.CommandHandler;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -18,11 +16,6 @@ import java.util.UUID;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UUIDArgumentType implements ArgumentType<UUID> {
-    protected static final Collection<String> EXAMPLES = Arrays.asList(
-            "069a79f4-44e9-4726-a5be-fca90e38aaf5",
-            "069a79f444e94726a5befca90e38aaf5"
-    );
-
 
     public static UUIDArgumentType uuid() {
         return new UUIDArgumentType();
@@ -47,10 +40,5 @@ public class UUIDArgumentType implements ArgumentType<UUID> {
             throw CommandHandler.getBuiltInExceptions().readerInvalidUUID().createWithContext(reader, uuidString);
         }
         return ret;
-    }
-
-    @Override
-    public Collection<String> getExamples() {
-        return EXAMPLES;
     }
 }
