@@ -61,12 +61,12 @@ public class MWhitelistCommand {
             }
         }
         if (count == 0) {
-            context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove_repeat_username",
+            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove_repeat_username",
                     new Pair<>("username", username)
             ));
             return 0;
         }
-        context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove_username",
+        context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove_username",
                 new Pair<>("username", username),
                 new Pair<>("count", count)
         ));
@@ -83,19 +83,19 @@ public class MWhitelistCommand {
             have = handler.getCore().getSqlManager().getUserDataTable().hasWhitelist(inGameUUID);
         }
         if (have) {
-            context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat_username",
+            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat_username",
                     new Pair<>("username", username)
             ));
             return 0;
         }
         if (!WhitelistCheckFlows.cachedWhitelist.add(username)) {
-            context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat_username",
+            context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat_username",
                     new Pair<>("username", username)
             ));
             return 0;
         }
 
-        context.getSource().sendMessage(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_username",
+        context.getSource().sendMessagePL(handler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_username",
                 new Pair<>("username", username)
         ));
         return 0;

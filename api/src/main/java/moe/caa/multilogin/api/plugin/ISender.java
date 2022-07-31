@@ -20,11 +20,15 @@ public interface ISender {
     boolean hasPermission(String permission);
 
     /**
-     * 给执行者发送特定的字符串消息
+     * 给执行者发送特定的字符串消息，使用精美的换行
      *
      * @param message 发送的字符串消息
      */
-    void sendMessage(String message);
+    /*
+     * for (String s : message.split("\\r?\\n"))
+     *     self.sendMessage(s);
+     */
+    void sendMessagePL(String message);
 
     /**
      * 获得这个命令执行者的名称

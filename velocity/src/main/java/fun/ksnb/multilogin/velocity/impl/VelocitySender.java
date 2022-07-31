@@ -24,8 +24,10 @@ public class VelocitySender implements ISender {
     }
 
     @Override
-    public void sendMessage(String message) {
-        commandSource.sendMessage(Component.text(message));
+    public void sendMessagePL(String message) {
+        for (String s : message.split("\\r?\\n")) {
+            commandSource.sendMessage(Component.text(s));
+        }
     }
 
     @Override
