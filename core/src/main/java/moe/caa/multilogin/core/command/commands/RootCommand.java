@@ -17,10 +17,12 @@ import java.util.stream.Collectors;
 public class RootCommand {
     private final CommandHandler handler;
     private final MWhitelistCommand mWhitelistCommand;
+    private final MSearchCommand mSearchCommand;
 
     public RootCommand(CommandHandler handler) {
         this.handler = handler;
         this.mWhitelistCommand = new MWhitelistCommand(handler);
+        this.mSearchCommand = new MSearchCommand(handler);
     }
 
     public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
@@ -34,6 +36,7 @@ public class RootCommand {
                 .then(handler.literal("list")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LIST))
                         .executes(this::executeList))
+                .then(mSearchCommand.register(handler.literal("search")))
                 .then(mWhitelistCommand.register(handler.literal("whitelist")));
     }
 

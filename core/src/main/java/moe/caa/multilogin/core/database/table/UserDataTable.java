@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.database.table;
 
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
 
@@ -88,6 +89,28 @@ public class UserDataTable {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     result.add(((int) resultSet.getBytes(1)[0]));
+                }
+            }
+        }
+        return Collections.unmodifiableSet(result);
+    }
+
+    public Set<Pair<UUID, Integer>> getOnlineProfiles(UUID inGameUUID) throws SQLException {
+        Set<Pair<UUID, Integer>> result = new HashSet<>();
+        String sql = String.format(
+                "SELECT %s, %s FROM %s WHERE %s = ?"
+                , fieldOnlineUUID, fieldYggdrasilId, tableName, fieldInGameProfileUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    result.add(new Pair<>(
+                            ValueUtil.bytesToUuid(resultSet.getBytes(1)),
+                            ((int) resultSet.getBytes(2)[0])
+                    ));
                 }
             }
         }

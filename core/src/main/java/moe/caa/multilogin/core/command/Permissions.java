@@ -14,5 +14,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_ADD = "command.multilogin.whitelist.add";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_REMOVE = "command.multilogin.whitelist.remove";
     public static final String COMMAND_MULTI_LOGIN_LIST = "command.multilogin.list";
+    public static final String COMMAND_MULTI_LOGIN_QUERY_LOGIN = "command.multilogin.query.login";
+    public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID = "command.multilogin.query.ingameuuid";
 
 }
