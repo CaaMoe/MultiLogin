@@ -20,11 +20,11 @@
 # Yggdrasil 的 ID，用于识别 Yggdrasil 的唯一标识.
 # 它不可以是重复的值，重复的值会导致数据错乱或丢失！！！
 #
-# 请不要在使用中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
+# 警告，请不要在使用中途更改它的值，更改它将会导致部分玩家的数据错乱或丢失！！！
 # 此值为必须值，取值范围为整数 0 ~ 127
 id: -1
 
-# Yggdrasil 的别称，用于内容显示
+# Yggdrasil 的别称，用于一些指令结果或其他用途的内容显示
 # 
 # 默认值 ‘Unnamed’
 name: 'Unnamed'
@@ -34,6 +34,7 @@ name: 'Unnamed'
 hasJoined:
 
   # 此值设置 Yggdrasil 服务器类型为官方 Yggdrasil 服务器。
+  # 此节点下不需进行任何设置。
   official: { }
 
   # 此值设置 Yggdrasil 服务器类型为 Blessing Skin Yggdrasil API 服务器。
@@ -110,7 +111,12 @@ hasJoined:
 
 
 # 请求是否追加用户 IP 信息。
-# 此 IP 一般用于 Yggdrasil 的防代理检查
+# 此 IP 一般用于 Yggdrasil 的防代理检查。
+#
+# 理论上，开启了这个，服务器和玩家只要有一方开了代理访问验证服务器，
+# 在玩家登录时 Yggdrasil 都会返回无效的会话而被拒绝登录。
+#
+# 本地测试时请保持此值为 false，否则可能返回无效的会话的登录结果。
 #
 # 默认值 ‘true’
 passIp: true
