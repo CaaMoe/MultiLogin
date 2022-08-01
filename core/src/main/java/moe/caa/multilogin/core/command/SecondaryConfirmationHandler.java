@@ -1,62 +1,70 @@
 package moe.caa.multilogin.core.command;
 
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.util.Pair;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 二次确认快处工具
  */
 public class SecondaryConfirmationHandler {
     private static final long confirmValidTimeMillis = 1000 * 15;
-    private final Map<ConfirmSender, ConfirmEntry> concurrentHashMap = new ConcurrentHashMap<>();
+    private final Map<IPlayer, ConfirmEntry> concurrentHashMap = new ConcurrentHashMap<>();
+    private final AtomicReference<ConfirmEntry> consoleConfirm = new AtomicReference<>();
 
-    public void submit(ISender sender, CallbackConfirmCommand callbackConfirmCommand) {
-        concurrentHashMap.put(new ConfirmSender(sender), new ConfirmEntry(callbackConfirmCommand));
+    public void submit(
+            ISender sender,
+            CallbackConfirmCommand callbackConfirmCommand,
+            String desc, String consequences
+    ) {
+        if (sender.isPlayer()) {
+            concurrentHashMap.put(sender.getAsPlayer(), new ConfirmEntry(callbackConfirmCommand));
+        } else if (sender.isConsole()) {
+            consoleConfirm.set(new ConfirmEntry(callbackConfirmCommand));
+        } else {
+            sender.sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_confirm_unidentified"));
+            return;
+        }
+
+        sender.sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_confirm_warning",
+                new Pair<>("desc", desc),
+                new Pair<>("consequences", consequences)
+        ));
     }
 
-    public boolean confirm(ISender sender) throws Exception {
-        concurrentHashMap.values().removeIf(confirmEntry -> !confirmEntry.valid());
-        ConfirmEntry entry = concurrentHashMap.remove(new ConfirmSender(sender));
-        if (entry == null) return false;
-        entry.confirm();
-        return true;
+    public void confirm(ISender sender) throws Exception {
+        concurrentHashMap.values().removeIf(ConfirmEntry::isInvalid);
+        consoleConfirm.updateAndGet(confirmEntry -> {
+            if (confirmEntry == null) return null;
+            if (confirmEntry.isInvalid()) return null;
+            return confirmEntry;
+        });
+
+        if (sender.isPlayer()) {
+            ConfirmEntry entry = concurrentHashMap.remove(sender.getAsPlayer());
+            if (entry == null) {
+                sender.sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_confirm_not_found"));
+                return;
+            }
+            entry.confirm();
+        } else if (sender.isConsole()) {
+            ConfirmEntry entry = consoleConfirm.getAndSet(null);
+            if (entry == null) {
+                sender.sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_confirm_not_found"));
+                return;
+            }
+            entry.confirm();
+        } else {
+            sender.sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_confirm_unidentified"));
+        }
     }
 
     public interface CallbackConfirmCommand {
         void confirm() throws Exception;
-    }
-
-    private static class ConfirmSender {
-        private final boolean console;
-        private final UUID uuid;
-
-        private ConfirmSender(ISender sender) {
-            if (!sender.isPlayer()) {
-                console = true;
-                uuid = null;
-            } else {
-                console = false;
-                uuid = sender.getAsPlayer().getUniqueId();
-            }
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ConfirmSender sender = (ConfirmSender) o;
-            if (console && sender.console) return true;
-            return console == sender.console && Objects.equals(uuid, sender.uuid);
-        }
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
     }
 
     private static class ConfirmEntry {
@@ -68,8 +76,8 @@ public class SecondaryConfirmationHandler {
             this.callbackConfirmCommand = callbackConfirmCommand;
         }
 
-        private boolean valid() {
-            return subTime + confirmValidTimeMillis >= System.currentTimeMillis();
+        private boolean isInvalid() {
+            return subTime + confirmValidTimeMillis < System.currentTimeMillis();
         }
 
         public void confirm() throws Exception {

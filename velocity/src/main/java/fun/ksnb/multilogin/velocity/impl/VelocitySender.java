@@ -2,6 +2,7 @@ package fun.ksnb.multilogin.velocity.impl;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import com.velocitypowered.proxy.console.VelocityConsole;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import net.kyori.adventure.text.Component;
@@ -16,6 +17,11 @@ public class VelocitySender implements ISender {
     @Override
     public boolean isPlayer() {
         return commandSource instanceof Player;
+    }
+
+    @Override
+    public boolean isConsole() {
+        return commandSource instanceof VelocityConsole;
     }
 
     @Override

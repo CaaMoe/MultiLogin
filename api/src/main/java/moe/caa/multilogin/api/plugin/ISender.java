@@ -12,6 +12,8 @@ public interface ISender {
      */
     boolean isPlayer();
 
+    boolean isConsole();
+
     /**
      * 这个命令执行者是否具有某权限
      *

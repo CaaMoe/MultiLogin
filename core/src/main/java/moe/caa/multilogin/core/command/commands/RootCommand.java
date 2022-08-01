@@ -36,8 +36,17 @@ public class RootCommand {
                 .then(handler.literal("list")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LIST))
                         .executes(this::executeList))
+                .then(handler.literal("confirm")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
+                        .executes(this::executeConfirm))
                 .then(mSearchCommand.register(handler.literal("search")))
                 .then(mWhitelistCommand.register(handler.literal("whitelist")));
+    }
+
+    @SneakyThrows
+    private int executeConfirm(CommandContext<ISender> context) {
+        handler.getSecondaryConfirmationHandler().confirm(context.getSource());
+        return 0;
     }
 
     private int executeList(CommandContext<ISender> context) {

@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.plugin.IPlayer;
 import net.kyori.adventure.text.Component;
 
 import java.net.InetSocketAddress;
+import java.util.Objects;
 import java.util.UUID;
 
 public class VelocityPlayer extends VelocitySender implements IPlayer {
@@ -33,5 +34,18 @@ public class VelocityPlayer extends VelocitySender implements IPlayer {
     @Override
     public String getName() {
         return player.getUsername();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VelocityPlayer that = (VelocityPlayer) o;
+        return Objects.equals(player.getUniqueId(), that.player.getUniqueId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player.getUniqueId());
     }
 }
