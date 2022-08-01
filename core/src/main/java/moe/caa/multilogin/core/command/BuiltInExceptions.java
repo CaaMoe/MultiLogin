@@ -43,6 +43,8 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
 
     // custom
     private final DynamicCommandExceptionType READER_INVALID_UUID;
+    private final SimpleCommandExceptionType REQUIRE_PLAYER;
+    private final DynamicCommandExceptionType PLAYER_NOT_ONLINE;
 
     public BuiltInExceptions(MultiCore core) {
 
@@ -126,6 +128,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
         YGGDRASIL_ID_NOT_FOUND = new DynamicCommandExceptionType(value -> new LiteralMessage(
                 core.getLanguageHandler().getMessage("command_exception_yggdrasilid_not_found",
                         new Pair<>("value", value)
+                )));
+
+        REQUIRE_PLAYER = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_require_player")));
+
+        PLAYER_NOT_ONLINE = new DynamicCommandExceptionType(value -> new LiteralMessage(
+                core.getLanguageHandler().getMessage("command_message_player_not_online",
+                        new Pair<>("name", value)
                 )));
     }
 
@@ -270,5 +279,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
 
     public DynamicCommandExceptionType yggdrasilidNotFound() {
         return YGGDRASIL_ID_NOT_FOUND;
+    }
+
+    public SimpleCommandExceptionType requirePlayer() {
+        return REQUIRE_PLAYER;
+    }
+
+    public DynamicCommandExceptionType playerNotOnline() {
+        return PLAYER_NOT_ONLINE;
     }
 }

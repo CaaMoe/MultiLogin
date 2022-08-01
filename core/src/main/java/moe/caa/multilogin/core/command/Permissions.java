@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Permissions {
     public static final String COMMAND_TAB_COMPLETE = "command.multilogin.tab.complete";
+    public static final String COMMAND_MULTI_LOGIN_ME = "command.multilogin.me";
     public static final String COMMAND_MULTI_LOGIN_RELOAD = "command.multilogin.reload";
     public static final String COMMAND_MULTI_LOGIN_CONFIRM = "command.multilogin.confirm";
     public static final String COMMAND_MULTI_LOGIN_ERASE_USERNAME = "command.multilogin.eraseusername";
@@ -21,4 +22,5 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_QUERY_LOGIN_BYINGAMEUUID = "command.multilogin.query.login.byingameuuid";
     public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYNAME = "command.multilogin.query.ingameuuid.byname";
     public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYPROFILE = "command.multilogin.query.ingameuuid.byprofile";
+    public static final String COMMAND_MULTI_LOGIN_QUERY_CURRENT = "command.multilogin.query.current";
 }

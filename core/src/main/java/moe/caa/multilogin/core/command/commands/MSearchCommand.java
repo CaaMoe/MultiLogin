@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.command.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
@@ -50,9 +51,43 @@ public class MSearchCommand {
                                                 .executes(this::executeInGameUUIDByProfile)
                                         )
                                 )
-                        )
-
+                        ))
+                .then(handler.literal("current")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_QUERY_CURRENT))
+                        .then(handler.argument("name", StringArgumentType.string())
+                                .executes(this::executeCurrent))
                 );
+    }
+
+    @SneakyThrows
+    private int executeCurrent(CommandContext<ISender> context) {
+        Set<IPlayer> name = handler.requirePlayersArgument(context, "name");
+        if (name.size() > 1) {
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_search_current_multi",
+                    new Pair<>("count", name.size())
+            ));
+        }
+        for (IPlayer player : name) {
+            Pair<UUID, Integer> profile = CommandHandler.getCore().getCache().getPlayerOnlineProfile(player.getUniqueId());
+            if (profile == null) {
+                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_search_current_unknown"));
+            } else {
+                String yggName;
+                YggdrasilServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getIdMap().get(profile.getValue2());
+                if (ysc == null) {
+                    yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_search_current_unidentified_name");
+                } else {
+                    yggName = ysc.getName();
+                }
+                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_search_current",
+                        new Pair<>("name", player.getName()),
+                        new Pair<>("yggdrasil_name", yggName),
+                        new Pair<>("yggdrasil_id", profile.getValue2()),
+                        new Pair<>("online_uuid", profile.getValue1())
+                ));
+            }
+        }
+        return 0;
     }
 
     @SneakyThrows

@@ -4,19 +4,23 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandHandler implements CommandAPI {
@@ -78,5 +82,20 @@ public class CommandHandler implements CommandAPI {
 
     public final <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
         return RequiredArgumentBuilder.argument(name, type);
+    }
+
+    public final void requirePlayer(CommandContext<ISender> context) throws CommandSyntaxException {
+        if (!context.getSource().isPlayer()) {
+            throw builtInExceptions.requirePlayer().create();
+        }
+    }
+
+    public final Set<IPlayer> requirePlayersArgument(CommandContext<ISender> context, String name) throws CommandSyntaxException {
+        String string = StringArgumentType.getString(context, name);
+        Set<IPlayer> players = core.getPlugin().getRunServer().getPlayerManager().getPlayers(string);
+        if (players.size() == 0)
+            throw builtInExceptions.playerNotOnline().create(string);
+
+        return players;
     }
 }
