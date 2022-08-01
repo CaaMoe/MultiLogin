@@ -23,4 +23,15 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYNAME = "command.multilogin.query.ingameuuid.byname";
     public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYPROFILE = "command.multilogin.query.ingameuuid.byprofile";
     public static final String COMMAND_MULTI_LOGIN_QUERY_CURRENT = "command.multilogin.query.current";
+    public static final String COMMAND_MULTI_LOGIN_USER_MERGE_BYNAME = "command.multilogin.user.merge.byname";
+    public static final String COMMAND_MULTI_LOGIN_USER_MERGE_BYINGAMEUUID = "command.multilogin.user.merge.byingameuuid";
+    public static final String COMMAND_MULTI_LOGIN_USER_MERGETO_BYNAME = "command.multilogin.user.mergeto.byname";
+    public static final String COMMAND_MULTI_LOGIN_USER_MERGETO_BYINGAMEUUID = "command.multilogin.user.mergeto.byingameuuid";
+    public static final String COMMAND_MULTI_LOGIN_USER_DISTRIBUTE = "command.multilogin.user.distribute";
+    public static final String COMMAND_MULTI_LOGIN_USER_DISTRIBUTETO = "command.multilogin.user.distributeto";
+    public static final String COMMAND_MULTI_LOGIN_USER_REMOVE_PROFILE = "command.multilogin.user.remove.profile";
+    public static final String COMMAND_MULTI_LOGIN_USER_REMOVE_INGAME_BYNAME = "command.multilogin.user.remove.ingame.byname";
+    public static final String COMMAND_MULTI_LOGIN_USER_REMOVE_INGAME_BYINGAMEUUID = "command.multilogin.user.remove.ingame.byingameuuid";
+
+
 }

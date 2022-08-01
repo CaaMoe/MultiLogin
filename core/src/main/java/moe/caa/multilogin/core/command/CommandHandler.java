@@ -13,14 +13,12 @@ import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 public class CommandHandler implements CommandAPI {
@@ -97,5 +95,14 @@ public class CommandHandler implements CommandAPI {
             throw builtInExceptions.playerNotOnline().create(string);
 
         return players;
+    }
+
+    public final Pair<UUID, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
+        requirePlayer(context);
+        Pair<UUID, Integer> profile = core.getCache().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
+        if (profile == null) {
+            throw builtInExceptions.cacheNotFoundSelf().create();
+        }
+        return profile;
     }
 }

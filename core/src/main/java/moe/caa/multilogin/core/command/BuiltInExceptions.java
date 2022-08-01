@@ -46,6 +46,9 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private final SimpleCommandExceptionType REQUIRE_PLAYER;
     private final DynamicCommandExceptionType PLAYER_NOT_ONLINE;
 
+    private final SimpleCommandExceptionType CACHE_NOT_FOUND_SELF;
+    private final Dynamic2CommandExceptionType CACHE_NOT_FOUND;
+
     public BuiltInExceptions(MultiCore core) {
 
         DOUBLE_TOO_SMALL = new Dynamic2CommandExceptionType((found, min) -> new LiteralMessage(core.getLanguageHandler().getMessage("command_exception_double_too_small",
@@ -135,6 +138,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
         PLAYER_NOT_ONLINE = new DynamicCommandExceptionType(value -> new LiteralMessage(
                 core.getLanguageHandler().getMessage("command_message_player_not_online",
                         new Pair<>("name", value)
+                )));
+
+        CACHE_NOT_FOUND_SELF = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_cache_not_found_self")));
+        CACHE_NOT_FOUND = new Dynamic2CommandExceptionType((value1, value2) -> new LiteralMessage(
+                core.getLanguageHandler().getMessage("command_message_cache_not_found",
+                        new Pair<>("name", value1),
+                        new Pair<>("in_game_uuid", value2)
                 )));
     }
 
@@ -287,5 +297,13 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
 
     public DynamicCommandExceptionType playerNotOnline() {
         return PLAYER_NOT_ONLINE;
+    }
+
+    public Dynamic2CommandExceptionType cacheNotFound() {
+        return CACHE_NOT_FOUND;
+    }
+
+    public SimpleCommandExceptionType cacheNotFoundSelf() {
+        return CACHE_NOT_FOUND_SELF;
     }
 }
