@@ -39,7 +39,7 @@ public class MWhitelistCommand {
                         )
                 ).then(handler.literal("permanent")
                         .then(handler.literal("add")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_ADD))
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_ADD))
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .executes(this::executeAdd)
@@ -47,7 +47,7 @@ public class MWhitelistCommand {
                                 )
                         )
                         .then(handler.literal("remove")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_REMOVE))
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_REMOVE))
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .executes(this::executeRemove)
@@ -70,9 +70,6 @@ public class MWhitelistCommand {
             return 0;
         }
         // 如果有白名单的话，表示有数据，直接更新不需要额外判断
-//        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, ysc.getId())) {
-//            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(onlineUUID, ysc.getId(), null);
-//        }
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), false);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove",
                 new Pair<>("online_uuid", onlineUUID),
