@@ -240,4 +240,18 @@ public class UserDataTable {
             statement.executeUpdate();
         }
     }
+
+    public void delete(UUID onlineUUID, int yggdrasilId) throws SQLException {
+        String sql = String.format(
+                "DELETE FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
+                , tableName, fieldOnlineUUID, fieldYggdrasilId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setBytes(2, new byte[]{(byte) yggdrasilId});
+            statement.executeUpdate();
+        }
+    }
 }

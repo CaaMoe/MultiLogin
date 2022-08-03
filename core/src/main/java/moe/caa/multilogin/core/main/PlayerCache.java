@@ -64,6 +64,15 @@ public class PlayerCache implements CacheAPI {
         return new Pair<>(entry.onlineUUID, entry.yggdrasilID);
     }
 
+    @Override
+    public UUID getInGameUUID(UUID onlineUUID, int yggdrasilId) {
+        for (Map.Entry<UUID, Entry> entry : cache.entrySet()) {
+            if (entry.getValue().onlineUUID.equals(onlineUUID) && entry.getValue().yggdrasilID == yggdrasilId)
+                return entry.getKey();
+        }
+        return null;
+    }
+
     protected void register() {
         core.getPlugin().getRunServer().getScheduler().runTaskAsyncTimer(() -> {
             // 存放在线的所有玩家

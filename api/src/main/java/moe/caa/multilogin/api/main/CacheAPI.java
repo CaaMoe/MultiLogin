@@ -30,4 +30,6 @@ public interface CacheAPI {
      * @return 一个表示玩家在线 UUID 和验证它的 Yggdrasil ID 的复合类
      */
     Pair<UUID, Integer> getPlayerOnlineProfile(UUID inGameUUID);
+
+    UUID getInGameUUID(UUID onlineUUID, int yggdrasilId);
 }

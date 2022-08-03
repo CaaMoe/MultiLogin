@@ -42,6 +42,21 @@ public class InGameProfileTable {
         }
     }
 
+    public boolean dataExists(UUID inGameUUID) throws SQLException {
+        String sql = String.format(
+                "SELECT 1 FROM %s WHERE %s = ? LIMIT 1"
+                , tableName, fieldInGameUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next();
+            }
+        }
+    }
+
     public UUID getInGameUUID(String currentUsername) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
@@ -54,6 +69,24 @@ public class InGameProfileTable {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return ValueUtil.bytesToUuid(resultSet.getBytes(1));
+                }
+            }
+        }
+        return null;
+    }
+
+    public String getUsername(UUID inGameUUID) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
+                , fieldCurrentUsername, tableName, fieldInGameUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString(1);
                 }
             }
         }

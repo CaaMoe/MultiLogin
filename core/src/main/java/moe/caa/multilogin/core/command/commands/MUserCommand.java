@@ -2,7 +2,9 @@ package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
@@ -26,54 +28,59 @@ public class MUserCommand {
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .then(handler.argument("username", StringArgumentType.string())
-                                                        .executes(this::executeMergeByName)))))
+                                                        .executes(c -> 0)))))
                         .then(handler.literal("byInGameUUID")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_MERGE_BYINGAMEUUID))
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
                                                         .executes(c -> 0))))))
-                .then(handler.literal("mergeTo")
+                .then(handler.literal("mergeMe")
                         .then(handler.literal("byName")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_MERGETO_BYNAME))
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_MERGEME_BYNAME))
                                 .then(handler.argument("username", StringArgumentType.string())
                                         .executes(c -> 0)))
                         .then(handler.literal("byInGameUUID")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_MERGETO_BYINGAMEUUID))
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_MERGEME_BYINGAMEUUID))
                                 .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
                                         .executes(c -> 0))))
-                .then(handler.literal("distribute")
-                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_DISTRIBUTE))
-                        .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
-                                .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
-                                        .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
-                                                .executes(c -> 0)))))
-                .then(handler.literal("distributeTo")
-                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_DISTRIBUTETO))
-                        .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
-                                .executes(c -> 0)))
                 .then(handler.literal("remove")
                         .then(handler.literal("profile")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_REMOVE_PROFILE))
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
-                                                .executes(c -> 0))))
-                        .then(handler.literal("inGame")
-                                .then(handler.literal("byName")
-                                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_REMOVE_INGAME_BYNAME))
-                                        .then(handler.argument("name", StringArgumentType.string())
-                                                .executes(c -> 0)))
-                                .then(handler.literal("byInGameUUID")
-                                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_USER_REMOVE_INGAME_BYINGAMEUUID))
-                                        .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
-                                                .executes(c -> 0)))
-                        ));
+                                                .executes(this::removeProfile)))));
     }
 
-    private int executeMergeByName(CommandContext<ISender> context) {
+    private int removeProfile(CommandContext<ISender> context) {
         YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
-        String username = StringArgumentType.getString(context, "username");
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            if (CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, ysc.getId())) {
+                CommandHandler.getCore().getSqlManager().getUserDataTable().delete(onlineUUID, ysc.getId());
+                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_user_remove_profile_done",
+                        new Pair<>("yggdrasil_name", ysc.getName()),
+                        new Pair<>("yggdrasil_id", ysc.getId()),
+                        new Pair<>("online_uuid", onlineUUID)));
+
+                UUID inGameUUID = CommandHandler.getCore().getCache().getInGameUUID(onlineUUID, ysc.getId());
+                if (inGameUUID != null) {
+                    IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
+                    if (player != null) {
+                        player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_profile_remove"));
+                    }
+                }
+            } else {
+                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_user_remove_profile_not_found",
+                        new Pair<>("yggdrasil_name", ysc.getName()),
+                        new Pair<>("yggdrasil_id", ysc.getId()),
+                        new Pair<>("online_uuid", onlineUUID)));
+            }
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_user_remove_profile_desc",
+                new Pair<>("yggdrasil_name", ysc.getName()),
+                new Pair<>("yggdrasil_id", ysc.getId()),
+                new Pair<>("online_uuid", onlineUUID)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_user_remove_profile_cq"));
         return 0;
     }
 }
