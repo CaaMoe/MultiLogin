@@ -80,7 +80,7 @@ public class MWhitelistCommand {
         if (inGameUUID != null) {
             IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
             if (player != null) {
-                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_remove"));
+                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
             }
         }
         return 0;
@@ -136,7 +136,7 @@ public class MWhitelistCommand {
         ));
         IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
         if (player != null) {
-            player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_remove"));
+            player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
         }
         return 0;
     }
