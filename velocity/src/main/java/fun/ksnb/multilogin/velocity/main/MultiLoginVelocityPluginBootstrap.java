@@ -5,9 +5,11 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
+import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
+import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.loader.main.MultiLoginVelocityLoader;
-import io.netty.util.collection.IntObjectMap;
+import fun.ksnb.multilogin.velocity.main.v5t.MultiServerLogin;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.impl.IPlugin;
@@ -66,23 +68,32 @@ public class MultiLoginVelocityPluginBootstrap extends BasePluginBootstrap imple
         velocityUserLoginClass.getMethod("init").invoke(null);
 //        要替换的方向
         StateRegistry.PacketRegistry toReplace = StateRegistry.LOGIN.serverbound;
-
         Field field_versions = ReflectUtil.handleAccessible(StateRegistry.PacketRegistry.class.getDeclaredField("versions"), true);
-//        获取注册Map
-        Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry> map = (Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) field_versions.get(toReplace);
-        for (StateRegistry.PacketRegistry.ProtocolRegistry protocolRegistry : map.values()) {
-//            获取packetIdToSupplier Map
-            Field field_packetIdToSupplier = ReflectUtil.handleAccessible(StateRegistry.PacketRegistry.ProtocolRegistry.class.getDeclaredField("packetIdToSupplier"), true);
-            IntObjectMap<Supplier<? extends MinecraftPacket>> packetIdToSupplier = (IntObjectMap<Supplier<? extends MinecraftPacket>>) field_packetIdToSupplier.get(protocolRegistry);
-//            至此 替换完成
-            packetIdToSupplier.put(0x01, new Supplier<>() {
-                @Override
-                @SneakyThrows
-                public MinecraftPacket get() {
-                    return (MinecraftPacket) multiLoginEncryptionResponseClass.getConstructor().newInstance();
+        Field field_packetIdToSupplier = ReflectUtil.handleAccessible(StateRegistry.PacketRegistry.ProtocolRegistry.class.getDeclaredField("packetIdToSupplier"), true);
+
+
+        Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry> versionsObject = (Map<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry>) field_versions.get(toReplace);
+        for (Map.Entry<ProtocolVersion, StateRegistry.PacketRegistry.ProtocolRegistry> entry : versionsObject.entrySet()) {
+            Object value = entry.getValue();
+            // IntObjectMap<Supplier<? extends MinecraftPacket>>
+            Map<?, ?> packetIdToSupplierObject = (Map<?, ?>) field_packetIdToSupplier.get(value);
+            for (Map.Entry e : packetIdToSupplierObject.entrySet()) {
+                MinecraftPacket minecraftPacketObject = (MinecraftPacket) ((Supplier<?>) e.getValue()).get();
+                if (minecraftPacketObject.getClass().equals(EncryptionResponse.class)) {
+                    e.setValue(new Supplier<>() {
+                        @Override
+                        @SneakyThrows
+                        public MinecraftPacket get() {
+                            return (MinecraftPacket) multiLoginEncryptionResponseClass.getConstructor().newInstance();
+                        }
+                    });
                 }
-            });
+                if (minecraftPacketObject.getClass().equals(ServerLogin.class)) {
+                    e.setValue((Supplier<MultiServerLogin>) MultiServerLogin::new);
+                }
+            }
         }
+
     }
 
 
