@@ -3,6 +3,7 @@ package fun.ksnb.multilogin.velocity.injector;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
+import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 
@@ -18,10 +19,10 @@ public class MultiInjTask {
 
     public void run() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
         MultiInitialLoginSessionHandler.init();
-
         Class<StateRegistry.PacketRegistry> stateRegistry$packetRegistryClass = StateRegistry.PacketRegistry.class;
         Class<StateRegistry.PacketRegistry.ProtocolRegistry> stateRegistry$packetRegistry$protocolRegistryClass = StateRegistry.PacketRegistry.ProtocolRegistry.class;
         Class<EncryptionResponse> encryptionResponseClass = EncryptionResponse.class;
+        Class<ServerLogin> serverLoginClass = ServerLogin.class;
         Field stateRegistry$packetRegistry_versionsField = stateRegistry$packetRegistryClass.getDeclaredField("versions");
         Field stateRegistry$packetRegistry_packetIdToSupplierField = stateRegistry$packetRegistry$protocolRegistryClass.getDeclaredField("packetIdToSupplier");
         // 不想看到泛型警告，反正就执行一次而已
@@ -42,6 +43,9 @@ public class MultiInjTask {
                 MinecraftPacket minecraftPacketObject = (MinecraftPacket) ((Supplier<?>) e.getValue()).get();
                 if (minecraftPacketObject.getClass().equals(encryptionResponseClass)) {
                     map$entry$setValueMethod.invoke(e, (Supplier<MultiEncryptionResponse>) () -> new MultiEncryptionResponse(multiCoreAPI));
+                }
+                if (minecraftPacketObject.getClass().equals(serverLoginClass)) {
+                    map$entry$setValueMethod.invoke(e, (Supplier<MultiServerLogin>) () -> new MultiServerLogin(multiCoreAPI));
                 }
             }
         }
