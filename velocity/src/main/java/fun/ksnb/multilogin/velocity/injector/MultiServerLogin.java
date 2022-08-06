@@ -18,7 +18,7 @@ public class MultiServerLogin extends ServerLogin {
         if (getPlayerKey() != null) {
             setPlayerKey((IdentifiedKey) Proxy.newProxyInstance(
                     Thread.currentThread().getContextClassLoader(),
-                    new Class[]{IdentifiedKey.class}, new IdentifiedKeyInvocationHandler()));
+                    new Class[]{IdentifiedKey.class}, new IdentifiedKeyInvocationHandler(getPlayerKey())));
         }
 
         return super.handle(handler);
