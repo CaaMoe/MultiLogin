@@ -1,4 +1,4 @@
-package fun.ksnb.multilogin.velocity.injector;
+package moe.caa.multilogin.velocity.injector;
 
 import com.google.common.primitives.Longs;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
@@ -10,7 +10,6 @@ import com.velocitypowered.proxy.connection.client.LoginInboundConnection;
 import com.velocitypowered.proxy.crypto.EncryptionUtils;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import lombok.AccessLevel;
 import lombok.Getter;
 import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
@@ -31,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * 接管 InitialLoginSessionHandler 类的其中一个方法
  */
-@Getter(value = AccessLevel.PROTECTED)
+@Getter()
 public class MultiInitialLoginSessionHandler {
 
     // LoginStateEnum 的枚举
@@ -62,7 +61,7 @@ public class MultiInitialLoginSessionHandler {
     // 自己的对象，表示是否通过加密
     private boolean encrypted = false;
 
-    protected MultiInitialLoginSessionHandler(InitialLoginSessionHandler initialLoginSessionHandler, MultiCoreAPI multiCoreAPI) {
+    public MultiInitialLoginSessionHandler(InitialLoginSessionHandler initialLoginSessionHandler, MultiCoreAPI multiCoreAPI) {
         this.initialLoginSessionHandler = initialLoginSessionHandler;
         this.multiCoreAPI = multiCoreAPI;
         try {

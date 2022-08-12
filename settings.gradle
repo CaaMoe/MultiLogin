@@ -5,4 +5,5 @@ include 'core'
 include 'api'
 include 'velocity'
 include 'dataUpgrade'
+include 'velocity:injector'
 

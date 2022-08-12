@@ -1,4 +1,4 @@
-package fun.ksnb.multilogin.velocity.injector.proxy;
+package moe.caa.multilogin.velocity.injector.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

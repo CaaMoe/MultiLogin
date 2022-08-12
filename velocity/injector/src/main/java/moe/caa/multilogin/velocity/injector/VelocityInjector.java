@@ -1,17 +1,14 @@
-package fun.ksnb.multilogin.velocity.injector;
+package moe.caa.multilogin.velocity.injector;
 
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
-import fun.ksnb.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
-import fun.ksnb.multilogin.velocity.injector.redirect.MultiPlayerChat;
-import fun.ksnb.multilogin.velocity.injector.redirect.MultiPlayerCommand;
-import fun.ksnb.multilogin.velocity.injector.redirect.MultiServerLogin;
-import lombok.AllArgsConstructor;
+import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.velocity.injector.proxy.PlayerChatInvocationHandler;
+import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
+import moe.caa.multilogin.velocity.injector.redirect.MultiServerLogin;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,20 +16,25 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.function.Supplier;
 
-@AllArgsConstructor
-public class MultiInjTask {
-    private final MultiCoreAPI multiCoreAPI;
+public class VelocityInjector implements Injector {
 
-    public void run() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    @Override
+    public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         MultiInitialLoginSessionHandler.init();
+        PlayerChatInvocationHandler.init();
         redirect(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
         redirect(StateRegistry.LOGIN.serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
 
-        redirect(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand::new);
-        redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat::new);
+//        redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, ()->
+//                (MinecraftPacket) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+//                        new Class[]{MinecraftPacket.class}, new PlayerChatInvocationHandler(new PlayerChat()))
+//        );
+
+        // Unable to find id for packet of type %s in %s protocol %s
+        //redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat::new);
     }
 
-    private <T> void redirect(StateRegistry.PacketRegistry bound, Class<T> target, Supplier<? extends T> redirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    private void redirect(StateRegistry.PacketRegistry bound, Class<?> target, Supplier<? extends MinecraftPacket> redirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Class<StateRegistry.PacketRegistry> stateRegistry$packetRegistryClass = StateRegistry.PacketRegistry.class;
         Class<StateRegistry.PacketRegistry.ProtocolRegistry> stateRegistry$packetRegistry$protocolRegistryClass = StateRegistry.PacketRegistry.ProtocolRegistry.class;
         Field stateRegistry$packetRegistry_versionsField = stateRegistry$packetRegistryClass.getDeclaredField("versions");

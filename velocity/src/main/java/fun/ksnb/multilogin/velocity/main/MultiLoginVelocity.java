@@ -11,9 +11,9 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import fun.ksnb.multilogin.velocity.impl.VelocitySender;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
-import fun.ksnb.multilogin.velocity.injector.MultiInjTask;
 import fun.ksnb.multilogin.velocity.logger.Slf4jLoggerBridge;
 import lombok.Getter;
+import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
@@ -45,7 +45,7 @@ public class MultiLoginVelocity implements IPlugin {
         LoggerProvider.setLogger(new Slf4jLoggerBridge(logger));
         this.pluginLoader = new PluginLoader(this);
         try {
-            pluginLoader.load();
+            pluginLoader.load("MultiLogin-Velocity-Injector.JarFile");
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             server.shutdown();
@@ -58,10 +58,11 @@ public class MultiLoginVelocity implements IPlugin {
         try {
             multiCoreAPI = pluginLoader.getCoreObject();
             multiCoreAPI.load();
-            new MultiInjTask(multiCoreAPI).run();
+            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.velocity.injector.VelocityInjector").getConstructor().newInstance();
+            injector.inject(multiCoreAPI);
             CommandManager commandManager = server.getCommandManager();
             commandManager.register(commandManager.metaBuilder("multilogin").build(), MultiLoginVelocity.this.new CommandHandler());
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
             return;

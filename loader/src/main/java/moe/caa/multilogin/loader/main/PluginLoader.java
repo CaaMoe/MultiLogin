@@ -182,8 +182,13 @@ public class PluginLoader {
     }
 
     private void loadCore() throws Exception {
-        Class<?> coreClass = Class.forName(coreClassName, true, pluginClassLoader.self());
+        Class<?> coreClass = findClass(coreClassName);
         coreObject = (MultiCoreAPI) coreClass.getConstructor(IPlugin.class).newInstance(plugin);
+    }
+
+
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        return Class.forName(name, true, pluginClassLoader.self());
     }
 
     /**
