@@ -4,14 +4,11 @@ import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.velocity.injector.proxy.PlayerChatInterceptor;
 import moe.caa.multilogin.velocity.injector.proxy.PlayerChatInvocationHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.MultiServerLogin;
-import net.sf.cglib.proxy.Enhancer;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -28,13 +25,13 @@ public class VelocityInjector implements Injector {
         redirect(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
         redirect(StateRegistry.LOGIN.serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
 
-        Enhancer playerChatEnhancer = new Enhancer();
-
-        playerChatEnhancer.setSuperclass(PlayerChat.class);
-        playerChatEnhancer.setCallback(new PlayerChatInterceptor());
-        redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, ()->
-                (MinecraftPacket) playerChatEnhancer.create()
-        );
+//        Enhancer playerChatEnhancer = new Enhancer();
+//
+//        playerChatEnhancer.setSuperclass(PlayerChat.class);
+//        playerChatEnhancer.setCallback(new PlayerChatInterceptor());
+//        redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, ()->
+//                (MinecraftPacket) playerChatEnhancer.create()
+//        );
 
         // Unable to find id for packet of type %s in %s protocol %s
         //redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat::new);

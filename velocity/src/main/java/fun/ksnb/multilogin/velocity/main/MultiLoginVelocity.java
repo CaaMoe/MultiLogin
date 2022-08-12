@@ -100,6 +100,11 @@ public class MultiLoginVelocity implements IPlugin {
         ).getAsJsonObject().getAsJsonPrimitive("version").getAsString();
     }
 
+    @Override
+    public ClassLoader getVanillaClassLoader() {
+        return getClass().getClassLoader();
+    }
+
     private class CommandHandler implements SimpleCommand {
         @Override
         public void execute(Invocation invocation) {

@@ -3,6 +3,7 @@ package moe.caa.multilogin.api.main;
 import moe.caa.multilogin.api.auth.AuthAPI;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.language.LanguageAPI;
+import moe.caa.multilogin.api.plugin.IPlugin;
 
 public interface MultiCoreAPI {
 
@@ -29,4 +30,6 @@ public interface MultiCoreAPI {
     AuthAPI getAuthHandler();
 
     CacheAPI getCache();
+
+    IPlugin getPlugin();
 }
