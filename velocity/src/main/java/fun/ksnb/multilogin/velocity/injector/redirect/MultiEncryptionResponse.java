@@ -1,8 +1,9 @@
-package fun.ksnb.multilogin.velocity.injector;
+package fun.ksnb.multilogin.velocity.injector.redirect;
 
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
+import fun.ksnb.multilogin.velocity.injector.MultiInitialLoginSessionHandler;
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
