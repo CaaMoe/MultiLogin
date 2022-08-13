@@ -8,6 +8,7 @@ import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
 import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerChat;
 import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerCommand;

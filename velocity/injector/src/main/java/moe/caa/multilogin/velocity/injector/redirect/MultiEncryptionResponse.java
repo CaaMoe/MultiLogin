@@ -6,7 +6,7 @@ import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.velocity.injector.MultiInitialLoginSessionHandler;
+import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import net.kyori.adventure.text.Component;
 
 @AllArgsConstructor

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.velocity.injector;
+package moe.caa.multilogin.velocity.injector.handler;
 
 import com.google.common.primitives.Longs;
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
