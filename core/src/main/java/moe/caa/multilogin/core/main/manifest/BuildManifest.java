@@ -9,7 +9,6 @@ import moe.caa.multilogin.core.main.MultiCore;
 import java.util.Date;
 import java.util.Locale;
 
-import static moe.caa.multilogin.core.main.manifest.BuildType.FAST;
 import static moe.caa.multilogin.core.main.manifest.BuildType.FINAL;
 
 /**
@@ -22,7 +21,7 @@ public class BuildManifest {
     private final String buildTimestamp = "@Build-Timestamp@";
     private final String version = "@MultiLogin-Version@";
 
-    public void read(MultiCore core) throws InterruptedException {
+    public void read(MultiCore core) {
         BuildType type = BuildType.valueOf(buildType.toUpperCase(Locale.ROOT));
         Date date = new Date(Long.parseLong(buildTimestamp));
         if (type != FINAL) {
@@ -34,12 +33,9 @@ public class BuildManifest {
             MultiLogger.getLogger().log(LoggerLevel.WARN, "#    Build Time: " + date);
             MultiLogger.getLogger().log(LoggerLevel.WARN, "#    Version : " + version);
             MultiLogger.getLogger().log(LoggerLevel.WARN, "################################################");
-            if (type == FAST) return;
-            MultiLogger.getLogger().log(LoggerLevel.WARN, "服务器将在 15 秒后继续启动");
             core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                 core.getUpdater().check();
             });
-            Thread.sleep(15 * 1000);
         }
     }
 }
