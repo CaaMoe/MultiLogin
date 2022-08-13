@@ -1,0 +1,22 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+repositories {
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+}
+
+dependencies {
+    compileOnly project(":api")
+    compileOnly project(":bukkit")
+
+    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+}
+
+shadowJar {
+    archiveFileName = 'MultiLogin-Bukkit-Injector.JarFile'
+}
+
+artifacts {
+    archives shadowJar
+}

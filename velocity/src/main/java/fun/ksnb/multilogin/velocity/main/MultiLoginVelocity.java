@@ -2,14 +2,11 @@ package fun.ksnb.multilogin.velocity.main;
 
 import com.google.gson.JsonParser;
 import com.google.inject.Inject;
-import com.velocitypowered.api.command.CommandManager;
-import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
-import fun.ksnb.multilogin.velocity.impl.VelocitySender;
 import fun.ksnb.multilogin.velocity.impl.VelocityServer;
 import fun.ksnb.multilogin.velocity.logger.Slf4jLoggerBridge;
 import lombok.Getter;
@@ -23,7 +20,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 
 public class MultiLoginVelocity implements IPlugin {
@@ -60,14 +56,13 @@ public class MultiLoginVelocity implements IPlugin {
             multiCoreAPI.load();
             Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.velocity.injector.VelocityInjector").getConstructor().newInstance();
             injector.inject(multiCoreAPI);
-            CommandManager commandManager = server.getCommandManager();
-            commandManager.register(commandManager.metaBuilder("multilogin").build(), MultiLoginVelocity.this.new CommandHandler());
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.shutdown();
             return;
         }
         new GlobalListener(this).register();
+        new CommandHandler(this).register("multilogin");
     }
 
     @Subscribe
@@ -98,30 +93,5 @@ public class MultiLoginVelocity implements IPlugin {
         return JsonParser.parseReader(
                 new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream("/velocity-plugin.json")))
         ).getAsJsonObject().getAsJsonPrimitive("version").getAsString();
-    }
-
-    @Override
-    public ClassLoader getVanillaClassLoader() {
-        return getClass().getClassLoader();
-    }
-
-    private class CommandHandler implements SimpleCommand {
-        @Override
-        public void execute(Invocation invocation) {
-            String[] arguments = invocation.arguments();
-            String[] ns = new String[arguments.length + 1];
-            System.arraycopy(arguments, 0, ns, 1, arguments.length);
-            ns[0] = invocation.alias();
-            multiCoreAPI.getCommandHandler().execute(new VelocitySender(invocation.source()), ns);
-        }
-
-        @Override
-        public List<String> suggest(Invocation invocation) {
-            String[] arguments = invocation.arguments();
-            String[] ns = new String[arguments.length + 1];
-            System.arraycopy(arguments, 0, ns, 1, arguments.length);
-            ns[0] = invocation.alias();
-            return multiCoreAPI.getCommandHandler().tabComplete(new VelocitySender(invocation.source()), ns);
-        }
     }
 }

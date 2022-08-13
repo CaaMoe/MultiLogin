@@ -56,6 +56,7 @@ subprojects {
 
         filter ReplaceTokens, tokens: [
                 "contributors_json": JsonOutput.toJson(contributors),
+                "contributors"     : contributors.join(", "),
                 "version"          : ver,
                 "build_type"       : env,
                 "build_timestamp"  : System.currentTimeMillis() as String

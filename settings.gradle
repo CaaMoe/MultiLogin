@@ -6,4 +6,6 @@ include 'api'
 include 'velocity'
 include 'dataUpgrade'
 include 'velocity:injector'
+include 'bukkit'
+include 'bukkit:injector'
 

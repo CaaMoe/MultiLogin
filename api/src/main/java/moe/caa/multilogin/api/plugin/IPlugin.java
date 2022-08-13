@@ -26,6 +26,4 @@ public interface IPlugin {
     IServer getRunServer();
 
     String getVersion();
-
-    ClassLoader getVanillaClassLoader();
 }

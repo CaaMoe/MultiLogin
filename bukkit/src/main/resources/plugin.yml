@@ -1,0 +1,8 @@
+name: MultiLogin
+version: @version@
+main: moe.caa.multilogin.bukkit.main.MultiLoginBukkit
+author: @contributors@
+api-version: 1.13
+softdepend: [ PlaceholderAPI ]
+commands:
+  multilogin:
