@@ -6,6 +6,7 @@ import lombok.Getter;
 import moe.caa.multilogin.bukkit.auth.MultiLoginYggdrasilMinecraftSessionService;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.bukkit.listener.BukkitListener;
+import moe.caa.multilogin.bukkit.main.proxy.SignatureValidatorInvocationHandler;
 import moe.caa.multilogin.bukkit.support.expansions.MultiLoginExpansion;
 import moe.caa.multilogin.core.impl.IPlugin;
 import moe.caa.multilogin.core.impl.IServer;
@@ -18,10 +19,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -68,6 +66,12 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     public void initService() throws Exception {
         try {
             Class<?> serviceClass = Class.forName("net.minecraft.server.Services");
+            Class<?> signatureValidatorClass = null;
+
+            try {
+                signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
+            } catch (Exception ignored) {
+            }
 
             final Object[] minecraftServerClassMO = forceGet(vanServer, serviceClass, new HashSet<>());
 
@@ -79,17 +83,22 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
             LinkedHashMap<Field, Object> fieldObjectMap = new LinkedHashMap<>();
             MultiLoginYggdrasilMinecraftSessionService sessionService = null;
 
+
             for (Field field : serviceObj.getClass().getDeclaredFields()) {
                 if (Modifier.isStatic(field.getModifiers())) {
                     continue;
                 }
                 field.setAccessible(true);
                 Object value = field.get(serviceObj);
-                if(value instanceof MinecraftSessionService){
+                if (value instanceof MinecraftSessionService) {
                     sessionService = new MultiLoginYggdrasilMinecraftSessionService(((HttpMinecraftSessionService) value).getAuthenticationService());
                     sessionService.setVanService((HttpMinecraftSessionService) value);
                     sessionService.setBootstrap(this);
                     value = sessionService;
+                }
+                if (value.getClass().getName().contains("SignatureValidator")) {
+                    value = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                            new Class[]{signatureValidatorClass}, new SignatureValidatorInvocationHandler(value));
                 }
                 fieldObjectMap.put(field, value);
             }
