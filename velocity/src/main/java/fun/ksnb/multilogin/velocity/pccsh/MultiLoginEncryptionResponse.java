@@ -1,4 +1,4 @@
-package fun.ksnb.multilogin.velocity.pccsh.v3_1_2;
+package fun.ksnb.multilogin.velocity.pccsh;
 
 import com.google.common.primitives.Longs;
 import com.velocitypowered.proxy.VelocityServer;

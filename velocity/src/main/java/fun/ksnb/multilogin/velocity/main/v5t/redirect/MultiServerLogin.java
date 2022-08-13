@@ -1,4 +1,4 @@
-package fun.ksnb.multilogin.velocity.main.v5t;
+package fun.ksnb.multilogin.velocity.main.v5t.redirect;
 
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
