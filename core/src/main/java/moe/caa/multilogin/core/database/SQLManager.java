@@ -59,6 +59,6 @@ public class SQLManager {
     }
 
     public void close() {
-        pool.close();
+        if (pool != null) pool.close();
     }
 }

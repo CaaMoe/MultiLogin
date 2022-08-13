@@ -69,6 +69,10 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
+        if (!checkEnvironment()) {
+            plugin.getRunServer().shutdown();
+            return;
+        }
         new CheckUpdater(this).start();
         new MetricsLite(this);
         new BuildManifest().read(this);
@@ -83,6 +87,18 @@ public class MultiCore implements MultiCoreAPI {
                         plugin.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
                 )
         );
+    }
+
+    private boolean checkEnvironment() {
+        if (!plugin.getRunServer().isOnlineMode()) {
+            LoggerProvider.getLogger().warn("Please enable online mode, otherwise the plugin will not work!!!");
+            return false;
+        }
+        if (!plugin.getRunServer().isForwarded()) {
+            LoggerProvider.getLogger().warn("Please enable forwarding, otherwise the plugin will not work!!!");
+            return false;
+        }
+        return true;
     }
 
     public void reload() throws IOException, URISyntaxException {

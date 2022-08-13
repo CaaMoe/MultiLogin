@@ -35,11 +35,6 @@ public class VelocityServer implements IServer {
     }
 
     @Override
-    public boolean isWhitelist() {
-        return false;
-    }
-
-    @Override
     public boolean isForwarded() {
         return ((VelocityConfiguration) server.getConfiguration()).getPlayerInfoForwardingMode() != PlayerInfoForwarding.NONE;
     }

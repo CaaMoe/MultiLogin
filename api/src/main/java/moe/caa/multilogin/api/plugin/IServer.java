@@ -24,11 +24,6 @@ public interface IServer {
     boolean isOnlineMode();
 
     /**
-     * 判断是否开启原版的白名单系统
-     */
-    boolean isWhitelist();
-
-    /**
      * 返回是否已开启最基本的 UUID 穿透功能
      */
     boolean isForwarded();
