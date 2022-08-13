@@ -83,7 +83,7 @@ public class MultiCore implements MultiCoreAPI {
         cache.register();
 
         LoggerProvider.getLogger().info(
-                String.format("Loaded, using MultiLogin v%s on %s v%s",
+                String.format("Loaded, using MultiLogin v%s on %s - %s",
                         plugin.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
                 )
         );
