@@ -4,7 +4,7 @@ import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.crypto.SignaturePair;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
+import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import io.netty.buffer.ByteBuf;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 
@@ -12,25 +12,23 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
-public class MultiPlayerChat extends PlayerChat {
-    private static MethodHandle signatureFieldSetter;
-    private static MethodHandle saltFieldSetter;
+public class MultiPlayerCommand extends PlayerCommand {
     private static MethodHandle previousMessagesFieldSetter;
+    private static MethodHandle lastMessageFieldSetter;
+
 
     public static void init() throws NoSuchFieldException, IllegalAccessException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-        Field signatureField = PlayerChat.class.getDeclaredField("signature");
-        signatureField.setAccessible(true);
-        MultiPlayerChat.signatureFieldSetter = lookup.unreflectSetter(signatureField);
-
-        Field saltField = PlayerChat.class.getDeclaredField("salt");
-        saltField.setAccessible(true);
-        MultiPlayerChat.saltFieldSetter = lookup.unreflectSetter(saltField);
-
-        Field previousMessagesField = PlayerChat.class.getDeclaredField("previousMessages");
+        Field previousMessagesField = PlayerCommand.class.getDeclaredField("previousMessages");
         previousMessagesField.setAccessible(true);
-        MultiPlayerChat.previousMessagesFieldSetter = lookup.unreflectSetter(previousMessagesField);
+        MultiPlayerCommand.previousMessagesFieldSetter = lookup.unreflectSetter(previousMessagesField);
+
+        Field lastMessageField = PlayerCommand.class.getDeclaredField("lastMessage");
+        lastMessageField.setAccessible(true);
+        MultiPlayerCommand.lastMessageFieldSetter = lookup.unreflectSetter(lastMessageField);
+
+
     }
 
     @Override
@@ -47,11 +45,10 @@ public class MultiPlayerChat extends PlayerChat {
 
     private void removeSignature() {
         try {
-            signatureFieldSetter.invoke(this, new byte[]{0, 0, 0, 0, 0, 0, 0, 0});
-            saltFieldSetter.invoke(this, new byte[]{0, 0, 0, 0, 0, 0, 0, 0});
             previousMessagesFieldSetter.invoke(this, new SignaturePair[0]);
+            lastMessageFieldSetter.invoke(this, null);
         } catch (Throwable throwable) {
-            LoggerProvider.getLogger().error("An exception was encountered while clearing the chat signature.", throwable);
+            LoggerProvider.getLogger().error("An exception was encountered while clearing the command signature.", throwable);
         }
     }
 }

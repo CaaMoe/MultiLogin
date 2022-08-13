@@ -5,11 +5,12 @@ import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
+import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.velocity.injector.proxy.PlayerChatInvocationHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerChat;
+import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerCommand;
 import moe.caa.multilogin.velocity.injector.redirect.MultiServerLogin;
 
 import java.lang.reflect.Field;
@@ -25,7 +26,8 @@ public class VelocityInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         MultiInitialLoginSessionHandler.init();
-        PlayerChatInvocationHandler.init();
+        MultiPlayerChat.init();
+        MultiPlayerCommand.init();
 
         // auth
         redirect(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, MultiEncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
@@ -33,6 +35,7 @@ public class VelocityInjector implements Injector {
 
         // chat
         redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat.class, MultiPlayerChat::new);
+        redirect(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand.class, MultiPlayerCommand::new);
 
     }
 
