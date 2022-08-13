@@ -1,6 +1,5 @@
 package moe.caa.multilogin.bukkit.main;
 
-import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.HttpMinecraftSessionService;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
@@ -21,8 +20,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -67,8 +68,6 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
     public void initService() throws Exception {
         try {
             Class<?> serviceClass = Class.forName("net.minecraft.server.Services");
-            final Class<?> signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
-            final Class<?> userCacheClass = Class.forName("net.minecraft.server.players.UserCache");
 
             final Object[] minecraftServerClassMO = forceGet(vanServer, serviceClass, new HashSet<>());
 
@@ -77,43 +76,32 @@ public class MultiLoginBukkitPluginBootstrap extends BasePluginBootstrap impleme
 
             final Object serviceObj = serviceField.get(serverObj);
 
-            HttpMinecraftSessionService vanSession = null;
-            Object signatureValidator = null;
-            GameProfileRepository gameProfileRepository = null;
-            Object userCache = null;
+            LinkedHashMap<Field, Object> fieldObjectMap = new LinkedHashMap<>();
+            MultiLoginYggdrasilMinecraftSessionService sessionService = null;
 
             for (Field field : serviceObj.getClass().getDeclaredFields()) {
+                if (Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
                 field.setAccessible(true);
-                if (field.getType() == MinecraftSessionService.class) {
-                    vanSession = (HttpMinecraftSessionService) field.get(serviceObj);
+                Object value = field.get(serviceObj);
+                if(value instanceof MinecraftSessionService){
+                    sessionService = new MultiLoginYggdrasilMinecraftSessionService(((HttpMinecraftSessionService) value).getAuthenticationService());
+                    sessionService.setVanService((HttpMinecraftSessionService) value);
+                    sessionService.setBootstrap(this);
+                    value = sessionService;
                 }
-
-                if (field.getType() == signatureValidatorClass) {
-                    signatureValidator = field.get(serviceObj);
-                }
-
-                if (field.getType() == GameProfileRepository.class) {
-                    gameProfileRepository = (GameProfileRepository) field.get(serviceObj);
-                }
-
-                if (field.getType() == userCacheClass) {
-                    userCache = field.get(serviceObj);
-                }
+                fieldObjectMap.put(field, value);
+            }
+            if(sessionService == null) {
+                throw new RuntimeException("Unsupported Server.");
             }
 
-
-            MultiLoginYggdrasilMinecraftSessionService mlymss = new MultiLoginYggdrasilMinecraftSessionService(vanSession.getAuthenticationService());
-            mlymss.setVanService(vanSession);
-            mlymss.setBootstrap(this);
-
             final Constructor<?> declaredConstructor = serviceObj.getClass().getDeclaredConstructor(
-                    MinecraftSessionService.class,
-                    signatureValidatorClass,
-                    GameProfileRepository.class,
-                    userCacheClass
+                    fieldObjectMap.keySet().stream().map(Field::getType).toArray(Class[]::new)
             );
 
-            final Object o = declaredConstructor.newInstance(mlymss, signatureValidator, gameProfileRepository, userCache);
+            final Object o = declaredConstructor.newInstance(fieldObjectMap.values().toArray());
 
             serviceField.set(serverObj, o);
             return;
