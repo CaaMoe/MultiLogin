@@ -97,6 +97,7 @@ public class UserDataTable {
 
     /**
      * 返回档案集合
+     *
      * @param inGameUUID 游戏内 UUID
      */
     public Set<Pair<UUID, Integer>> getOnlineProfiles(UUID inGameUUID) throws SQLException {
@@ -123,8 +124,9 @@ public class UserDataTable {
 
     /**
      * 设置游戏内 UUID
-     * @param onlineUUID 在线 UUID
-     * @param yggdrasilId Yggdrasil ID
+     *
+     * @param onlineUUID    在线 UUID
+     * @param yggdrasilId   Yggdrasil ID
      * @param newInGameUUID 新的游戏内 UUID
      */
     public int setInGameUUID(UUID onlineUUID, int yggdrasilId, UUID newInGameUUID) throws SQLException {
@@ -144,7 +146,8 @@ public class UserDataTable {
 
     /**
      * 查询数据是否存在
-     * @param onlineUUID 在线UUID
+     *
+     * @param onlineUUID  在线UUID
      * @param yggdrasilId Yggdrasil Id
      */
     public boolean dataExists(UUID onlineUUID, int yggdrasilId) throws SQLException {
@@ -192,9 +195,10 @@ public class UserDataTable {
 
     /**
      * 设置白名单
-     * @param onlineUUID 在线 UUID
+     *
+     * @param onlineUUID  在线 UUID
      * @param yggdrasilId Yggdrasil Id
-     * @param whitelist 新的白名单
+     * @param whitelist   新的白名单
      */
     public void setWhitelist(UUID onlineUUID, int yggdrasilId, boolean whitelist) throws SQLException {
         String sql = String.format(

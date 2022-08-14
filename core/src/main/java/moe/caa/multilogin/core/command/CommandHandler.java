@@ -27,9 +27,9 @@ import java.util.concurrent.CompletableFuture;
 public class CommandHandler implements CommandAPI {
     @Getter
     private static MultiCore core;
-    private final CommandDispatcher<ISender> dispatcher;
     @Getter
     private static BuiltInExceptions builtInExceptions;
+    private final CommandDispatcher<ISender> dispatcher;
     @Getter
     private final SecondaryConfirmationHandler secondaryConfirmationHandler;
 

@@ -18,10 +18,10 @@ public class IdentifiedKeyInvocationHandler implements InvocationHandler {
         if (method.getName().equals("hasExpired")) {
             return false;
         }
-        if(method.getName().equals("isSignatureValid")){
+        if (method.getName().equals("isSignatureValid")) {
             return true;
         }
-        if(method.getName().equals("internalAddHolder")){
+        if (method.getName().equals("internalAddHolder")) {
             return true;
         }
         return method.invoke(obj, args);

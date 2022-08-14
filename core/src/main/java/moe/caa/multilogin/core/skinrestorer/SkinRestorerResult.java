@@ -18,7 +18,7 @@ public class SkinRestorerResult {
     private final GameProfile response;
     private final Throwable throwable;
 
-    public static SkinRestorerResult ofNoSkin(){
+    public static SkinRestorerResult ofNoSkin() {
         return new SkinRestorerResult(Reason.NO_SKIN, null, null);
     }
 

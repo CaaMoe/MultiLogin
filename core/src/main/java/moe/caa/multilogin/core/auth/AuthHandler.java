@@ -33,6 +33,7 @@ public class AuthHandler implements AuthAPI {
 
     /**
      * 开始验证
+     *
      * @param username 用户名
      * @param serverId 服务器ID
      * @param ip       用户IP
@@ -100,7 +101,7 @@ public class AuthHandler implements AuthAPI {
                 return AuthResult.ofAllowed(finalProfile);
             }
             return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
-        } catch (Exception e){
+        } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception occurred while processing the validation request.", e);
             return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_validate_error"));
         }

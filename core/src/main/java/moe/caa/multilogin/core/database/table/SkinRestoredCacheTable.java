@@ -42,8 +42,9 @@ public class SkinRestoredCacheTable {
 
     /**
      * 获得缓存的数据对象
+     *
      * @param urlSha256 皮肤 URL
-     * @param model 皮肤模型
+     * @param model     皮肤模型
      * @return 缓存的对象
      */
     public Pair<String, String> getCacheRestored(byte[] urlSha256, String model) throws SQLException {
@@ -67,9 +68,10 @@ public class SkinRestoredCacheTable {
 
     /**
      * 插入新的缓存对象
+     *
      * @param urlSha256 皮肤 URL
-     * @param model 皮肤模型
-     * @param value 值
+     * @param model     皮肤模型
+     * @param value     值
      * @param signature 签名
      */
     public void insertNew(byte[] urlSha256, String model, String value, String signature) throws SQLException {

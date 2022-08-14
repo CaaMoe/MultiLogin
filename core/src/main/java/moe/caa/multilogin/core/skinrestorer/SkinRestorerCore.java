@@ -28,8 +28,8 @@ import java.util.Map;
  * 皮肤修复程序核心
  */
 public class SkinRestorerCore {
-    private static final String[] ALLOWED_DOMAINS = new String[] { ".minecraft.net", ".mojang.com" };
-    private static final String[] BLOCKED_DOMAINS = new String[] { "bugs.mojang.com", "education.minecraft.net", "feedback.minecraft.net" };
+    private static final String[] ALLOWED_DOMAINS = new String[]{".minecraft.net", ".mojang.com"};
+    private static final String[] BLOCKED_DOMAINS = new String[]{"bugs.mojang.com", "education.minecraft.net", "feedback.minecraft.net"};
     private static PublicKey publicKey;
 
 
@@ -57,6 +57,31 @@ public class SkinRestorerCore {
         signature.initVerify(publicKey);
         signature.update(value.getBytes());
         return signature.verify(Base64.getDecoder().decode(signatureValue));
+    }
+
+    /**
+     * 判断材质URL白名单
+     */
+    private static boolean isAllowedTextureDomain(String url) {
+        try {
+            String domain = new URI(url).getHost();
+            boolean allowed = false;
+            for (String allowedDomain : ALLOWED_DOMAINS) {
+                if (domain.endsWith(allowedDomain)) {
+                    allowed = true;
+                    break;
+                }
+            }
+            if (!allowed) return false;
+            for (String blockedDomain : BLOCKED_DOMAINS) {
+                if (domain.endsWith(blockedDomain)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (URISyntaxException ignored) {
+            throw new IllegalArgumentException("Invalid URL '" + url + "'");
+        }
     }
 
     /**
@@ -130,31 +155,5 @@ public class SkinRestorerCore {
             return SkinRestorerResult.ofRestorerAsync();
         }
         return srf.call();
-    }
-
-
-    /**
-     * 判断材质URL白名单
-     */
-    private static boolean isAllowedTextureDomain(String url) {
-        try {
-            String domain = new URI(url).getHost();
-            boolean allowed = false;
-            for (String allowedDomain : ALLOWED_DOMAINS) {
-                if(domain.endsWith(allowedDomain)){
-                    allowed = true;
-                    break;
-                }
-            }
-            if(!allowed) return false;
-            for (String blockedDomain : BLOCKED_DOMAINS) {
-                if (domain.endsWith(blockedDomain)) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (URISyntaxException ignored) {
-            throw new IllegalArgumentException("Invalid URL '" + url + "'");
-        }
     }
 }
