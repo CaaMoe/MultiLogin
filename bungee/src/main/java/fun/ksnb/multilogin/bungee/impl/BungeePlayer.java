@@ -1,23 +1,24 @@
-package moe.caa.multilogin.bukkit.impl;
+package fun.ksnb.multilogin.bungee.impl;
 
 import moe.caa.multilogin.api.plugin.IPlayer;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 
-public class BukkitPlayer extends BukkitSender implements IPlayer {
-    private final Player player;
+public class BungeePlayer extends BungeeSender implements IPlayer {
+    private final ProxiedPlayer player;
 
-    public BukkitPlayer(Player player) {
+    public BungeePlayer(ProxiedPlayer player) {
         super(player);
         this.player = player;
     }
 
     @Override
     public void kickPlayer(String message) {
-        player.kickPlayer(message);
+        player.disconnect(new TextComponent(message));
     }
 
     @Override
@@ -26,20 +27,20 @@ public class BukkitPlayer extends BukkitSender implements IPlayer {
     }
 
     @Override
-    public SocketAddress getAddress() {
-        return player.getAddress();
+    public String getName() {
+        return player.getName();
     }
 
     @Override
-    public String getName() {
-        return player.getName();
+    public SocketAddress getAddress() {
+        return player.getSocketAddress();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BukkitPlayer that = (BukkitPlayer) o;
+        BungeePlayer that = (BungeePlayer) o;
         return Objects.equals(player.getUniqueId(), that.player.getUniqueId());
     }
 

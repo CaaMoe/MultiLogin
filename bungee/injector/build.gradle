@@ -1,0 +1,23 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+repositories {
+    maven { url "https://repo.codemc.io/repository/maven-public/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
+}
+
+dependencies {
+    compileOnly project(":api")
+    compileOnly project(":bungee")
+
+    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.19-R0.1-SNAPSHOT'
+}
+
+shadowJar {
+    archiveFileName = 'MultiLogin-Bungee-Injector.JarFile'
+}
+
+artifacts {
+    archives shadowJar
+}

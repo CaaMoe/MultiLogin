@@ -1,21 +1,22 @@
-package moe.caa.multilogin.bukkit.impl;
+package fun.ksnb.multilogin.bungee.impl;
 
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.command.ConsoleCommandSender;
 
-public class BukkitSender implements ISender {
+public class BungeeSender implements ISender {
     private final CommandSender sender;
 
-    public BukkitSender(CommandSender sender) {
+    public BungeeSender(CommandSender sender) {
         this.sender = sender;
     }
 
     @Override
     public boolean isPlayer() {
-        return sender instanceof Player;
+        return sender instanceof ProxiedPlayer;
     }
 
     @Override
@@ -31,7 +32,7 @@ public class BukkitSender implements ISender {
     @Override
     public void sendMessagePL(String message) {
         for (String s : message.split("\\r?\\n")) {
-            sender.sendMessage(s);
+            sender.sendMessage(new TextComponent(s));
         }
     }
 
@@ -42,6 +43,6 @@ public class BukkitSender implements ISender {
 
     @Override
     public IPlayer getAsPlayer() {
-        return new BukkitPlayer((Player) sender);
+        return null;
     }
 }

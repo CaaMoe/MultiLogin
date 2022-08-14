@@ -4,7 +4,7 @@ import com.velocitypowered.api.proxy.Player;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import net.kyori.adventure.text.Component;
 
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -27,7 +27,7 @@ public class VelocityPlayer extends VelocitySender implements IPlayer {
     }
 
     @Override
-    public InetSocketAddress getAddress() {
+    public SocketAddress getAddress() {
         return player.getRemoteAddress();
     }
 

@@ -1,6 +1,6 @@
 package moe.caa.multilogin.api.plugin;
 
-import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.UUID;
 
 public interface IPlayer extends ISender {
@@ -23,5 +23,5 @@ public interface IPlayer extends ISender {
      *
      * @return 玩家的 IP 地址
      */
-    InetSocketAddress getAddress();
+    SocketAddress getAddress();
 }
