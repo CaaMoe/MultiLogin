@@ -6,6 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Bukkit 的命令执行者对象
+ */
 public class BukkitSender implements ISender {
     private final CommandSender sender;
 

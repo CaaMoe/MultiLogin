@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Bukkit 的玩家管理器对象
+ */
 public class BukkitPlayerManager implements IPlayerManager {
     private final Server server;
 

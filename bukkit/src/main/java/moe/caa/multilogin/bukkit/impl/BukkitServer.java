@@ -7,6 +7,9 @@ import moe.caa.multilogin.api.plugin.IServer;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Bukkit 的服务端对象
+ */
 public class BukkitServer implements IServer {
     private final Server server;
     private final BaseScheduler scheduler;

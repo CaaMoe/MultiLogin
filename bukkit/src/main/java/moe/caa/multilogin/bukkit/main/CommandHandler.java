@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Bukkit 的命令处理程序
+ */
 public class CommandHandler {
     private final MultiLoginBukkit multiLoginBukkit;
 

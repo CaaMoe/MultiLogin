@@ -7,6 +7,9 @@ import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Bukkit 的玩家对象
+ */
 public class BukkitPlayer extends BukkitSender implements IPlayer {
     private final Player player;
 

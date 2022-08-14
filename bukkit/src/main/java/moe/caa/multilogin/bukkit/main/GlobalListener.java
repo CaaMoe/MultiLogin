@@ -5,6 +5,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * Bukkit 的事件处理程序
+ */
 public class GlobalListener {
     private final MultiLoginBukkit multiLoginBukkit;
 

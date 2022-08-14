@@ -12,6 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
+/**
+ * Bukkit Main
+ */
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Getter
     private BukkitServer runServer;

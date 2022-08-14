@@ -3,6 +3,9 @@ package moe.caa.multilogin.bukkit.impl;
 import moe.caa.multilogin.api.plugin.BaseScheduler;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Bukkit 的调度器对象
+ */
 public class BukkitScheduler extends BaseScheduler {
     private final org.bukkit.scheduler.BukkitScheduler scheduler;
     private final Plugin plugin;
