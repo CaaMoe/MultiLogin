@@ -38,7 +38,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
         try {
             multiCoreAPI = pluginLoader.getCoreObject();
             multiCoreAPI.load();
-            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.bungee.injector.BukkitInjector").getConstructor().newInstance();
+            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.bungee.injector.BungeeInjector").getConstructor().newInstance();
             injector.inject(multiCoreAPI);
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);

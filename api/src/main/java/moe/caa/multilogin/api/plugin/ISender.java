@@ -12,6 +12,9 @@ public interface ISender {
      */
     boolean isPlayer();
 
+    /**
+     * 判断是不是控制台
+     */
     boolean isConsole();
 
     /**

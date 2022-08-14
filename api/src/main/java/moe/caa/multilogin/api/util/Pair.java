@@ -3,6 +3,9 @@ package moe.caa.multilogin.api.util;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * 表示一对对象
+ */
 @Data
 @AllArgsConstructor
 public class Pair<V1, V2> {

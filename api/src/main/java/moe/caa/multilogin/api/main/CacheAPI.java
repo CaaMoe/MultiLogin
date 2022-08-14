@@ -31,5 +31,12 @@ public interface CacheAPI {
      */
     Pair<UUID, Integer> getPlayerOnlineProfile(UUID inGameUUID);
 
+    /**
+     * 获得玩家游戏内 UUID
+     *
+     * @param onlineUUID  玩家的在线 UUID
+     * @param yggdrasilId yggdrasil id
+     * @return 玩家游戏内 UUID
+     */
     UUID getInGameUUID(UUID onlineUUID, int yggdrasilId);
 }

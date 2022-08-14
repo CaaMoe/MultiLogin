@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+/**
+ * 值操作工具
+ */
 public class ValueUtil {
     /**
      * UUID 转 bytes
@@ -76,6 +79,9 @@ public class ValueUtil {
         return s;
     }
 
+    /**
+     * 替换变量
+     */
     public static String transPapi(String s, List<Pair<?, ?>> pairs) {
         for (int i = 0; i < pairs.size(); i++) {
             s = s.replace("{" + pairs.get(i).getValue1() + "}", pairs.get(i).getValue2().toString());
@@ -84,6 +90,9 @@ public class ValueUtil {
         return s;
     }
 
+    /**
+     * 字符串加入
+     */
     public static String join(CharSequence delimiter, CharSequence lastDelimiter, Object... elements) {
         if (elements.length == 0) return "";
         if (elements.length == 1) return elements[0].toString();
@@ -98,6 +107,9 @@ public class ValueUtil {
         return join(delimiter, lastDelimiter, elements.toArray(new Object[0]));
     }
 
+    /**
+     * 返回字符串 sha256
+     */
     public static byte[] sha256(String str) throws NoSuchAlgorithmException {
         return MessageDigest.getInstance("SHA-256").digest(str.getBytes(StandardCharsets.UTF_8));
     }

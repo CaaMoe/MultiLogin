@@ -25,5 +25,8 @@ public interface IPlugin {
      */
     IServer getRunServer();
 
+    /**
+     * 获得服务端版本
+     */
     String getVersion();
 }

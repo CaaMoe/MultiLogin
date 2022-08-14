@@ -22,6 +22,9 @@ public interface MultiCoreAPI {
      */
     CommandAPI getCommandHandler();
 
+    /**
+     * 获得语言处理程序
+     */
     LanguageAPI getLanguageHandler();
 
     /**
@@ -29,7 +32,13 @@ public interface MultiCoreAPI {
      */
     AuthAPI getAuthHandler();
 
+    /**
+     * 获得缓存
+     */
     CacheAPI getCache();
 
+    /**
+     * 获得插件对象
+     */
     IPlugin getPlugin();
 }

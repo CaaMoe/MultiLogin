@@ -4,6 +4,9 @@ import moe.caa.multilogin.api.logger.Level;
 import moe.caa.multilogin.api.logger.Logger;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 
+/**
+ * 调试日志处理
+ */
 public class DebugLoggerBridge implements Logger {
     private final Logger logger;
 

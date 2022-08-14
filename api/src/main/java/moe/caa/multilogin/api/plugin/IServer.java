@@ -47,5 +47,8 @@ public interface IServer {
      */
     void shutdown();
 
+    /**
+     * 获得控制台对象
+     */
     ISender getConsoleSender();
 }

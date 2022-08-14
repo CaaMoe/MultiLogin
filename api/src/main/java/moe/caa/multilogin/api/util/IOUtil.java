@@ -9,9 +9,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
+/**
+ * 流工具
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IOUtil {
 
+    /**
+     * 拷贝流
+     */
     public static void copy(InputStream is, OutputStream os) throws IOException {
         byte[] buffer = new byte[1024];
         int n;
@@ -21,6 +27,9 @@ public class IOUtil {
         os.flush();
     }
 
+    /**
+     * 递归删除文件
+     */
     public static void removeAllFiles(File file) throws IOException {
         if (!file.exists()) return;
         if (!file.isFile()) {
