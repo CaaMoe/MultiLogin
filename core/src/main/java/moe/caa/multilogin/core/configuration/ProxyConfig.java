@@ -13,6 +13,9 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 
+/**
+ * 表示一个代理配置
+ */
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Getter
 @ToString

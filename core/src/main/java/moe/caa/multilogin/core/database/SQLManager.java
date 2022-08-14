@@ -13,7 +13,9 @@ import moe.caa.multilogin.core.main.MultiCore;
 
 import java.sql.SQLException;
 
-
+/**
+ * 数据库管理程序
+ */
 public class SQLManager {
     @Getter
     private final MultiCore core;

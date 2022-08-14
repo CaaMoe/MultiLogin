@@ -6,6 +6,9 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 
+/**
+ * 数据升级程序未完成
+ */
 public class Main {
 
     public static void main(String[] args) {

@@ -9,6 +9,9 @@ import org.spongepowered.configurate.CommentedConfigurationNode;
 
 import java.util.Objects;
 
+/**
+ * 表示 Blessing 的 HasJoined 配置
+ */
 @ToString
 public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
     @Getter

@@ -22,6 +22,9 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * 表示插件配置处理程序
+ */
 public class PluginConfig {
     private final File dataFolder;
 

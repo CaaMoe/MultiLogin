@@ -9,6 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 
+/**
+ * 皮肤修复缓存表
+ */
 public class SkinRestoredCacheTable {
     private static final String fieldCurrentSkinUrlSha256 = "current_skin_url_sha256";
     private static final String fieldCurrentSkinModel = "current_skin_model";
@@ -37,6 +40,12 @@ public class SkinRestoredCacheTable {
         }
     }
 
+    /**
+     * 获得缓存的数据对象
+     * @param urlSha256 皮肤 URL
+     * @param model 皮肤模型
+     * @return 缓存的对象
+     */
     public Pair<String, String> getCacheRestored(byte[] urlSha256, String model) throws SQLException {
         String sql = String.format(
                 "SELECT %s, %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
@@ -56,6 +65,13 @@ public class SkinRestoredCacheTable {
         return null;
     }
 
+    /**
+     * 插入新的缓存对象
+     * @param urlSha256 皮肤 URL
+     * @param model 皮肤模型
+     * @param value 值
+     * @param signature 签名
+     */
     public void insertNew(byte[] urlSha256, String model, String value, String signature) throws SQLException {
         String sql = String.format(
                 "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) "

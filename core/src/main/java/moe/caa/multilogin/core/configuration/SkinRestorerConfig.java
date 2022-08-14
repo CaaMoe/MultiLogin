@@ -7,6 +7,9 @@ import lombok.ToString;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+/**
+ * 表示一个皮肤修复配置
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString

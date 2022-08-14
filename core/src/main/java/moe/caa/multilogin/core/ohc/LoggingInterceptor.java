@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Http 日志打印拦截器
+ */
 public class LoggingInterceptor implements Interceptor {
 
     @NotNull

@@ -10,6 +10,9 @@ import org.spongepowered.configurate.serialize.SerializationException;
 
 import java.util.Objects;
 
+/**
+ * 表示高度自定义的 HasJoined 配置
+ */
 @ToString
 public class CustomHasJoinedConfig implements HasJoinedConfig {
     @Getter

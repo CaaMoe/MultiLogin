@@ -95,6 +95,10 @@ public class UserDataTable {
         return Collections.unmodifiableSet(result);
     }
 
+    /**
+     * 返回档案集合
+     * @param inGameUUID 游戏内 UUID
+     */
     public Set<Pair<UUID, Integer>> getOnlineProfiles(UUID inGameUUID) throws SQLException {
         Set<Pair<UUID, Integer>> result = new HashSet<>();
         String sql = String.format(
@@ -117,6 +121,12 @@ public class UserDataTable {
         return Collections.unmodifiableSet(result);
     }
 
+    /**
+     * 设置游戏内 UUID
+     * @param onlineUUID 在线 UUID
+     * @param yggdrasilId Yggdrasil ID
+     * @param newInGameUUID 新的游戏内 UUID
+     */
     public int setInGameUUID(UUID onlineUUID, int yggdrasilId, UUID newInGameUUID) throws SQLException {
         String sql = String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ? AND %s = ? LIMIT 1"
@@ -132,6 +142,11 @@ public class UserDataTable {
         }
     }
 
+    /**
+     * 查询数据是否存在
+     * @param onlineUUID 在线UUID
+     * @param yggdrasilId Yggdrasil Id
+     */
     public boolean dataExists(UUID onlineUUID, int yggdrasilId) throws SQLException {
         String sql = String.format(
                 "SELECT 1 FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
@@ -175,6 +190,12 @@ public class UserDataTable {
         }
     }
 
+    /**
+     * 设置白名单
+     * @param onlineUUID 在线 UUID
+     * @param yggdrasilId Yggdrasil Id
+     * @param whitelist 新的白名单
+     */
     public void setWhitelist(UUID onlineUUID, int yggdrasilId, boolean whitelist) throws SQLException {
         String sql = String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ? AND %s = ? LIMIT 1"
@@ -190,6 +211,9 @@ public class UserDataTable {
         }
     }
 
+    /**
+     * 查询白名单
+     */
     public boolean hasWhitelist(UUID onlineUUID, int yggdrasilId) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
@@ -209,6 +233,9 @@ public class UserDataTable {
         return false;
     }
 
+    /**
+     * 查询白名单
+     */
     public boolean hasWhitelist(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
@@ -227,6 +254,9 @@ public class UserDataTable {
         return false;
     }
 
+    /**
+     * 设置白名单
+     */
     public void setWhitelist(UUID inGameUUID, boolean whitelist) throws SQLException {
         String sql = String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ?LIMIT 1"
@@ -241,6 +271,9 @@ public class UserDataTable {
         }
     }
 
+    /**
+     * 删除数据
+     */
     public void delete(UUID onlineUUID, int yggdrasilId) throws SQLException {
         String sql = String.format(
                 "DELETE FROM %s WHERE %s = ? AND %s = ? LIMIT 1"

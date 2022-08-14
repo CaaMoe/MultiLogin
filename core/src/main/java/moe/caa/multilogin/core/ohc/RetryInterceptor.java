@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 延时重试拦截器
+ */
 public class RetryInterceptor implements Interceptor {
     private final int retry;
     private final int delay;

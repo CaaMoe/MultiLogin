@@ -16,6 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
+/**
+ * 表示一个验证服务器配置
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @ToString
@@ -81,6 +84,9 @@ public class YggdrasilServiceConfig {
         GET, POST
     }
 
+    /**
+     * 初始化的UUID生成器
+     */
     public enum InitUUID {
         DEFAULT((u, n) -> u),
         OFFLINE((u, n) -> UUID.nameUUIDFromBytes(("OfflinePlayer:" + n).getBytes(StandardCharsets.UTF_8))),

@@ -4,6 +4,9 @@ import lombok.ToString;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 
+/**
+ * 表示 MoJang 官方的 HasJoined 配置
+ */
 @ToString
 public class OfficialHasJoinedConfig implements HasJoinedConfig {
 

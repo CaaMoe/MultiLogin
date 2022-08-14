@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * 检查更新程序
+ */
 public class CheckUpdater {
     private final MultiCore core;
 

@@ -19,6 +19,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+/**
+ * 皮肤修复工作流
+ */
 public class SkinRestorerFlows implements Callable<SkinRestorerResult> {
     private final MultiCore core;
     private final YggdrasilServiceConfig config;
@@ -36,6 +39,9 @@ public class SkinRestorerFlows implements Callable<SkinRestorerResult> {
         this.profile = profile;
     }
 
+    /**
+     * 进行皮肤修复
+     */
     public SkinRestorerResult call() throws Exception {
         byte[] bytes;
         try {

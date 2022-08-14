@@ -42,6 +42,11 @@ public class InGameProfileTable {
         }
     }
 
+    /**
+     * 查询数据是否存在
+     * @param inGameUUID 游戏内 UUID
+     * @return 是否存在数据
+     */
     public boolean dataExists(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "SELECT 1 FROM %s WHERE %s = ? LIMIT 1"
@@ -57,6 +62,11 @@ public class InGameProfileTable {
         }
     }
 
+    /**
+     * 获得游戏内 UUID
+     * @param currentUsername 用户名
+     * @return 游戏内 UUID
+     */
     public UUID getInGameUUID(String currentUsername) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
@@ -75,6 +85,10 @@ public class InGameProfileTable {
         return null;
     }
 
+    /**
+     * 获得游戏内名字
+     * @param inGameUUID 游戏内 UUID
+     */
     public String getUsername(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
@@ -93,6 +107,10 @@ public class InGameProfileTable {
         return null;
     }
 
+    /**
+     * 插入一条新的数据
+     * @param inGameUUID 游戏内 UUID
+     */
     public void insertNewData(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "INSERT INTO %s (%s) VALUES (?)"
@@ -106,6 +124,12 @@ public class InGameProfileTable {
         }
     }
 
+    /**
+     * 更新用户名
+     * @param inGameUUID 游戏内 UUID
+     * @param currentUsername 新的名字
+     * @throws SQLException
+     */
     public void updateUsername(UUID inGameUUID, String currentUsername) throws SQLException {
         String sql = String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ?"
@@ -120,6 +144,10 @@ public class InGameProfileTable {
         }
     }
 
+    /**
+     * 擦除用户名使用记录
+     * @param currentUsername 用户名
+     */
     public int eraseUsername(String currentUsername) throws SQLException {
         String sql = String.format(
                 "UPDATE %s SET %s = ? WHERE %s = ?"

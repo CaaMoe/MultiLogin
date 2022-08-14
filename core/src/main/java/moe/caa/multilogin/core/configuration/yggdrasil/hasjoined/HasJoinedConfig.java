@@ -11,12 +11,18 @@ import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+/**
+ * 表示一个 HasJoined 配置
+ */
 public interface HasJoinedConfig {
     Map<String, Supplier<HasJoinedConfig>> hasJoinedSupplier = Map.of(
             "official", OfficialHasJoinedConfig::new,
             "blessingSkin", BlessingSkinHasJoinedConfig::new,
             "custom", CustomHasJoinedConfig::new);
 
+    /**
+     * 返回 HasJoined 配置
+     */
     static HasJoinedConfig getHasJoinedConfig(CommentedConfigurationNode node) throws ConfException, SerializationException {
         HasJoinedConfig hasJoinedConfig = null;
         for (Map.Entry<String, Supplier<HasJoinedConfig>> entry : hasJoinedSupplier.entrySet()) {
@@ -42,6 +48,9 @@ public interface HasJoinedConfig {
         return hasJoinedConfig;
     }
 
+    /**
+     * 初始化值
+     */
     void initValue(CommentedConfigurationNode node) throws ConfException, SerializationException;
 
     String getUrl();

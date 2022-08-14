@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
+/**
+ * 非稳定版本输出Banner
+ */
 @NoArgsConstructor
 @Getter
 public class BuildManifest {

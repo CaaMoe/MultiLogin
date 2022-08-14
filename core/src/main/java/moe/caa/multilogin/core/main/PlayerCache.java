@@ -14,6 +14,9 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+/**
+ * 数据缓存中心
+ */
 public class PlayerCache implements CacheAPI {
 
     private final MultiCore core;

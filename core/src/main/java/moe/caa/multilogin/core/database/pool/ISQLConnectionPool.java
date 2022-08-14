@@ -3,6 +3,9 @@ package moe.caa.multilogin.core.database.pool;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+/**
+ * 表示数据库连接池
+ */
 public interface ISQLConnectionPool {
     /**
      * 获得链接对象

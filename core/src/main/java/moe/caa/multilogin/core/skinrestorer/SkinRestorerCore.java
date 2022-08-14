@@ -24,6 +24,9 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.Map;
 
+/**
+ * 皮肤修复程序核心
+ */
 public class SkinRestorerCore {
     private static final String[] ALLOWED_DOMAINS = new String[] { ".minecraft.net", ".mojang.com" };
     private static final String[] BLOCKED_DOMAINS = new String[] { "bugs.mojang.com", "education.minecraft.net", "feedback.minecraft.net" };
@@ -46,6 +49,9 @@ public class SkinRestorerCore {
         this.core = core;
     }
 
+    /**
+     * 判断材质签名是否有效
+     */
     private static boolean isSignatureValid(String value, String signatureValue) throws InvalidKeyException, NoSuchAlgorithmException, SignatureException {
         Signature signature = Signature.getInstance("SHA1withRSA");
         signature.initVerify(publicKey);
@@ -53,6 +59,9 @@ public class SkinRestorerCore {
         return signature.verify(Base64.getDecoder().decode(signatureValue));
     }
 
+    /**
+     * 进行修复
+     */
     @SneakyThrows
     public SkinRestorerResult doRestorer(YggdrasilServiceConfig yggdrasilServiceConfig, GameProfile profile) {
         profile = profile.clone();
@@ -124,7 +133,9 @@ public class SkinRestorerCore {
     }
 
 
-
+    /**
+     * 判断材质URL白名单
+     */
     private static boolean isAllowedTextureDomain(String url) {
         try {
             String domain = new URI(url).getHost();

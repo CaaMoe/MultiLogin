@@ -2,6 +2,9 @@ package moe.caa.multilogin.core.configuration;
 
 import java.io.IOException;
 
+/**
+ * 配置异常
+ */
 public class ConfException extends IOException {
     public ConfException() {
     }

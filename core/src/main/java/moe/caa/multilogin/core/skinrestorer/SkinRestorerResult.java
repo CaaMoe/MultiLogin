@@ -7,6 +7,9 @@ import lombok.ToString;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 
+/**
+ * 皮肤修复结果
+ */
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString

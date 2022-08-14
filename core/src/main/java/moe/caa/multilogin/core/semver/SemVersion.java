@@ -8,6 +8,9 @@ import moe.caa.multilogin.api.util.ValueUtil;
 
 import java.util.Locale;
 
+/**
+ * 语义化版本号处理工具
+ */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @EqualsAndHashCode
