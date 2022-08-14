@@ -6,6 +6,9 @@ import fun.ksnb.multilogin.velocity.impl.VelocitySender;
 
 import java.util.List;
 
+/**
+ * Velocity 的指令处理程序
+ */
 public class CommandHandler {
     private final MultiLoginVelocity multiLoginVelocity;
 

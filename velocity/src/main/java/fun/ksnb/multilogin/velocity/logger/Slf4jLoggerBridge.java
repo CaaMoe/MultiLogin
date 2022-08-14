@@ -4,6 +4,9 @@ import moe.caa.multilogin.api.logger.Level;
 import moe.caa.multilogin.api.logger.bridges.BaseLoggerBridge;
 import org.slf4j.Logger;
 
+/**
+ * Slf4J 日志桥接程序
+ */
 public class Slf4jLoggerBridge extends BaseLoggerBridge {
     private final Logger logger;
 

@@ -12,6 +12,9 @@ import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.Set;
 
+/**
+ * 可以中途重定向包名的类加载器
+ */
 public class RelocateClassLoader extends URLClassLoader implements IExtURLClassLoader {
     static {
         registerAsParallelCapable();

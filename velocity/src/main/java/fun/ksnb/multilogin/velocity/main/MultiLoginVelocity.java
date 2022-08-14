@@ -22,6 +22,9 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Objects;
 
+/**
+ * Velocity Main
+ */
 public class MultiLoginVelocity implements IPlugin {
     private final Path dataDirectory;
     @Getter

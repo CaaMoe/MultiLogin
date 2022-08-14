@@ -3,6 +3,9 @@ package moe.caa.multilogin.velocity.injector.proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+/**
+ * IdentifiedKey 代理，始终让签名数据有效
+ */
 public class IdentifiedKeyInvocationHandler implements InvocationHandler {
     private final Object obj;
 

@@ -9,6 +9,9 @@ import moe.caa.multilogin.velocity.injector.proxy.IdentifiedKeyInvocationHandler
 
 import java.lang.reflect.Proxy;
 
+/**
+ * 擦除登录验证签名的包
+ */
 @AllArgsConstructor
 public class MultiServerLogin extends ServerLogin {
     private final MultiCoreAPI multiCoreAPI;

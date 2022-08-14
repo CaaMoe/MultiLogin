@@ -10,6 +10,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Velocity 玩家管理器对象
+ */
 public class VelocityPlayerManager implements IPlayerManager {
     private final ProxyServer server;
 

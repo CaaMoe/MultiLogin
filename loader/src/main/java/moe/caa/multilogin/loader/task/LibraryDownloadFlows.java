@@ -15,6 +15,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 表示文件依赖下载流
+ */
 public class LibraryDownloadFlows extends BaseFlows<Void> {
     private final Library library;
     private final File librariesFolder;

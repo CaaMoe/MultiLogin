@@ -8,6 +8,9 @@ import moe.caa.multilogin.api.plugin.IPlayerManager;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
 
+/**
+ * Velocity 服务器对象
+ */
 public class VelocityServer implements IServer {
     private final ProxyServer server;
     private final BaseScheduler scheduler;

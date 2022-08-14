@@ -5,6 +5,9 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 
+/**
+ * Velocity 的事件处理程序
+ */
 public class GlobalListener {
     private final MultiLoginVelocity multiLoginVelocity;
 

@@ -12,6 +12,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
+/**
+ * 擦除聊天签名的包
+ */
 public class MultiPlayerChat extends PlayerChat {
     private static MethodHandle signatureFieldSetter;
     private static MethodHandle saltFieldSetter;

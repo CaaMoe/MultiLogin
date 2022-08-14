@@ -12,6 +12,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 
+/**
+ * 擦除指令签名的包
+ */
 public class MultiPlayerCommand extends PlayerCommand {
     private static MethodHandle previousMessagesFieldSetter;
     private static MethodHandle lastMessageFieldSetter;

@@ -7,6 +7,9 @@ import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import net.kyori.adventure.text.Component;
 
+/**
+ * Velocity 指令执行者对象
+ */
 public class VelocitySender implements ISender {
     private final CommandSource commandSource;
 

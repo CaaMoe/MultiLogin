@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+/**
+ * 表示插件加载器
+ */
 public class PluginLoader {
     public static final String nestJarName = "MultiLogin-Core.JarFile";
     public static final String coreClassName = "moe.caa.multilogin.core.main.MultiCore";
@@ -214,6 +217,7 @@ public class PluginLoader {
         }
     }
 
+    // 获得文件sha256
     private String getSha256(File file) throws Exception {
         try (FileInputStream fis = new FileInputStream(file);
              ByteArrayOutputStream baos = new ByteArrayOutputStream();) {

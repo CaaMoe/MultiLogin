@@ -9,6 +9,9 @@ import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import net.kyori.adventure.text.Component;
 
+/**
+ * EncryptionResponse 数据包处理
+ */
 @AllArgsConstructor
 public class MultiEncryptionResponse extends EncryptionResponse {
     private final MultiCoreAPI multiCoreAPI;

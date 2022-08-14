@@ -8,6 +8,9 @@ import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Velocity 玩家对象
+ */
 public class VelocityPlayer extends VelocitySender implements IPlayer {
     private final Player player;
 

@@ -22,6 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * Velocity 注入程序
+ */
 public class VelocityInjector implements Injector {
 
     @Override
@@ -40,6 +43,9 @@ public class VelocityInjector implements Injector {
 
     }
 
+    /**
+     * 重定向数据包
+     */
     private synchronized <T> void redirect(StateRegistry.PacketRegistry bound, Class<T> target, Class<? extends T> redirect, Supplier<? extends T> supplierRedirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         //定义一些基础
         Class<StateRegistry.PacketRegistry> stateRegistry$packetRegistryClass = StateRegistry.PacketRegistry.class;
