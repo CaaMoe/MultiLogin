@@ -12,6 +12,9 @@ import net.md_5.bungee.api.plugin.Plugin;
 
 import java.io.File;
 
+/**
+ * Bungee Main
+ */
 public class MultiLoginBungee extends Plugin implements IPlugin {
     @Getter
     private BungeeServer runServer;

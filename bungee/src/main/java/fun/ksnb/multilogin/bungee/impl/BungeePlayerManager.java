@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * Bungee 的玩家管理器对象
+ */
 public class BungeePlayerManager implements IPlayerManager {
 
     private final ProxyServer bungeeCord;

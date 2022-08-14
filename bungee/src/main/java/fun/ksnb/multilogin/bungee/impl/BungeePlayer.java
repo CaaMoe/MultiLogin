@@ -8,6 +8,9 @@ import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Bungee 的玩家对象
+ */
 public class BungeePlayer extends BungeeSender implements IPlayer {
     private final ProxiedPlayer player;
 

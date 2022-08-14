@@ -5,6 +5,9 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
+/**
+ * Bungee 的命令执行器
+ */
 public class CommandHandler {
     private final MultiLoginBungee multiLoginBungee;
 

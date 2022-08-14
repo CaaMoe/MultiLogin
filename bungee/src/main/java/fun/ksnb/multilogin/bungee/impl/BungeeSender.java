@@ -7,6 +7,9 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.command.ConsoleCommandSender;
 
+/**
+ * Bungee 的命令执行者对象
+ */
 public class BungeeSender implements ISender {
     private final CommandSender sender;
 

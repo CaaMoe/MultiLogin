@@ -5,6 +5,9 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+/**
+ * Bungee 的事件处理程序
+ */
 public class GlobalListener {
     private final MultiLoginBungee multiLoginBungee;
 

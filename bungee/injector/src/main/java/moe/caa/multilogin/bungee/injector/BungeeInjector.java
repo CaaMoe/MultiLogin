@@ -10,12 +10,18 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Bungee 的注入器
+ */
 public class BungeeInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI api) throws Throwable {
         throw new RuntimeException("Unsupported Bungee Server.");
     }
 
+    /**
+     * 重定向包，未完成
+     */
     private synchronized <T> void redirect() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
         Class<?> protocol$DirectionData = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
         Class<?> protocol$ProtocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
