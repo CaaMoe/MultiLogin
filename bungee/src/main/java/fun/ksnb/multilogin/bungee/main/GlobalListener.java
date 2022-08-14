@@ -8,27 +8,26 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * Bungee 的事件处理程序
  */
-public class GlobalListener {
+public class GlobalListener implements Listener {
     private final MultiLoginBungee multiLoginBungee;
 
-    private final Listener listener = new Listener() {
 
-        @EventHandler
-        public void onJoin(PostLoginEvent event) {
-            multiLoginBungee.getMultiCoreAPI().getCache().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-        }
+    @EventHandler
+    public void onJoin(PostLoginEvent event) {
+        multiLoginBungee.getMultiCoreAPI().getCache().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+    }
 
-        @EventHandler
+    @EventHandler
         public void onQuit(PlayerDisconnectEvent event) {
             multiLoginBungee.getMultiCoreAPI().getCache().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         }
-    };
+
 
     public GlobalListener(MultiLoginBungee multiLoginBungee) {
         this.multiLoginBungee = multiLoginBungee;
     }
 
     public void register() {
-        multiLoginBungee.getProxy().getPluginManager().registerListener(multiLoginBungee, listener);
+        multiLoginBungee.getProxy().getPluginManager().registerListener(multiLoginBungee, this);
     }
 }

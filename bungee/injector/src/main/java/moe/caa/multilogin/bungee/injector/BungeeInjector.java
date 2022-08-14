@@ -4,8 +4,10 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
+import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +20,7 @@ import java.util.function.Supplier;
 public class BungeeInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI api) throws Throwable {
-        throw new RuntimeException("Unsupported Bungee Server.");
+        redirect(Protocol.LOGIN, true, EncryptionResponse.class, MultiEncryptionResponse.class, MultiEncryptionResponse::new);
     }
 
     /**
@@ -57,7 +59,9 @@ public class BungeeInjector implements Injector {
             // 替换包
             // Supplier<? extends DefinedPacket>[]
             Supplier<?>[] definedPackets = (Supplier<?>[]) (protocolData$packetConstructorsField.get(data));
+
             for (int i = 0; i < definedPackets.length; i++) {
+                if(definedPackets[i] == null) continue;
                 if(definedPackets[i].get().getClass().equals(target)){
                     definedPackets[i] = supplierRedirect;
                 }
