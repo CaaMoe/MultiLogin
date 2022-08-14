@@ -21,6 +21,9 @@ import moe.caa.multilogin.core.main.MultiCore;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * 中央命令处理程序
+ */
 public class CommandHandler implements CommandAPI {
     @Getter
     private static MultiCore core;
@@ -74,20 +77,32 @@ public class CommandHandler implements CommandAPI {
         return ret;
     }
 
+    /**
+     * 子命令名字
+     */
     public final LiteralArgumentBuilder<ISender> literal(String literal) {
         return LiteralArgumentBuilder.literal(literal);
     }
 
+    /**
+     * 构建命令参数
+     */
     public final <T> RequiredArgumentBuilder<ISender, T> argument(String name, ArgumentType<T> type) {
         return RequiredArgumentBuilder.argument(name, type);
     }
 
+    /**
+     * 检查玩家执行
+     */
     public final void requirePlayer(CommandContext<ISender> context) throws CommandSyntaxException {
         if (!context.getSource().isPlayer()) {
             throw builtInExceptions.requirePlayer().create();
         }
     }
 
+    /**
+     * 检查输入玩家参数
+     */
     public final Set<IPlayer> requirePlayersArgument(CommandContext<ISender> context, String name) throws CommandSyntaxException {
         String string = StringArgumentType.getString(context, name);
         Set<IPlayer> players = core.getPlugin().getRunServer().getPlayerManager().getPlayers(string);
@@ -97,6 +112,9 @@ public class CommandHandler implements CommandAPI {
         return players;
     }
 
+    /**
+     * 检查是通过猫踢螺钉登录的玩家
+     */
     public final Pair<UUID, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
         requirePlayer(context);
         Pair<UUID, Integer> profile = core.getCache().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());

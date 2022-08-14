@@ -17,6 +17,9 @@ import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ * /MultiLogin whitelist * 指令处理程序
+ */
 public class MWhitelistCommand {
 
     private final CommandHandler handler;
@@ -57,6 +60,7 @@ public class MWhitelistCommand {
                 );
     }
 
+    // /MultiLogin whitelist permanent remove <yggdrasilid> <onlineuuid>
     @SneakyThrows
     private int executeRemove(CommandContext<ISender> context) {
         YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
@@ -86,6 +90,7 @@ public class MWhitelistCommand {
         return 0;
     }
 
+    // /MultiLogin whitelist permanent add <yggdrasilid> <onlineuuid>
     @SneakyThrows
     private int executeAdd(CommandContext<ISender> context) {
         YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
@@ -110,6 +115,7 @@ public class MWhitelistCommand {
         return 0;
     }
 
+    // /MultiLogin whitelist remove <name>
     @SneakyThrows
     private int executeRemoveUsername(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");
@@ -141,7 +147,7 @@ public class MWhitelistCommand {
         return 0;
     }
 
-
+    // /MultiLogin whitelist remove <add>
     @SneakyThrows
     private int executeAddUsername(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);

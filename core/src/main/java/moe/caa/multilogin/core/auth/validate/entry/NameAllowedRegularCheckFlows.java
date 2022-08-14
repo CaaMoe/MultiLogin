@@ -9,6 +9,9 @@ import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.regex.Pattern;
 
+/**
+ * 玩家名字正则检查器
+ */
 public class NameAllowedRegularCheckFlows extends BaseFlows<ValidateContext> {
     private final MultiCore core;
 

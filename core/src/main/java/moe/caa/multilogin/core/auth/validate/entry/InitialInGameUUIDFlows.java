@@ -9,6 +9,9 @@ import moe.caa.multilogin.flows.workflows.Signal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.UUID;
 
+/**
+ * 玩家初始 UUID 生成程序
+ */
 public class InitialInGameUUIDFlows extends BaseFlows<ValidateContext> {
     private final MultiCore core;
 

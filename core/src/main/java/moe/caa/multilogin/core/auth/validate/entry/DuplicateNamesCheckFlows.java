@@ -11,6 +11,9 @@ import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.UUID;
 
+/**
+ * 重名检查程序
+ */
 public class DuplicateNamesCheckFlows extends BaseFlows<ValidateContext> {
     private final MultiCore core;
 

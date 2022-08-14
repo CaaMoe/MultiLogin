@@ -15,6 +15,9 @@ import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
 import java.util.UUID;
 
+/**
+ * /MultiLogin user * 指令处理程序
+ */
 public class MUserCommand {
     private final CommandHandler handler;
 
@@ -53,6 +56,7 @@ public class MUserCommand {
                                                 .executes(this::executeRemoveProfile)))));
     }
 
+    // /MultiLogin user merge * 集中处理
     private void executeMerge(ISender sender, YggdrasilServiceConfig ysc, UUID onlineUUID, UUID inGameUUID) {
         handler.getSecondaryConfirmationHandler().submit(sender, () -> {
             if (CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, ysc.getId())) {
@@ -85,6 +89,7 @@ public class MUserCommand {
         ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_user_merge_cq"));
     }
 
+    // /MultiLogin user merge byInGameUUID <yggdrasilId> <onlineuuid> <ingameuuid>
     private int executeMergeByInGameUUID(CommandContext<ISender> context) {
         YggdrasilServiceConfig yggdrasilid = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
@@ -93,6 +98,7 @@ public class MUserCommand {
         return 0;
     }
 
+    // /MultiLogin user merge byName <yggdrasilId> <onlineuuid> <name>
     @SneakyThrows
     private int executeMergeByName(CommandContext<ISender> context) {
         YggdrasilServiceConfig yggdrasilid = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
@@ -109,6 +115,7 @@ public class MUserCommand {
         return 0;
     }
 
+    // /MultiLogin user mergeMe byInGameUUID <ingameuuid>
     @SneakyThrows
     private int executeMergeMeByInGameUUID(CommandContext<ISender> context) {
         Pair<UUID, Integer> uuidIntegerPair = handler.requireDataCacheArgument(context);
@@ -122,6 +129,7 @@ public class MUserCommand {
         return 0;
     }
 
+    // /MultiLogin user mergeMe byName <name>
     @SneakyThrows
     private int executeMergeMeByName(CommandContext<ISender> context) {
         Pair<UUID, Integer> uuidIntegerPair = handler.requireDataCacheArgument(context);
@@ -142,6 +150,7 @@ public class MUserCommand {
         return 0;
     }
 
+    // /MultiLogin user remove profile <yggdrasilId> <onlineuuid>
     private int executeRemoveProfile(CommandContext<ISender> context) {
         YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");

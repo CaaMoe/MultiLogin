@@ -4,6 +4,9 @@ import lombok.Data;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 
+/**
+ * 游戏内验证消息上下文
+ */
 @Data
 public class ValidateContext {
     private final String username;

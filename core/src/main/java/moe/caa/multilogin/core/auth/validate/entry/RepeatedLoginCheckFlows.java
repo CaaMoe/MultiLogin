@@ -6,6 +6,9 @@ import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 
+/**
+ * 重复登录检查器
+ */
 public class RepeatedLoginCheckFlows extends BaseFlows<ValidateContext> {
     private final MultiCore core;
 

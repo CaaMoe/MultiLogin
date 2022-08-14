@@ -8,6 +8,9 @@ import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.Arrays;
 
+/**
+ * 游戏内验证集中处理程序
+ */
 public class ValidateAuthenticationService {
     private final MultiCore core;
     private final SequenceFlows<ValidateContext> sequenceFlows;
@@ -29,6 +32,9 @@ public class ValidateAuthenticationService {
         ));
     }
 
+    /**
+     * 开始游戏内验证
+     */
     public ValidateAuthenticationResult checkIn(String username, String serverId, String ip,
                                                 YggdrasilAuthenticationResult yggdrasilAuthenticationResult) {
         ValidateContext context = new ValidateContext(username, serverId, ip, yggdrasilAuthenticationResult);

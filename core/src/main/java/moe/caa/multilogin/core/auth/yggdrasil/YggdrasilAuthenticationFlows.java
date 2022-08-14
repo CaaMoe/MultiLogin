@@ -17,6 +17,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Objects;
 
+/**
+ * 一个工作流，进行对 Yggd 的 hasJoined 访问
+ */
 public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     private final MultiCore core;
     private final String username;
@@ -32,6 +35,7 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
         this.yggdrasilId = yggdrasilId;
     }
 
+    // 进行验证
     public Pair<GameProfile, YggdrasilServiceConfig> call() throws Exception {
         YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
         String ipContent = "";

@@ -16,6 +16,9 @@ public class SecondaryConfirmationHandler {
     private final Map<IPlayer, ConfirmEntry> concurrentHashMap = new ConcurrentHashMap<>();
     private final AtomicReference<ConfirmEntry> consoleConfirm = new AtomicReference<>();
 
+    /**
+     * 提交一个风险指令
+     */
     public void submit(
             ISender sender,
             CallbackConfirmCommand callbackConfirmCommand,
@@ -36,6 +39,9 @@ public class SecondaryConfirmationHandler {
         ));
     }
 
+    /**
+     * 对风险指令进行确认
+     */
     public void confirm(ISender sender) throws Exception {
         concurrentHashMap.values().removeIf(ConfirmEntry::isInvalid);
         consoleConfirm.updateAndGet(confirmEntry -> {

@@ -13,6 +13,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * HasJoined 集中处理程序
+ */
 public class YggdrasilAuthenticationService {
     private final MultiCore core;
 
@@ -20,6 +23,9 @@ public class YggdrasilAuthenticationService {
         this.core = core;
     }
 
+    /**
+     * 开始验证
+     */
     public YggdrasilAuthenticationResult hasJoined(String username, String serverId, String ip) throws SQLException {
         final Set<Integer> ids = core.getPluginConfig().getIdMap().keySet();
         if (ids.size() == 0) return YggdrasilAuthenticationResult.ofNoService();

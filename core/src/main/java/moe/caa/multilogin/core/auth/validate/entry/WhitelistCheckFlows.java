@@ -11,7 +11,12 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * 白名单检查器
+ */
 public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
+
+    // 这是缓冲白名单
     public static final Set<String> cachedWhitelist = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final MultiCore core;
 

@@ -13,6 +13,9 @@ import moe.caa.multilogin.core.main.PlayerCache;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 
+/**
+ * 验证核心
+ */
 public class AuthHandler implements AuthAPI {
     private final MultiCore core;
     private final YggdrasilAuthenticationService yggdrasilAuthenticationService;
@@ -27,6 +30,13 @@ public class AuthHandler implements AuthAPI {
         this.skinRestorerCore = new SkinRestorerCore(core);
     }
 
+
+    /**
+     * 开始验证
+     * @param username 用户名
+     * @param serverId 服务器ID
+     * @param ip       用户IP
+     */
     @Override
     public AuthResult auth(String username, String serverId, String ip) {
         YggdrasilAuthenticationResult yggdrasilAuthenticationResult;

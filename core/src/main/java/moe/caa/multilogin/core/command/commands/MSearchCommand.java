@@ -17,6 +17,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * /MultiLogin search * 指令处理程序
+ */
 public class MSearchCommand {
 
     private final CommandHandler handler;
@@ -59,6 +62,7 @@ public class MSearchCommand {
                 );
     }
 
+    // /MultiLogin search current <name>
     @SneakyThrows
     private int executeCurrent(CommandContext<ISender> context) {
         Set<IPlayer> name = handler.requirePlayersArgument(context, "name");
@@ -90,6 +94,7 @@ public class MSearchCommand {
         return 0;
     }
 
+    // /MultiLogin search inGameUUID byProfile <yggdrasilId> <onlineUUID>
     @SneakyThrows
     private int executeInGameUUIDByProfile(CommandContext<ISender> context) {
         YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
@@ -114,6 +119,7 @@ public class MSearchCommand {
         return 0;
     }
 
+    // /MultiLogin search inGameUUID byName <username>
     @SneakyThrows
     private int executeInGameUUIDByName(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");
@@ -132,6 +138,7 @@ public class MSearchCommand {
         return 0;
     }
 
+    // /MultiLogin search login * 集中处理程序
     private void executeLogin(ISender sender, UUID inGameUUID) throws SQLException {
         Set<Pair<UUID, Integer>> profiles = CommandHandler.getCore().getSqlManager().getUserDataTable().getOnlineProfiles(inGameUUID);
         if (profiles.size() == 0) {
@@ -182,12 +189,14 @@ public class MSearchCommand {
         sender.sendMessagePL(message);
     }
 
+    // /MultiLogin search login byInGameUUID <ingameuuid>
     @SneakyThrows
     private int executeLoginByInGameUUID(CommandContext<ISender> context) {
         executeLogin(context.getSource(), UUIDArgumentType.getUuid(context, "ingameuuid"));
         return 0;
     }
 
+    // /MultiLogin search login byName <name>
     @SneakyThrows
     private int executeLoginByName(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");

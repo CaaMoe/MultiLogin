@@ -14,6 +14,9 @@ import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * /MultiLogin * 指令处理程序和分发程序
+ */
 public class RootCommand {
     private final CommandHandler handler;
     private final MWhitelistCommand mWhitelistCommand;
@@ -46,12 +49,14 @@ public class RootCommand {
                 .then(mWhitelistCommand.register(handler.literal("whitelist")));
     }
 
+    // /MultiLogin confirm
     @SneakyThrows
     private int executeConfirm(CommandContext<ISender> context) {
         handler.getSecondaryConfirmationHandler().confirm(context.getSource());
         return 0;
     }
 
+    // /MultiLogin list
     private int executeList(CommandContext<ISender> context) {
         Set<IPlayer> onlinePlayers = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers();
         if (onlinePlayers.size() == 0) {
@@ -110,6 +115,7 @@ public class RootCommand {
         return 0;
     }
 
+    // /MultiLogin eraseUsername <name>
     @SneakyThrows
     private int executeEraseUsername(CommandContext<ISender> context) {
         String string = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
@@ -133,6 +139,7 @@ public class RootCommand {
         return 0;
     }
 
+    // /MultiLogin reload
     @SneakyThrows
     private int executeReload(CommandContext<ISender> context) {
         CommandHandler.getCore().reload();

@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
-
+/**
+ * Yggdrasil 参数阅读程序
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class YggdrasilIdArgumentType implements ArgumentType<YggdrasilServiceConfig> {
 
