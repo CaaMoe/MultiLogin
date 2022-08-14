@@ -91,11 +91,13 @@ public class MultiCore implements MultiCoreAPI {
 
     private boolean checkEnvironment() {
         if (!plugin.getRunServer().isOnlineMode()) {
-            LoggerProvider.getLogger().warn("Please enable online mode, otherwise the plugin will not work!!!");
+            LoggerProvider.getLogger().error("Please enable online mode, otherwise the plugin will not work!!!");
+            LoggerProvider.getLogger().error("Server is closing!!!");
             return false;
         }
         if (!plugin.getRunServer().isForwarded()) {
-            LoggerProvider.getLogger().warn("Please enable forwarding, otherwise the plugin will not work!!!");
+            LoggerProvider.getLogger().error("Please enable forwarding, otherwise the plugin will not work!!!");
+            LoggerProvider.getLogger().error("Server is closing!!!");
             return false;
         }
         return true;

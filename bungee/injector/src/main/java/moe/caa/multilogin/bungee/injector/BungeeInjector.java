@@ -6,12 +6,12 @@ import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -20,58 +20,63 @@ import java.util.function.Supplier;
 public class BungeeInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI api) throws Throwable {
-        redirect(Protocol.LOGIN, true, EncryptionResponse.class, MultiEncryptionResponse.class, MultiEncryptionResponse::new);
+        redirectIn(Protocol.LOGIN, EncryptionResponse.class, MultiEncryptionResponse::new);
     }
 
-    /**
-     * 重定向包，未完成
-     */
-    private synchronized <T> void redirect(Protocol protocol, boolean toServer, Class<T> target, Class<? extends T> redirect, Supplier<? extends T> supplierRedirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException, ClassNotFoundException {
-        Class<?> protocol$DirectionData = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
-        Class<?> protocol$ProtocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
+    private synchronized <T> void redirectIn(Protocol protocol, Class<T> originalClass, Supplier<? extends T> redirectSupplier) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
+        Class<?> c$protocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
+        Field f$packetConstructors = c$protocolData.getDeclaredField("packetConstructors");// Supplier<? extends DefinedPacket>[]
+        accessSet(f$packetConstructors);
 
-        // TIntObjectMap<ProtocolData>
-        Field directionData$protocolsField = protocol$DirectionData.getDeclaredField("protocols");
-        // DirectionData
-        Field protocol$TO_SERVERField = Protocol.class.getDeclaredField("TO_SERVER");
-        Field protocol$TO_CLIENTField = Protocol.class.getDeclaredField("TO_CLIENT");
-        // Supplier<? extends DefinedPacket>[]
-        Field protocolData$packetConstructorsField = protocol$ProtocolData.getDeclaredField("packetConstructors");
-        //TObjectIntMap<Class<? extends DefinedPacket>>
-        Field protocolData$packetMapField = protocol$ProtocolData.getDeclaredField("packetMap");
-
-        Method tObjectIntMap$putMethod = TObjectIntMap.class.getDeclaredMethod("put", Object.class, int.class);
-
-        directionData$protocolsField.setAccessible(true);
-        protocol$TO_SERVERField.setAccessible(true);
-        protocolData$packetConstructorsField.setAccessible(true);
-        protocolData$packetMapField.setAccessible(true);
-
-        Object toTarget = toServer ? protocol$TO_SERVERField.get(protocol) : protocol$TO_CLIENTField.get(protocol);
-        // TIntObjectMap<ProtocolData>
-        TIntObjectMap<?> protocols = (TIntObjectMap<?>) directionData$protocolsField.get(toTarget);
-
-        // 遍历所有支持版本
-        for (int supportId : ProtocolConstants.SUPPORTED_VERSION_IDS) {
-            // ProtocolData
-            Object data = protocols.get(supportId);
-
-            // 替换包
-            // Supplier<? extends DefinedPacket>[]
-            Supplier<?>[] definedPackets = (Supplier<?>[]) (protocolData$packetConstructorsField.get(data));
-
+        // 遍历所有版本协议
+        for (Object data : getProtocolDataList(protocol, getServerSideField())) {//ProtocolData
+            // 获取其入口包构造数据
+            Supplier<?>[] definedPackets = (Supplier<?>[]) (f$packetConstructors.get(data)); // ? extends DefinedPacket
+//            寻找该类
             for (int i = 0; i < definedPackets.length; i++) {
-                if(definedPackets[i] == null) continue;
-                if(definedPackets[i].get().getClass().equals(target)){
-                    definedPackets[i] = supplierRedirect;
+                if (definedPackets[i] == null) continue;
+                if (definedPackets[i].get().getClass().equals(originalClass)) {
+                    definedPackets[i] = redirectSupplier;
                 }
             }
-
-            // 替换出口方向包
-            TObjectIntMap<?> intMap = (TObjectIntMap<?>) protocolData$packetMapField.get(data);
-            tObjectIntMap$putMethod.invoke(
-                    intMap, redirect, intMap.get(target)
-            );
         }
     }
+
+
+    private synchronized <T, F> void redirectOut(Protocol protocol, Class<T> originalClass, Class<F> redirectClass) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        Class<?> c$protocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
+        Field f$packetMap = c$protocolData.getDeclaredField("packetMap");// Supplier<? extends DefinedPacket>[]
+        accessSet(f$packetMap);
+
+        Method m$put = TObjectIntMap.class.getDeclaredMethod("put", Object.class, int.class);
+
+        // 遍历所有版本协议
+        for (Object data : getProtocolDataList(protocol, getClientSideField())) {//ProtocolData
+            TObjectIntMap<?> packetMap = (TObjectIntMap<?>) f$packetMap.get(data);
+            if (!packetMap.containsKey(originalClass)) continue;
+            m$put.invoke(packetMap, redirectClass, packetMap.get(originalClass));
+        }
+    }
+
+    private void accessSet(Field... fields) {
+        Arrays.stream(fields).forEach(field -> field.setAccessible(true));
+    }
+
+    private Object[] getProtocolDataList(Protocol protocol, Field sideField) throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+        Class<?> c$directionData = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
+        Field f$protocols = c$directionData.getDeclaredField("protocols");// TIntObjectMap<ProtocolData>
+        accessSet(f$protocols, sideField);
+        Object directionData = sideField.get(protocol);
+        TIntObjectMap<?> protocols = (TIntObjectMap<?>) f$protocols.get(directionData); // ? is ProtocolData
+        return protocols.values();
+    }
+
+    private Field getServerSideField() throws NoSuchFieldException {
+        return Protocol.class.getDeclaredField("TO_SERVER");// DirectionData
+    }
+
+    private Field getClientSideField() throws NoSuchFieldException {
+        return Protocol.class.getDeclaredField("TO_CLIENT");// DirectionData
+    }
+
 }
