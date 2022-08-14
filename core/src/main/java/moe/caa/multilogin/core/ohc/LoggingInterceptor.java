@@ -24,11 +24,12 @@ public class LoggingInterceptor implements Interceptor {
         if (requestBody != null) {
             Buffer bf = new Buffer();
             requestBody.writeTo(bf);
-            LoggerProvider.getLogger().debug(String.format("--> (%d bytes)", bf.size()));
+            long size = bf.size();
+            if(size > 0) LoggerProvider.getLogger().debug(String.format("--> (%d bytes)", size));
         }
 
         long startNs = System.nanoTime();
-        Response response = null;
+        Response response;
         try {
             response = chain.proceed(request);
         } catch (Exception e) {
@@ -44,7 +45,8 @@ public class LoggingInterceptor implements Interceptor {
             BufferedSource source = body.source();
             source.request(Long.MAX_VALUE);
             Buffer buffer = source.getBuffer();
-            LoggerProvider.getLogger().debug(String.format("<-- (%d bytes)", buffer.size()));
+            long size = buffer.size();
+            if(size > 0) LoggerProvider.getLogger().debug(String.format("<-- (%d bytes)", size));
         }
 
         return response;
