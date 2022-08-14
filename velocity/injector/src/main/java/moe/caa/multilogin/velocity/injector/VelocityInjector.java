@@ -34,32 +34,34 @@ public class VelocityInjector implements Injector {
         MultiPlayerCommand.init();
 
         // auth
-        redirect(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, MultiEncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
-        redirect(StateRegistry.LOGIN.serverbound, ServerLogin.class, MultiServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
+        redirectInput(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
+        redirectInput(StateRegistry.LOGIN.serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
 
         // chat
-        redirect(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat.class, MultiPlayerChat::new);
-        redirect(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand.class, MultiPlayerCommand::new);
+        redirectInput(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat::new);
+        redirectInput(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand::new);
 
+        appendOutput(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat.class);
+        appendOutput(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand.class);
     }
 
     /**
      * 重定向数据包
+     * @param bound 数据包方向
+     * @param originalClass 原始数据包类对象
+     * @param supplierRedirect 重定向后的 Supplier
      */
-    private synchronized <T> void redirect(StateRegistry.PacketRegistry bound, Class<T> target, Class<? extends T> redirect, Supplier<? extends T> supplierRedirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    private synchronized <T> void redirectInput(StateRegistry.PacketRegistry bound, Class<T> originalClass, Supplier<? extends T> supplierRedirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         //定义一些基础
         Class<StateRegistry.PacketRegistry> stateRegistry$packetRegistryClass = StateRegistry.PacketRegistry.class;
         Class<StateRegistry.PacketRegistry.ProtocolRegistry> stateRegistry$packetRegistry$protocolRegistryClass = StateRegistry.PacketRegistry.ProtocolRegistry.class;
         Field stateRegistry$packetRegistry_versionsField = stateRegistry$packetRegistryClass.getDeclaredField("versions");
         Field stateRegistry$packetRegistry_packetIdToSupplierField = stateRegistry$packetRegistry$protocolRegistryClass.getDeclaredField("packetIdToSupplier");
-        Field stateRegistry$packetRegistry_packetClassToId = stateRegistry$packetRegistry$protocolRegistryClass.getDeclaredField("packetClassToId");
 
         Method map$entry$setValueMethod = Map.Entry.class.getMethod("setValue", Object.class);
-        Method map$putMethod = Map.class.getMethod("put", Object.class, Object.class);
 
         stateRegistry$packetRegistry_versionsField.setAccessible(true);
         stateRegistry$packetRegistry_packetIdToSupplierField.setAccessible(true);
-        stateRegistry$packetRegistry_packetClassToId.setAccessible(true);
 
         //获取PacketRegistry下的private final Map<ProtocolVersion, ProtocolRegistry> versions;
         Map<?, ?> versionsObject = (Map<?, ?>) stateRegistry$packetRegistry_versionsField.get(bound);
@@ -75,10 +77,36 @@ public class VelocityInjector implements Injector {
             for (Map.Entry<?, ?> e : packetIdToSupplierObject.entrySet()) {
                 MinecraftPacket minecraftPacketObject = (MinecraftPacket) ((Supplier<?>) e.getValue()).get();
                 // 类匹配则进行替换
-                if (minecraftPacketObject.getClass().equals(target)) {
+                if (minecraftPacketObject.getClass().equals(originalClass)) {
                     map$entry$setValueMethod.invoke(e, supplierRedirect);
                 }
             }
+        }
+    }
+
+    /**
+     * 追加注册出口包
+     * @param bound 数据包方向
+     * @param originalClass 原始数据包类对象
+     * @param appendClass 追加的数据包类对象
+     */
+    private synchronized <T> void appendOutput(StateRegistry.PacketRegistry bound, Class<T> originalClass, Class<? extends T> appendClass) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        //定义一些基础
+        Class<StateRegistry.PacketRegistry> stateRegistry$packetRegistryClass = StateRegistry.PacketRegistry.class;
+        Class<StateRegistry.PacketRegistry.ProtocolRegistry> stateRegistry$packetRegistry$protocolRegistryClass = StateRegistry.PacketRegistry.ProtocolRegistry.class;
+        Field stateRegistry$packetRegistry_versionsField = stateRegistry$packetRegistryClass.getDeclaredField("versions");
+        Field stateRegistry$packetRegistry_packetClassToId = stateRegistry$packetRegistry$protocolRegistryClass.getDeclaredField("packetClassToId");
+
+        Method map$putMethod = Map.class.getMethod("put", Object.class, Object.class);
+
+        stateRegistry$packetRegistry_versionsField.setAccessible(true);
+        stateRegistry$packetRegistry_packetClassToId.setAccessible(true);
+
+        //获取PacketRegistry下的private final Map<ProtocolVersion, ProtocolRegistry> versions;
+        Map<?, ?> versionsObject = (Map<?, ?>) stateRegistry$packetRegistry_versionsField.get(bound);
+        for (Map.Entry<?, ?> entry : versionsObject.entrySet()) {
+            // ProtocolRegistry
+            Object protocolRegistry = entry.getValue();
 
             // output
             // IntObjectMap<Supplier<? extends MinecraftPacket>>
@@ -88,13 +116,13 @@ public class VelocityInjector implements Injector {
             List<Map.Entry<?, ?>> needModify = new ArrayList<>();
             for (Map.Entry<?, ?> packetToId : packetClassToIdObject.entrySet()) {
                 // 目标匹配
-                if (packetToId.getKey().equals(target)) {
+                if (packetToId.getKey().equals(originalClass)) {
                     needModify.add(packetToId);
                 }
             }
 
             for (Map.Entry<?, ?> e : needModify) {
-                map$putMethod.invoke(packetClassToIdObject, redirect, e.getValue());
+                map$putMethod.invoke(packetClassToIdObject, appendClass, e.getValue());
             }
         }
     }
