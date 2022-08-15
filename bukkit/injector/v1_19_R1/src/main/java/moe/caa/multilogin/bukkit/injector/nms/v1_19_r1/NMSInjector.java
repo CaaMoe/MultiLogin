@@ -3,6 +3,7 @@ package moe.caa.multilogin.bukkit.injector.nms.v1_19_r1;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.bukkit.injector.nms.v1_19_r1.handler.MultiPacketLoginInEncryptionBeginHandler;
 import moe.caa.multilogin.bukkit.injector.nms.v1_19_r1.redirect.MultiPacketLoginInEncryptionBegin;
 import net.minecraft.network.EnumProtocol;
 import net.minecraft.network.PacketDataSerializer;
@@ -21,6 +22,7 @@ public class NMSInjector implements Injector {
 
     @Override
     public void inject(MultiCoreAPI api) throws Throwable {
+        MultiPacketLoginInEncryptionBeginHandler.init();
         redirectInput(EnumProtocol.d, EnumProtocolDirection.a, 0x01, var0 -> new MultiPacketLoginInEncryptionBegin(var0, api));
     }
 
