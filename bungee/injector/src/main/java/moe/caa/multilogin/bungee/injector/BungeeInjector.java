@@ -4,6 +4,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
@@ -20,7 +21,9 @@ import java.util.function.Supplier;
 public class BungeeInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI api) throws Throwable {
-        redirectIn(Protocol.LOGIN, EncryptionResponse.class, MultiEncryptionResponse::new);
+        AbstractMultiInitialHandler.init();
+
+        redirectIn(Protocol.LOGIN, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
     }
 
 

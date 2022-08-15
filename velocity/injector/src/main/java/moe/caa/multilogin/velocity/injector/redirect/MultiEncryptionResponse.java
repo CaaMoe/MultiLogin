@@ -26,10 +26,10 @@ public class MultiEncryptionResponse extends EncryptionResponse {
             multiInitialLoginSessionHandler.handle(this);
         } catch (Throwable e) {
             if (multiInitialLoginSessionHandler.isEncrypted()) {
-                multiInitialLoginSessionHandler.getInbound().disconnect(Component.text(multiCoreAPI.getLanguageHandler().getMessage("velocity_encrypt_error")));
+                multiInitialLoginSessionHandler.getInbound().disconnect(Component.text(multiCoreAPI.getLanguageHandler().getMessage("velocity_auth_error")));
             }
             multiInitialLoginSessionHandler.getMcConnection().close(true);
-            LoggerProvider.getLogger().error("An exception occurred while processing the encryption request.", e);
+            LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
         }
         return true;
     }
