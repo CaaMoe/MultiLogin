@@ -1,0 +1,18 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+}
+
+repositories {
+    maven { url 'https://repo.codemc.io/repository/nms/' }
+}
+
+dependencies {
+    compileOnly project(":api")
+    compileOnly 'org.spigotmc:spigot:1.19.1-R0.1-20220727.205853-1'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}

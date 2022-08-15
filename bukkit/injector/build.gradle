@@ -9,12 +9,15 @@ repositories {
 dependencies {
     compileOnly project(":api")
     compileOnly project(":bukkit")
-
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
 }
 
 shadowJar {
     archiveFileName = 'MultiLogin-Bukkit-Injector.JarFile'
+
+    from {
+        project(':bukkit:injector:v1_19_R1').tasks.shadowJar.archiveFile
+    }
 }
 
 artifacts {
