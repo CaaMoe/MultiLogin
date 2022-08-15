@@ -27,12 +27,18 @@ public class CommandHandler {
 
         @Override
         public void execute(CommandSender sender, String[] args) {
-            multiLoginBungee.getMultiCoreAPI().getCommandHandler().execute(new BungeeSender(sender), args);
+            String[] ns = new String[args.length + 1];
+            System.arraycopy(args, 0, ns, 1, args.length);
+            ns[0] = getName();
+            multiLoginBungee.getMultiCoreAPI().getCommandHandler().execute(new BungeeSender(sender), ns);
         }
 
         @Override
         public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-            return multiLoginBungee.getMultiCoreAPI().getCommandHandler().tabComplete(new BungeeSender(sender), args);
+            String[] ns = new String[args.length + 1];
+            System.arraycopy(args, 0, ns, 1, args.length);
+            ns[0] = getName();
+            return multiLoginBungee.getMultiCoreAPI().getCommandHandler().tabComplete(new BungeeSender(sender), ns);
         }
     }
 }
