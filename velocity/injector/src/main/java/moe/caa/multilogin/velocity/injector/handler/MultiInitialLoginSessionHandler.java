@@ -34,20 +34,20 @@ import java.util.stream.Collectors;
 public class MultiInitialLoginSessionHandler {
 
     // LoginStateEnum 的枚举
-    private static Enum<?> initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_EXPECTED;
-    private static Enum<?> initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_RECEIVED;
-    private static Enum<?> initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT;
-    private static Enum<?> initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED;
+    private static Enum<?> loginStateEnum$LOGIN_PACKET_EXPECTED;
+    private static Enum<?> loginStateEnum$LOGIN_PACKET_RECEIVED;
+    private static Enum<?> loginStateEnum$ENCRYPTION_REQUEST_SENT;
+    private static Enum<?> loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED;
 
     // 一些函数和字段的引用
-    private static MethodHandle initialLoginSessionHandler_assertStateMethod;
-    private static MethodHandle initialLoginSessionHandler_setCurrentStateField;
-    private static MethodHandle initialLoginSessionHandler_getLoginField;
-    private static MethodHandle initialLoginSessionHandler_getVerifyField;
-    private static MethodHandle initialLoginSessionHandler_getServerField;
-    private static MethodHandle initialLoginSessionHandler_getInboundField;
-    private static MethodHandle initialLoginSessionHandler_getMcConnectionField;
-    private static MethodHandle initialLoginSessionHandler_getCurrentStateField;
+    private static MethodHandle assertStateMethod;
+    private static MethodHandle setCurrentStateField;
+    private static MethodHandle getLoginField;
+    private static MethodHandle getVerifyField;
+    private static MethodHandle getServerField;
+    private static MethodHandle getInboundField;
+    private static MethodHandle getMcConnectionField;
+    private static MethodHandle getCurrentStateField;
     private static MethodHandle authSessionHandler_allArgsConstructor;
     // 类体常量
     private final InitialLoginSessionHandler initialLoginSessionHandler;
@@ -65,9 +65,9 @@ public class MultiInitialLoginSessionHandler {
         this.initialLoginSessionHandler = initialLoginSessionHandler;
         this.multiCoreAPI = multiCoreAPI;
         try {
-            this.server = (VelocityServer) initialLoginSessionHandler_getServerField.invoke(initialLoginSessionHandler);
-            this.mcConnection = (MinecraftConnection) initialLoginSessionHandler_getMcConnectionField.invoke(initialLoginSessionHandler);
-            this.inbound = (LoginInboundConnection) initialLoginSessionHandler_getInboundField.invoke(initialLoginSessionHandler);
+            this.server = (VelocityServer) getServerField.invoke(initialLoginSessionHandler);
+            this.mcConnection = (MinecraftConnection) getMcConnectionField.invoke(initialLoginSessionHandler);
+            this.inbound = (LoginInboundConnection) getInboundField.invoke(initialLoginSessionHandler);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
@@ -75,61 +75,61 @@ public class MultiInitialLoginSessionHandler {
 
     public static void init() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         Class<InitialLoginSessionHandler> initialLoginSessionHandlerClass = InitialLoginSessionHandler.class;
-        Class<?> initialLoginSessionHandler$loginStateEnum = Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler$LoginState");
+        Class<?> loginStateEnum = Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler$LoginState");
 
         // 获取枚举常量
-        for (Object constant : initialLoginSessionHandler$loginStateEnum.getEnumConstants()) {
+        for (Object constant : loginStateEnum.getEnumConstants()) {
             final Enum<?> enumObject = (Enum<?>) constant;
             switch ((enumObject).name()) {
                 case "LOGIN_PACKET_EXPECTED":
-                    initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_EXPECTED = enumObject;
+                    loginStateEnum$LOGIN_PACKET_EXPECTED = enumObject;
                     break;
                 case "LOGIN_PACKET_RECEIVED":
-                    initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_RECEIVED = enumObject;
+                    loginStateEnum$LOGIN_PACKET_RECEIVED = enumObject;
                     break;
                 case "ENCRYPTION_REQUEST_SENT":
-                    initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT = enumObject;
+                    loginStateEnum$ENCRYPTION_REQUEST_SENT = enumObject;
                     break;
                 case "ENCRYPTION_RESPONSE_RECEIVED":
-                    initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED = enumObject;
+                    loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED = enumObject;
                     break;
             }
         }
-        Objects.requireNonNull(initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_EXPECTED, "LOGIN_PACKET_EXPECTED");
-        Objects.requireNonNull(initialLoginSessionHandler$loginStateEnum$LOGIN_PACKET_RECEIVED, "LOGIN_PACKET_RECEIVED");
-        Objects.requireNonNull(initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT, "ENCRYPTION_REQUEST_SENT");
-        Objects.requireNonNull(initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED, "ENCRYPTION_RESPONSE_RECEIVED");
+        Objects.requireNonNull(loginStateEnum$LOGIN_PACKET_EXPECTED, "LOGIN_PACKET_EXPECTED");
+        Objects.requireNonNull(loginStateEnum$LOGIN_PACKET_RECEIVED, "LOGIN_PACKET_RECEIVED");
+        Objects.requireNonNull(loginStateEnum$ENCRYPTION_REQUEST_SENT, "ENCRYPTION_REQUEST_SENT");
+        Objects.requireNonNull(loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED, "ENCRYPTION_RESPONSE_RECEIVED");
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        initialLoginSessionHandler_assertStateMethod = lookup.unreflect(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredMethod("assertState", initialLoginSessionHandler$loginStateEnum)
+        assertStateMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                initialLoginSessionHandlerClass.getDeclaredMethod("assertState", loginStateEnum)
         ));
 
-        initialLoginSessionHandler_setCurrentStateField = lookup.unreflectSetter(ReflectUtil.handleAccessible(
+        setCurrentStateField = lookup.unreflectSetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("currentState")
         ));
 
-        initialLoginSessionHandler_getLoginField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getLoginField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("login")
         ));
 
-        initialLoginSessionHandler_getVerifyField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getVerifyField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("verify")
         ));
 
-        initialLoginSessionHandler_getServerField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getServerField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("server")
         ));
 
-        initialLoginSessionHandler_getInboundField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getInboundField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("inbound")
         ));
 
-        initialLoginSessionHandler_getMcConnectionField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getMcConnectionField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("mcConnection")
         ));
 
-        initialLoginSessionHandler_getCurrentStateField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+        getCurrentStateField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("currentState")
         ));
 
@@ -144,16 +144,16 @@ public class MultiInitialLoginSessionHandler {
     }
 
     private void initValues() throws Throwable {
-        this.login = (ServerLogin) initialLoginSessionHandler_getLoginField.invoke(initialLoginSessionHandler);
-        this.verify = (byte[]) initialLoginSessionHandler_getVerifyField.invoke(initialLoginSessionHandler);
+        this.login = (ServerLogin) getLoginField.invoke(initialLoginSessionHandler);
+        this.verify = (byte[]) getVerifyField.invoke(initialLoginSessionHandler);
     }
 
     public void handle(EncryptionResponse packet) throws Throwable {
         initValues();
 
         // 模拟常规流程
-        initialLoginSessionHandler_assertStateMethod.invoke(initialLoginSessionHandler, initialLoginSessionHandler$loginStateEnum$ENCRYPTION_REQUEST_SENT);
-        initialLoginSessionHandler_setCurrentStateField.invoke(initialLoginSessionHandler, initialLoginSessionHandler$loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED);
+        assertStateMethod.invoke(initialLoginSessionHandler, loginStateEnum$ENCRYPTION_REQUEST_SENT);
+        setCurrentStateField.invoke(initialLoginSessionHandler, loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED);
 
         ServerLogin login = this.login;
         if (login == null) {
