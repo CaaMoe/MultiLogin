@@ -27,7 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 // EncryptionResponse 这个包
-public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialHandler {
+public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialHandler<EncryptionResponse> {
     // 运行时产生数据
     private Enum<?> thisState = null;
     private LoginRequest loginRequest;
@@ -45,6 +45,7 @@ public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialH
         ch = (ChannelWrapper) chFieldGetter.invoke(initialHandler);
     }
 
+    @Override
     public void handle(EncryptionResponse encryptResponse) throws Throwable {
         initValue();
 

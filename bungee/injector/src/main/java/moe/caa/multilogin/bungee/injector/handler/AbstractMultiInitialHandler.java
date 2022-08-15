@@ -4,6 +4,7 @@ import lombok.Getter;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.ReflectUtil;
 import net.md_5.bungee.connection.InitialHandler;
+import net.md_5.bungee.protocol.DefinedPacket;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -13,7 +14,7 @@ import java.util.Objects;
  * 接管 net.md_5.bungee.connection.InitialHandler 类的其中一个方法
  */
 @Getter
-public abstract class AbstractMultiInitialHandler {
+public abstract class AbstractMultiInitialHandler<T> {
     // LoginStateEnum 的枚举
     protected static Enum<?> state$HANDSHAKE;
     protected static Enum<?> state$STATUS;
@@ -29,6 +30,10 @@ public abstract class AbstractMultiInitialHandler {
     protected static MethodHandle loginRequestFieldGetter;
     protected static MethodHandle requestFieldGetter;
     protected static MethodHandle chFieldGetter;
+    protected static MethodHandle uniqueIdFieldGetter;
+    protected static MethodHandle bungeeFieldGetter;
+    protected static MethodHandle onlineModeFieldGetter;
+    protected static MethodHandle unsafeFieldGetter;
 
     /*
      * Method
@@ -37,6 +42,8 @@ public abstract class AbstractMultiInitialHandler {
     protected static MethodHandle getSocketAddressMethod;
     protected static MethodHandle getAddressMethod;
     protected static MethodHandle finishMethod;
+    protected static MethodHandle getVersionMethod;
+    protected static MethodHandle unsafe$sendPacketMethod;
 
     /*
      * Setter
@@ -44,6 +51,9 @@ public abstract class AbstractMultiInitialHandler {
     protected static MethodHandle loginProfileFieldSetter;
     protected static MethodHandle nameFieldSetter;
     protected static MethodHandle uniqueIdFieldSetter;
+    protected static MethodHandle loginRequestFieldSetter;
+    protected static MethodHandle thisStateFieldSetter;
+    protected static MethodHandle requestFieldSetter;
 
     protected final MultiCoreAPI multiCoreAPI;
     protected final InitialHandler initialHandler;
@@ -131,5 +141,43 @@ public abstract class AbstractMultiInitialHandler {
         uniqueIdFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
                 InitialHandler.class.getDeclaredField("uniqueId")
         ));
+
+        getVersionMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredMethod("getVersion")
+        ));
+
+        loginRequestFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("loginRequest")
+        ));
+
+        thisStateFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("thisState")
+        ));
+
+        requestFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("request")
+        ));
+
+        unsafe$sendPacketMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                Class.forName("net.md_5.bungee.api.connection.Connection$Unsafe").getDeclaredMethod("sendPacket", DefinedPacket.class)
+        ));
+
+        uniqueIdFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("uniqueId")
+        ));
+
+        bungeeFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("bungee")
+        ));
+
+        onlineModeFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("onlineMode")
+        ));
+
+        unsafeFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                InitialHandler.class.getDeclaredField("unsafe")
+        ));
     }
+
+    public abstract void handle(T packet) throws Throwable;
 }

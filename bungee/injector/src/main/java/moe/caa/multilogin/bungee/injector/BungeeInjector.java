@@ -6,8 +6,10 @@ import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
+import moe.caa.multilogin.bungee.injector.redirect.MultiLoginRequest;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
+import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +26,7 @@ public class BungeeInjector implements Injector {
         AbstractMultiInitialHandler.init();
 
         redirectIn(Protocol.LOGIN, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
+        redirectIn(Protocol.LOGIN, LoginRequest.class, () -> new MultiLoginRequest(api));
     }
 
 
