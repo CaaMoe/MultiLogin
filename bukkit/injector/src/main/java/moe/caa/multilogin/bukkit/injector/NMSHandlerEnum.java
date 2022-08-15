@@ -3,6 +3,9 @@ package moe.caa.multilogin.bukkit.injector;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * NMS主类枚举
+ */
 @AllArgsConstructor
 @Getter
 public enum NMSHandlerEnum {
