@@ -2,6 +2,8 @@ package moe.caa.multilogin.api.util;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.function.Function;
 
 /**
  * 反射工具库
@@ -69,5 +71,34 @@ public class ReflectUtil {
             }
         }
         throw new NoSuchMethodException(target.getName() + " Types: " + Arrays.toString(fieldTypes));
+    }
+
+    /**
+     * 修改一个 Record 对象的一个字段
+     *
+     * @param source   record 对象
+     * @param match    对象匹配函数
+     * @param redirect 重定向对象函数
+     * @return 修改后的 Record，源 Record 不变
+     */
+    public static Object redirectRecordObject(Object source, Function<Object, Boolean> match, Function<Object, Object> redirect)
+            throws IllegalAccessException, NoSuchMethodException, InvocationTargetException, InstantiationException {
+        LinkedHashMap<Field, Object> fieldObjectMap = new LinkedHashMap<>();
+        for (Field field : source.getClass().getDeclaredFields()) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                continue;
+            }
+            Object value = ReflectUtil.handleAccessible(field).get(source);
+            if (match.apply(value)) {
+                value = redirect.apply(value);
+            }
+            fieldObjectMap.put(field, value);
+        }
+
+        final Constructor<?> declaredConstructor = source.getClass().getDeclaredConstructor(
+                fieldObjectMap.keySet().stream().map(Field::getType).toArray(Class[]::new)
+        );
+
+        return declaredConstructor.newInstance(fieldObjectMap.values().toArray());
     }
 }

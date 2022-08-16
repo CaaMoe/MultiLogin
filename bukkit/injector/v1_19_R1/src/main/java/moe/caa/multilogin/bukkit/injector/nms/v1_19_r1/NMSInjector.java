@@ -17,11 +17,8 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.SignatureValidator;
 import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -41,26 +38,13 @@ public class NMSInjector implements Injector {
         DedicatedServer server = ((CraftServer) ((MultiLoginBukkit) api.getPlugin()).getServer()).getServer();
 
         Field servicesField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(MinecraftServer.class, Services.class));
-        Object serviceObj  = servicesField.get(server);
+        Object serviceObj = servicesField.get(server);
 
-        LinkedHashMap<Field, Object> fieldObjectMap = new LinkedHashMap<>();
-        for (Field declaredField  : Services.class.getDeclaredFields()) {
-            if (Modifier.isStatic(declaredField.getModifiers())) {
-                continue;
-            }
-            Object value = ReflectUtil.handleAccessible(declaredField).get(serviceObj);
-            if (value.getClass().getName().contains("SignatureValidator")) {
-                value = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                        new Class[]{SignatureValidator.class}, new SignatureValidatorInvocationHandler(value));
-            }
-            fieldObjectMap.put(declaredField, value);
-        }
-
-        final Constructor<?> declaredConstructor = serviceObj.getClass().getDeclaredConstructor(
-                fieldObjectMap.keySet().stream().map(Field::getType).toArray(Class[]::new)
+        Object o = ReflectUtil.redirectRecordObject(serviceObj,
+                o1 -> o1.getClass().getName().contains("SignatureValidator"),
+                o12 -> Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
+                        new Class[]{SignatureValidator.class}, new SignatureValidatorInvocationHandler(o12))
         );
-
-        final Object o = declaredConstructor.newInstance(fieldObjectMap.values().toArray());
 
         servicesField.set(server, o);
     }
