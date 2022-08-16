@@ -4,6 +4,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.util.ReflectUtil;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.bungee.injector.redirect.MultiLoginRequest;
@@ -14,7 +15,6 @@ import net.md_5.bungee.protocol.packet.LoginRequest;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -41,7 +41,7 @@ public class BungeeInjector implements Injector {
     private <T> void redirectIn(Protocol stage, Class<T> originalClass, Supplier<? extends T> redirectSupplier) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         Class<?> c$protocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
         Field f$packetConstructors = c$protocolData.getDeclaredField("packetConstructors");// Supplier<? extends DefinedPacket>[]
-        accessSet(f$packetConstructors);
+        ReflectUtil.handleAccessible(f$packetConstructors);
 
         // 遍历所有版本协议
         for (Object data : getProtocolDataList(stage, true)) {//ProtocolData
@@ -69,7 +69,7 @@ public class BungeeInjector implements Injector {
     private <T> void redirectOut(Protocol stage, Class<T> originalClass, Class<? extends T> redirectClass) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Class<?> c$protocolData = Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolData");
         Field f$packetMap = c$protocolData.getDeclaredField("packetMap");// Supplier<? extends DefinedPacket>[]
-        accessSet(f$packetMap);
+        ReflectUtil.handleAccessible(f$packetMap);
 
         Method m$put = TObjectIntMap.class.getDeclaredMethod("put", Object.class, int.class);
 
@@ -91,14 +91,10 @@ public class BungeeInjector implements Injector {
         Class<?> c$directionData = Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData");
         Field f$protocols = c$directionData.getDeclaredField("protocols");// TIntObjectMap<ProtocolData>
         Field sideField = toServer ? Protocol.class.getDeclaredField("TO_SERVER") : Protocol.class.getDeclaredField("TO_CLIENT");
-        accessSet(f$protocols, sideField);
+        ReflectUtil.handleAccessible(f$protocols);
+        ReflectUtil.handleAccessible(sideField);
         Object directionData = sideField.get(stage);
         TIntObjectMap<?> protocols = (TIntObjectMap<?>) f$protocols.get(directionData); // ? is ProtocolData
         return protocols.values();
     }
-
-    private void accessSet(Field... fields) {
-        Arrays.stream(fields).forEach(field -> field.setAccessible(true));
-    }
-
 }

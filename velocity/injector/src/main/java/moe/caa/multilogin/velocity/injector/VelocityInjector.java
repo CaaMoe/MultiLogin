@@ -9,6 +9,7 @@ import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.util.ReflectUtil;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerChat;
@@ -55,6 +56,8 @@ public class VelocityInjector implements Injector {
     private <T> void redirectInput(StateRegistry.PacketRegistry bound, Class<T> originalClass, Supplier<? extends T> supplierRedirect) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Field f$packetIdToSupplier = StateRegistry.PacketRegistry.ProtocolRegistry.class.getDeclaredField("packetIdToSupplier");
         f$packetIdToSupplier.setAccessible(true);
+        ReflectUtil.handleAccessible(f$packetIdToSupplier);
+
 
         Method map$entry$setValueMethod = Map.Entry.class.getMethod("setValue", Object.class);
 
@@ -79,7 +82,7 @@ public class VelocityInjector implements Injector {
      */
     private <T> void redirectOutput(StateRegistry.PacketRegistry bound, Class<T> originalClass, Class<? extends T> appendClass) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         Field f$packetClassToId = StateRegistry.PacketRegistry.ProtocolRegistry.class.getDeclaredField("packetClassToId");
-        f$packetClassToId.setAccessible(true);
+        ReflectUtil.handleAccessible(f$packetClassToId);
 
         Method map$putMethod = Map.class.getMethod("put", Object.class, Object.class);
 
@@ -92,7 +95,8 @@ public class VelocityInjector implements Injector {
 
     private Collection<?> getProtocolRegistries(StateRegistry.PacketRegistry bound) throws NoSuchFieldException, IllegalAccessException {
         Field f$versions = StateRegistry.PacketRegistry.class.getDeclaredField("versions");
-        f$versions.setAccessible(true);
+        ReflectUtil.handleAccessible(f$versions);
+
         Map<?, ?> versionsObject = (Map<?, ?>) f$versions.get(bound);//Map<ProtocolVersion, ProtocolRegistry> versions;
         return versionsObject.values();
     }
