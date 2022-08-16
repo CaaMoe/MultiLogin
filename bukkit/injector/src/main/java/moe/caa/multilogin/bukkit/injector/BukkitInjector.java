@@ -21,17 +21,15 @@ public class BukkitInjector implements Injector {
             Injector injector = (Injector) Class.forName(handlerEnum.getNhc()).getConstructor().newInstance();
             injector.inject(api);
         } catch (Throwable t0) {
-            Throwable ft = t0;
+            LoggerProvider.getLogger().error("The new injector cannot be used.", t0);
             try {
                 String generalNHC = "moe.caa.multilogin.bukkit.injector.nms.old.NMSInjector";
                 Injector injector = (Injector) Class.forName(generalNHC).getConstructor().newInstance();
                 injector.inject(api);
                 LoggerProvider.getLogger().warn("With older injectors, there may be some problems.");
-                return;
             } catch (Throwable t1) {
-                ft = t1;
+                throw new RuntimeException("Servers with Bukkit version " + nmsVersion + " are not supported.", t1);
             }
-            throw new RuntimeException("Servers with Bukkit version " + nmsVersion + " are not supported.", ft);
         }
     }
 }
