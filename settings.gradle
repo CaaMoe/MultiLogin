@@ -10,6 +10,7 @@ include 'velocity:injector'
 
 include 'bukkit'
 include 'bukkit:injector'
+include 'bukkit:injector:old'
 include 'bukkit:injector:v1_19_R1'
 
 include 'bungee'

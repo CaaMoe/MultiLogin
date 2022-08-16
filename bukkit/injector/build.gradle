@@ -18,6 +18,9 @@ shadowJar {
     from {
         project(':bukkit:injector:v1_19_R1').tasks.shadowJar.archiveFile
     }
+    from {
+        project(':bukkit:injector:old').tasks.shadowJar.archiveFile
+    }
 }
 
 artifacts {
