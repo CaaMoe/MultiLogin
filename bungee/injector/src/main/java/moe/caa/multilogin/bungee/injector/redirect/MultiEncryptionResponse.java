@@ -26,7 +26,7 @@ public class MultiEncryptionResponse extends EncryptionResponse {
         try {
             multiEncryptionResponseInitialHandler.handle(this);
         } catch (Throwable e) {
-            multiEncryptionResponseInitialHandler.getInitialHandler().disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("bungee_auth_error")));
+            multiEncryptionResponseInitialHandler.getInitialHandler().disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("auth_error")));
             LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
         }
     }

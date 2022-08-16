@@ -26,7 +26,7 @@ public class MultiLoginRequest extends LoginRequest {
         try {
             multiLoginRequestInitialHandler.handle(this);
         } catch (Throwable e) {
-            multiLoginRequestInitialHandler.getInitialHandler().disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("bungee_auth_error")));
+            multiLoginRequestInitialHandler.getInitialHandler().disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("auth_error")));
             LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
         }
     }

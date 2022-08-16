@@ -26,7 +26,7 @@ public class MultiPacketLoginInEncryptionBegin extends PacketLoginInEncryptionBe
         try {
             multiLoginRequestInitialHandler.handle(this);
         } catch (Throwable e) {
-            multiLoginRequestInitialHandler.getLoginListener().disconnect(multiCoreAPI.getLanguageHandler().getMessage("bukkit_auth_error"));
+            multiLoginRequestInitialHandler.getLoginListener().disconnect(multiCoreAPI.getLanguageHandler().getMessage("auth_error"));
             LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
         }
     }

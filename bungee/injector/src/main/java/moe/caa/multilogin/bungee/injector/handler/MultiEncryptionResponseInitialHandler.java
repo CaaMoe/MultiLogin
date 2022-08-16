@@ -90,7 +90,7 @@ public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialH
                     initialHandler.disconnect(authResult.getKickMessage());
                 }
             } catch (Throwable e) {
-                initialHandler.disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("bungee_auth_error")));
+                initialHandler.disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("auth_error")));
                 LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
             }
 

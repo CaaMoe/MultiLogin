@@ -7,7 +7,6 @@ import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.ReflectUtil;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.protocol.login.PacketLoginInEncryptionBegin;
 import net.minecraft.server.MinecraftServer;
@@ -28,7 +27,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 接管 LoginListener 的其中一个方法
@@ -171,7 +169,7 @@ public class MultiPacketLoginInEncryptionBeginHandler {
                     loginListener.disconnect(authResult.getKickMessage());
                 }
             } catch (Throwable e) {
-                loginListener.disconnect(multiCoreAPI.getLanguageHandler().getMessage("bukkit_auth_error"));
+                loginListener.disconnect(multiCoreAPI.getLanguageHandler().getMessage("auth_error"));
                 LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
             }
 
