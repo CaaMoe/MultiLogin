@@ -35,7 +35,7 @@ public class NMSInjector implements Injector {
      */
     private  void redirectInput(EnumProtocol bound, EnumProtocolDirection direction, int packetId, Function<PacketDataSerializer, ? extends Packet<?>> functionRedirect) throws Throwable {
         // Map<NetworkSide, ? extends PacketHandler<?>>;
-        Field j = bound.getClass().getDeclaredField("j");
+        Field j = ReflectUtil.findField(bound.getClass(), Map.class);
         Map<?, ?> packetHandlers = (Map<?, ?>) ReflectUtil.handleAccessible(j).get(bound);
 
         Object packetHandler = packetHandlers.get(direction);
@@ -45,7 +45,7 @@ public class NMSInjector implements Injector {
         }
 
         // List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories
-        Field c = packetHandler.getClass().getDeclaredField("c");
+        Field c = ReflectUtil.findField(packetHandler.getClass(), List.class);
         List<?> packetFactories = (List<?>) ReflectUtil.handleAccessible(c).get(packetHandler);
 
         List.class.getDeclaredMethod("set", int.class, Object.class).invoke(
