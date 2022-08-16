@@ -1,9 +1,7 @@
 package moe.caa.multilogin.api.util;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
+import java.util.Arrays;
 
 /**
  * 反射工具库
@@ -35,14 +33,41 @@ public class ReflectUtil {
     }
 
     /**
-     * 指定一个目标类检索第一个出现的Field
+     * 指定一个目标类检索第一个出现的成员 Field
      */
-    public static Field findField(Class<?> target, Type fieldType) throws NoSuchFieldException {
+    public static Field findNoStaticField(Class<?> target, Type fieldType) throws NoSuchFieldException {
         for (Field field : target.getDeclaredFields()) {
-            if(field.getType() == fieldType){
+            if (Modifier.isStatic(field.getModifiers())) continue;
+            if (field.getType() == fieldType) {
                 return field;
             }
         }
-        throw new NoSuchFieldException(fieldType.getTypeName());
+        throw new NoSuchFieldException("Type: " + fieldType.getTypeName());
+    }
+
+    /**
+     * 指定一个目标类检索第一个出现的成员 Method
+     */
+    public static Method findNoStaticMethodByParameters(Class<?> target, Type... fieldTypes) throws NoSuchMethodException {
+        for (Method method : target.getDeclaredMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) continue;
+            if (Arrays.equals(method.getParameterTypes(), fieldTypes)) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException(target.getName() + " Types: " + Arrays.toString(fieldTypes));
+    }
+
+    /**
+     * 指定一个目标类检索第一个出现的静态 Method
+     */
+    public static Method findStaticMethodByParameters(Class<?> target, Type... fieldTypes) throws NoSuchMethodException {
+        for (Method method : target.getDeclaredMethods()) {
+            if (!Modifier.isStatic(method.getModifiers())) continue;
+            if (Arrays.equals(method.getParameterTypes(), fieldTypes)) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException(target.getName() + " Types: " + Arrays.toString(fieldTypes));
     }
 }

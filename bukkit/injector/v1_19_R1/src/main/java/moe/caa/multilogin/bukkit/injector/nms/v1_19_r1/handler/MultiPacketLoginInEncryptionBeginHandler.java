@@ -17,7 +17,6 @@ import net.minecraft.world.entity.player.ProfilePublicKey;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
-import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -25,7 +24,10 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.security.Key;
+import java.security.KeyPair;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Map;
 
 /**
@@ -54,6 +56,17 @@ public class MultiPacketLoginInEncryptionBeginHandler {
     private static MethodHandle connectionFieldGetter;
     private static MethodHandle gameProfileFieldGetter;
     private static MethodHandle gameProfileFieldSetter;
+    private static MethodHandle minecraftServer$keyPairFieldGetter;
+
+
+    private static MethodHandle minecraftEncryption$generateServerIdMethod;
+    private static MethodHandle packetLoginInEncryptionBegin$verifySignedNonceMethod;
+    private static MethodHandle packetLoginInEncryptionBegin$verifyEncryptedNonceMethod;
+    private static MethodHandle packetLoginInEncryptionBegin$decryptSecretKeyMethod;
+    private static MethodHandle minecraftEncryption$cipherFromKey;
+    private static MethodHandle NetworkManager$setupEncryption;
+
+    private static MethodHandle profilePublicKey$constructor;
 
     private Enum<?> state;
     private MinecraftServer server;
@@ -68,7 +81,7 @@ public class MultiPacketLoginInEncryptionBeginHandler {
         this.multiCoreAPI = multiCoreAPI;
     }
 
-    public static void init() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
+    public static void init() throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
         Class<?> stateEnum = Class.forName("net.minecraft.server.network.LoginListener$EnumProtocolState");
 
         for (int i = 0; i < stateEnum.getEnumConstants().length; i++) {
@@ -85,31 +98,76 @@ public class MultiPacketLoginInEncryptionBeginHandler {
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         stateFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("h")
+                ReflectUtil.findNoStaticField(LoginListener.class, stateEnum)
         ));
 
         stateFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("h")
+                ReflectUtil.findNoStaticField(LoginListener.class, stateEnum)
         ));
 
-        serverFieldGetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("g")
+        serverFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticField(LoginListener.class, MinecraftServer.class)
         ));
-        profilePublicKeyDataFieldGetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("m")
+        profilePublicKeyDataFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticField(LoginListener.class, ProfilePublicKey.a.class)
         ));
         nonceFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("f")
+                ReflectUtil.findNoStaticField(LoginListener.class, byte[].class)
         ));
         connectionFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("a")
+                ReflectUtil.findNoStaticField(LoginListener.class, NetworkManager.class)
         ));
 
         gameProfileFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("j")
+                ReflectUtil.findNoStaticField(LoginListener.class, GameProfile.class)
         ));
         gameProfileFieldSetter = lookup.unreflectSetter(ReflectUtil.handleAccessible(
-                LoginListener.class.getDeclaredField("j")
+                ReflectUtil.findNoStaticField(LoginListener.class, GameProfile.class)
+        ));
+
+        minecraftServer$keyPairFieldGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticField(MinecraftServer.class, KeyPair.class)
+        ));
+
+        minecraftEncryption$generateServerIdMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findStaticMethodByParameters(
+                        MinecraftEncryption.class,
+                        String.class, PublicKey.class, SecretKey.class
+                )
+        ));
+        minecraftEncryption$cipherFromKey = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findStaticMethodByParameters(
+                        MinecraftEncryption.class,
+                        int.class, Key.class
+                )
+        ));
+
+        profilePublicKey$constructor = lookup.unreflectConstructor(ReflectUtil.handleAccessible(
+                ProfilePublicKey.class.getDeclaredConstructor(ProfilePublicKey.a.class)
+        ));
+
+        packetLoginInEncryptionBegin$verifySignedNonceMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticMethodByParameters(
+                        PacketLoginInEncryptionBegin.class,
+                        byte[].class, ProfilePublicKey.class
+                )
+        ));
+        packetLoginInEncryptionBegin$verifyEncryptedNonceMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticMethodByParameters(
+                        PacketLoginInEncryptionBegin.class,
+                        byte[].class, PrivateKey.class
+                )
+        ));
+        packetLoginInEncryptionBegin$decryptSecretKeyMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticMethodByParameters(
+                        PacketLoginInEncryptionBegin.class, PrivateKey.class
+                )
+        ));
+        NetworkManager$setupEncryption = lookup.unreflect(ReflectUtil.handleAccessible(
+                ReflectUtil.findNoStaticMethodByParameters(
+                        NetworkManager.class,
+                        SecretKey.class
+                )
         ));
     }
 
@@ -130,36 +188,37 @@ public class MultiPacketLoginInEncryptionBeginHandler {
         String serverId;
 
         try {
-            PrivateKey privatekey = this.server.K().getPrivate();
+            KeyPair keyPair = (KeyPair) minecraftServer$keyPairFieldGetter.invoke(this.server);
+            PrivateKey privatekey = keyPair.getPrivate();
 
             if (this.profilePublicKeyData != null) {
-                ProfilePublicKey profilepublickey = ProfilePublicKey.a(this.profilePublicKeyData);
+                ProfilePublicKey profilepublickey = (ProfilePublicKey) profilePublicKey$constructor.invoke(this.profilePublicKeyData);
 
-                if (!packetLoginInEncryptionBegin.a(this.nonce, profilepublickey)) {
+                if (!((boolean) packetLoginInEncryptionBegin$verifySignedNonceMethod.invoke(packetLoginInEncryptionBegin, this.nonce, profilepublickey))) {
                     throw new IllegalStateException("Protocol error");
                 }
-            } else if (!packetLoginInEncryptionBegin.a(this.nonce, privatekey)) {
+            } else if (!((boolean) packetLoginInEncryptionBegin$verifyEncryptedNonceMethod.invoke(packetLoginInEncryptionBegin, this.nonce, privatekey))) {
                 throw new IllegalStateException("Protocol error");
             }
 
-            SecretKey secretkey = packetLoginInEncryptionBegin.a(privatekey);
-            Cipher cipher = MinecraftEncryption.a(2, secretkey);
-            Cipher cipher1 = MinecraftEncryption.a(1, secretkey);
+            SecretKey secretkey = (SecretKey) packetLoginInEncryptionBegin$decryptSecretKeyMethod.invoke(packetLoginInEncryptionBegin, privatekey);
 
+            serverId = new BigInteger(
+                    (byte[]) minecraftEncryption$generateServerIdMethod.invoke("", keyPair.getPublic(), secretkey)
+            ).toString(16);
 
-            serverId = (new BigInteger(MinecraftEncryption.a("", this.server.K().getPublic(), secretkey))).toString(16);
             stateFieldSetter.invoke(loginListener, enumProtocolState$AUTHENTICATING);
-            this.connection.a(cipher, cipher1);
+            NetworkManager$setupEncryption.invoke(this.connection, secretkey);
         } catch (CryptographyException cryptographyexception) {
             throw new IllegalStateException("Protocol error", cryptographyexception);
         }
 
-        multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(()->{
+        multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(()-> {
             InetAddress address = getAddress();
             AuthResult authResult = multiCoreAPI.getAuthHandler().auth(gameProfile.getName(), serverId, address == null ? null : address.getHostAddress());
-            if (!connection.h()) {
-                return;
-            }
+//            if (!connection.h()) {
+//                return;
+//            }
             try {
                 if (authResult.isAllowed()) {
                     GameProfile profile = generateGameProfile(authResult.getResponse());
@@ -172,7 +231,6 @@ public class MultiPacketLoginInEncryptionBeginHandler {
                 loginListener.disconnect(multiCoreAPI.getLanguageHandler().getMessage("auth_error"));
                 LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
             }
-
         });
     }
 
@@ -198,9 +256,13 @@ public class MultiPacketLoginInEncryptionBeginHandler {
         return profile;
     }
 
-    private void fireEvent() throws Exception {
+    private void fireEvent() throws Throwable {
         Class<LoginListener.LoginHandler> handlerClass = LoginListener.LoginHandler.class;
-        LoginListener.LoginHandler handler = handlerClass.getConstructor().newInstance();
+        LoginListener.LoginHandler handler = (LoginListener.LoginHandler) MethodHandles.lookup()
+                .unreflectConstructor(
+                        ReflectUtil.handleAccessible(
+                                handlerClass.getConstructor(LoginListener.class)))
+                .invoke(loginListener);
         handler.fireEvents();
     }
 }
