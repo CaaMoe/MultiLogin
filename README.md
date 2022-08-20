@@ -23,7 +23,7 @@ MultiLogin 是一款服务端插件(MOD)， 功能是让您的服务器支持正
 * 可控制的重复登入机制
 * 支持 PlaceholderAPI
 * 自动修复皮肤签名问题
-* 支持 Velocity、Bungee、Bukkit、Fabric
+* 支持 Velocity、Bungee、Bukkit、~~Fabric~~
 
 ## BUG 汇报
 
