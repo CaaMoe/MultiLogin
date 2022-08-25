@@ -18,13 +18,21 @@ import java.util.Properties;
  * 数据升级程序未完成
  */
 public class Main {
+    public static List<OldUserData> oldUserDataList;
+    private static OldConfig oldConfig;
 
     public static void main(String[] args) {
+        readOldData();
+        if(oldUserDataList == null || oldConfig == null) {
+            return;
+        }
+    }
 
-        // 取 input 文件夹
+    public static void readOldData(){
         File inputFile = new File("input");
         File configFile = new File(inputFile, "config.yml");
         File advancedConfigFile = new File(inputFile, "advanced_setting.properties");
+
         if (!configFile.exists()) {
             System.err.println("The config.yml file could not be found.");
             System.err.println("You need to create the input folder in the program's sibling directory, and then put the old files into it, Try again.");
@@ -32,9 +40,9 @@ public class Main {
         }
 
         // 解析 config.yml 文件
-        CommentedConfigurationNode load;
+        CommentedConfigurationNode configurationNodeConfigYml;
         try {
-            load = YamlConfigurationLoader.builder().file(configFile).build().load();
+            configurationNodeConfigYml = YamlConfigurationLoader.builder().file(configFile).build().load();
         } catch (ConfigurateException e) {
             System.err.println("An exception occurred while reading the config.yml file, maybe it's damaged.");
             e.printStackTrace();
@@ -42,15 +50,16 @@ public class Main {
         }
 
         // 老文件是必须有这个节点的，没有则代表是坏的。
-        if (!load.hasChild("services")) {
+        if (!configurationNodeConfigYml.hasChild("services")) {
             System.err.println("No services configuration was found.");
             System.err.println("Has it been successfully upgraded before?");
+            return;
         }
 
         // 读取他的全部配置
         final OldConfig oldConfig;
         try {
-            oldConfig = new OldConfig(load);
+            oldConfig = new OldConfig(configurationNodeConfigYml);
         } catch (Throwable e) {
             System.err.println("An exception occurred while parsing the config.yml file, maybe it's damaged.");
             e.printStackTrace();
@@ -76,7 +85,7 @@ public class Main {
         // 读数据
         OldSQLHandler oldSQLHandler;
         try {
-            System.out.println("Loading the old database driver...");
+            System.out.println("Loading the old " + oldConfig.getS_backend().name().toLowerCase() + " database driver...");
             oldSQLHandler = new OldSQLHandler(inputFile, oldConfig, oldAdvancedConfig);
         } catch (Throwable e){
             System.err.println("Cannot process old database, please check.");
@@ -86,6 +95,7 @@ public class Main {
 
         List<OldUserData> oldUserData;
         try {
+            System.out.println("Importing data...");
             oldUserData = oldSQLHandler.readAll();
         } catch (SQLException e) {
             System.err.println("Cannot read old data.");
@@ -93,11 +103,13 @@ public class Main {
             return;
         }
 
-        System.out.println(oldUserData.size() + " data is imported");
-
+        System.out.println(oldUserData.size() + " user data has been imported.");
 
         for (OldConfig.OldYggdrasilConfig service : oldConfig.getServices()) {
-            System.out.printf("Resolved a yggdrasil service with path %s and name %s.%n", service.getPath(), service.getName());
+            System.out.printf("Imported a yggdrasil service with path %s and name %s.%n", service.getPath(), service.getName());
         }
+
+        Main.oldConfig = oldConfig;
+        Main.oldUserDataList = oldUserData;
     }
 }
