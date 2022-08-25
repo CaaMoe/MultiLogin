@@ -3,11 +3,10 @@ plugins {
 }
 
 repositories {
+mavenCentral()
 }
 
 dependencies {
-    implementation 'mysql:mysql-connector-java:8.0.29'
-    implementation 'com.h2database:h2:2.1.212'
     implementation 'org.spongepowered:configurate-yaml:4.1.2'
     implementation 'org.spongepowered:configurate-core:4.1.2'
     implementation 'org.yaml:snakeyaml:1.30'
