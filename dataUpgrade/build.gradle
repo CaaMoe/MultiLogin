@@ -18,6 +18,12 @@ shadowJar {
     archiveBaseName.set('MultiLogin-DataUpgrade')
     archiveVersion.set('1.0')
     archiveClassifier.set("")
+
+    manifest {
+        attributes(
+                'Main-Class': 'moe.caa.multilogin.dataupgrade.Main'
+        )
+    }
 }
 
 
