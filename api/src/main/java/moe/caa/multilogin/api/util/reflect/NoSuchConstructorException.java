@@ -1,8 +1,5 @@
 package moe.caa.multilogin.api.util.reflect;
 
-/**
- * Signals that the class doesn't have a constructor of a specified name.
- */
 public class NoSuchConstructorException extends ReflectiveOperationException {
 
     /**

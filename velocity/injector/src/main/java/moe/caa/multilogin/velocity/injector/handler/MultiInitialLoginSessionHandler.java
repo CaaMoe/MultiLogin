@@ -15,16 +15,19 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.util.reflect.Accessor;
+import moe.caa.multilogin.api.util.reflect.EnumAccessor;
+import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import net.kyori.adventure.text.Component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.MessageDigest;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +35,8 @@ import java.util.stream.Collectors;
  */
 @Getter()
 public class MultiInitialLoginSessionHandler {
+    private static EnumAccessor loginStatsEnumAccessor;
+    private static Accessor initialLoginSessionHandlerAccessor;
 
     // LoginStateEnum 的枚举
     private static Enum<?> loginStateEnum$LOGIN_PACKET_EXPECTED;
@@ -73,65 +78,51 @@ public class MultiInitialLoginSessionHandler {
         }
     }
 
-    public static void init() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public static void init() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException, NoSuchEnumException {
         Class<InitialLoginSessionHandler> initialLoginSessionHandlerClass = InitialLoginSessionHandler.class;
-        Class<?> loginStateEnum = Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler$LoginState");
+        initialLoginSessionHandlerAccessor = new Accessor(initialLoginSessionHandlerClass);
 
-        // 获取枚举常量
-        for (Object constant : loginStateEnum.getEnumConstants()) {
-            final Enum<?> enumObject = (Enum<?>) constant;
-            switch ((enumObject).name()) {
-                case "LOGIN_PACKET_EXPECTED":
-                    loginStateEnum$LOGIN_PACKET_EXPECTED = enumObject;
-                    break;
-                case "LOGIN_PACKET_RECEIVED":
-                    loginStateEnum$LOGIN_PACKET_RECEIVED = enumObject;
-                    break;
-                case "ENCRYPTION_REQUEST_SENT":
-                    loginStateEnum$ENCRYPTION_REQUEST_SENT = enumObject;
-                    break;
-                case "ENCRYPTION_RESPONSE_RECEIVED":
-                    loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED = enumObject;
-                    break;
-            }
-        }
-        Objects.requireNonNull(loginStateEnum$LOGIN_PACKET_EXPECTED, "LOGIN_PACKET_EXPECTED");
-        Objects.requireNonNull(loginStateEnum$LOGIN_PACKET_RECEIVED, "LOGIN_PACKET_RECEIVED");
-        Objects.requireNonNull(loginStateEnum$ENCRYPTION_REQUEST_SENT, "ENCRYPTION_REQUEST_SENT");
-        Objects.requireNonNull(loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED, "ENCRYPTION_RESPONSE_RECEIVED");
+        Class<?> loginStateEnum = Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler$LoginState");
+        loginStatsEnumAccessor = new EnumAccessor(loginStateEnum);
+
+        loginStateEnum$LOGIN_PACKET_EXPECTED = loginStatsEnumAccessor.findByName("LOGIN_PACKET_EXPECTED");
+        loginStateEnum$LOGIN_PACKET_RECEIVED = loginStatsEnumAccessor.findByName("LOGIN_PACKET_RECEIVED");
+        loginStateEnum$ENCRYPTION_REQUEST_SENT = loginStatsEnumAccessor.findByName("ENCRYPTION_REQUEST_SENT");
+        loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED = loginStatsEnumAccessor.findByName("ENCRYPTION_RESPONSE_RECEIVED");
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+
         assertStateMethod = lookup.unreflect(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredMethod("assertState", loginStateEnum)
+                initialLoginSessionHandlerAccessor.findFirstMethodByName(true, "assertState")
         ));
 
-        setCurrentStateField = lookup.unreflectSetter(ReflectUtil.handleAccessible(
+        Field currentState = ReflectUtil.handleAccessible(
                 initialLoginSessionHandlerClass.getDeclaredField("currentState")
-        ));
+        );
+        getCurrentStateField = lookup.unreflectGetter(currentState);
+        setCurrentStateField = lookup.unreflectSetter(currentState);
 
         getLoginField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("login")
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, ServerLogin.class)
         ));
 
         getVerifyField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("verify")
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, byte[].class)
         ));
 
         getServerField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("server")
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, VelocityServer.class)
         ));
 
         getInboundField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("inbound")
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, LoginInboundConnection.class)
         ));
 
         getMcConnectionField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("mcConnection")
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, MinecraftConnection.class)
         ));
 
-        getCurrentStateField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerClass.getDeclaredField("currentState")
-        ));
 
         authSessionHandler_allArgsConstructor = lookup.unreflectConstructor(ReflectUtil.handleAccessible(
                 AuthSessionHandler.class.getDeclaredConstructor(
