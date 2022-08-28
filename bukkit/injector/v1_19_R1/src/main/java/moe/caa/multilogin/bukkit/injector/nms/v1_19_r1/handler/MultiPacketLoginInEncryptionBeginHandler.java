@@ -6,7 +6,7 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.protocol.login.PacketLoginInEncryptionBegin;
 import net.minecraft.server.MinecraftServer;

@@ -2,7 +2,7 @@ package moe.caa.multilogin.bungee.injector.handler;
 
 import lombok.Getter;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import net.md_5.bungee.connection.InitialHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.api.util;
+package moe.caa.multilogin.api.util.reflect;
 
 import java.lang.reflect.*;
 import java.util.Arrays;

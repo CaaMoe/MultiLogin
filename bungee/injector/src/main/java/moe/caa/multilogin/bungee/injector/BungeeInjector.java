@@ -4,7 +4,7 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
 import moe.caa.multilogin.bungee.injector.redirect.MultiLoginRequest;

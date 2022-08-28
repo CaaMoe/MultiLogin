@@ -2,7 +2,7 @@ package moe.caa.multilogin.bukkit.injector.nms.v1_19_r1;
 
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.nms.v1_19_r1.handler.MultiPacketLoginInEncryptionBeginHandler;
 import moe.caa.multilogin.bukkit.injector.nms.v1_19_r1.proxy.SignatureValidatorInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.nms.v1_19_r1.redirect.MultiPacketLoginInEncryptionBegin;

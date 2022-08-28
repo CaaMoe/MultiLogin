@@ -15,7 +15,7 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.ReflectUtil;
+import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import net.kyori.adventure.text.Component;
 
 import java.lang.invoke.MethodHandle;

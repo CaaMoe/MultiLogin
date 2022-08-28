@@ -6,10 +6,13 @@ import moe.caa.multilogin.dataupgrade.oldc.OldSQLHandler;
 import moe.caa.multilogin.dataupgrade.oldc.OldUserData;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +24,7 @@ public class Main {
     public static List<OldUserData> oldUserDataList;
     private static OldConfig oldConfig;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         long timeMillis = System.currentTimeMillis();
         readOldData();
         if(oldUserDataList == null || oldConfig == null) {
@@ -53,12 +56,22 @@ public class Main {
         System.out.println("================================================================");
         Thread.sleep(15000);
         System.out.println("Converting data...");
-        convertAndWrite();
+
+        try {
+            convertAndWrite();
+        } catch (Exception e) {
+            System.err.println("An exception occurs when processing upgrade data.");
+            e.printStackTrace();
+            return;
+        }
         System.out.printf("\n\nDone. Total time: %.2f seconds.", ((System.currentTimeMillis() - timeMillis) + 1.0) / 1000);
     }
 
-    public static void convertAndWrite() {
-
+    public static void convertAndWrite() throws ConfigurateException {
+        CommentedConfigurationNode resourceConfig = YamlConfigurationLoader.builder().url(Main.class.getResource("/config.yml")).build().load();
+        CommentedConfigurationNode resourceYggdrasilTemplate = YamlConfigurationLoader.builder().url(Main.class.getResource("/template_cn.yml")).build().load();
+        System.out.println(resourceYggdrasilTemplate);
+        YamlConfigurationLoader.builder().file(new File("output.yml")).nodeStyle(NodeStyle.BLOCK).build().save(resourceYggdrasilTemplate);
     }
 
     /**
