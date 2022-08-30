@@ -1,0 +1,28 @@
+name: Update Contributors
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 1 * *"
+
+jobs:
+  update-contributors:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Check and Update'
+        run: |
+          curl https://api.github.com/repos/$GITHUB_REPOSITORY/contributors | grep login | sed 's#    "login": "##g' | sed 's#",##g' > contributors.new
+          if [ `diff contributors.new contributors` == 0 ]; then
+              echo "No new Contributors, no Push required"
+          else
+              echo "New Contributors available, push now"
+              mv -f contributors.new contributors
+              git config user.name 'github-actions[bot]'
+              git config user.email 'github-actions[bot]@users.noreply.github.com'
+              git add .
+              git commit -am "Update contributors"
+              git push
+          fi

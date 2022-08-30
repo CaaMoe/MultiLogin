@@ -1,7 +1,14 @@
-# MultiLogin 多 Yggdrasil 共存的实现
+<div align="center">
 
+# MultiLogin
+
+_✨ 多 Yggdrasil 共存的实现 ✨_
+
+[![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+
+</div>
 
 ## 概述
 
@@ -23,25 +30,42 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 * HTTP 请求异常重试机智
 * 支持使用鉴权代理访问 HTTP 服务
 
+## 安装
+
+最低需要 `Java 11`， 不需要安装 `authlib-injector` ，没有任何前置插件，也不需要添加和更改 `JVM` 参数
+
+~~把大象装进冰箱需要几步？~~
+
+1. [下载](https://github.com/CaaMoe/MultiLogin/releases)插件
+2. 丢进 plugins
+3. 启动服务器
+
+## 配置
+
+详见 [Wiki](https://github.com/CaaMoe/MultiLogin/wiki)
+
+## 构建
+
+1. 克隆这个项目
+2. 执行 `gradle shadowJar`
+3. 在 `*/build/libs` 下寻找你需要的
+
+或者你也可以
+
+1. Fork 此项目
+2. 开启 action
+3. 随便提交一个文件
+
 ## BUG 汇报
 
 [832210691](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 点击此处，来加入 [QQ](https://im.qq.com/) 交流群
 
 [new issue](https://github.com/CaaMoe/MultiLogin/issues/new) 点击此处，提交你的问题
 
-## 构建
+## 贡献者
 
-克隆这个项目，执行以下指令：
+<a href="https://github.com/CaaMoe/MultiLogin/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=CaaMoe/MultiLogin" />
+</a>
 
-    gradle shadowJar
-
-构建输出位于 `*/build/libs` 下。
-
-## 安装
-
-插件需要使用 `Java 11`， 不需要安装 `authlib-injector` 、没有任何前置插件，也不需要添加和更改 `JVM`
-参数，将合适的版本丢进合适的文件夹下即可使用。
-
-## 文档
-
-[Wiki](https://github.com/CaaMoe/MultiLogin/wiki)
+[我也想为贡献者之一？](https://github.com/CaaMoe/MultiLogin/pulls)

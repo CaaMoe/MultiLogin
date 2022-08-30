@@ -2,7 +2,6 @@ name: Java CI
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -29,11 +28,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Patch Gradle Repositories
+        run: 
+          sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
+
       - name: Build
         uses: gradle/gradle-command-action@v1
         with:
           arguments: shadowJar
-          gradle-version: 7.2
+          gradle-version: 7.4
 
       - name: Cleanup Gradle Cache
         run: |
