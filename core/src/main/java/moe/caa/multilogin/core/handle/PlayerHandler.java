@@ -9,10 +9,7 @@ import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -50,6 +47,9 @@ public class PlayerHandler implements HandlerAPI {
                     "The player with in game UUID %s and name %s is not logged into the server by MultiLogin, some features will be disabled for him.",
                     inGameUUID.toString(), username
             ));
+            if(core.getPluginConfig().isForceUseLogin()){
+                return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_need_use_login"));
+            }
         } else {
             long l = System.currentTimeMillis() - remove.signTimeMillis;
             if (l > 5 * 1000) {
@@ -58,10 +58,16 @@ public class PlayerHandler implements HandlerAPI {
                         inGameUUID.toString(), username, l
                 ));
             }
-
             cache.put(inGameUUID, remove);
         }
-
+        boolean removed = core.getCacheWhitelistHandler().getCachedWhitelist().remove(username.toLowerCase(Locale.ROOT));
+        if(!removed){
+            if(core.getPluginConfig().isForceWhitelist()){
+                if(core.getPluginConfig().isForceUseLogin()){
+                    return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_no_whitelist"));
+                }
+            }
+        }
 
         return new HandleResult(HandleResult.Type.NONE, null);
     }
