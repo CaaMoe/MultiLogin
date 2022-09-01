@@ -117,7 +117,7 @@ public class CommandHandler implements CommandAPI {
      */
     public final Pair<UUID, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
         requirePlayer(context);
-        Pair<UUID, Integer> profile = core.getCache().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
+        Pair<UUID, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
         if (profile == null) {
             throw builtInExceptions.cacheNotFoundSelf().create();
         }

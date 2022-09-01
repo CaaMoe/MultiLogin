@@ -4,6 +4,8 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import moe.caa.multilogin.api.handle.HandleResult;
+import net.kyori.adventure.text.Component;
 
 /**
  * Velocity 的事件处理程序
@@ -21,15 +23,22 @@ public class GlobalListener {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onPlayerJoin(LoginEvent event) {
-        multiLoginVelocity.getMultiCoreAPI().getCache().pushPlayerJoinGame(
+        HandleResult result = multiLoginVelocity.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(
                 event.getPlayer().getUniqueId(),
                 event.getPlayer().getUsername()
         );
+        if (result.getType() == HandleResult.Type.KICK) {
+            if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
+                event.getPlayer().disconnect(Component.text(""));
+            } else {
+                event.getPlayer().disconnect(Component.text(result.getKickMessage()));
+            }
+        }
     }
 
     @Subscribe(order = PostOrder.FIRST)
     public void onDisconnect(DisconnectEvent event) {
-        multiLoginVelocity.getMultiCoreAPI().getCache().pushPlayerQuitGame(
+        multiLoginVelocity.getMultiCoreAPI().getPlayerHandler().pushPlayerQuitGame(
                 event.getPlayer().getUniqueId(),
                 event.getPlayer().getUsername()
         );

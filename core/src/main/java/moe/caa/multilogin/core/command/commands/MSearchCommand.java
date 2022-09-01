@@ -72,7 +72,7 @@ public class MSearchCommand {
             ));
         }
         for (IPlayer player : name) {
-            Pair<UUID, Integer> profile = CommandHandler.getCore().getCache().getPlayerOnlineProfile(player.getUniqueId());
+            Pair<UUID, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
             if (profile == null) {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_search_current_unknown"));
             } else {

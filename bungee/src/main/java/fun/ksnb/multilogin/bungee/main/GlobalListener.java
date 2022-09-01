@@ -1,5 +1,7 @@
 package fun.ksnb.multilogin.bungee.main;
 
+import moe.caa.multilogin.api.handle.HandleResult;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -14,12 +16,19 @@ public class GlobalListener implements Listener {
 
     @EventHandler
     public void onJoin(PostLoginEvent event) {
-        multiLoginBungee.getMultiCoreAPI().getCache().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        HandleResult result = multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        if (result.getType() == HandleResult.Type.KICK) {
+            if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
+                event.getPlayer().disconnect(new TextComponent(""));
+            } else {
+                event.getPlayer().disconnect(new TextComponent(result.getKickMessage()));
+            }
+        }
     }
 
     @EventHandler
         public void onQuit(PlayerDisconnectEvent event) {
-            multiLoginBungee.getMultiCoreAPI().getCache().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+        multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         }
 
 

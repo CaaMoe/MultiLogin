@@ -2,6 +2,7 @@ package moe.caa.multilogin.api.main;
 
 import moe.caa.multilogin.api.auth.AuthAPI;
 import moe.caa.multilogin.api.command.CommandAPI;
+import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.language.LanguageAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 
@@ -35,7 +36,7 @@ public interface MultiCoreAPI {
     /**
      * 获得缓存
      */
-    CacheAPI getCache();
+    HandlerAPI getPlayerHandler();
 
     /**
      * 获得插件对象

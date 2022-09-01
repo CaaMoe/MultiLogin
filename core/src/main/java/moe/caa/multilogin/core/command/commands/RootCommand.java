@@ -65,7 +65,7 @@ public class RootCommand {
         }
         Map<Integer, List<String>> identifiedPlayerMap = new HashMap<>();
         for (IPlayer player : onlinePlayers) {
-            Pair<UUID, Integer> profile = CommandHandler.getCore().getCache().getPlayerOnlineProfile(player.getUniqueId());
+            Pair<UUID, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
             int yid = -1;
             if (profile != null) {
                 yid = profile.getValue2();

@@ -2,8 +2,9 @@ package moe.caa.multilogin.core.main;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import moe.caa.multilogin.api.handle.HandleResult;
+import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.main.CacheAPI;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
 
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * 数据缓存中心
  */
-public class PlayerCache implements CacheAPI {
+public class PlayerHandler implements HandlerAPI {
 
     private final MultiCore core;
 
@@ -29,35 +30,39 @@ public class PlayerCache implements CacheAPI {
     @Getter
     private final Map<UUID, Entry> loginCache;
 
-    public PlayerCache(MultiCore core) {
+    public PlayerHandler(MultiCore core) {
         this.core = core;
         this.cache = new ConcurrentHashMap<>();
         this.loginCache = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void pushPlayerQuitGame(UUID inGameUUID, String username) {
+    public HandleResult pushPlayerQuitGame(UUID inGameUUID, String username) {
+        return new HandleResult(HandleResult.Type.NONE, null);
     }
 
     @Override
-    public void pushPlayerJoinGame(UUID inGameUUID, String username) {
+    public HandleResult pushPlayerJoinGame(UUID inGameUUID, String username) {
         Entry remove = loginCache.remove(inGameUUID);
         if (remove == null) {
             LoggerProvider.getLogger().warn(String.format(
                     "The player with in game UUID %s and name %s is not logged into the server by MultiLogin, some features will be disabled for him.",
                     inGameUUID.toString(), username
             ));
-            return;
-        }
-        long l = System.currentTimeMillis() - remove.signTimeMillis;
-        if (l > 5 * 1000) {
-            LoggerProvider.getLogger().warn(String.format(
-                    "Players with in game UUID %s and name %s are taking too long to log in after verification, reached %d milliseconds. Is it the same person?",
-                    inGameUUID.toString(), username, l
-            ));
+        } else {
+            long l = System.currentTimeMillis() - remove.signTimeMillis;
+            if (l > 5 * 1000) {
+                LoggerProvider.getLogger().warn(String.format(
+                        "Players with in game UUID %s and name %s are taking too long to log in after verification, reached %d milliseconds. Is it the same person?",
+                        inGameUUID.toString(), username, l
+                ));
+            }
+
+            cache.put(inGameUUID, remove);
         }
 
-        cache.put(inGameUUID, remove);
+
+        return new HandleResult(HandleResult.Type.NONE, null);
     }
 
     @Override

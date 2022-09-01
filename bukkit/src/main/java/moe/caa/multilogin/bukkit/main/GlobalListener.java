@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.main;
 
+import moe.caa.multilogin.api.handle.HandleResult;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -14,12 +15,19 @@ public class GlobalListener {
     private final Listener listener = new Listener() {
         @EventHandler
         public void onJoin(AsyncPlayerPreLoginEvent event) {
-            multiLoginBukkit.getMultiCoreAPI().getCache().pushPlayerJoinGame(event.getUniqueId(), event.getName());
+            HandleResult result = multiLoginBukkit.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getUniqueId(), event.getName());
+            if (result.getType() == HandleResult.Type.KICK) {
+                if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
+                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, "");
+                } else {
+                    event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_WHITELIST, result.getKickMessage());
+                }
+            }
         }
 
         @EventHandler
         public void onQuit(PlayerQuitEvent event) {
-            multiLoginBukkit.getMultiCoreAPI().getCache().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
+            multiLoginBukkit.getMultiCoreAPI().getPlayerHandler().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         }
     };
 

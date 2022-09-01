@@ -1,27 +1,27 @@
-package moe.caa.multilogin.api.main;
+package moe.caa.multilogin.api.handle;
 
 import moe.caa.multilogin.api.util.Pair;
 
 import java.util.UUID;
 
 /**
- * 简单缓存 API，所操作玩家需要在线。
+ * 简单通讯 API，所操作玩家需要在线。
  */
-public interface CacheAPI {
+public interface HandlerAPI {
 
     /**
      * 提交一个玩家退出事件
      *
      * @param inGameUUID 玩家的游戏内 UUID
      */
-    void pushPlayerQuitGame(UUID inGameUUID, String username);
+    HandleResult pushPlayerQuitGame(UUID inGameUUID, String username);
 
     /**
      * 提交一个玩家加入事件
      *
      * @param inGameUUID 玩家的游戏内 UUID
      */
-    void pushPlayerJoinGame(UUID inGameUUID, String username);
+    HandleResult pushPlayerJoinGame(UUID inGameUUID, String username);
 
     /**
      * 获得玩家的在线游戏档案

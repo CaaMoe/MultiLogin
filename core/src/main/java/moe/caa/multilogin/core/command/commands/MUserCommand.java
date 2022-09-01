@@ -67,7 +67,7 @@ public class MUserCommand {
                         new Pair<>("online_uuid", onlineUUID),
                         new Pair<>("in_game_uuid", inGameUUID)));
 
-                UUID needKick = CommandHandler.getCore().getCache().getInGameUUID(onlineUUID, ysc.getId());
+                UUID needKick = CommandHandler.getCore().getPlayerHandler().getInGameUUID(onlineUUID, ysc.getId());
                 if (needKick != null) {
                     IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(needKick);
                     if (player != null) {
@@ -162,7 +162,7 @@ public class MUserCommand {
                         new Pair<>("yggdrasil_id", ysc.getId()),
                         new Pair<>("online_uuid", onlineUUID)));
 
-                UUID inGameUUID = CommandHandler.getCore().getCache().getInGameUUID(onlineUUID, ysc.getId());
+                UUID inGameUUID = CommandHandler.getCore().getPlayerHandler().getInGameUUID(onlineUUID, ysc.getId());
                 if (inGameUUID != null) {
                     IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
                     if (player != null) {

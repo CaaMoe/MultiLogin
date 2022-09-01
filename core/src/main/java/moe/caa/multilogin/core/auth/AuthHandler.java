@@ -9,7 +9,7 @@ import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.main.PlayerCache;
+import moe.caa.multilogin.core.main.PlayerHandler;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 
@@ -93,7 +93,7 @@ public class AuthHandler implements AuthAPI {
                 } else {
                     finalProfile = validateAuthenticationResult.getInGameProfile();
                 }
-                core.getCache().getLoginCache().put(finalProfile.getId(), new PlayerCache.Entry(
+                core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
                         yggdrasilAuthenticationResult.getResponse().getId(),
                         yggdrasilAuthenticationResult.getYggdrasilId(),
                         System.currentTimeMillis()
