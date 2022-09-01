@@ -1,0 +1,47 @@
+# ####################################################################
+# 
+# 配置文件格式为 ‘YAML’，前往 ‘https://yaml.org/’ 查阅 YAML 配置语法
+#        NOTE: 此文件为 Yggdrasil Service 配置模板文件
+# 
+#   BUG REPORTS:   https://github.com/CaaMoe/MultiLogin/issues
+# 
+# ####################################################################
+
+id: -1
+name: Unnamed
+hasJoined:
+    official: { }
+    blessingSkin:
+        apiRoot: https://example.com/api/yggdrasil
+    custom:
+        url: https://example.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}
+        method: GET
+        ipContent: '&ip={0}'
+        postContent: '{"username":"{0}", "serverId":"{1}"}'
+passIp: true
+timeout: 10000
+retry: 0
+retryDelay: 0
+proxy:
+    type: DIRECT
+    hostname: 127.0.0.1
+    port: 1080
+    username: ''
+    password: ''
+initUUID: DEFAULT
+nameAllowedRegular: ^[0-9a-zA-Z_]{3,16}$
+whitelist: false
+refuseRepeatedLogin: false
+compulsoryUsername: false
+skinRestorer:
+    restorer: 'OFF'
+    method: URL
+    timeout: 10000
+    retry: 2
+    retryDelay: 5000
+    proxy:
+        type: DIRECT
+        hostname: 127.0.0.1
+        port: 1080
+        username: ''
+        password: ''

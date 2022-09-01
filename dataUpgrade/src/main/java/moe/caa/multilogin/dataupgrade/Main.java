@@ -1,18 +1,13 @@
 package moe.caa.multilogin.dataupgrade;
 
-import moe.caa.multilogin.dataupgrade.oldc.OldAdvancedConfig;
-import moe.caa.multilogin.dataupgrade.oldc.OldConfig;
-import moe.caa.multilogin.dataupgrade.oldc.OldSQLHandler;
-import moe.caa.multilogin.dataupgrade.oldc.OldUserData;
+import moe.caa.multilogin.dataupgrade.oldc.*;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
-import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,17 +63,15 @@ public class Main {
     }
 
     public static void convertAndWrite() throws ConfigurateException {
-        CommentedConfigurationNode resourceConfig = YamlConfigurationLoader.builder().url(Main.class.getResource("/config.yml")).build().load();
-        CommentedConfigurationNode resourceYggdrasilTemplate = YamlConfigurationLoader.builder().url(Main.class.getResource("/template_cn.yml")).build().load();
-        System.out.println(resourceYggdrasilTemplate);
-        YamlConfigurationLoader.builder().file(new File("output.yml")).nodeStyle(NodeStyle.BLOCK).build().save(resourceYggdrasilTemplate);
+        System.out.println("Converting configuration...");
+
     }
 
     /**
      * 检查数据完整
      */
     public static Map<String, Set<OldUserData>> checkImport() {
-        Set<String> set = oldConfig.getServices().stream().map(OldConfig.OldYggdrasilConfig::getPath).collect(Collectors.toSet());
+        Set<String> set = oldConfig.getServices().stream().map(OldYggdrasilConfig::getPath).collect(Collectors.toSet());
 
         Map<String, Set<OldUserData>> lossPath = new HashMap<>();
         for (OldUserData data : oldUserDataList) {

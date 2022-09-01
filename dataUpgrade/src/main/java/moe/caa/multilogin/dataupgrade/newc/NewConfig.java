@@ -30,6 +30,15 @@ public class NewConfig {
 
     public CommentedConfigurationNode toYaml() throws SerializationException {
         CommentedConfigurationNode ret = CommentedConfigurationNode.root();
+        ret.node("debug").set(debug);
+        ret.node("sql").node("backend").set(s_backend);
+        ret.node("sql").node("ip").set(s_ip);
+        ret.node("sql").node("port").set(s_port);
+        ret.node("sql").node("username").set(s_username);
+        ret.node("sql").node("password").set(s_password);
+        ret.node("sql").node("databases").set(s_database);
+        ret.node("sql").node("tablePrefix").set(s_tablePrefix);
+        ret.node("sql").node("connectUrl").set(s_connectUrl);
         return ret;
     }
 }
