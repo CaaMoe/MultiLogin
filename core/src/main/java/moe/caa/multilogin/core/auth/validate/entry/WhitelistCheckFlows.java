@@ -16,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
 
-    // 这是缓冲白名单
-    public static final Set<String> cachedWhitelist = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final MultiCore core;
 
     public WhitelistCheckFlows(MultiCore core) {
@@ -27,7 +25,7 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
-        boolean removed = cachedWhitelist.remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName().toLowerCase(Locale.ROOT));
+        boolean removed = core.getCacheWhitelistHandler().getCachedWhitelist().remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName().toLowerCase(Locale.ROOT));
         if (removed) {
             core.getSqlManager().getUserDataTable().setWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(), validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(), true);
         }

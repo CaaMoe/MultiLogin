@@ -120,7 +120,7 @@ public class MWhitelistCommand {
     private int executeRemoveUsername(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");
         int count = 0;
-        if (WhitelistCheckFlows.cachedWhitelist.remove(username)) {
+        if (CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist().remove(username)) {
             count++;
         }
         UUID inGameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
@@ -162,7 +162,7 @@ public class MWhitelistCommand {
             ));
             return 0;
         }
-        if (!WhitelistCheckFlows.cachedWhitelist.add(username)) {
+        if (!CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist().add(username)) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat",
                     new Pair<>("username", username)
             ));

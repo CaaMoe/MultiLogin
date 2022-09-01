@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.main;
+package moe.caa.multilogin.core.handle;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,7 @@ import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.Map;
 import java.util.Objects;
@@ -81,7 +82,7 @@ public class PlayerHandler implements HandlerAPI {
         return null;
     }
 
-    protected void register() {
+    public void register() {
         core.getPlugin().getRunServer().getScheduler().runTaskAsyncTimer(() -> {
             // 存放在线的所有玩家
             Set<UUID> onlinePlayerUUIDs = core.getPlugin().getRunServer().getPlayerManager().getOnlinePlayers().stream()
