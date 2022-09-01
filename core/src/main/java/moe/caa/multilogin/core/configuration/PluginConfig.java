@@ -29,8 +29,6 @@ public class PluginConfig {
     private final File dataFolder;
 
     @Getter
-    private boolean forceWhitelist;
-    @Getter
     private boolean forceUseLogin;
 
     @Getter
@@ -69,7 +67,6 @@ public class PluginConfig {
             DebugLoggerBridge.cancelDebugMode();
         }
 
-        forceWhitelist = configConfigurationNode.node("forceWhitelist").getBoolean(false);
         forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(false);
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));

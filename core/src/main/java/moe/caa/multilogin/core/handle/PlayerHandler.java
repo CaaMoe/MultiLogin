@@ -60,14 +60,6 @@ public class PlayerHandler implements HandlerAPI {
             }
             cache.put(inGameUUID, remove);
         }
-        boolean removed = core.getCacheWhitelistHandler().getCachedWhitelist().remove(username.toLowerCase(Locale.ROOT));
-        if(!removed){
-            if(core.getPluginConfig().isForceWhitelist()){
-                if(core.getPluginConfig().isForceUseLogin()){
-                    return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_no_whitelist"));
-                }
-            }
-        }
 
         return new HandleResult(HandleResult.Type.NONE, null);
     }
