@@ -8,6 +8,7 @@ import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
 import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
@@ -28,7 +29,7 @@ import java.util.function.Supplier;
 public class VelocityInjector implements Injector {
 
     @Override
-    public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException {
         MultiInitialLoginSessionHandler.init();
         MultiPlayerChat.init();
         MultiPlayerCommand.init();
