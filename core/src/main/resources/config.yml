@@ -14,6 +14,18 @@
 # 默认值 false
 debug: false
 
+# 强制使用白名单
+#
+# 即使是通过其他方式加入的服务器，都必须通过白名单验证。
+# 默认值 false
+forceWhitelist: false
+
+# 强制使用此登录
+#
+# 即强制使用 MultiLogin 来登录游戏。
+# 默认值 false
+forceUseLogin: false
+
 # 插件数据设置
 sql:
 

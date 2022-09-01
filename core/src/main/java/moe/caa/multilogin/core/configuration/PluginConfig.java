@@ -29,6 +29,11 @@ public class PluginConfig {
     private final File dataFolder;
 
     @Getter
+    private boolean forceWhitelist;
+    @Getter
+    private boolean forceUseLogin;
+
+    @Getter
     private SqlConfig sqlConfig;
     @Getter
     private Map<Integer, YggdrasilServiceConfig> idMap;
@@ -63,6 +68,9 @@ public class PluginConfig {
         } else {
             DebugLoggerBridge.cancelDebugMode();
         }
+
+        forceWhitelist = configConfigurationNode.node("forceWhitelist").getBoolean(false);
+        forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(false);
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
