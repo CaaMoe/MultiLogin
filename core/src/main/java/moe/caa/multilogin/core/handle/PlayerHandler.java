@@ -43,13 +43,13 @@ public class PlayerHandler implements HandlerAPI {
     public HandleResult pushPlayerJoinGame(UUID inGameUUID, String username) {
         Entry remove = loginCache.remove(inGameUUID);
         if (remove == null) {
+            if(core.getPluginConfig().isForceUseLogin()){
+                return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_need_use_login"));
+            }
             LoggerProvider.getLogger().warn(String.format(
                     "The player with in game UUID %s and name %s is not logged into the server by MultiLogin, some features will be disabled for him.",
                     inGameUUID.toString(), username
             ));
-            if(core.getPluginConfig().isForceUseLogin()){
-                return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_need_use_login"));
-            }
         } else {
             long l = System.currentTimeMillis() - remove.signTimeMillis;
             if (l > 5 * 1000) {
