@@ -18,11 +18,11 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_ADD = "command.multilogin.whitelist.permanent.add";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_REMOVE = "command.multilogin.whitelist.permanent.remove";
     public static final String COMMAND_MULTI_LOGIN_LIST = "command.multilogin.list";
-    public static final String COMMAND_MULTI_LOGIN_QUERY_LOGIN_BYNAME = "command.multilogin.query.login.byname";
-    public static final String COMMAND_MULTI_LOGIN_QUERY_LOGIN_BYINGAMEUUID = "command.multilogin.query.login.byingameuuid";
-    public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYNAME = "command.multilogin.query.ingameuuid.byname";
-    public static final String COMMAND_MULTI_LOGIN_QUERY_IN_GAME_UUID_BYPROFILE = "command.multilogin.query.ingameuuid.byprofile";
-    public static final String COMMAND_MULTI_LOGIN_QUERY_CURRENT = "command.multilogin.query.current";
+    public static final String COMMAND_MULTI_LOGIN_SEARCH_LOGIN_BYNAME = "command.multilogin.search.login.byname";
+    public static final String COMMAND_MULTI_LOGIN_SEARCH_LOGIN_BYINGAMEUUID = "command.multilogin.search.login.byingameuuid";
+    public static final String COMMAND_MULTI_LOGIN_SEARCH_IN_GAME_UUID_BYNAME = "command.multilogin.search.ingameuuid.byname";
+    public static final String COMMAND_MULTI_LOGIN_SEARCH_IN_GAME_UUID_BYPROFILE = "command.multilogin.search.ingameuuid.byprofile";
+    public static final String COMMAND_MULTI_LOGIN_SEARCH_CURRENT = "command.multilogin.search.current";
     public static final String COMMAND_MULTI_LOGIN_USER_MERGE_BYNAME = "command.multilogin.user.merge.byname";
     public static final String COMMAND_MULTI_LOGIN_USER_MERGE_BYINGAMEUUID = "command.multilogin.user.merge.byingameuuid";
     public static final String COMMAND_MULTI_LOGIN_USER_MERGEME_BYNAME = "command.multilogin.user.mergeme.byname";
