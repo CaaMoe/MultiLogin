@@ -65,7 +65,7 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 ## 贡献者
 
 <a href="https://github.com/CaaMoe/MultiLogin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=CaaMoe/MultiLogin" />
+  <img src="https://contrib.rocks/image?repo=CaaMoe/MultiLogin"  alt="作者头像"/>
 </a>
 
 [我也想为贡献者之一？](https://github.com/CaaMoe/MultiLogin/pulls)
