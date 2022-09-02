@@ -42,7 +42,7 @@ public class OldSQLHandler {
             Class<?> aClass = Class.forName("com.mysql.cj.jdbc.Driver", true, urlClassLoader);
             driver = ((Driver) aClass.getConstructor().newInstance());
 
-            connection = driver.connect("jdbc:mysql://" + config.getS_ip() + "/" + config.getS_port(), properties);
+            connection = driver.connect("jdbc:mysql://" + config.getS_ip() + ":" + config.getS_port() + "/" + config.getS_database(), properties);
         }
 
     }

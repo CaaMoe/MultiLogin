@@ -19,7 +19,7 @@ public class Main {
     public static List<OldUserData> oldUserDataList;
     private static OldConfig oldConfig;
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException {
         long timeMillis = System.currentTimeMillis();
         readOldData();
         if(oldUserDataList == null || oldConfig == null) {
