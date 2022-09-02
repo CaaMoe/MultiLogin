@@ -8,6 +8,7 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,7 +51,6 @@ public class Main {
         System.out.println(" Writing will begin in 15 seconds.");
         System.out.println("================================================================");
         Thread.sleep(15000);
-        System.out.println("Converting data...");
 
         try {
             convertAndWrite();
@@ -62,8 +62,11 @@ public class Main {
         System.out.printf("\n\nDone. Total time: %.2f seconds.", ((System.currentTimeMillis() - timeMillis) + 1.0) / 1000);
     }
 
-    public static void convertAndWrite() throws ConfigurateException {
+    public static void convertAndWrite() throws IOException {
+        File outputFile = new File("output");
+        if(!outputFile.exists()) Files.createDirectories(outputFile.toPath());
         System.out.println("Converting configuration...");
+        System.out.println("Converting data...");
 
     }
 
