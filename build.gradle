@@ -21,8 +21,8 @@ subprojects {
     }
 
     dependencies {
-        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
-        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+        compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 
         try (def scanner = new Scanner(file.libraries)) {
             while (scanner.hasNextLine()) {

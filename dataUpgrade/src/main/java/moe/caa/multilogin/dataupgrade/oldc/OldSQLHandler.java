@@ -38,7 +38,10 @@ public class OldSQLHandler {
             driver = ((Driver) driverField.get(null));
             connection = driver.connect("jdbc:h2:" + new File(folder, "multilogin").getAbsolutePath(), properties);
         } else {
-            urlClassLoader = new URLClassLoader(new URL[]{new URL("https://maven.aliyun.com/repository/public/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar")}, ClassLoader.getSystemClassLoader().getParent());
+            urlClassLoader = new URLClassLoader(new URL[]{
+                    new URL("https://maven.aliyun.com/repository/public/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar"),
+                    new URL("https://maven.aliyun.com/repository/public/io/leangen/geantyref/geantyref/1.3.13/geantyref-1.3.13.jar")
+            }, ClassLoader.getSystemClassLoader().getParent());
             Class<?> aClass = Class.forName("com.mysql.cj.jdbc.Driver", true, urlClassLoader);
             driver = ((Driver) aClass.getConstructor().newInstance());
 
