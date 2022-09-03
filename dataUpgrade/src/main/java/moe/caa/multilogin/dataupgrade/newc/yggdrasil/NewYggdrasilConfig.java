@@ -2,10 +2,16 @@ package moe.caa.multilogin.dataupgrade.newc.yggdrasil;
 
 import lombok.Getter;
 import lombok.ToString;
+import moe.caa.multilogin.dataupgrade.newc.yggdrasil.hasjoined.Custom;
 import moe.caa.multilogin.dataupgrade.newc.yggdrasil.hasjoined.IHasJoined;
+import moe.caa.multilogin.dataupgrade.oldc.OldConfig;
+import moe.caa.multilogin.dataupgrade.oldc.OldYggdrasilConfig;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+/**
+ * 新格式配置文件
+ */
 @Getter
 @ToString
 public class NewYggdrasilConfig {
@@ -30,21 +36,24 @@ public class NewYggdrasilConfig {
     private final SkinRestorer skinRestorer;
 
 
-    private NewYggdrasilConfig(int id, String name, IHasJoined hasJoined, boolean passIp, int timeout, int retry, int retryDelay, Proxy proxy, InitUUID initUUID, String nameAllowedRegular, boolean whitelist, boolean refuseRepeatedLogin, boolean compulsoryUsername, SkinRestorer skinRestorer) {
+    public NewYggdrasilConfig(
+            int id, OldConfig config, OldYggdrasilConfig oldYggdrasilConfig
+    ) {
+
         this.id = id;
-        this.name = name;
-        this.hasJoined = hasJoined;
-        this.passIp = passIp;
-        this.timeout = timeout;
-        this.retry = retry;
-        this.retryDelay = retryDelay;
-        this.proxy = proxy;
-        this.initUUID = initUUID;
-        this.nameAllowedRegular = nameAllowedRegular;
-        this.whitelist = whitelist;
-        this.refuseRepeatedLogin = refuseRepeatedLogin;
-        this.compulsoryUsername = compulsoryUsername;
-        this.skinRestorer = skinRestorer;
+        this.name = oldYggdrasilConfig.getName();
+        this.hasJoined = getHasJoined(oldYggdrasilConfig);
+        this.passIp = oldYggdrasilConfig.isB_passIp();
+        this.timeout = config.getServicesTimeOut();
+        this.retry = oldYggdrasilConfig.getAuthRetry();
+        this.retryDelay = 0;
+        this.proxy = new Proxy();
+        this.initUUID = InitUUID.valueOf(oldYggdrasilConfig.getConvUuid().name());
+        this.nameAllowedRegular = oldYggdrasilConfig.getNameAllowedRegular();
+        this.whitelist = oldYggdrasilConfig.isWhitelist();
+        this.refuseRepeatedLogin = oldYggdrasilConfig.isRefuseRepeatedLogin();
+        this.compulsoryUsername = false;
+        this.skinRestorer = new SkinRestorer(config, oldYggdrasilConfig);
     }
 
     public CommentedConfigurationNode toYaml() throws SerializationException {
@@ -57,7 +66,7 @@ public class NewYggdrasilConfig {
         ret.node("retry").set(retry);
         ret.node("retryDelay").set(retryDelay);
         ret.node("proxy").set(proxy.toYaml());
-        ret.node("initUUID").set(initUUID);
+        ret.node("initUUID").set(initUUID.name());
         ret.node("nameAllowedRegular").set(nameAllowedRegular);
         ret.node("whitelist").set(whitelist);
         ret.node("refuseRepeatedLogin").set(refuseRepeatedLogin);
@@ -68,5 +77,14 @@ public class NewYggdrasilConfig {
 
     public enum InitUUID {
         DEFAULT, OFFLINE, RANDOM;
+    }
+
+    private IHasJoined getHasJoined(OldYggdrasilConfig oldYggdrasilConfig) {
+
+        return new Custom(oldYggdrasilConfig.getB_url(),
+                oldYggdrasilConfig.isB_postMode() ? Custom.HttpMethod.POST : Custom.HttpMethod.GET,
+                oldYggdrasilConfig.getB_passIpContent(),
+                oldYggdrasilConfig.getB_postContent()
+        );
     }
 }

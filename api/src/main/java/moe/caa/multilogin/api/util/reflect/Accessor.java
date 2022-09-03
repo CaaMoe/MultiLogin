@@ -50,7 +50,7 @@ public class Accessor {
      */
     public Method findFirstMethod(boolean declared, Function<Method, Boolean> function, String exceptionMessage) throws NoSuchMethodException {
         List<Method> elements = getElements(declared ? classHandle.getDeclaredMethods() : classHandle.getMethods(), function);
-        if(elements.size() == 0) throw new NoSuchMethodException(exceptionMessage);
+        if (elements.size() == 0) throw new NoSuchMethodException(exceptionMessage);
         return elements.get(0);
     }
 
@@ -59,7 +59,7 @@ public class Accessor {
      */
     public Field findFirstField(boolean declared, Function<Field, Boolean> function, String exceptionMessage) throws NoSuchFieldException {
         List<Field> elements = getElements(declared ? classHandle.getDeclaredFields() : classHandle.getFields(), function);
-        if(elements.size() == 0) throw new NoSuchFieldException(exceptionMessage);
+        if (elements.size() == 0) throw new NoSuchFieldException(exceptionMessage);
         return elements.get(0);
     }
 
@@ -68,7 +68,7 @@ public class Accessor {
      */
     public Constructor<?> findFirstConstructors(boolean declared, Function<Constructor<?>, Boolean> function, String exceptionMessage) throws NoSuchConstructorException {
         List<Constructor<?>> elements = getElements(declared ? classHandle.getDeclaredConstructors() : classHandle.getConstructors(), function);
-        if(elements.size() == 0) throw new NoSuchConstructorException(exceptionMessage);
+        if (elements.size() == 0) throw new NoSuchConstructorException(exceptionMessage);
         return elements.get(0);
     }
 

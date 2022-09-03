@@ -29,7 +29,7 @@ public class OldConfig {
     private final String s_prefix;
 
     @SneakyThrows
-    public OldConfig(CommentedConfigurationNode load){
+    public OldConfig(CommentedConfigurationNode load) {
         this.services = load.node("services").childrenMap().entrySet().stream()
                 .map(e -> new OldYggdrasilConfig(((String) e.getKey()), e.getValue())).collect(Collectors.toList());
 

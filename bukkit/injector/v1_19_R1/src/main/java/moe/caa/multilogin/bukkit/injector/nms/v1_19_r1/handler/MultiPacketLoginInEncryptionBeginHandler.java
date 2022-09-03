@@ -213,7 +213,7 @@ public class MultiPacketLoginInEncryptionBeginHandler {
             throw new IllegalStateException("Protocol error", cryptographyexception);
         }
 
-        multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(()-> {
+        multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
             InetAddress address = getAddress();
             AuthResult authResult = multiCoreAPI.getAuthHandler().auth(gameProfile.getName(), serverId, address == null ? null : address.getHostAddress());
 //            if (!connection.h()) {

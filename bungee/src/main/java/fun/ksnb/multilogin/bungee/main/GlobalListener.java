@@ -27,9 +27,9 @@ public class GlobalListener implements Listener {
     }
 
     @EventHandler
-        public void onQuit(PlayerDisconnectEvent event) {
+    public void onQuit(PlayerDisconnectEvent event) {
         multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-        }
+    }
 
 
     public GlobalListener(MultiLoginBungee multiLoginBungee) {

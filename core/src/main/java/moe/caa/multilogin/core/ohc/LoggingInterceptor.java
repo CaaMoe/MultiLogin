@@ -25,7 +25,7 @@ public class LoggingInterceptor implements Interceptor {
             Buffer bf = new Buffer();
             requestBody.writeTo(bf);
             long size = bf.size();
-            if(size > 0) LoggerProvider.getLogger().debug(String.format("--> (%d bytes)", size));
+            if (size > 0) LoggerProvider.getLogger().debug(String.format("--> (%d bytes)", size));
         }
 
         long startNs = System.nanoTime();
@@ -46,7 +46,7 @@ public class LoggingInterceptor implements Interceptor {
             source.request(Long.MAX_VALUE);
             Buffer buffer = source.getBuffer();
             long size = buffer.size();
-            if(size > 0) LoggerProvider.getLogger().debug(String.format("<-- (%d bytes)", size));
+            if (size > 0) LoggerProvider.getLogger().debug(String.format("<-- (%d bytes)", size));
         }
 
         return response;

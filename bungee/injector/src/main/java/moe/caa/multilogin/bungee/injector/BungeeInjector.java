@@ -83,6 +83,7 @@ public class BungeeInjector implements Injector {
 
     /**
      * 获取不同方向下的不同阶段的全部协议
+     *
      * @param stage    进行中的阶段
      * @param toServer 是否是发给服务端方向
      * @return 全部版本的协议

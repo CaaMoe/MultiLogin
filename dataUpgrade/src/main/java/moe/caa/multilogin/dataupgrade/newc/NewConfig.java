@@ -5,6 +5,9 @@ import moe.caa.multilogin.dataupgrade.sql.Backend;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+/**
+ * 表示一个新版配置
+ */
 public class NewConfig {
     private final boolean debug;
     private final Backend s_backend;
@@ -31,7 +34,7 @@ public class NewConfig {
     public CommentedConfigurationNode toYaml() throws SerializationException {
         CommentedConfigurationNode ret = CommentedConfigurationNode.root();
         ret.node("debug").set(debug);
-        ret.node("sql").node("backend").set(s_backend);
+        ret.node("sql").node("backend").set(s_backend.name());
         ret.node("sql").node("ip").set(s_ip);
         ret.node("sql").node("port").set(s_port);
         ret.node("sql").node("username").set(s_username);

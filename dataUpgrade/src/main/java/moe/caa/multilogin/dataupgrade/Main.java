@@ -1,17 +1,22 @@
 package moe.caa.multilogin.dataupgrade;
 
+import moe.caa.multilogin.dataupgrade.newc.NewConfig;
+import moe.caa.multilogin.dataupgrade.newc.yggdrasil.NewYggdrasilConfig;
 import moe.caa.multilogin.dataupgrade.oldc.*;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
+import org.spongepowered.configurate.yaml.NodeStyle;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 数据升级程序未完成
@@ -23,12 +28,12 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         long timeMillis = System.currentTimeMillis();
         readOldData();
-        if(oldUserDataList == null || oldConfig == null) {
+        if (oldUserDataList == null || oldConfig == null) {
             return;
         }
         System.out.println("Checking import...");
         Map<String, Set<OldUserData>> checkResultMap = checkImport();
-        if(checkResultMap.size() != 0){
+        if (checkResultMap.size() != 0) {
             System.out.println();
             System.err.println("================================================================");
             for (Map.Entry<String, Set<OldUserData>> entry : checkResultMap.entrySet()) {
@@ -44,7 +49,7 @@ public class Main {
         System.out.println(" Allocated Yggdrasil ID:");
         for (int i = 0; i < oldConfig.getServices().size(); i++) {
             System.out.printf("      ID: %d is allocated to the Yggdrasil Service where path is %s and name is %s.%n", i
-            , oldConfig.getServices().get(i).getPath(), oldConfig.getServices().get(i).getName());
+                    , oldConfig.getServices().get(i).getPath(), oldConfig.getServices().get(i).getName());
         }
         System.out.println();
         System.out.println(" Unhappy with the allocation? You can immediately close the program, change the order of the service children in the configuration file, and run the program again.");
@@ -64,8 +69,26 @@ public class Main {
 
     public static void convertAndWrite() throws IOException {
         File outputFile = new File("output");
-        if(!outputFile.exists()) Files.createDirectories(outputFile.toPath());
+        if (!outputFile.exists()) Files.createDirectories(outputFile.toPath());
         System.out.println("Converting configuration...");
+
+        NewConfig config = new NewConfig(oldConfig);
+        CommentedConfigurationNode configYaml = config.toYaml();
+        YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK).file(new File(outputFile, "config.yml")).build().save(configYaml);
+
+        File outputService = new File(outputFile, "services");
+        if (!outputService.exists()) Files.createDirectories(outputService.toPath());
+        try (Stream<Path> list = Files.list(outputService.toPath())) {
+            for (Path path : list.toArray(Path[]::new)) {
+                Files.delete(path);
+            }
+        }
+        for (int i = 0; i < oldConfig.getServices().size(); i++) {
+            File service = new File(outputService, oldConfig.getServices().get(i).getPath() + ".yml");
+            NewYggdrasilConfig yggdrasilConfig = new NewYggdrasilConfig(i, oldConfig, oldConfig.getServices().get(i));
+            YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK).file(service).build().save(yggdrasilConfig.toYaml());
+        }
+
         System.out.println("Converting data...");
 
     }
@@ -87,7 +110,7 @@ public class Main {
     }
 
     // 读老数据
-    public static void readOldData(){
+    public static void readOldData() {
         File inputFile = new File("input");
         File configFile = new File(inputFile, "config.yml");
         File advancedConfigFile = new File(inputFile, "advanced_setting.properties");
@@ -127,7 +150,7 @@ public class Main {
 
         // 读取高级设置文件
         final OldAdvancedConfig oldAdvancedConfig;
-        if(advancedConfigFile.exists()){
+        if (advancedConfigFile.exists()) {
             try {
                 Properties properties = new Properties();
                 properties.load(new FileInputStream(advancedConfigFile));
@@ -146,7 +169,7 @@ public class Main {
         try {
             System.out.println("Loading the old " + oldConfig.getS_backend().name().toLowerCase() + " database driver...");
             oldSQLHandler = new OldSQLHandler(inputFile, oldConfig, oldAdvancedConfig);
-        } catch (Throwable e){
+        } catch (Throwable e) {
             System.err.println("Cannot process old database, please check.");
             e.printStackTrace();
             return;

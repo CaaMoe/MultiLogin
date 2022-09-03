@@ -5,6 +5,9 @@ import lombok.ToString;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 
+/**
+ * 表示一个代理
+ */
 @Getter
 @ToString
 public class Proxy {
@@ -24,7 +27,7 @@ public class Proxy {
 
     public CommentedConfigurationNode toYaml() throws SerializationException {
         CommentedConfigurationNode ret = CommentedConfigurationNode.root();
-        ret.node("type").set(type);
+        ret.node("type").set(type.name());
         ret.node("hostname").set(hostname);
         ret.node("port").set(port);
         ret.node("username").set(username);

@@ -43,7 +43,7 @@ public class PlayerHandler implements HandlerAPI {
     public HandleResult pushPlayerJoinGame(UUID inGameUUID, String username) {
         Entry remove = loginCache.remove(inGameUUID);
         if (remove == null) {
-            if(core.getPluginConfig().isForceUseLogin()){
+            if (core.getPluginConfig().isForceUseLogin()) {
                 return new HandleResult(HandleResult.Type.KICK, core.getLanguageHandler().getMessage("auth_handler_need_use_login"));
             }
             LoggerProvider.getLogger().warn(String.format(
