@@ -19,4 +19,9 @@ public class PriorAllURLClassLoader extends PriorURLClassLoader {
     public boolean containPrior(String name) {
         return true;
     }
+
+    @Override
+    public Class<?> defineClass(String name, byte[] bytes) {
+        return defineClass(name, bytes, 0, bytes.length);
+    }
 }

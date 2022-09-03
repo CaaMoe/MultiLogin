@@ -26,4 +26,9 @@ public class OtherAppClassLoader extends URLClassLoader implements IExtURLClassL
     public URLClassLoader self() {
         return this;
     }
+
+    @Override
+    public Class<?> defineClass(String name, byte[] bytes) {
+        return defineClass(name, bytes, 0, bytes.length);
+    }
 }

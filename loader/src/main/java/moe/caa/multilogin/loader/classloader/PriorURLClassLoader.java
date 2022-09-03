@@ -21,6 +21,11 @@ public class PriorURLClassLoader extends URLClassLoader implements IExtURLClassL
     }
 
     @Override
+    public Class<?> defineClass(String name, byte[] bytes) {
+        return defineClass(name, bytes, 0, bytes.length);
+    }
+
+    @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized (getClassLoadingLock(name)) {
             Class<?> c = findLoadedClass(name);

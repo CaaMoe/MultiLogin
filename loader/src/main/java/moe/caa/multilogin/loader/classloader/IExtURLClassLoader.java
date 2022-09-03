@@ -10,4 +10,6 @@ public interface IExtURLClassLoader {
     void addURL(URL url);
 
     URLClassLoader self();
+
+    Class<?> defineClass(String name, byte[] bytes);
 }
