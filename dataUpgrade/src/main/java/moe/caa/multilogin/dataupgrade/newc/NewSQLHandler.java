@@ -39,6 +39,8 @@ public class NewSQLHandler {
             driverField.setAccessible(true);
             driver = ((Driver) driverField.get(null));
             connection = driver.connect("jdbc:h2:" + new File(folder, "multilogin").getAbsolutePath(), properties);
+
+            connection.prepareStatement("SET MODE MYSQL").executeUpdate();
         } else {
             urlClassLoader = new URLClassLoader(new URL[]{
                     new URL("https://maven.aliyun.com/repository/public/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar"),
@@ -77,7 +79,7 @@ public class NewSQLHandler {
         PreparedStatement preparedStatement2 =
                 connection.prepareStatement("INSERT INTO " + userDataTableName + "(online_uuid, yggdrasil_id, in_game_profile_uuid, whitelist) VALUES(?, ?, ?, ?)");
         preparedStatement2.setBytes(1, ValueUtil.uuidToBytes(userData.getOnlineUUID()));
-        preparedStatement2.setInt(2, yggdrasilId);
+        preparedStatement2.setByte(2, (byte) yggdrasilId);
         preparedStatement2.setBytes(3, ValueUtil.uuidToBytes(userData.getRedirectUUID()));
         preparedStatement2.setBoolean(4, userData.isWhitelist());
         preparedStatement2.executeUpdate();
