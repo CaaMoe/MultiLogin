@@ -4,6 +4,7 @@ import moe.caa.multilogin.dataupgrade.ValueUtil;
 import moe.caa.multilogin.dataupgrade.sql.Backend;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -66,5 +67,18 @@ public class OldSQLHandler {
             );
         }
         return oldUserData;
+    }
+
+    public void close(){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            urlClassLoader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

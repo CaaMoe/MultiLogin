@@ -1,5 +1,6 @@
 package moe.caa.multilogin.dataupgrade.newc;
 
+import lombok.Getter;
 import moe.caa.multilogin.dataupgrade.oldc.OldConfig;
 import moe.caa.multilogin.dataupgrade.sql.Backend;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -8,6 +9,7 @@ import org.spongepowered.configurate.serialize.SerializationException;
 /**
  * 表示一个新版配置
  */
+@Getter
 public class NewConfig {
     private final boolean debug;
     private final Backend s_backend;

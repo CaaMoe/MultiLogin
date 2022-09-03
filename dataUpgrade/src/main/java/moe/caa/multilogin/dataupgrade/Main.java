@@ -1,6 +1,7 @@
 package moe.caa.multilogin.dataupgrade;
 
 import moe.caa.multilogin.dataupgrade.newc.NewConfig;
+import moe.caa.multilogin.dataupgrade.newc.NewSQLHandler;
 import moe.caa.multilogin.dataupgrade.newc.yggdrasil.NewYggdrasilConfig;
 import moe.caa.multilogin.dataupgrade.oldc.*;
 import org.spongepowered.configurate.CommentedConfigurationNode;
@@ -64,7 +65,8 @@ public class Main {
             e.printStackTrace();
             return;
         }
-        System.out.printf("\n\nDone. Total time: %.2f seconds.", ((System.currentTimeMillis() - timeMillis) + 1.0) / 1000);
+
+        System.out.printf("\nDone. Total time: %.2f seconds.", ((System.currentTimeMillis() - timeMillis) + 1.0) / 1000);
     }
 
     public static void convertAndWrite() throws IOException {
@@ -89,8 +91,50 @@ public class Main {
             YamlConfigurationLoader.builder().nodeStyle(NodeStyle.BLOCK).file(service).build().save(yggdrasilConfig.toYaml());
         }
 
-        System.out.println("Converting data...");
+        NewSQLHandler newSQLHandler;
+        try {
+            System.out.println("Loading the new " + config.getS_backend().name().toLowerCase() + " database driver...");
+            newSQLHandler = new NewSQLHandler(outputFile, config);
+        } catch (Throwable e) {
+            System.err.println("Cannot process new database, please check.");
+            e.printStackTrace();
+            return;
+        }
 
+        System.out.println("Converting data...");
+        // 处理重名数据
+        Set<String> cache = new HashSet<>();
+        for (OldUserData data : oldUserDataList) {
+            data.setCurrentName(data.getCurrentName().toLowerCase());
+            if(!cache.add(data.getCurrentName())){
+                System.out.println("Processing duplicate name: " + data.getCurrentName());
+                data.setCurrentName(null);
+            }
+        }
+
+
+        List<String> sSt = new ArrayList<>();
+        for (OldYggdrasilConfig service : oldConfig.getServices()) {
+            sSt.add(service.getPath());
+        }
+
+        int failed = 0;
+        for (OldUserData data : oldUserDataList) {
+            int i = sSt.indexOf(data.getYggdrasilService());
+            if(i != -1){
+                try {
+                    newSQLHandler.insertNewUserData(i, data);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    failed++;
+                }
+            } else {
+                failed++;
+            }
+        }
+
+        newSQLHandler.close();
+        System.out.println("\n" + failed + " failure.");
     }
 
     /**
@@ -184,6 +228,7 @@ public class Main {
             e.printStackTrace();
             return;
         }
+        oldSQLHandler.close();
 
         System.out.println(oldUserData.size() + " user data have been imported.");
         System.out.println(oldConfig.getServices().size() + " yggdrasil service have been imported.");
