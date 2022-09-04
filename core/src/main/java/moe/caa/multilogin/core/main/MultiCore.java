@@ -76,7 +76,6 @@ public class MultiCore implements MultiCoreAPI {
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
         checkEnvironment();
         new CheckUpdater(this).start();
-        new MetricsLite(this);
         new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
