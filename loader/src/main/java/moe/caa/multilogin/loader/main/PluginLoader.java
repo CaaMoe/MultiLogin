@@ -151,37 +151,30 @@ public class PluginLoader {
             );
         }
 
-        {
-            // 提取 nest jar
-            final File output = File.createTempFile(nestJarName + ".", ".jar", plugin.getTempFolder());
-            if (!output.exists()) {
-                Files.createFile(output.toPath());
-            }
-            output.deleteOnExit();
-            try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(nestJarName);
-                 FileOutputStream fos = new FileOutputStream(output);
-            ) {
-                IOUtil.copy(Objects.requireNonNull(is, nestJarName), fos);
-            }
-            pluginClassLoader.addURL(output.toURI().toURL());
-        }
-        {
-            for (String addition : additions) {
-                final File output = File.createTempFile(addition + ".", ".jar", plugin.getTempFolder());
-                if (!output.exists()) {
-                    Files.createFile(output.toPath());
-                }
-                output.deleteOnExit();
-                try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(addition);
-                     FileOutputStream fos = new FileOutputStream(output);
-                ) {
-                    IOUtil.copy(Objects.requireNonNull(is, addition), fos);
-                }
-                pluginClassLoader.addURL(output.toURI().toURL());
-            }
+
+        // 提取 nest jar
+        loadNestJar(nestJarName, pluginClassLoader);
+
+
+        for (String addition : additions) {
+            loadNestJar(addition, pluginClassLoader);
         }
 
         loadCore();
+    }
+
+    private void loadNestJar(String nestJarName, IExtURLClassLoader classLoader) throws IOException {
+        final File output = File.createTempFile(nestJarName + ".", ".jar", plugin.getTempFolder());
+        if (!output.exists()) {
+            Files.createFile(output.toPath());
+        }
+        output.deleteOnExit();
+        try (InputStream is = PluginLoader.class.getClassLoader().getResourceAsStream(nestJarName);
+             FileOutputStream fos = new FileOutputStream(output);
+        ) {
+            IOUtil.copy(Objects.requireNonNull(is, nestJarName), fos);
+        }
+        classLoader.addURL(output.toURI().toURL());
     }
 
     private void loadCore() throws Exception {

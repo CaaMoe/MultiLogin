@@ -106,7 +106,7 @@ public class Main {
         Set<String> cache = new HashSet<>();
         for (OldUserData data : oldUserDataList) {
             data.setCurrentName(data.getCurrentName().toLowerCase());
-            if(!cache.add(data.getCurrentName())){
+            if (!cache.add(data.getCurrentName())) {
                 System.out.println("Processing duplicate name: " + data.getCurrentName());
                 data.setCurrentName(null);
             }
@@ -121,7 +121,7 @@ public class Main {
         int failed = 0;
         for (OldUserData data : oldUserDataList) {
             int i = sSt.indexOf(data.getYggdrasilService());
-            if(i != -1){
+            if (i != -1) {
                 try {
                     newSQLHandler.insertNewUserData(i, data);
                 } catch (SQLException e) {

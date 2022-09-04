@@ -69,7 +69,7 @@ public class OldSQLHandler {
         return oldUserData;
     }
 
-    public void close(){
+    public void close() {
         try {
             connection.close();
         } catch (SQLException e) {
