@@ -47,5 +47,5 @@ jobs:
         uses: MuirProject/upload-artifact@v2-beta
         with:
           name: '["Velocity", "Bukkit", "Bungee", "DataUpgrade"]'
-          path: '["velocity/build/libs/MultiLogin-*.jar", "bukkit/build/libs/MultiLogin-*.jar", "bungee/build/libs/MultiLogin-*.jar", "dataUpgrade/build/libs/MultiLogin-*.jar"]'
+          path: '["build/libs/MultiLogin-Velocity-*.jar", "build/libs/MultiLogin-Bukkit-*.jar", "build/libs/MultiLogin-Bungee-*.jar", "build/libs/MultiLogin-DataUpgrade-*.jar"]'
           retention-days: 1
