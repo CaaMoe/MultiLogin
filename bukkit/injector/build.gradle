@@ -14,10 +14,6 @@ dependencies {
 
 shadowJar {
     archiveFileName = 'MultiLogin-Bukkit-Injector.JarFile'
-
-    from {
-        project(':bukkit:injector:v1_19_R1').tasks.shadowJar.archiveFile
-    }
 }
 
 artifacts {
