@@ -117,22 +117,7 @@ public class PluginConfig {
     }
 
     public void saveResource(String path, boolean cover) throws IOException {
-        File file = new File(dataFolder, path);
-        boolean exists = file.exists();
-        if (exists && !cover) {
-            return;
-        } else {
-            if (!exists) Files.createFile(file.toPath());
-        }
-        try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + path));
-             FileOutputStream fs = new FileOutputStream(file)) {
-            IOUtil.copy(is, fs);
-        }
-        if (!exists) {
-            LoggerProvider.getLogger().info("Extract: " + path);
-        } else {
-            LoggerProvider.getLogger().info("Cover: " + path);
-        }
+        saveResource(cover, dataFolder, path, path);
     }
 
     public void saveResourceDir(String path, boolean cover) throws IOException, URISyntaxException {
@@ -148,24 +133,28 @@ public class PluginConfig {
 //                下属文件
                 String realName = je.getRealName();
                 String fileName = realName.substring(path.length());
-                File subFile = new File(file, fileName);
-                boolean exists = subFile.exists();
-                if (exists && !cover) {
-                    return;
-                } else {
-                    if (!exists) Files.createFile(subFile.toPath());
-                }
-                try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + realName));
-                     FileOutputStream fs = new FileOutputStream(subFile)) {
-                    IOUtil.copy(is, fs);
-                }
-                if (!exists) {
-                    LoggerProvider.getLogger().info("Extract: " + realName);
-                } else {
-                    LoggerProvider.getLogger().info("Cover: " + realName);
-                }
-//                }
+                saveResource(cover, file, realName, fileName);
+//
             }
+        }
+    }
+
+    private void saveResource(boolean cover, File file, String realName, String fileName) throws IOException {
+        File subFile = new File(file, fileName);
+        boolean exists = subFile.exists();
+        if (exists && !cover) {
+            return;
+        } else {
+            if (!exists) Files.createFile(subFile.toPath());
+        }
+        try (InputStream is = Objects.requireNonNull(getClass().getResourceAsStream("/" + realName));
+             FileOutputStream fs = new FileOutputStream(subFile)) {
+            IOUtil.copy(is, fs);
+        }
+        if (!exists) {
+            LoggerProvider.getLogger().info("Extract: " + realName);
+        } else {
+            LoggerProvider.getLogger().info("Cover: " + realName);
         }
     }
 }
