@@ -39,4 +39,12 @@ public interface HandlerAPI {
      * @return 玩家游戏内 UUID
      */
     UUID getInGameUUID(UUID onlineUUID, int yggdrasilId);
+
+    /**
+     * 获得 Yggdrasil name
+     *
+     * @param yggdrasilId yggdrasil id
+     * @return Yggdrasil name
+     */
+    String getYggdrasilName(int yggdrasilId);
 }

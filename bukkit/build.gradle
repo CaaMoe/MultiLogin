@@ -4,12 +4,16 @@ plugins {
 
 repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url "https://repo.extendedclip.com/content/repositories/placeholderapi/" }
 }
 
 dependencies {
     implementation project(":api")
     implementation project(":flows")
     implementation project(":loader")
+
+    // support
+    compileOnly 'me.clip:placeholderapi:2.10.10'
 
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
 }

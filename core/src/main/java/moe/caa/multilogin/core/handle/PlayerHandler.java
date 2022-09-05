@@ -7,6 +7,7 @@ import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.*;
@@ -78,6 +79,13 @@ public class PlayerHandler implements HandlerAPI {
                 return entry.getKey();
         }
         return null;
+    }
+
+    @Override
+    public String getYggdrasilName(int yggdrasilId) {
+        YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
+        if(config == null) return null;
+        return config.getName();
     }
 
     public void register() {

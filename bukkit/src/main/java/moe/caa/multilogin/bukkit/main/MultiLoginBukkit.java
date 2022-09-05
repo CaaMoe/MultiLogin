@@ -7,6 +7,7 @@ import moe.caa.multilogin.api.logger.bridges.JavaLoggerBridge;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
+import moe.caa.multilogin.bukkit.support.expansions.MultiLoginPlaceholderExpansion;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -50,6 +51,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         }
         new GlobalListener(this).register();
         new CommandHandler(this).register("multilogin");
+        new MultiLoginPlaceholderExpansion(this).register();
     }
 
     @Override
