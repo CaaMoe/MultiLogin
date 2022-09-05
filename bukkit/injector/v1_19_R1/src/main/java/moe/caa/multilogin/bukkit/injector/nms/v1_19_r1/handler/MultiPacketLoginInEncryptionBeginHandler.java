@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.ProfilePublicKey;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
+import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -56,7 +57,10 @@ public class MultiPacketLoginInEncryptionBeginHandler {
     private static MethodHandle packetLoginInEncryptionBegin$verifyEncryptedNonceMethod;
     private static MethodHandle packetLoginInEncryptionBegin$decryptSecretKeyMethod;
     private static MethodHandle minecraftEncryption$cipherFromKey;
-    private static MethodHandle NetworkManager$setupEncryption;
+    // Nullable
+    private static MethodHandle networkManager$setupEncryptionMethod;
+    // Nullable
+    private static MethodHandle networkManager$setEncryptionKeyMethod;
     private static MethodHandle profilePublicKey$constructor;
     @Getter
     private final LoginListener loginListener;
@@ -156,12 +160,21 @@ public class MultiPacketLoginInEncryptionBeginHandler {
                         PacketLoginInEncryptionBegin.class, PrivateKey.class
                 )
         ));
-        NetworkManager$setupEncryption = lookup.unreflect(ReflectUtil.handleAccessible(
-                ReflectUtil.findNoStaticMethodByParameters(
-                        NetworkManager.class,
-                        SecretKey.class
-                )
-        ));
+        try {
+            networkManager$setupEncryptionMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                    ReflectUtil.findNoStaticMethodByParameters(
+                            NetworkManager.class,
+                            SecretKey.class
+                    )
+            ));
+        } catch (Throwable e) {
+            networkManager$setEncryptionKeyMethod = lookup.unreflect(ReflectUtil.handleAccessible(
+                    ReflectUtil.findNoStaticMethodByParameters(
+                            NetworkManager.class,
+                            Cipher.class, Cipher.class
+                    )
+            ));
+        }
     }
 
     private void initValues() throws Throwable {
@@ -201,7 +214,7 @@ public class MultiPacketLoginInEncryptionBeginHandler {
             ).toString(16);
 
             stateFieldSetter.invoke(loginListener, enumProtocolState$AUTHENTICATING);
-            NetworkManager$setupEncryption.invoke(this.connection, secretkey);
+            setEncryptionKey(secretkey);
         } catch (CryptographyException cryptographyexception) {
             throw new IllegalStateException("Protocol error", cryptographyexception);
         }
@@ -225,6 +238,19 @@ public class MultiPacketLoginInEncryptionBeginHandler {
                 LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e);
             }
         });
+    }
+
+    /**
+     * 不同的版本有不一样的方法
+     */
+    private void setEncryptionKey(SecretKey secretkey) throws Throwable {
+        if(networkManager$setupEncryptionMethod != null){
+            networkManager$setupEncryptionMethod.invoke(this.connection, secretkey);
+        } else {
+            Cipher cipher = ((Cipher) minecraftEncryption$cipherFromKey.invoke(2, secretkey));
+            Cipher cipher1 = ((Cipher) minecraftEncryption$cipherFromKey.invoke(1, secretkey));
+            networkManager$setEncryptionKeyMethod.invoke(this.connection, cipher, cipher1);
+        }
     }
 
 
@@ -258,4 +284,6 @@ public class MultiPacketLoginInEncryptionBeginHandler {
                 .invoke(loginListener);
         handler.fireEvents();
     }
+
+
 }
