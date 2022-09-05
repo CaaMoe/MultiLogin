@@ -33,6 +33,7 @@ public class LibraryDownloadFlows extends BaseFlows<Void> {
         HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
         httpURLConnection.setDoInput(true);
         httpURLConnection.setDoOutput(false);
+        httpURLConnection.setConnectTimeout(10000);
         httpURLConnection.connect();
 
         if (httpURLConnection.getResponseCode() == 200) {
@@ -85,6 +86,7 @@ public class LibraryDownloadFlows extends BaseFlows<Void> {
 
             Files.write(tmp.toPath(), bytes);
             Files.move(tmp.toPath(), output.toPath());
+            LoggerProvider.getLogger().info("Downloaded " + output.getName());
         } catch (Throwable t) {
             LoggerProvider.getLogger().error("Unable to process file " + library.getFileName(), t);
             return Signal.TERMINATED;
