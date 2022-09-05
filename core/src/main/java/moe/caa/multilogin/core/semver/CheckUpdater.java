@@ -57,6 +57,7 @@ public class CheckUpdater {
 
     public void start() {
         core.getPlugin().getRunServer().getScheduler().runTaskAsyncTimer(() -> {
+            if(!core.getPluginConfig().isCheckUpdate()) return;
             try {
                 List<SemVersion> latestVersionNow = getLatestVersionNow();
                 if (latestVersionNow.isEmpty()) return;
@@ -79,7 +80,7 @@ public class CheckUpdater {
                     }
                 }
             } catch (IOException e) {
-                LoggerProvider.getLogger().error("Check update failure.", e);
+                LoggerProvider.getLogger().debug("Check update failure.", e);
             }
         }, 0, 1000 * 60 * 60 * 12); // 半天一次更新检查
     }

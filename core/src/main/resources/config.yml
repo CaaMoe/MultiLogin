@@ -14,6 +14,12 @@
 # 默认值 false
 debug: false
 
+# 开启更新检查
+#
+# 插件将半天进行一次更新检查
+# 默认值 true
+checkUpdate: true
+
 # 强制使用此登录
 #
 # 即强制使用 MultiLogin 来登录游戏。

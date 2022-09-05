@@ -30,6 +30,8 @@ public class PluginConfig {
 
     @Getter
     private boolean forceUseLogin;
+    @Getter
+    private boolean checkUpdate;
 
     @Getter
     private SqlConfig sqlConfig;
@@ -68,6 +70,8 @@ public class PluginConfig {
         }
 
         forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(false);
+
+        checkUpdate = configConfigurationNode.node("checkUpdate").getBoolean(true);
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
