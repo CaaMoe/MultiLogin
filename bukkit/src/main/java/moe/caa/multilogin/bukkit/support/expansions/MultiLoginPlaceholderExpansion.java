@@ -31,18 +31,18 @@ public class MultiLoginPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
-        if(player == null || ValueUtil.isEmpty(params)) return "";
+        if (player == null || ValueUtil.isEmpty(params)) return "";
         Pair<UUID, Integer> profile = plugin.getMultiCoreAPI()
                 .getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
-        if(profile == null) return "";
-        if(params.equalsIgnoreCase("yggdrasilId")){
+        if (profile == null) return "";
+        if (params.equalsIgnoreCase("yggdrasilId")) {
             return String.valueOf(profile.getValue2());
-        } else if(params.equalsIgnoreCase("yggdrasilName")){
+        } else if (params.equalsIgnoreCase("yggdrasilName")) {
             String name = plugin.getMultiCoreAPI().getPlayerHandler().getYggdrasilName(profile.getValue2());
             return ValueUtil.isEmpty(name) ? "" : name;
-        } else if(params.equalsIgnoreCase("onlineUUID")){
+        } else if (params.equalsIgnoreCase("onlineUUID")) {
             return profile.getValue1().toString();
-        } else if(params.equalsIgnoreCase("ingameUUID")){
+        } else if (params.equalsIgnoreCase("ingameUUID")) {
             return player.getUniqueId().toString();
         }
         return "";

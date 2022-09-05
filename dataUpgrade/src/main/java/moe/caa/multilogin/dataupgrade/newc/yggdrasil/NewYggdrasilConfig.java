@@ -75,10 +75,6 @@ public class NewYggdrasilConfig {
         return ret;
     }
 
-    public enum InitUUID {
-        DEFAULT, OFFLINE, RANDOM;
-    }
-
     private IHasJoined getHasJoined(OldYggdrasilConfig oldYggdrasilConfig) {
 
         return new Custom(oldYggdrasilConfig.getB_url(),
@@ -86,5 +82,9 @@ public class NewYggdrasilConfig {
                 oldYggdrasilConfig.getB_passIpContent(),
                 oldYggdrasilConfig.getB_postContent()
         );
+    }
+
+    public enum InitUUID {
+        DEFAULT, OFFLINE, RANDOM;
     }
 }

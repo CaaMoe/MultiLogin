@@ -55,7 +55,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             try {
                 new MultiLoginPlaceholderExpansion(this).register();
-            } catch (Throwable throwable){
+            } catch (Throwable throwable) {
                 LoggerProvider.getLogger().error("Placeholder registration failed.");
             }
         }

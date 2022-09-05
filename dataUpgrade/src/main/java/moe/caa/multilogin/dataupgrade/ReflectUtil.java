@@ -2,10 +2,8 @@ package moe.caa.multilogin.dataupgrade;
 
 import sun.misc.Unsafe;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
-import java.net.URL;
 
 public class ReflectUtil {
 

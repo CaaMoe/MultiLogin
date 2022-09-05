@@ -57,7 +57,7 @@ public class CheckUpdater {
 
     public void start() {
         core.getPlugin().getRunServer().getScheduler().runTaskAsyncTimer(() -> {
-            if(!core.getPluginConfig().isCheckUpdate()) return;
+            if (!core.getPluginConfig().isCheckUpdate()) return;
             try {
                 List<SemVersion> latestVersionNow = getLatestVersionNow();
                 if (latestVersionNow.isEmpty()) return;

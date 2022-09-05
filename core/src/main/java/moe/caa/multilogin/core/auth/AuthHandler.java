@@ -8,8 +8,8 @@ import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationResult;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
-import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.handle.PlayerHandler;
+import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 

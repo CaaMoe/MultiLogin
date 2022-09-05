@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
-import moe.caa.multilogin.core.auth.validate.entry.WhitelistCheckFlows;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;

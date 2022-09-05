@@ -14,6 +14,10 @@ public class GlobalListener implements Listener {
     private final MultiLoginBungee multiLoginBungee;
 
 
+    public GlobalListener(MultiLoginBungee multiLoginBungee) {
+        this.multiLoginBungee = multiLoginBungee;
+    }
+
     @EventHandler
     public void onJoin(PostLoginEvent event) {
         HandleResult result = multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
@@ -29,11 +33,6 @@ public class GlobalListener implements Listener {
     @EventHandler
     public void onQuit(PlayerDisconnectEvent event) {
         multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerQuitGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
-    }
-
-
-    public GlobalListener(MultiLoginBungee multiLoginBungee) {
-        this.multiLoginBungee = multiLoginBungee;
     }
 
     public void register() {

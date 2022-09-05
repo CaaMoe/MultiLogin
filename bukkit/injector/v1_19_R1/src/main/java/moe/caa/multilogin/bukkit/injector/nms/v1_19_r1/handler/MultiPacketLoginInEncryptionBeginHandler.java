@@ -42,12 +42,6 @@ public class MultiPacketLoginInEncryptionBeginHandler {
     private static Enum<?> enumProtocolState$READY_TO_ACCEPT;
     private static Enum<?> enumProtocolState$DELAY_ACCEPT;
     private static Enum<?> enumProtocolState$ACCEPTED;
-
-    @Getter
-    private final LoginListener loginListener;
-    private final MultiCoreAPI multiCoreAPI;
-
-
     private static MethodHandle stateFieldGetter;
     private static MethodHandle stateFieldSetter;
     private static MethodHandle serverFieldGetter;
@@ -57,23 +51,22 @@ public class MultiPacketLoginInEncryptionBeginHandler {
     private static MethodHandle gameProfileFieldGetter;
     private static MethodHandle gameProfileFieldSetter;
     private static MethodHandle minecraftServer$keyPairFieldGetter;
-
-
     private static MethodHandle minecraftEncryption$generateServerIdMethod;
     private static MethodHandle packetLoginInEncryptionBegin$verifySignedNonceMethod;
     private static MethodHandle packetLoginInEncryptionBegin$verifyEncryptedNonceMethod;
     private static MethodHandle packetLoginInEncryptionBegin$decryptSecretKeyMethod;
     private static MethodHandle minecraftEncryption$cipherFromKey;
     private static MethodHandle NetworkManager$setupEncryption;
-
     private static MethodHandle profilePublicKey$constructor;
-
+    @Getter
+    private final LoginListener loginListener;
+    private final MultiCoreAPI multiCoreAPI;
+    public NetworkManager connection;
+    public GameProfile gameProfile;
     private Enum<?> state;
     private MinecraftServer server;
     private ProfilePublicKey.a profilePublicKeyData;
     private byte[] nonce;
-    public NetworkManager connection;
-    public GameProfile gameProfile;
 
 
     public MultiPacketLoginInEncryptionBeginHandler(LoginListener loginListener, MultiCoreAPI multiCoreAPI) {

@@ -2,12 +2,6 @@ package moe.caa.multilogin.dataupgrade;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 /**

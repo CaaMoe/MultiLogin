@@ -10,7 +10,10 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -84,7 +87,7 @@ public class PlayerHandler implements HandlerAPI {
     @Override
     public String getYggdrasilName(int yggdrasilId) {
         YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
-        if(config == null) return null;
+        if (config == null) return null;
         return config.getName();
     }
 
