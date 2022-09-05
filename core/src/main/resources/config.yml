@@ -23,8 +23,8 @@ checkUpdate: true
 # 强制使用此登录
 #
 # 即强制使用 MultiLogin 来登录游戏。
-# 默认值 false
-forceUseLogin: false
+# 默认值 true
+forceUseLogin: true
 
 # 插件数据设置
 sql:

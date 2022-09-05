@@ -69,7 +69,7 @@ public class PluginConfig {
             DebugLoggerBridge.cancelDebugMode();
         }
 
-        forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(false);
+        forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(true);
 
         checkUpdate = configConfigurationNode.node("checkUpdate").getBoolean(true);
 
