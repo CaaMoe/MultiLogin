@@ -51,11 +51,17 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
                 .subclass(BukkitInjector.getLoginListenerClass())
                 .name(name)
                 .defineField(original_handler, BukkitInjector.getLoginListenerClass(), Visibility.PUBLIC)
-                // 代理全部方法，apply!
+                // 代理全部方法，代理值更改需要实时同步到原来的值上!
                 // todo
                 // 这里有个难以实现的地方
-                // 方法全部假代理，但是执行只能调用原对象，这样假代理将会失效
-                // 这个，以后再解决吧
+                // 方法全部代理，但是执行只能调用原对象，这样假代理将会失效
+
+                // 如果代理 public void a(PacketLoginInEncryptionBegin packetlogininencryptionbegin) 这个方法，
+                //           用它调用原来值的方法，就不能正常将代理的值应用到原来的值上导致登录时间过长（监听AsyncLogin又摸不到这个代理类）
+                //
+                // 如果不代理这个方法，就不能实现预期效果（重写踢出方法）
+
+                // 这个代理将要实现的是： 修改玩家的踢出消息（代理非接口方法）。
                 .method(m -> true).intercept(InvocationHandlerAdapter.of((proxy, method, args) -> {
                     Object origin = multilgoin_original_handlerFieldGetter.invoke(proxy);
                     if (args.length == 1) {
