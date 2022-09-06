@@ -7,8 +7,9 @@ import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.proxy.MinecraftSessionServiceInvocationHandler;
-import moe.caa.multilogin.bukkit.injector.proxy.PacketLoginInEncryptionBeginInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler;
+import moe.caa.multilogin.bukkit.injector.subclasshandler.LoginListenerSubclassHandler;
+import moe.caa.multilogin.bukkit.injector.subclasshandler.PacketLoginInEncryptionBeginSubclassHandler;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.proxy.FixedReturnParameterInvocationHandler;
 import org.bukkit.Bukkit;
@@ -23,52 +24,34 @@ import java.util.function.Supplier;
 /**
  * Bukkit 的注入程序
  */
-
+@Getter
 public class BukkitInjector implements Injector {
-    @Getter
-    private static MultiCoreAPI api;
-    @Getter
-    private static String nmsVersion;
-    @Getter
-    private static Enum<?> enumProtocol_HANDSHAKING;
-    @Getter
-    private static Enum<?> enumProtocol_PLAY;
-    @Getter
-    private static Enum<?> enumProtocol_STATUS;
-    @Getter
-    private static Enum<?> enumProtocol_LOGIN;
-    @Getter
-    private static Enum<?> enumProtocolDirection_SERVERBOUND;
-    @Getter
-    private static Enum<?> enumProtocolDirection_CLIENTBOUND;
-    @Getter
-    private static Class<?> packetClass;
-    @Getter
-    private static Class<?> loginListenerClass;
-    @Getter
-    private static Class<?> packetLoginInEncryptionBeginClass;
-    @Getter
-    private static Class<?> packetListenerClass;
-    @Getter
-    private static Class<?> iChatBaseComponentClass;
-    @Getter
-    private static Class<?> minecraftServerClass;
-    @Getter
-    private static Class<?> minecraftSessionServiceClass;
-    @Getter
-    private static Class<?> dedicatedPlayerListClass;
-    @Getter
-    private static Class<?> playerListClass;
-    @Getter
-    private static Class<?> dedicatedServerClass;
-    @Getter
-    private static Class<?> iChatBaseComponent$chatSerializerClass;
-
-    @Getter
-    private static Class<?> chatComponentTextClass;
+    private final PacketLoginInEncryptionBeginSubclassHandler packetLoginInEncryptionBeginSubclassHandler = new PacketLoginInEncryptionBeginSubclassHandler(this);
+    private final LoginListenerSubclassHandler loginListenerSubclassHandler = new LoginListenerSubclassHandler(this);
+    private final LoginListenerSynchronizer loginListenerSynchronizer = new LoginListenerSynchronizer(this);
+    private MultiCoreAPI api;
+    private String nmsVersion;
+    private Enum<?> enumProtocol_HANDSHAKING;
+    private Enum<?> enumProtocol_PLAY;
+    private Enum<?> enumProtocol_STATUS;
+    private Enum<?> enumProtocol_LOGIN;
+    private Enum<?> enumProtocolDirection_SERVERBOUND;
+    private Enum<?> enumProtocolDirection_CLIENTBOUND;
+    private Class<?> packetClass;
+    private Class<?> loginListenerClass;
+    private Class<?> packetLoginInEncryptionBeginClass;
+    private Class<?> packetListenerClass;
+    private Class<?> iChatBaseComponentClass;
+    private Class<?> minecraftServerClass;
+    private Class<?> minecraftSessionServiceClass;
+    private Class<?> dedicatedPlayerListClass;
+    private Class<?> playerListClass;
+    private Class<?> dedicatedServerClass;
+    private Class<?> iChatBaseComponent$chatSerializerClass;
+    private Class<?> chatComponentTextClass;
+    private Class<?> packetLoginInListenerClass;
 
     private void initReflectData() throws ClassNotFoundException {
-
         packetClass = InjectUtil.findNMSClass("Packet", "network.protocol", nmsVersion);
         loginListenerClass = InjectUtil.findNMSClass("LoginListener", "server.network", nmsVersion);
         packetListenerClass = InjectUtil.findNMSClass("PacketListener", "network", nmsVersion);
@@ -76,6 +59,7 @@ public class BukkitInjector implements Injector {
         minecraftServerClass = InjectUtil.findNMSClass("MinecraftServer", "server", nmsVersion);
         minecraftSessionServiceClass = MinecraftSessionService.class;
         packetLoginInEncryptionBeginClass = InjectUtil.findNMSClass("PacketLoginInEncryptionBegin", "network.protocol.login", nmsVersion);
+        packetLoginInListenerClass = InjectUtil.findNMSClass("PacketLoginInListener", "network.protocol.login", nmsVersion);
         chatComponentTextClass = InjectUtil.findNMSClass("ChatComponentText", "network.chat", nmsVersion);
 
         dedicatedPlayerListClass = InjectUtil.findNMSClass("DedicatedPlayerList", "server.dedicated", nmsVersion);
@@ -98,51 +82,63 @@ public class BukkitInjector implements Injector {
 
     @Override
     public void inject(MultiCoreAPI api) {
-        BukkitInjector.api = api;
+        this.api = api;
         nmsVersion = ((MultiLoginBukkit) api.getPlugin())
                 .getServer().getClass().getName().split("\\.")[3];
 
         try {
             initReflectData();
-            LoginListenerSynchronizer.getInstance().init();
-            PacketLoginInEncryptionBeginInvocationHandler.init();
-            if (!InjectUtil.redirectInput(enumProtocol_LOGIN, enumProtocolDirection_SERVERBOUND, 0x01, var0 -> {
-                if (var0 instanceof Function) {
-                    Function<?, ?> function = (Function<?, ?>) var0;
-                    // 返回代理数据包对象
-                    return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Function.class}, new FixedReturnParameterInvocationHandler(
-                            function, m -> m.getName().equals("apply"),
-                            // 返回代理数据包处理类对象
-                            o -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
-                                    new Class[]{packetClass}, new PacketLoginInEncryptionBeginInvocationHandler(o)
-                            )
-                    ));
-                } else if (var0 instanceof Supplier) {
-                    Supplier<?> supplier = ((Supplier<?>) var0);
-                    return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Supplier.class}, new FixedReturnParameterInvocationHandler(
-                            supplier, m -> m.getName().equals("get"),
-                            // 返回代理数据包处理类对象
-                            o -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
-                                    new Class[]{packetClass}, new PacketLoginInEncryptionBeginInvocationHandler(o)
-                            )
-                    ));
-                } else if (var0 instanceof Class) {
-                    // TODO: 2022/9/6 ???
-                    return PacketLoginInEncryptionBeginInvocationHandler.class;
-                }
-                throw new RuntimeException(var0.getClass().getName());
-            })) {
+            packetLoginInEncryptionBeginSubclassHandler.init();
+            loginListenerSubclassHandler.init();
+            loginListenerSynchronizer.init();
+            if (!InjectUtil.redirectInput(enumProtocol_LOGIN, enumProtocolDirection_SERVERBOUND, 0x01, this::getProxyPacketLoginInEncryptionBeginPacket)) {
                 throw new RuntimeException("0x01 -> new MultiPacketLoginInEncryptionBegin");
             }
 
-
             redirectHasJoined();
-//            NMSHandlerEnum handlerEnum = NMSHandlerEnum.valueOf(nmsVersion.toLowerCase(Locale.ROOT));
-//            Injector injector = (Injector) Class.forName(handlerEnum.getNhc()).getConstructor().newInstance();
-//            injector.inject(api);
+            redirectFakeSignatureValidator();
         } catch (Throwable t0) {
             throw new RuntimeException("Servers with Bukkit version " + nmsVersion + " are not supported.", t0);
         }
+    }
+
+    private Object getProxyPacketLoginInEncryptionBeginPacket(Object obj) {
+        if (obj instanceof Function) {
+            Function<?, ?> function = (Function<?, ?>) obj;
+            // 返回代理数据包对象
+            return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Function.class}, new FixedReturnParameterInvocationHandler(
+                    function, m -> m.getName().equals("apply"),
+                    packetLoginInEncryptionBeginSubclassHandler::newProxyLoginInEncryptionBegin
+            ));
+        } else if (obj instanceof Supplier) {
+            Supplier<?> supplier = ((Supplier<?>) obj);
+            return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Supplier.class}, new FixedReturnParameterInvocationHandler(
+                    supplier, m -> m.getName().equals("get"),
+                    o -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin()
+            ));
+        } else if (obj instanceof Class) {
+            return packetLoginInEncryptionBeginSubclassHandler.getProxyLoginInEncryptionBeginClass();
+        }
+        throw new RuntimeException(obj.getClass().getName());
+    }
+
+    private void redirectFakeSignatureValidator() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        Object minecraftServer = getMinecraftServerObject();
+        Class<?> signatureValidatorClass;
+        try {
+            signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
+        } catch (Exception ignore) {
+            return;
+        }
+        Class<?> servicesClass = InjectUtil.findNMSClass("Services", "server", nmsVersion);
+        Field servicesField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(minecraftServerClass, servicesClass));
+        Object serviceObj = servicesField.get(minecraftServer);
+        serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
+                o1 -> o1.getClass().getName().contains("SignatureValidator"),
+                o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
+                        new Class[]{signatureValidatorClass}, new SignatureValidatorInvocationHandler(o12))
+        );
+        servicesField.set(minecraftServer, serviceObj);
     }
 
     private void redirectHasJoined() throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
@@ -151,7 +147,7 @@ public class BukkitInjector implements Injector {
             Field field = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(minecraftServerClass, minecraftSessionServiceClass));
             MinecraftSessionService service = (MinecraftSessionService) field.get(minecraftServer);
             field.set(minecraftServer,
-                    Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{minecraftSessionServiceClass}, new MinecraftSessionServiceInvocationHandler(service)));
+                    Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{minecraftSessionServiceClass}, new MinecraftSessionServiceInvocationHandler(this, service)));
         } catch (Throwable e) {
             Class<?> servicesClass = InjectUtil.findNMSClass("Services", "server", nmsVersion);
             Field servicesField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(minecraftServerClass, servicesClass));
@@ -160,24 +156,14 @@ public class BukkitInjector implements Injector {
             serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
                     o1 -> o1.getClass().getName().contains("SessionService"),
                     o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
-                            new Class[]{minecraftServerClass}, new MinecraftSessionServiceInvocationHandler((MinecraftSessionService) o12))
+                            new Class[]{minecraftServerClass}, new MinecraftSessionServiceInvocationHandler(this, (MinecraftSessionService) o12))
             );
-
-            try {
-                Class<?> signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
-                serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
-                        o1 -> o1.getClass().getName().contains("SignatureValidator"),
-                        o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
-                                new Class[]{signatureValidatorClass}, new SignatureValidatorInvocationHandler(o12))
-                );
-            } catch (Exception ignore) {
-            }
 
             servicesField.set(minecraftServer, serviceObj);
         }
     }
 
-    private Object getMinecraftServerObject() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
+    private Object getMinecraftServerObject() throws IllegalAccessException, NoSuchFieldException {
         Server server = ((MultiLoginBukkit) api.getPlugin()).getServer();
         Field playerListField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(server.getClass(), dedicatedPlayerListClass));
         Object dedicatedPlayerList = playerListField.get(server);

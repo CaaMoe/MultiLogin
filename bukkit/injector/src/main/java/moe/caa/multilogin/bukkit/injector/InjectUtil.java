@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -44,7 +45,8 @@ public class InjectUtil {
             );
             return true;
         } catch (Throwable throwable) {
-            // BiMap<Integer, Class<? extends Packet>>
+            // BiMap<Integer, Class<? extends Packet>> ?
+            // BiMap<Class<? extends Packet>, Integer> ?
             Field c = ReflectUtil.findNoStaticField(packetHandler.getClass(), BiMap.class);
             BiMap<?, ?> biMap = (BiMap<?, ?>) ReflectUtil.handleAccessible(c).get(packetHandler);
             Method map$put = Map.class.getDeclaredMethod("put", Object.class, Object.class);
@@ -86,6 +88,19 @@ public class InjectUtil {
             } catch (Throwable ex) {
                 throw new ClassNotFoundException(baseName, ex);
             }
+        }
+    }
+
+    public static <T> void apply(Class<?> mb, T source, T target) throws IllegalAccessException {
+        for (Field declaredField : mb.getDeclaredFields()) {
+            if (Modifier.isStatic(declaredField.getModifiers())) continue;
+            Field field = ReflectUtil.handleAccessible(declaredField);
+            field.set(target, field.get(source));
+        }
+        for (Field declaredField : mb.getFields()) {
+            if (Modifier.isStatic(declaredField.getModifiers())) continue;
+            Field field = ReflectUtil.handleAccessible(declaredField);
+            field.set(target, field.get(source));
         }
     }
 }

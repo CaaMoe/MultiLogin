@@ -13,9 +13,11 @@ import java.net.InetAddress;
 import java.util.Map;
 
 public class MinecraftSessionServiceInvocationHandler implements InvocationHandler {
+    private final BukkitInjector injector;
     private final MinecraftSessionService origin;
 
-    public MinecraftSessionServiceInvocationHandler(MinecraftSessionService origin) {
+    public MinecraftSessionServiceInvocationHandler(BukkitInjector injector, MinecraftSessionService origin) {
+        this.injector = injector;
         this.origin = origin;
     }
 
@@ -32,7 +34,7 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
                 ip = ((InetAddress) args[2]).getHostAddress();
             }
         }
-        AuthResult authResult = BukkitInjector.getApi().getAuthHandler().auth(profile.getName(), serverId, ip);
+        AuthResult authResult = injector.getApi().getAuthHandler().auth(profile.getName(), serverId, ip);
         if (authResult.isAllowed()) {
             return generate(authResult.getResponse());
         } else {
