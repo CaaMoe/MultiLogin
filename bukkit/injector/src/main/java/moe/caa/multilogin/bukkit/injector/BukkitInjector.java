@@ -8,6 +8,7 @@ import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.proxy.MinecraftSessionServiceInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.proxy.PacketLoginInEncryptionBeginInvocationHandler;
+import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.proxy.FixedReturnParameterInvocationHandler;
 import org.bukkit.Bukkit;
@@ -136,16 +137,35 @@ public class BukkitInjector implements Injector {
         }
     }
 
-    private void redirectHasJoined() throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+    private void redirectHasJoined() throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Object minecraftServer = getMinecraftServerObject();
         try {
             Field field = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(minecraftServerClass, minecraftSessionServiceClass));
             MinecraftSessionService service = (MinecraftSessionService) field.get(minecraftServer);
             field.set(minecraftServer,
                     Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{minecraftSessionServiceClass}, new MinecraftSessionServiceInvocationHandler(service)));
-            return;
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            Class<?> servicesClass = InjectUtil.findNMSClass("Services", "server", nmsVersion);
+            Field servicesField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(minecraftServerClass, servicesClass));
+            Object serviceObj = servicesField.get(minecraftServer);
+
+            serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
+                    o1 -> o1.getClass().getName().contains("SessionService"),
+                    o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
+                            new Class[]{minecraftServerClass}, new MinecraftSessionServiceInvocationHandler((MinecraftSessionService) o12))
+            );
+
+            try {
+                Class<?> signatureValidatorClass = Class.forName("net.minecraft.util.SignatureValidator");
+                serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
+                        o1 -> o1.getClass().getName().contains("SignatureValidator"),
+                        o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
+                                new Class[]{signatureValidatorClass}, new SignatureValidatorInvocationHandler(o12))
+                );
+            } catch (Exception ignore) {
+            }
+
+            servicesField.set(minecraftServer, serviceObj);
         }
     }
 
