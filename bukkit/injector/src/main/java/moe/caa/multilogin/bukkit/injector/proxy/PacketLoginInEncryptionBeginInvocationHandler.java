@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.BukkitInjector;
 import moe.caa.multilogin.bukkit.injector.Contents;
+import moe.caa.multilogin.bukkit.injector.LoginListenerSynchronizer;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import moe.caa.multilogin.core.proxy.InterceptMethodInvocationHandler;
 import net.bytebuddy.ByteBuddy;
@@ -27,7 +28,7 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
     private static MethodHandle multilgoin_original_handlerFieldSetter;
     private static MethodHandle multilgoin_original_handlerFieldGetter;
     private static MethodHandle gameProfileGetter;
-    private static MethodHandle chatDeserializer;
+    private static MethodHandle chatComponentConstructor;
 
     /**
      * @param handle 被代理的类
@@ -54,8 +55,13 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
                 .subclass(BukkitInjector.getLoginListenerClass())
                 .name(name)
                 .defineField(original_handler, BukkitInjector.getLoginListenerClass(), Visibility.PUBLIC)
-                .method(ElementMatchers.takesArguments(1)).intercept(
-                        MethodDelegation.to(DisconnectInterceptor.class)
+                .method(ElementMatchers.takesArguments(1)
+                        .and(ElementMatchers.takesArguments(String.class)
+                                .or(ElementMatchers.takesArguments(BukkitInjector.getIChatBaseComponentClass())
+                                        .or(ElementMatchers.takesArguments(BukkitInjector.getPacketLoginInEncryptionBeginClass()))
+                                )
+                        )).intercept(
+                        MethodDelegation.to(ProxyMethodInterceptor.class)
                 )
                 .make()
                 .load(((MultiLoginBukkit) BukkitInjector.getApi().getPlugin()).getMlPluginLoader()
@@ -66,9 +72,7 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
 
         multilgoin_original_handlerFieldSetter = lookup.unreflectSetter(field);
         multilgoin_original_handlerFieldGetter = lookup.unreflectGetter(field);
-
-        chatDeserializer = lookup.unreflect(ReflectUtil.handleAccessible(ReflectUtil.findStaticMethodByReturnTypeAndParameters(
-                BukkitInjector.getIChatBaseComponent$chatSerializerClass(), BukkitInjector.getIChatMutableComponentClass(), String.class)));
+        chatComponentConstructor = lookup.unreflectConstructor(ReflectUtil.handleAccessible(BukkitInjector.getChatComponentTextClass().getConstructor(String.class)));
     }
 
     private static Object newFakeProxyLoginListener(Object source, Class<?> byteBuddyProxyClass) throws Throwable {
@@ -97,50 +101,42 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
     }
 
 
-    public static class DisconnectInterceptor {
-
-        // 代理全部方法，代理值更改需要实时同步到原来的值上!
-        // todo
-        // 这里有个难以实现的地方
-        // 方法全部代理，但是执行只能调用原对象，这样假代理将会失效
-
-        // 如果代理 public void a(PacketLoginInEncryptionBegin packetlogininencryptionbegin) 这个方法，
-        //           用它调用原来值的方法，就不能正常将代理的值应用到原来的值上导致登录时间过长（监听AsyncLogin又摸不到这个代理类）
-        //
-        // 如果不代理这个方法，就不能实现预期效果（重写踢出方法）
-
-        // 这个代理将要实现的是： 修改玩家的踢出消息（代理非接口方法）。
+    public static class ProxyMethodInterceptor {
         @RuntimeType
-        public Object intercept(
+        public static Object intercept(
                 @SuperCall Callable<Object> supercall,
-                @This Object target,
+                @This Object proxyObj,
                 @Origin Method method,
-                @Argument(0) Object arg) throws Throwable {
-            Object origin = multilgoin_original_handlerFieldGetter.invoke(target);
-            // 调用前同步数据
-            apply(BukkitInjector.getLoginListenerClass(), origin, target);
+                @AllArguments Object[] args) throws Throwable {
 
-            GameProfile profile = (GameProfile) gameProfileGetter.invoke(target);
-            if (arg.getClass().equals(String.class)) {
-                Contents.KickMessageEntry remove = Contents.getKickMessageEntryMap().remove(profile.getName());
-                if (remove != null) {
-                    System.out.println(remove.getKickMessage());
-                    arg = remove.getKickMessage();
-                }
-            } else if (arg.getClass().equals(BukkitInjector.getIChatBaseComponentClass())) {
-                Contents.KickMessageEntry remove = Contents.getKickMessageEntryMap().remove(profile.getName());
-                if (remove != null) {
-                    System.out.println(remove.getKickMessage());
-                    arg = chatDeserializer.invoke(remove.getKickMessage());
+            Object origin = multilgoin_original_handlerFieldGetter.invoke(proxyObj);
+            // 调用前同步数据
+            apply(BukkitInjector.getLoginListenerClass(), origin, proxyObj);
+
+            Object arg = args[0];
+            Class<?> argType = arg.getClass();
+            if (!argType.equals(BukkitInjector.getPacketLoginInEncryptionBeginClass())) {
+                if (argType.equals(String.class) || BukkitInjector.getIChatBaseComponentClass().isAssignableFrom(argType)) {
+                    GameProfile profile = (GameProfile) gameProfileGetter.invoke(proxyObj);
+                    Contents.KickMessageEntry remove = Contents.getKickMessageEntryMap().remove(profile.getName());
+                    if (remove != null) {
+                        if (arg.getClass().equals(String.class)) {
+                            arg = remove.getKickMessage();
+                        } else {
+                            arg = chatComponentConstructor.invoke(remove.getKickMessage());
+                        }
+                    }
+                    args[0] = arg;
+                    return method.invoke(origin, args);
                 }
             }
-
             Object invoke = supercall.call();
-            // 将代理类的所有属性赋给原始操作对象
-
             // 执行后跟进数据
-            apply(BukkitInjector.getLoginListenerClass(), target, origin);
+            apply(BukkitInjector.getLoginListenerClass(), proxyObj, origin);
 
+            if (argType.equals(BukkitInjector.getPacketLoginInEncryptionBeginClass())) {
+                LoginListenerSynchronizer.getInstance().putEntry(proxyObj, origin);
+            }
             return invoke;
         }
     }

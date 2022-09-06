@@ -46,6 +46,8 @@ public class BukkitInjector implements Injector {
     @Getter
     private static Class<?> loginListenerClass;
     @Getter
+    private static Class<?> packetLoginInEncryptionBeginClass;
+    @Getter
     private static Class<?> packetListenerClass;
     @Getter
     private static Class<?> iChatBaseComponentClass;
@@ -61,8 +63,9 @@ public class BukkitInjector implements Injector {
     private static Class<?> dedicatedServerClass;
     @Getter
     private static Class<?> iChatBaseComponent$chatSerializerClass;
+
     @Getter
-    private static Class<?> iChatMutableComponentClass;
+    private static Class<?> chatComponentTextClass;
 
     private void initReflectData() throws ClassNotFoundException {
 
@@ -72,12 +75,13 @@ public class BukkitInjector implements Injector {
         iChatBaseComponentClass = InjectUtil.findNMSClass("IChatBaseComponent", "network.chat", nmsVersion);
         minecraftServerClass = InjectUtil.findNMSClass("MinecraftServer", "server", nmsVersion);
         minecraftSessionServiceClass = MinecraftSessionService.class;
+        packetLoginInEncryptionBeginClass = InjectUtil.findNMSClass("PacketLoginInEncryptionBegin", "network.protocol.login", nmsVersion);
+        chatComponentTextClass = InjectUtil.findNMSClass("ChatComponentText", "network.chat", nmsVersion);
 
         dedicatedPlayerListClass = InjectUtil.findNMSClass("DedicatedPlayerList", "server.dedicated", nmsVersion);
         playerListClass = InjectUtil.findNMSClass("PlayerList", "server.players", nmsVersion);
         dedicatedServerClass = InjectUtil.findNMSClass("DedicatedServer", "server.dedicated", nmsVersion);
         iChatBaseComponent$chatSerializerClass = Class.forName(iChatBaseComponentClass.getName() + "$ChatSerializer");
-        iChatMutableComponentClass = InjectUtil.findNMSClass("IChatMutableComponent", "network.chat", nmsVersion);
 
         EnumAccessor enumProtocolAccessor = new EnumAccessor(InjectUtil.findNMSClass("EnumProtocol", "network", nmsVersion));
         EnumAccessor enumProtocolDirectionAccessor = new EnumAccessor(InjectUtil.findNMSClass("EnumProtocolDirection", "network.protocol", nmsVersion));
@@ -100,6 +104,7 @@ public class BukkitInjector implements Injector {
 
         try {
             initReflectData();
+            LoginListenerSynchronizer.getInstance().init();
             PacketLoginInEncryptionBeginInvocationHandler.init();
             if (!InjectUtil.redirectInput(enumProtocol_LOGIN, enumProtocolDirection_SERVERBOUND, 0x01, var0 -> {
                 if (var0 instanceof Function) {
