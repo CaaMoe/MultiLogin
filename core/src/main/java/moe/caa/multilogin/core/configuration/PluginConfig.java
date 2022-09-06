@@ -79,6 +79,7 @@ public class PluginConfig {
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
             List<YggdrasilServiceConfig> tmp = new ArrayList<>();
             list.forEach(path -> {
+                if (!path.toFile().getName().toLowerCase().endsWith(".yml")) return;
                 try {
                     tmp.add(YggdrasilServiceConfig.read(YamlConfigurationLoader.builder().path(path).build().load()));
                 } catch (Exception e) {
