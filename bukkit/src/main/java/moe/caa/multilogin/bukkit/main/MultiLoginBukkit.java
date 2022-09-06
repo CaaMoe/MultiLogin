@@ -19,7 +19,8 @@ import java.io.File;
 public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Getter
     private BukkitServer runServer;
-    private PluginLoader pluginLoader;
+    @Getter
+    private PluginLoader mlPluginLoader;
     @Getter
     private MultiCoreAPI multiCoreAPI;
 
@@ -27,9 +28,9 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onLoad() {
         LoggerProvider.setLogger(new JavaLoggerBridge(getLogger()));
         this.runServer = new BukkitServer(this, getServer());
-        this.pluginLoader = new PluginLoader(this);
+        this.mlPluginLoader = new PluginLoader(this);
         try {
-            pluginLoader.load("MultiLogin-Bukkit-Injector.JarFile");
+            mlPluginLoader.load("MultiLogin-Bukkit-Injector.JarFile");
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             runServer.shutdown();
@@ -40,9 +41,9 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     @Override
     public void onEnable() {
         try {
-            multiCoreAPI = pluginLoader.getCoreObject();
+            multiCoreAPI = mlPluginLoader.getCoreObject();
             multiCoreAPI.load();
-            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.bukkit.injector.BukkitInjector").getConstructor().newInstance();
+            Injector injector = (Injector) mlPluginLoader.findClass("moe.caa.multilogin.bukkit.injector.BukkitInjector").getConstructor().newInstance();
             injector.inject(multiCoreAPI);
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
@@ -65,7 +66,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public void onDisable() {
         try {
             multiCoreAPI.close();
-            pluginLoader.close();
+            mlPluginLoader.close();
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while close the plugin", e);
         } finally {

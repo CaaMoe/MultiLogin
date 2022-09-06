@@ -1,5 +1,6 @@
 # group id               # name               # version
 
+net.bytebuddy            byte-buddy           1.12.14
 com.zaxxer               HikariCP             5.0.1
 mysql                    mysql-connector-java 8.0.29
 com.h2database           h2                   2.1.212

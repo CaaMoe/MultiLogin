@@ -44,6 +44,12 @@ public class ReflectUtil {
                 return field;
             }
         }
+        for (Field field : target.getFields()) {
+            if (Modifier.isStatic(field.getModifiers())) continue;
+            if (field.getType() == fieldType) {
+                return field;
+            }
+        }
         throw new NoSuchFieldException("Type: " + fieldType.getTypeName());
     }
 
@@ -71,6 +77,28 @@ public class ReflectUtil {
             }
         }
         throw new NoSuchMethodException(target.getName() + " Types: " + Arrays.toString(fieldTypes));
+    }
+
+    public static Method findStaticMethodByReturnTypeAndParameters(Class<?> target, Type returnType, Type... fieldTypes) throws NoSuchMethodException {
+        for (Method method : target.getDeclaredMethods()) {
+            if (!Modifier.isStatic(method.getModifiers())) continue;
+            if (Arrays.equals(method.getParameterTypes(), fieldTypes)) {
+                if (returnType.equals(method.getReturnType())) {
+                    return method;
+                }
+            }
+        }
+        throw new NoSuchMethodException(target.getName() + " Types: " + Arrays.toString(fieldTypes));
+    }
+
+    public static Method findNoStaticMethodByReturnType(Class<?> target, Type returnType) throws NoSuchMethodException {
+        for (Method method : target.getDeclaredMethods()) {
+            if (!Modifier.isStatic(method.getModifiers())) continue;
+            if (method.getReturnType().equals(returnType)) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException(target.getName() + " Types: " + returnType);
     }
 
     /**

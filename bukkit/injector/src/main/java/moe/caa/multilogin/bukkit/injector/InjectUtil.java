@@ -50,7 +50,7 @@ public class InjectUtil {
      * @param path       新包名
      * @param nmsVersion nms 版本
      */
-    public static Class<?> findClass(String baseName, String path, String nmsVersion) throws ClassNotFoundException {
+    public static Class<?> findNMSClass(String baseName, String path, String nmsVersion) throws ClassNotFoundException {
         try {
             return Class.forName("net.minecraft.server." + nmsVersion + "." + baseName);
         } catch (Throwable e) {

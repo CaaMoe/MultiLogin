@@ -1,7 +1,8 @@
-package moe.caa.multilogin.bukkit.injector.proxy;
+package moe.caa.multilogin.core.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -24,11 +25,13 @@ public class InterceptMethodInvocationHandler implements InvocationHandler {
         this.redirect = redirect;
 
         for (Method method : handle.getClass().getDeclaredMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) continue;
             if (match.apply(method)) {
                 return;
             }
         }
         for (Method method : handle.getClass().getMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) continue;
             if (match.apply(method)) {
                 return;
             }

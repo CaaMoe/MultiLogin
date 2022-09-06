@@ -4,12 +4,16 @@ plugins {
 
 repositories {
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url "https://repo.codemc.io/repository/nms/" }
 }
 
 dependencies {
     compileOnly project(":api")
+    compileOnly project(":core")
     compileOnly project(":bukkit")
-    compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+    compileOnly project(":loader")
+
+    compileOnly group: 'com.destroystokyo.paper', name: 'paper', version: '1.16.5-R0.1-SNAPSHOT'
 }
 
 shadowJar {
