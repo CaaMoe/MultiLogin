@@ -1,11 +1,13 @@
 package moe.caa.multilogin.bukkit.injector;
 
+import com.google.common.collect.BiMap;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 /**
@@ -22,8 +24,7 @@ public class InjectUtil {
      * @param redirectFunction 重定向函数，输入重定向前的值并返回重定向后的结果
      */
     public static boolean redirectInput(Enum<?> protocol, Enum<?> direction, int packetId, Function<Object, Object> redirectFunction) throws Throwable {
-        // Map<NetworkSide, ? extends PacketHandler<?>>;
-        Field j = ReflectUtil.findNoStaticField(protocol.getClass(), Map.class);
+        Field j = ReflectUtil.findNoStaticField(protocol.getDeclaringClass(), Map.class);
         Map<?, ?> packetHandlers = (Map<?, ?>) ReflectUtil.handleAccessible(j).get(protocol);
 
         Object packetHandler = packetHandlers.get(direction);
@@ -32,15 +33,41 @@ public class InjectUtil {
             return false;
         }
 
-        // List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories
-        Field c = ReflectUtil.findNoStaticField(packetHandler.getClass(), List.class);
-        List<?> packetFactories = (List<?>) ReflectUtil.handleAccessible(c).get(packetHandler);
+        try {
+            // List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories
+            Field c = ReflectUtil.findNoStaticField(packetHandler.getClass(), List.class);
+            List<?> packetFactories = (List<?>) ReflectUtil.handleAccessible(c).get(packetHandler);
 
-        Method list$set = List.class.getDeclaredMethod("set", int.class, Object.class);
-        list$set.invoke(
-                packetFactories, packetId, redirectFunction.apply(packetFactories.get(packetId))
-        );
-        return true;
+            Method list$set = List.class.getDeclaredMethod("set", int.class, Object.class);
+            list$set.invoke(
+                    packetFactories, packetId, redirectFunction.apply(packetFactories.get(packetId))
+            );
+            return true;
+        } catch (Throwable throwable) {
+            // BiMap<Integer, Class<? extends Packet>>
+            Field c = ReflectUtil.findNoStaticField(packetHandler.getClass(), BiMap.class);
+            BiMap<?, ?> biMap = (BiMap<?, ?>) ReflectUtil.handleAccessible(c).get(packetHandler);
+            Method map$put = Map.class.getDeclaredMethod("put", Object.class, Object.class);
+            if (biMap.entrySet().iterator().next().getKey().getClass() == int.class) {
+                map$put.invoke(
+                        biMap, packetId, redirectFunction.apply(biMap.get(packetId))
+                );
+            } else {
+                AtomicReference<Object> origin = new AtomicReference<>();
+                biMap.entrySet().removeIf(entry -> {
+                    if ((int) entry.getValue() == packetId) {
+                        origin.set(entry.getKey());
+                        return true;
+                    }
+                    return false;
+                });
+                map$put.invoke(
+                        biMap, redirectFunction.apply(origin.get()), packetId
+                );
+            }
+
+            return true;
+        }
     }
 
     /**

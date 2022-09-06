@@ -16,10 +16,7 @@ import net.bytebuddy.matcher.ElementMatchers;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
@@ -29,6 +26,10 @@ public class PacketLoginInEncryptionBeginInvocationHandler extends InterceptMeth
     private static MethodHandle multilgoin_original_handlerFieldGetter;
     private static MethodHandle gameProfileGetter;
     private static MethodHandle chatComponentConstructor;
+
+    public PacketLoginInEncryptionBeginInvocationHandler() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        this(BukkitInjector.getPacketLoginInEncryptionBeginClass().getConstructor().newInstance());
+    }
 
     /**
      * @param handle 被代理的类

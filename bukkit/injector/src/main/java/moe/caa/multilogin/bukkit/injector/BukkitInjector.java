@@ -126,6 +126,9 @@ public class BukkitInjector implements Injector {
                                     new Class[]{packetClass}, new PacketLoginInEncryptionBeginInvocationHandler(o)
                             )
                     ));
+                } else if (var0 instanceof Class) {
+                    // TODO: 2022/9/6 ???
+                    return PacketLoginInEncryptionBeginInvocationHandler.class;
                 }
                 throw new RuntimeException(var0.getClass().getName());
             })) {
