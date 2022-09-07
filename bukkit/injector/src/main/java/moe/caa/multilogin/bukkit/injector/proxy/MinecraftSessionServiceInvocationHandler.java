@@ -49,7 +49,7 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
         }
         GameProfile profile = ((GameProfile) args[0]);
         String serverId = (String) args[1];
-        String ip = "";
+        String ip;
         if (args.length == 3) {
             if (args[2] != null) {
                 ip = getIp(profile.getName(), (SocketAddress) args[2]);
@@ -70,13 +70,17 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
 
     private String getIp(String name, SocketAddress address) {
         if (address instanceof InetSocketAddress) {
-            return ((InetSocketAddress) address).getAddress().getHostName();
+            return getHostAddress((InetSocketAddress) address);
         }
         SocketAddress socketAddress = injector.getLoginStateSocketAddressGetter().get(name);
         if (socketAddress instanceof InetSocketAddress) {
-            return ((InetSocketAddress) socketAddress).getAddress().getHostName();
+            return getHostAddress((InetSocketAddress) socketAddress);
         }
         return "";
+    }
+
+    private String getHostAddress(InetSocketAddress inetSocketAddress) {
+        return inetSocketAddress.getAddress().getHostAddress();
     }
 
     private GameProfile generate(moe.caa.multilogin.api.auth.GameProfile response) {
