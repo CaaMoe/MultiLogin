@@ -75,19 +75,20 @@ public class MultiCore implements MultiCoreAPI {
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
         checkEnvironment();
-        new CheckUpdater(this).start();
         new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
         commandHandler.init();
         playerHandler.register();
+        new CheckUpdater(this).start();
 
         LoggerProvider.getLogger().info(
                 String.format("Loaded, using MultiLogin v%s on %s - %s",
                         plugin.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
                 )
         );
+
     }
 
     private void checkEnvironment() {
