@@ -58,6 +58,9 @@ public class BukkitInjector implements Injector {
     private Class<?> craftChatMessageClass;
     private ThrowFunction<String, Object> functionGenerateLiteralTextComponent;
 
+    /**
+     * 初始化全部数据
+     */
     private void initReflectData() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         packetClass = InjectUtil.findNMSClass("Packet", "network.protocol", nmsVersion);
@@ -95,7 +98,9 @@ public class BukkitInjector implements Injector {
         enumProtocolDirection_CLIENTBOUND = enumProtocolDirectionAccessor.indexOf(1);
     }
 
-
+    /**
+     * 注入方法开始
+     */
     @Override
     public void inject(MultiCoreAPI api) {
         this.api = api;
@@ -118,6 +123,9 @@ public class BukkitInjector implements Injector {
         }
     }
 
+    /**
+     * 获得 ProxyPacketLoginInEncryptionBeginPacket 在 EnumProtocol 枚举时的表现
+     */
     private Object getProxyPacketLoginInEncryptionBeginPacket(Object obj) {
         if (obj instanceof Function) {
             Function<?, ?> function = (Function<?, ?>) obj;
@@ -138,6 +146,9 @@ public class BukkitInjector implements Injector {
         throw new RuntimeException(obj.getClass().getName());
     }
 
+    /**
+     * 提交假的签名验证器
+     */
     private void redirectFakeSignatureValidator() throws NoSuchFieldException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         Object minecraftServer = getMinecraftServerObject();
         Class<?> signatureValidatorClass;
@@ -157,6 +168,9 @@ public class BukkitInjector implements Injector {
         servicesField.set(minecraftServer, serviceObj);
     }
 
+    /**
+     * 重定向 HasJoined
+     */
     private void redirectHasJoined() throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Object minecraftServer = getMinecraftServerObject();
         try {

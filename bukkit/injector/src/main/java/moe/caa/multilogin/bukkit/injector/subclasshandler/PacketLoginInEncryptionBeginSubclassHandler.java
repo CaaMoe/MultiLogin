@@ -24,7 +24,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * 代理 PacketLoginInEncryptionBegin 这个数据包
+ * 子类重写、代理 PacketLoginInEncryptionBegin 这个数据包
  */
 public class PacketLoginInEncryptionBeginSubclassHandler {
     private final BukkitInjector injector;

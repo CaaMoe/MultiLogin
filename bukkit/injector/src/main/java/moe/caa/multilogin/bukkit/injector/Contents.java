@@ -6,11 +6,17 @@ import lombok.Getter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * 常烂
+ */
 public class Contents {
+
+    // 记录ID对应的踢出信息
     @Getter
     private static final Map<String, KickMessageEntry> kickMessageEntryMap = new ConcurrentHashMap<>();
 
+    // 封装的踢出信息
+    // 记录了收录时间，和踢出的信息
     @Getter
     @AllArgsConstructor
     public static class KickMessageEntry {

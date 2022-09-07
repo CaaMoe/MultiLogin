@@ -3,6 +3,9 @@ package moe.caa.multilogin.bukkit.injector.proxy;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
+/**
+ * JDK 代理 SignatureValidator
+ */
 public class SignatureValidatorInvocationHandler implements InvocationHandler {
     private final Object obj;
 

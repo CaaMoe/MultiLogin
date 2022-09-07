@@ -6,6 +6,9 @@ import moe.caa.multilogin.api.logger.LoggerProvider;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * LoginListener 及其他的代理的字段同步程序
+ */
 public class LoginListenerSynchronizer {
     private final BukkitInjector injector;
     private final Map<Object, OriginEntry> proxyLoginListenerMap = new ConcurrentHashMap<>();
@@ -14,6 +17,9 @@ public class LoginListenerSynchronizer {
         this.injector = injector;
     }
 
+    /**
+     * 注册一对，同步 10 秒
+     */
     public void putEntry(Object proxyObj, Object origin) {
         proxyLoginListenerMap.put(proxyObj, new OriginEntry(origin, System.currentTimeMillis() + 1000 * 10));
     }

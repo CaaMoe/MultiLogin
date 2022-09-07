@@ -73,7 +73,7 @@ public class InjectUtil {
     }
 
     /**
-     * 查找 NMS 方法
+     * 查找 NMS 类
      *
      * @param baseName   类名
      * @param path       新包名
@@ -91,12 +91,22 @@ public class InjectUtil {
         }
     }
 
+    /**
+     * 查找 OBC 类
+     *
+     * @param baseName   类名
+     * @param path       新包名
+     * @param nmsVersion nms 版本
+     */
     public static Class<?> findOBCClass(String baseName, String path, String nmsVersion) throws ClassNotFoundException {
         path += path.trim().length() == 0 ? "" : ".";
         String className = "org.bukkit.craftbukkit." + nmsVersion + "." + path + baseName;
         return Class.forName(className);
     }
 
+    /**
+     * 暴力同步类型相同的方法的字段
+     */
     public static <T> void apply(Class<?> mb, T source, T target) throws IllegalAccessException {
         for (Field declaredField : mb.getDeclaredFields()) {
             if (Modifier.isStatic(declaredField.getModifiers())) continue;

@@ -25,6 +25,9 @@ import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ * 子类重写、代理 LoginListener 这个类
+ */
 public class LoginListenerSubclassHandler {
     private final BukkitInjector injector;
     @Getter

@@ -12,6 +12,9 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.util.Map;
 
+/**
+ * JDK 代理 MinecraftSessionService
+ */
 public class MinecraftSessionServiceInvocationHandler implements InvocationHandler {
     private final BukkitInjector injector;
     private final MinecraftSessionService origin;
