@@ -32,6 +32,7 @@ public class BukkitInjector implements Injector {
     private final PacketLoginInEncryptionBeginSubclassHandler packetLoginInEncryptionBeginSubclassHandler = new PacketLoginInEncryptionBeginSubclassHandler(this);
     private final LoginListenerSubclassHandler loginListenerSubclassHandler = new LoginListenerSubclassHandler(this);
     private final LoginListenerSynchronizer loginListenerSynchronizer = new LoginListenerSynchronizer(this);
+    private final LoginStateSocketAddressGetter loginStateSocketAddressGetter = new LoginStateSocketAddressGetter(this);
     private MultiCoreAPI api;
     private String nmsVersion;
     private Enum<?> enumProtocol_HANDSHAKING;
@@ -51,6 +52,7 @@ public class BukkitInjector implements Injector {
     private Class<?> playerListClass;
     private Class<?> dedicatedServerClass;
     private Class<?> packetLoginInListenerClass;
+    private Class<?> networkManagerClass;
 
     // Nullable
     private Class<?> chatComponentTextClass;
@@ -71,6 +73,7 @@ public class BukkitInjector implements Injector {
         minecraftSessionServiceClass = MinecraftSessionService.class;
         packetLoginInEncryptionBeginClass = InjectUtil.findNMSClass("PacketLoginInEncryptionBegin", "network.protocol.login", nmsVersion);
         packetLoginInListenerClass = InjectUtil.findNMSClass("PacketLoginInListener", "network.protocol.login", nmsVersion);
+        networkManagerClass = InjectUtil.findNMSClass("NetworkManager", "network", nmsVersion);
 
         try {
             chatComponentTextClass = InjectUtil.findNMSClass("ChatComponentText", "network.chat", nmsVersion);

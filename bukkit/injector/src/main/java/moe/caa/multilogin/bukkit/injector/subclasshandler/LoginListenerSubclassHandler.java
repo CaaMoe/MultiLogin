@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.SocketAddress;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -35,6 +36,8 @@ public class LoginListenerSubclassHandler {
     private MethodHandle multilogin_original_handlerFieldSetter;
     private MethodHandle multilogin_original_handlerFieldGetter;
     private MethodHandle gameProfileGetter;
+    private MethodHandle networkManagerGetter;
+    private MethodHandle socketAddressGetter;
 
     public LoginListenerSubclassHandler(BukkitInjector injector) {
         this.injector = injector;
@@ -63,10 +66,13 @@ public class LoginListenerSubclassHandler {
                 .getLoaded();
 
         MethodHandles.Lookup lookup = MethodHandles.lookup();
+
         gameProfileGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getLoginListenerClass(), GameProfile.class)));
         Field field = proxyLoginListenerClass.getField(original_handler);
         multilogin_original_handlerFieldSetter = lookup.unreflectSetter(field);
         multilogin_original_handlerFieldGetter = lookup.unreflectGetter(field);
+        networkManagerGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getLoginListenerClass(), injector.getNetworkManagerClass())));
+        socketAddressGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getNetworkManagerClass(), SocketAddress.class)));
     }
 
     public Object newFakeProxyLoginListener(Object source) throws Throwable {
@@ -98,9 +104,9 @@ public class LoginListenerSubclassHandler {
             // 调用前，同步原对象的数据
             InjectUtil.apply(injector.getLoginListenerClass(), origin, proxyObj);
 
+            GameProfile profile = (GameProfile) gameProfileGetter.invoke(proxyObj);
             // 修改方法参数
             if (args[0].getClass().equals(String.class) || injector.getIChatBaseComponentClass().isAssignableFrom(args[0].getClass())) {
-                GameProfile profile = (GameProfile) gameProfileGetter.invoke(proxyObj);
                 Contents.KickMessageEntry remove = Contents.getKickMessageEntryMap().remove(profile.getName());
                 if (remove != null) {
                     if (args[0].getClass().equals(String.class)) {
@@ -109,6 +115,13 @@ public class LoginListenerSubclassHandler {
                         args[0] = injector.generateIChatBaseComponent(remove.getKickMessage());
                     }
                 }
+            }
+
+            // 如果传入方法是 PacketLoginInEncryptionBegin ，先记录 SocketAddress
+            if (injector.getPacketLoginInEncryptionBeginClass().isAssignableFrom(args[0].getClass())) {
+                Object networkManager = networkManagerGetter.invoke(origin);
+                SocketAddress address = (SocketAddress) socketAddressGetter.invoke(networkManager);
+                injector.getLoginStateSocketAddressGetter().put(profile.getName(), address);
             }
 
             // 开始调用

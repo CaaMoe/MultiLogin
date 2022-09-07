@@ -10,6 +10,8 @@ import moe.caa.multilogin.bukkit.injector.Contents;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.Map;
 
 /**
@@ -50,8 +52,12 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
         String ip = "";
         if (args.length == 3) {
             if (args[2] != null) {
-                ip = ((InetAddress) args[2]).getHostAddress();
+                ip = getIp(profile.getName(), (SocketAddress) args[2]);
+            } else {
+                ip = getIp(profile.getName(), null);
             }
+        } else {
+            ip = getIp(profile.getName(), null);
         }
         AuthResult authResult = injector.getApi().getAuthHandler().auth(profile.getName(), serverId, ip);
         if (authResult.isAllowed()) {
@@ -60,6 +66,17 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
             Contents.getKickMessageEntryMap().put(profile.getName(), Contents.KickMessageEntry.of(authResult.getKickMessage()));
             return null;
         }
+    }
+
+    private String getIp(String name, SocketAddress address) {
+        if (address instanceof InetSocketAddress) {
+            return ((InetSocketAddress) address).getAddress().getHostName();
+        }
+        SocketAddress socketAddress = injector.getLoginStateSocketAddressGetter().get(name);
+        if (socketAddress instanceof InetSocketAddress) {
+            return ((InetSocketAddress) socketAddress).getAddress().getHostName();
+        }
+        return "";
     }
 
     private GameProfile generate(moe.caa.multilogin.api.auth.GameProfile response) {
