@@ -43,6 +43,8 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
             ipContent = config.getHasJoined().getIpContent();
             if (!ValueUtil.isEmpty(ipContent)) {
                 ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", URLEncoder.encode(ip, StandardCharsets.UTF_8)));
+            } else {
+                ipContent = "";
             }
         }
 
