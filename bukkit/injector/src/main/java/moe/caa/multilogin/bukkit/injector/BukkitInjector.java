@@ -53,7 +53,6 @@ public class BukkitInjector implements Injector {
     private Class<?> dedicatedServerClass;
     private Class<?> packetLoginInListenerClass;
     private Class<?> networkManagerClass;
-
     // Nullable
     private Class<?> chatComponentTextClass;
     // Nullable
@@ -81,7 +80,11 @@ public class BukkitInjector implements Injector {
             functionGenerateLiteralTextComponent = handle::invoke;
         } catch (Throwable throwable) {
             craftChatMessageClass = InjectUtil.findOBCClass("CraftChatMessage", "util", nmsVersion);
-            MethodHandle handle = lookup.unreflect(ReflectUtil.handleAccessible(ReflectUtil.findStaticMethodByReturnTypeAndParameters(craftChatMessageClass, iChatBaseComponentClass, String.class)));
+            MethodHandle handle = lookup.unreflect(
+                    ReflectUtil.handleAccessible(
+                            craftChatMessageClass.getDeclaredMethod("fromStringOrNull", String.class)
+                    )
+            );
             functionGenerateLiteralTextComponent = handle::invoke;
         }
 
