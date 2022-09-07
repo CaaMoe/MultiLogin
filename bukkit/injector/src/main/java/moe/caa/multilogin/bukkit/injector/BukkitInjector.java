@@ -2,6 +2,7 @@ package moe.caa.multilogin.bukkit.injector;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
+import moe.caa.multilogin.api.function.ThrowFunction;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.EnumAccessor;
@@ -15,6 +16,8 @@ import moe.caa.multilogin.core.proxy.FixedReturnParameterInvocationHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
@@ -47,11 +50,16 @@ public class BukkitInjector implements Injector {
     private Class<?> dedicatedPlayerListClass;
     private Class<?> playerListClass;
     private Class<?> dedicatedServerClass;
-    private Class<?> iChatBaseComponent$chatSerializerClass;
-    private Class<?> chatComponentTextClass;
     private Class<?> packetLoginInListenerClass;
 
-    private void initReflectData() throws ClassNotFoundException {
+    // Nullable
+    private Class<?> chatComponentTextClass;
+    // Nullable
+    private Class<?> craftChatMessageClass;
+    private ThrowFunction<String, Object> functionGenerateLiteralTextComponent;
+
+    private void initReflectData() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
         packetClass = InjectUtil.findNMSClass("Packet", "network.protocol", nmsVersion);
         loginListenerClass = InjectUtil.findNMSClass("LoginListener", "server.network", nmsVersion);
         packetListenerClass = InjectUtil.findNMSClass("PacketListener", "network", nmsVersion);
@@ -60,12 +68,20 @@ public class BukkitInjector implements Injector {
         minecraftSessionServiceClass = MinecraftSessionService.class;
         packetLoginInEncryptionBeginClass = InjectUtil.findNMSClass("PacketLoginInEncryptionBegin", "network.protocol.login", nmsVersion);
         packetLoginInListenerClass = InjectUtil.findNMSClass("PacketLoginInListener", "network.protocol.login", nmsVersion);
-        chatComponentTextClass = InjectUtil.findNMSClass("ChatComponentText", "network.chat", nmsVersion);
+
+        try {
+            chatComponentTextClass = InjectUtil.findNMSClass("ChatComponentText", "network.chat", nmsVersion);
+            MethodHandle handle = lookup.unreflectConstructor(chatComponentTextClass.getConstructor(String.class));
+            functionGenerateLiteralTextComponent = handle::invoke;
+        } catch (Throwable throwable) {
+            craftChatMessageClass = InjectUtil.findOBCClass("CraftChatMessage", "util", nmsVersion);
+            MethodHandle handle = lookup.unreflect(ReflectUtil.handleAccessible(ReflectUtil.findStaticMethodByReturnTypeAndParameters(craftChatMessageClass, iChatBaseComponentClass, String.class)));
+            functionGenerateLiteralTextComponent = handle::invoke;
+        }
 
         dedicatedPlayerListClass = InjectUtil.findNMSClass("DedicatedPlayerList", "server.dedicated", nmsVersion);
         playerListClass = InjectUtil.findNMSClass("PlayerList", "server.players", nmsVersion);
         dedicatedServerClass = InjectUtil.findNMSClass("DedicatedServer", "server.dedicated", nmsVersion);
-        iChatBaseComponent$chatSerializerClass = Class.forName(iChatBaseComponentClass.getName() + "$ChatSerializer");
 
         EnumAccessor enumProtocolAccessor = new EnumAccessor(InjectUtil.findNMSClass("EnumProtocol", "network", nmsVersion));
         EnumAccessor enumProtocolDirectionAccessor = new EnumAccessor(InjectUtil.findNMSClass("EnumProtocolDirection", "network.protocol", nmsVersion));
@@ -156,19 +172,23 @@ public class BukkitInjector implements Injector {
             serviceObj = ReflectUtil.redirectRecordObject(serviceObj,
                     o1 -> o1.getClass().getName().contains("SessionService"),
                     o12 -> Proxy.newProxyInstance(Bukkit.class.getClassLoader(),
-                            new Class[]{minecraftServerClass}, new MinecraftSessionServiceInvocationHandler(this, (MinecraftSessionService) o12))
+                            new Class[]{minecraftSessionServiceClass}, new MinecraftSessionServiceInvocationHandler(this, (MinecraftSessionService) o12))
             );
 
             servicesField.set(minecraftServer, serviceObj);
         }
     }
 
-    private Object getMinecraftServerObject() throws IllegalAccessException, NoSuchFieldException {
+    public Object getMinecraftServerObject() throws IllegalAccessException, NoSuchFieldException {
         Server server = ((MultiLoginBukkit) api.getPlugin()).getServer();
         Field playerListField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(server.getClass(), dedicatedPlayerListClass));
         Object dedicatedPlayerList = playerListField.get(server);
 
         Field serverField = ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(playerListClass, minecraftServerClass));
         return serverField.get(dedicatedPlayerList);
+    }
+
+    public Object generateIChatBaseComponent(String text) throws Throwable {
+        return functionGenerateLiteralTextComponent.apply(text);
     }
 }

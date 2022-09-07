@@ -91,6 +91,12 @@ public class InjectUtil {
         }
     }
 
+    public static Class<?> findOBCClass(String baseName, String path, String nmsVersion) throws ClassNotFoundException {
+        path += path.trim().length() == 0 ? "" : ".";
+        String className = "org.bukkit.craftbukkit." + nmsVersion + "." + path + baseName;
+        return Class.forName(className);
+    }
+
     public static <T> void apply(Class<?> mb, T source, T target) throws IllegalAccessException {
         for (Field declaredField : mb.getDeclaredFields()) {
             if (Modifier.isStatic(declaredField.getModifiers())) continue;

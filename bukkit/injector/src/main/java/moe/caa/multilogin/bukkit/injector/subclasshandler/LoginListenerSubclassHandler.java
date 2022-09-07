@@ -32,7 +32,6 @@ public class LoginListenerSubclassHandler {
     private MethodHandle multilogin_original_handlerFieldSetter;
     private MethodHandle multilogin_original_handlerFieldGetter;
     private MethodHandle gameProfileGetter;
-    private MethodHandle chatComponentConstructor;
 
     public LoginListenerSubclassHandler(BukkitInjector injector) {
         this.injector = injector;
@@ -65,7 +64,6 @@ public class LoginListenerSubclassHandler {
         Field field = proxyLoginListenerClass.getField(original_handler);
         multilogin_original_handlerFieldSetter = lookup.unreflectSetter(field);
         multilogin_original_handlerFieldGetter = lookup.unreflectGetter(field);
-        chatComponentConstructor = lookup.unreflectConstructor(ReflectUtil.handleAccessible(injector.getChatComponentTextClass().getConstructor(String.class)));
     }
 
     public Object newFakeProxyLoginListener(Object source) throws Throwable {
@@ -105,7 +103,7 @@ public class LoginListenerSubclassHandler {
                     if (args[0].getClass().equals(String.class)) {
                         args[0] = remove.getKickMessage();
                     } else {
-                        args[0] = chatComponentConstructor.invoke(remove.getKickMessage());
+                        args[0] = injector.generateIChatBaseComponent(remove.getKickMessage());
                     }
                 }
             }
