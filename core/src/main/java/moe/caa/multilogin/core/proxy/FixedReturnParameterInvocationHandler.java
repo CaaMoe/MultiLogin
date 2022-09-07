@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.proxy;
 
+import moe.caa.multilogin.api.function.BiConsumerFunction;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -12,14 +14,14 @@ import java.util.function.Function;
 public class FixedReturnParameterInvocationHandler implements InvocationHandler {
     private final Object handle;
     private final Function<Method, Boolean> match;
-    private final Function<Object, Object> fixedFunc;
+    private final BiConsumerFunction<Object, Object, Object> fixedFunc;
 
     /**
      * @param handle    被代理的类
      * @param match     过滤规则
      * @param fixedFunc 返回值修改函数
      */
-    public FixedReturnParameterInvocationHandler(Object handle, Function<Method, Boolean> match, Function<Object, Object> fixedFunc) {
+    public FixedReturnParameterInvocationHandler(Object handle, Function<Method, Boolean> match, BiConsumerFunction<Object, Object, Object> fixedFunc) {
         this.handle = handle;
         this.match = match;
         this.fixedFunc = fixedFunc;
@@ -43,7 +45,7 @@ public class FixedReturnParameterInvocationHandler implements InvocationHandler 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
         if (match.apply(method)) {
-            return fixedFunc.apply(method.invoke(handle, args));
+            return fixedFunc.accept(handle, args);
         }
         return method.invoke(handle, args);
     }

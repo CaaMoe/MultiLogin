@@ -23,7 +23,23 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        if (!method.getName().contains("hasJoined")) {
+        boolean matched = false;
+        if (method.getReturnType().equals(GameProfile.class)) {
+            if (method.getParameterCount() == 2 || method.getParameterCount() == 3) {
+                if (method.getParameterTypes()[0].equals(GameProfile.class)) {
+                    if (method.getParameterTypes()[1].equals(String.class)) {
+                        if (method.getParameterCount() == 3) {
+                            if (method.getParameterTypes()[2].equals(InetAddress.class)) {
+                                matched = true;
+                            }
+                        } else {
+                            matched = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (!matched) {
             return method.invoke(origin, args);
         }
         GameProfile profile = ((GameProfile) args[0]);

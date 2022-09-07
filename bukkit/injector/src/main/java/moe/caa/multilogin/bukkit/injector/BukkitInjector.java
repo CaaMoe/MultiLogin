@@ -108,13 +108,13 @@ public class BukkitInjector implements Injector {
             // 返回代理数据包对象
             return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Function.class}, new FixedReturnParameterInvocationHandler(
                     function, m -> m.getName().equals("apply"),
-                    packetLoginInEncryptionBeginSubclassHandler::newProxyLoginInEncryptionBegin
+                    (handle, invokeArgs) -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin((Object[]) invokeArgs)
             ));
         } else if (obj instanceof Supplier) {
             Supplier<?> supplier = ((Supplier<?>) obj);
             return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Supplier.class}, new FixedReturnParameterInvocationHandler(
                     supplier, m -> m.getName().equals("get"),
-                    o -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin()
+                    (handle, invokeArgs) -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin()
             ));
         } else if (obj instanceof Class) {
             return packetLoginInEncryptionBeginSubclassHandler.getProxyLoginInEncryptionBeginClass();
