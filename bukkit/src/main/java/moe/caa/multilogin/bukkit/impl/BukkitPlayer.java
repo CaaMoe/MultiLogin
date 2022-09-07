@@ -1,7 +1,10 @@
 package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.api.plugin.IPlayer;
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.net.SocketAddress;
 import java.util.Objects;
@@ -20,6 +23,10 @@ public class BukkitPlayer extends BukkitSender implements IPlayer {
 
     @Override
     public void kickPlayer(String message) {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getServer().getScheduler().runTask(JavaPlugin.getPlugin(MultiLoginBukkit.class), ()->kickPlayer(message));
+            return;
+        }
         player.kickPlayer(message);
     }
 
