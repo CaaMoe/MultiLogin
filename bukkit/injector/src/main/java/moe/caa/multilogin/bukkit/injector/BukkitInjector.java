@@ -1,5 +1,6 @@
 package moe.caa.multilogin.bukkit.injector;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import lombok.Getter;
 import moe.caa.multilogin.api.function.ThrowFunction;
@@ -9,10 +10,8 @@ import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.proxy.MinecraftSessionServiceInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler;
-import moe.caa.multilogin.bukkit.injector.subclasshandler.LoginListenerSubclassHandler;
-import moe.caa.multilogin.bukkit.injector.subclasshandler.PacketLoginInEncryptionBeginSubclassHandler;
+import moe.caa.multilogin.bukkit.injector.redefine.LoginListenerRedirectHandler;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
-import moe.caa.multilogin.core.proxy.FixedReturnParameterInvocationHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
@@ -21,17 +20,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.net.SocketAddress;
 
 /**
  * Bukkit 的注入程序
  */
 @Getter
 public class BukkitInjector implements Injector {
-    private final PacketLoginInEncryptionBeginSubclassHandler packetLoginInEncryptionBeginSubclassHandler = new PacketLoginInEncryptionBeginSubclassHandler(this);
-    private final LoginListenerSubclassHandler loginListenerSubclassHandler = new LoginListenerSubclassHandler(this);
-    private final LoginListenerSynchronizer loginListenerSynchronizer = new LoginListenerSynchronizer(this);
+    @Getter
+    private static BukkitInjector injector;
+    private final LoginListenerRedirectHandler loginListenerRedirectHandler = new LoginListenerRedirectHandler();
     private final LoginStateSocketAddressGetter loginStateSocketAddressGetter = new LoginStateSocketAddressGetter(this);
     private MultiCoreAPI api;
     private String nmsVersion;
@@ -58,11 +56,14 @@ public class BukkitInjector implements Injector {
     // Nullable
     private Class<?> craftChatMessageClass;
     private ThrowFunction<String, Object> functionGenerateLiteralTextComponent;
+    private MethodHandle loginListener_networkManagerGetter;
+    private MethodHandle loginListener_socketAddressGetter;
+    private MethodHandle loginListener_gameProfileGetter;
 
     /**
      * 初始化全部数据
      */
-    private void initReflectData() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
+    private void initReflectData() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         packetClass = InjectUtil.findNMSClass("Packet", "network.protocol", nmsVersion);
         loginListenerClass = InjectUtil.findNMSClass("LoginListener", "server.network", nmsVersion);
@@ -102,6 +103,10 @@ public class BukkitInjector implements Injector {
 
         enumProtocolDirection_SERVERBOUND = enumProtocolDirectionAccessor.indexOf(0);
         enumProtocolDirection_CLIENTBOUND = enumProtocolDirectionAccessor.indexOf(1);
+
+        loginListener_gameProfileGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getLoginListenerClass(), GameProfile.class)));
+        loginListener_networkManagerGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getLoginListenerClass(), injector.getNetworkManagerClass())));
+        loginListener_socketAddressGetter = lookup.unreflectGetter(ReflectUtil.handleAccessible(ReflectUtil.findNoStaticField(injector.getNetworkManagerClass(), SocketAddress.class)));
     }
 
     /**
@@ -109,47 +114,20 @@ public class BukkitInjector implements Injector {
      */
     @Override
     public void inject(MultiCoreAPI api) {
+        injector = this;
         this.api = api;
         nmsVersion = ((MultiLoginBukkit) api.getPlugin())
                 .getServer().getClass().getName().split("\\.")[3];
 
         try {
             initReflectData();
-            packetLoginInEncryptionBeginSubclassHandler.init();
-            loginListenerSubclassHandler.init();
-            loginListenerSynchronizer.init();
-            if (!InjectUtil.redirectInput(enumProtocol_LOGIN, enumProtocolDirection_SERVERBOUND, 0x01, this::getProxyPacketLoginInEncryptionBeginPacket)) {
-                throw new RuntimeException("0x01 -> new MultiPacketLoginInEncryptionBegin");
-            }
+            loginListenerRedirectHandler.init();
 
             redirectHasJoined();
             redirectFakeSignatureValidator();
         } catch (Throwable t0) {
             throw new RuntimeException("Servers with Bukkit version " + nmsVersion + " are not supported.", t0);
         }
-    }
-
-    /**
-     * 获得 ProxyPacketLoginInEncryptionBeginPacket 在 EnumProtocol 枚举时的表现
-     */
-    private Object getProxyPacketLoginInEncryptionBeginPacket(Object obj) {
-        if (obj instanceof Function) {
-            Function<?, ?> function = (Function<?, ?>) obj;
-            // 返回代理数据包对象
-            return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Function.class}, new FixedReturnParameterInvocationHandler(
-                    function, m -> m.getName().equals("apply"),
-                    (handle, invokeArgs) -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin((Object[]) invokeArgs)
-            ));
-        } else if (obj instanceof Supplier) {
-            Supplier<?> supplier = ((Supplier<?>) obj);
-            return Proxy.newProxyInstance(Bukkit.class.getClassLoader(), new Class[]{Supplier.class}, new FixedReturnParameterInvocationHandler(
-                    supplier, m -> m.getName().equals("get"),
-                    (handle, invokeArgs) -> packetLoginInEncryptionBeginSubclassHandler.newProxyLoginInEncryptionBegin()
-            ));
-        } else if (obj instanceof Class) {
-            return packetLoginInEncryptionBeginSubclassHandler.getProxyLoginInEncryptionBeginClass();
-        }
-        throw new RuntimeException(obj.getClass().getName());
     }
 
     /**
