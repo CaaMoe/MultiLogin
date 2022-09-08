@@ -10,20 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * 登录验证时记录 IP 地址的操作类
  */
 public class LoginStateSocketAddressGetter {
-    private final BukkitInjector injector;
-    private final Map<String, Entry> addressGetterMap = new ConcurrentHashMap<>();
+    private final Map<Object, Entry> addressGetterMap = new ConcurrentHashMap<>();
 
-    public LoginStateSocketAddressGetter(BukkitInjector injector) {
-        this.injector = injector;
+    public void put(Object obj, SocketAddress address) {
+        addressGetterMap.put(obj, new Entry(address, System.currentTimeMillis() + 1000 * 10));
     }
 
-    public void put(String name, SocketAddress address) {
-        addressGetterMap.put(name, new Entry(address, System.currentTimeMillis() + 1000 * 10));
-    }
-
-    public SocketAddress get(String name) {
+    public SocketAddress get(Object obj) {
         long currentTimeMillis = System.currentTimeMillis();
-        Entry entry = addressGetterMap.get(name);
+        Entry entry = addressGetterMap.get(obj);
         addressGetterMap.entrySet().removeIf(e -> e.getValue().invalidTimeMillis < currentTimeMillis);
         if (entry != null) return entry.socketAddress;
         return null;

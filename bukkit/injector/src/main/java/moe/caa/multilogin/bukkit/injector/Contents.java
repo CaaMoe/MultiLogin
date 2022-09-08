@@ -13,7 +13,7 @@ public class Contents {
 
     // 记录ID对应的踢出信息
     @Getter
-    private static final Map<String, KickMessageEntry> kickMessageEntryMap = new ConcurrentHashMap<>();
+    private static final Map<Object, KickMessageEntry> kickMessageEntryMap = new ConcurrentHashMap<>();
 
     // 封装的踢出信息
     // 记录了收录时间，和踢出的信息

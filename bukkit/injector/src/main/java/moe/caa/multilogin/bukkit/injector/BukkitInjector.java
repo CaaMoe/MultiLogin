@@ -30,7 +30,7 @@ public class BukkitInjector implements Injector {
     @Getter
     private static BukkitInjector injector;
     private final LoginListenerRedirectHandler loginListenerRedirectHandler = new LoginListenerRedirectHandler();
-    private final LoginStateSocketAddressGetter loginStateSocketAddressGetter = new LoginStateSocketAddressGetter(this);
+    private final LoginStateSocketAddressGetter loginStateSocketAddressGetter = new LoginStateSocketAddressGetter();
     private MultiCoreAPI api;
     private String nmsVersion;
     private Enum<?> enumProtocol_HANDSHAKING;
