@@ -17,6 +17,7 @@ public class LoginListenerRedirectHandler {
                 .redefine(BukkitInjector.getInjector().getLoginListenerClass())
                 .visit(Advice.to(HandleMethodInterceptor.class).on(ElementMatchers.takesArguments(1)
                         .and(ElementMatchers.takesArguments(String.class)
+                                .and(ElementMatchers.not(ElementMatchers.isStatic()))
                                 .or(ElementMatchers.takesArguments(BukkitInjector.getInjector().getIChatBaseComponentClass())
                                         .or(ElementMatchers.takesArguments(BukkitInjector.getInjector().getPacketLoginInEncryptionBeginClass()))
                                 )
