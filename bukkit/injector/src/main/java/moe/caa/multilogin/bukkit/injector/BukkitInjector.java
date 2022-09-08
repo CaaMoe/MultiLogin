@@ -8,6 +8,7 @@ import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
+import moe.caa.multilogin.bukkit.injector.data.LoginListenerData;
 import moe.caa.multilogin.bukkit.injector.proxy.MinecraftSessionServiceInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.redefine.loginlistener.LoginListenerRedirectHandler;
@@ -30,7 +31,7 @@ public class BukkitInjector implements Injector {
     @Getter
     private static BukkitInjector injector;
     private final LoginListenerRedirectHandler loginListenerRedirectHandler = new LoginListenerRedirectHandler();
-    private final LoginStateSocketAddressGetter loginStateSocketAddressGetter = new LoginStateSocketAddressGetter();
+    private final LoginListenerData loginListenerData = new LoginListenerData();
     private MultiCoreAPI api;
     private String nmsVersion;
     private Enum<?> enumProtocol_HANDSHAKING;
@@ -63,7 +64,7 @@ public class BukkitInjector implements Injector {
     /**
      * 初始化全部数据
      */
-    private void initReflectData() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    private void initValue() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         packetClass = InjectUtil.findNMSClass("Packet", "network.protocol", nmsVersion);
         loginListenerClass = InjectUtil.findNMSClass("LoginListener", "server.network", nmsVersion);
@@ -120,7 +121,7 @@ public class BukkitInjector implements Injector {
                 .getServer().getClass().getName().split("\\.")[3];
 
         try {
-            initReflectData();
+            initValue();
             loginListenerRedirectHandler.init();
 
             redirectHasJoined();

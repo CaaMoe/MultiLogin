@@ -5,7 +5,6 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.bukkit.injector.BukkitInjector;
-import moe.caa.multilogin.bukkit.injector.Contents;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -52,27 +51,27 @@ public class MinecraftSessionServiceInvocationHandler implements InvocationHandl
         String ip;
         if (args.length == 3) {
             if (args[2] != null) {
-                ip = getIp(profile.getName(), (SocketAddress) args[2]);
+                ip = getIp(profile, (SocketAddress) args[2]);
             } else {
-                ip = getIp(profile.getName(), null);
+                ip = getIp(profile, null);
             }
         } else {
-            ip = getIp(profile.getName(), null);
+            ip = getIp(profile, null);
         }
         AuthResult authResult = injector.getApi().getAuthHandler().auth(profile.getName(), serverId, ip);
         if (authResult.isAllowed()) {
             return generate(authResult.getResponse());
         } else {
-            Contents.getKickMessageEntryMap().put(profile.getName(), Contents.KickMessageEntry.of(authResult.getKickMessage()));
+            BukkitInjector.getInjector().getLoginListenerData().setDisconnectMessage(Thread.currentThread(), authResult.getKickMessage());
             return null;
         }
     }
 
-    private String getIp(String name, SocketAddress address) {
+    private String getIp(GameProfile profile, SocketAddress address) {
         if (address instanceof InetSocketAddress) {
             return getHostAddress((InetSocketAddress) address);
         }
-        SocketAddress socketAddress = injector.getLoginStateSocketAddressGetter().get(name);
+        SocketAddress socketAddress = BukkitInjector.getInjector().getLoginListenerData().getSocketAddress(profile);
         if (socketAddress instanceof InetSocketAddress) {
             return getHostAddress((InetSocketAddress) socketAddress);
         }

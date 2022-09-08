@@ -5,6 +5,8 @@ import net.bytebuddy.implementation.bytecode.assign.Assigner;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -20,7 +22,10 @@ public class HandleMethodInterceptor {
         Field loader = plugin.getClass().getDeclaredField("mlClassLoader");
         loader.setAccessible(true);
         ClassLoader classLoader = (ClassLoader) loader.get(plugin);
-        Method handle = classLoader.loadClass("moe.caa.multilogin.bukkit.injector.redefine.loginlistener.DockHandler").getMethod("handle", Object.class, Object[].class);
-        args = (Object[]) handle.invoke(null, thisObj, args);
+        Method handle = classLoader.loadClass(
+                "moe.caa.multilogin.bukkit.injector.redefine.loginlistener.DockHandler"
+        ).getMethod("handle", Object.class, Object[].class);
+        MethodHandle mockHandle = MethodHandles.lookup().unreflect(handle);
+        args = (Object[]) mockHandle.invoke(thisObj, args);
     }
 }
