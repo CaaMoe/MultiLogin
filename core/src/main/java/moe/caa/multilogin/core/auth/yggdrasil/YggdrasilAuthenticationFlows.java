@@ -39,12 +39,10 @@ public class YggdrasilAuthenticationFlows extends BaseFlows<HasJoinedContext> {
     public Pair<GameProfile, YggdrasilServiceConfig> call() throws Exception {
         YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
         String ipContent = "";
-        if (config.isPassIp()) {
+        if (config.isPassIp() && !ValueUtil.isEmpty(ip)) {
             ipContent = config.getHasJoined().getIpContent();
             if (!ValueUtil.isEmpty(ipContent)) {
                 ipContent = ValueUtil.transPapi(ipContent, new Pair<>("ip", URLEncoder.encode(ip, StandardCharsets.UTF_8)));
-            } else {
-                ipContent = "";
             }
         }
 
