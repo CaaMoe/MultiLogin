@@ -10,7 +10,7 @@ import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bukkit.injector.proxy.MinecraftSessionServiceInvocationHandler;
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler;
-import moe.caa.multilogin.bukkit.injector.redefine.LoginListenerRedirectHandler;
+import moe.caa.multilogin.bukkit.injector.redefine.loginlistener.LoginListenerRedirectHandler;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;

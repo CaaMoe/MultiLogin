@@ -23,6 +23,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     private PluginLoader mlPluginLoader;
     @Getter
     private MultiCoreAPI multiCoreAPI;
+    private ClassLoader mlClassLoader;
 
     @Override
     public void onLoad() {
@@ -31,6 +32,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         this.mlPluginLoader = new PluginLoader(this);
         try {
             mlPluginLoader.load("MultiLogin-Bukkit-Injector.JarFile");
+            mlClassLoader = mlPluginLoader.getPluginClassLoader().self();
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             runServer.shutdown();
