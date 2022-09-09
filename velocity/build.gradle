@@ -38,9 +38,6 @@ shadowJar {
         project(':core').tasks.shadowJar.archiveFile
     }
     from {
-        project(':core').tasks.shadowJar.archiveFile
-    }
-    from {
         project(':velocity:injector').tasks.shadowJar.archiveFile
     }
 }
