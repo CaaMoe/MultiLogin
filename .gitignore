@@ -8,3 +8,5 @@
 /*/*/*/*/build/
 /input/
 /output/
+run/
+fabric/.gradle/*
