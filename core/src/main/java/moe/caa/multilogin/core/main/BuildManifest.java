@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.main;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 
 import java.io.IOException;
@@ -11,17 +10,29 @@ import java.util.Properties;
 /**
  * 非稳定版本输出Banner
  */
-@NoArgsConstructor
+
 @Getter
 public class BuildManifest {
-    public void read(MultiCore core) throws IOException {
+    private final MultiCore core;
+    private String buildType;
+    private Date buildDate;
+    private String version;
+
+    public BuildManifest(MultiCore core) {
+        this.core = core;
+    }
+
+    public void read() throws IOException {
         Properties properties = new Properties();
         properties.load(getClass().getResourceAsStream("/build.properties"));
 
-        String build_type = properties.getProperty("build_type");
-        Date date = new Date(Long.parseLong(properties.getProperty("build_timestamp")));
+        buildType = properties.getProperty("build_type");
+        buildDate = new Date(Long.parseLong(properties.getProperty("build_timestamp")));
+        version = properties.getProperty("version");
+    }
 
-        if (!build_type.equalsIgnoreCase("final")) {
+    public void checkStable() {
+        if (!buildType.equalsIgnoreCase("final")) {
             LoggerProvider.getLogger().warn("######################################################");
             LoggerProvider.getLogger().warn("#   Warning, you are not using a stable version");
             LoggerProvider.getLogger().warn("# and may have some very fatal errors!");
@@ -29,8 +40,8 @@ public class BuildManifest {
             LoggerProvider.getLogger().warn("#   Please download the latest stable version");
             LoggerProvider.getLogger().warn("# from https://github.com/CaaMoe/MultiLogin/releases");
             LoggerProvider.getLogger().warn("#");
-            LoggerProvider.getLogger().warn("#     Build Time : " + date);
-            LoggerProvider.getLogger().warn("#     Version    : " + core.getPlugin().getVersion());
+            LoggerProvider.getLogger().warn("#     Build Time : " + buildDate);
+            LoggerProvider.getLogger().warn("#     Version    : " + version);
             LoggerProvider.getLogger().warn("######################################################");
         }
     }
