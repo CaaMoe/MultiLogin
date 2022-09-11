@@ -24,9 +24,4 @@ public interface IPlugin {
      * @return 服务器对象
      */
     IServer getRunServer();
-
-    /**
-     * 获得服务端版本
-     */
-    String getVersion();
 }

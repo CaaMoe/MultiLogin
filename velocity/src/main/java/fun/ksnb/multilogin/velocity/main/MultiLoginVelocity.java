@@ -1,6 +1,5 @@
 package fun.ksnb.multilogin.velocity.main;
 
-import com.google.gson.JsonParser;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -18,9 +17,7 @@ import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
-import java.util.Objects;
 
 /**
  * Velocity Main
@@ -89,12 +86,5 @@ public class MultiLoginVelocity implements IPlugin {
     @Override
     public File getTempFolder() {
         return new File(getDataFolder(), "tmp");
-    }
-
-    @Override
-    public String getVersion() {
-        return JsonParser.parseReader(
-                new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream("/velocity-plugin.json")))
-        ).getAsJsonObject().getAsJsonPrimitive("version").getAsString();
     }
 }

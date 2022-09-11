@@ -31,6 +31,8 @@ public class MultiCore implements MultiCoreAPI {
     @Getter
     private final IPlugin plugin;
     @Getter
+    private final BuildManifest buildManifest;
+    @Getter
     private final SQLManager sqlManager;
     @Getter
     private final PluginConfig pluginConfig;
@@ -55,12 +57,13 @@ public class MultiCore implements MultiCoreAPI {
      */
     public MultiCore(IPlugin plugin) {
         this.plugin = plugin;
+        this.buildManifest = new BuildManifest(this);
         this.languageHandler = new LanguageHandler(this);
         this.pluginConfig = new PluginConfig(plugin.getDataFolder());
         this.sqlManager = new SQLManager(this);
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
-        this.semVersion = SemVersion.of(plugin.getVersion());
+        this.semVersion = SemVersion.of(buildManifest.getVersion());
         this.playerHandler = new PlayerHandler(this);
         this.cacheWhitelistHandler = new CacheWhitelistHandler();
         this.gson = new GsonBuilder()
@@ -74,8 +77,9 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
+        buildManifest.read();
+        buildManifest.checkStable();
         checkEnvironment();
-        new BuildManifest().read(this);
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
@@ -85,7 +89,7 @@ public class MultiCore implements MultiCoreAPI {
 
         LoggerProvider.getLogger().info(
                 String.format("Loaded, using MultiLogin v%s on %s - %s",
-                        plugin.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
+                        buildManifest.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
                 )
         );
 

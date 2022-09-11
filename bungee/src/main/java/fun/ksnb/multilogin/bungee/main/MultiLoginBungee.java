@@ -69,9 +69,4 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
     public File getTempFolder() {
         return new File(getDataFolder(), "tmp");
     }
-
-    @Override
-    public String getVersion() {
-        return getDescription().getVersion();
-    }
 }

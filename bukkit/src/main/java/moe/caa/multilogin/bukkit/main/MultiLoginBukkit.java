@@ -81,9 +81,4 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
     public File getTempFolder() {
         return new File(getDataFolder(), "tmp");
     }
-
-    @Override
-    public String getVersion() {
-        return getDescription().getVersion();
-    }
 }

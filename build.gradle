@@ -68,10 +68,6 @@ subprojects {
         file.encoding = "UTF-8"
     }
 
-    tasks.withType(Jar) {
-        destinationDir = file("$rootDir/build/libs")
-    }
-
     java {
         toolchain {
             languageVersion.set(JavaLanguageVersion.of(11))
