@@ -20,6 +20,7 @@ dependencies {
 }
 
 shadowJar {
+    configurations = [project.configurations.shadow]
     archiveBaseName.set('MultiLogin-Fabric')
 
     if (System.getProperty("env", "AUTO") == "final") {
@@ -29,7 +30,12 @@ shadowJar {
         archiveVersion.set(ver)
     }
     archiveClassifier.set("")
+
     from {
         project(':core').tasks.shadowJar.archiveFile
     }
+}
+
+remapJar {
+    dependsOn(shadowJar)
 }
