@@ -16,6 +16,9 @@
       "moe.caa.multilogin.fabric.main.MultiLoginFabric"
     ]
   },
+  "mixins": [
+    "multilogin.mixins.json"
+  ],
   "depends": {
     "java": ">=11",
     "fabric": "*"

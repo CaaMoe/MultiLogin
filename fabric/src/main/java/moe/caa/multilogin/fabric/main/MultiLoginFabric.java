@@ -1,11 +1,10 @@
 package moe.caa.multilogin.fabric.main;
 
-import com.google.gson.JsonParser;
 import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.logger.bridges.ConsoleBridge;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.fabric.event.PluginEnableEvent;
 import moe.caa.multilogin.fabric.impl.FabricServer;
 import moe.caa.multilogin.fabric.logger.Log4j2LoggerBridge;
 import moe.caa.multilogin.fabric.logger.Slf4jLoggerBridge;
@@ -15,12 +14,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
-import org.apache.logging.log4j.LogManager;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.InputStreamReader;
-import java.util.Objects;
 
 @Environment(EnvType.SERVER)
 public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin {
@@ -34,7 +29,7 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
 
     @Override
     public void onInitializeServer() {
-        ServerLifecycleEvents.SERVER_STARTING.register(MultiLoginFabric.this::onLEnable);
+        PluginEnableEvent.INSTANCE.register(MultiLoginFabric.this::onLEnable);
         ServerLifecycleEvents.SERVER_STOPPING.register(MultiLoginFabric.this::onDisable);
     }
 
@@ -93,12 +88,5 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
     @Override
     public File getTempFolder() {
         return new File(getDataFolder(), "tmp");
-    }
-
-    @Override
-    public String getVersion() {
-        return JsonParser.parseReader(
-                new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream("/fabric.mod.json")))
-        ).getAsJsonObject().getAsJsonPrimitive("version").getAsString();
     }
 }

@@ -1,6 +1,9 @@
 plugins {
     id 'fabric-loom' version '0.7-SNAPSHOT'
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+configurations {
+    shadow
 }
 
 repositories {
@@ -12,6 +15,10 @@ dependencies {
     implementation project(":flows")
     implementation project(":loader")
 
+    shadow project(":api")
+    shadow project(":flows")
+    shadow project(":loader")
+
     // https://modmuss50.me/fabric.html
     minecraft "com.mojang:minecraft:1.16.5"
     mappings "net.fabricmc:yarn:1.16.5+build.10:v2"
@@ -19,8 +26,17 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:0.42.0+1.16"
 }
 
-shadowJar {
-    configurations = [project.configurations.shadow]
+jar {
+    from {
+        configurations.shadow.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    from {
+        project(':core').tasks.shadowJar.archiveFile
+    }
+}
+
+remapJar {
     archiveBaseName.set('MultiLogin-Fabric')
 
     if (System.getProperty("env", "AUTO") == "final") {
@@ -29,13 +45,6 @@ shadowJar {
         String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
         archiveVersion.set(ver)
     }
+
     archiveClassifier.set("")
-
-    from {
-        project(':core').tasks.shadowJar.archiveFile
-    }
-}
-
-remapJar {
-    dependsOn(shadowJar)
 }

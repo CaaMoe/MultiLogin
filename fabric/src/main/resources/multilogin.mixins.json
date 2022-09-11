@@ -2,13 +2,14 @@
   "required": true,
   "minVersion": "0.8",
   "package": "moe.caa.multilogin.fabric.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_11",
   "server": [
+    "MixinMinecraftDedicatedServer",
+    "MixinServerCommandSource"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
-    "MixinServerCommandSource"
   ]
 }
