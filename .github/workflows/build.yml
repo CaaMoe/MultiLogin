@@ -38,12 +38,6 @@ jobs:
           arguments: shadowJar
           gradle-version: 7.4
 
-      - name: Build
-        uses: gradle/gradle-command-action@v1
-        with:
-          arguments: build
-          gradle-version: 7.4
-
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
@@ -53,5 +47,5 @@ jobs:
         uses: MuirProject/upload-artifact@v2-beta
         with:
           name: '["Velocity", "Bukkit", "Bungee", "DataUpgrade", "Fabric"]'
-          path: '["velocity/build/libs/MultiLogin-Velocity-*.jar","bukkit/build/libs/MultiLogin-Bukkit-*.jar","bungee/build/libs/MultiLogin-Bungee-*.jar","dataUpgrade/build/libs/MultiLogin-DataUpgrade-*.jar","fabric/build/libs/MultiLogin-DataUpgrade-*.jar"]'
+          path: '["velocity/build/libs/MultiLogin-Velocity-*.jar", "bukkit/build/libs/MultiLogin-Bukkit-*.jar", "bungee/build/libs/MultiLogin-Bungee-*.jar", "dataUpgrade/build/libs/MultiLogin-DataUpgrade-*.jar", "fabric/build/libs/MultiLogin-Fabric-*.jar"]'
           retention-days: 1
