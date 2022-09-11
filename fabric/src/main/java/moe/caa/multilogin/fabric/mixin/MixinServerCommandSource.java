@@ -7,6 +7,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * 此处注入为，添加获取命令输出源
+ */
 @Mixin(ServerCommandSource.class)
 public abstract class MixinServerCommandSource implements IServerCommandSource {
     @Shadow @Final private CommandOutput output;

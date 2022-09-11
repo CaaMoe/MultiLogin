@@ -68,7 +68,7 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
             server.stop(false);
             return;
         }
-
+        throw new RuntimeException("Fabric is not supported. Please wait for a later version");
     }
 
     private void loggerInit() {

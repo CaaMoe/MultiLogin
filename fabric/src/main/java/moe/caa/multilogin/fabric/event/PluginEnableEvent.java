@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 
+/**
+ * 插件启动事件
+ */
 public class PluginEnableEvent {
 
     // 插件启动事件
