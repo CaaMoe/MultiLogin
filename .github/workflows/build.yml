@@ -11,20 +11,12 @@ jobs:
       - name: 'Checkout'
         uses: actions/checkout@v2
 
-
       - name: 'Setup JDK 18'
         uses: AdoptOpenJDK/install-jdk@v1
         with:
           version: '18'
           architecture: x64
           targets: 'JDK_18'
-
-      - name: 'Setup JDK 11'
-        uses: AdoptOpenJDK/install-jdk@v1
-        with:
-          version: '11'
-          architecture: x64
-          targets: 'JDK_11'
 
       - name: Cache Gradle packages
         uses: actions/cache@v2
