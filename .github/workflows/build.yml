@@ -6,16 +6,17 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [
-          18,
-        ]
-        os: [ ubuntu-20.04, windows-2022 ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
+
+      - name: 'Setup JDK 11'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+          architecture: x64
+          targets: 'JDK_11'
 
       - name: Cache Gradle packages
         uses: actions/cache@v2
@@ -26,7 +27,6 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-
       - name: Patch Gradle Repositories
         run:
           sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
@@ -35,21 +35,58 @@ jobs:
         uses: gradle/gradle-command-action@v1
         with:
           arguments: shadowJar
-          gradle-version: 7.5.1
+          gradle-version: 7.4
 
       - name: Cleanup Gradle Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
-
       - name: Upload to artifact respectively
         uses: MuirProject/upload-artifact@v2-beta
         with:
-          name: '["Velocity", "Bukkit", "Bungee", "DataUpgrade", "Fabric"]'
+          name: '["Velocity","Bukkit","Bungee","DataUpgrade"]'
+          path: '["velocity/build/libs/MultiLogin-Velocity-*.jar","bukkit/build/libs/MultiLogin-Bukkit-*.jar","bungee/build/libs/MultiLogin-Bungee-*.jar","dataUpgrade/build/libs/MultiLogin-DataUpgrade-*.jar"]'
+          retention-days: 15
+
+  build-fabric:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Setup JDK 17'
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '17'
+          architecture: x64
+          targets: 'JDK_17'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
           path: |
-            '["velocity/build/libs/MultiLogin-Velocity-*.jar",
-            "bukkit/build/libs/MultiLogin-Bukkit-*.jar",
-            "bungee/build/libs/MultiLogin-Bungee-*.jar",
-            "dataUpgrade/build/libs/MultiLogin-DataUpgrade-*.jar",
-            "fabric/build/libs/MultiLogin-Fabric-*.jar"]'
-          retention-days: 1
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Patch Gradle Repositories
+        run:
+          sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
+
+      - name: Build
+        uses: gradle/gradle-command-action@v1
+        with:
+          arguments: build
+          gradle-version: 7.4
+
+      - name: Cleanup Gradle Cache
+        run: |
+          rm -f ~/.gradle/caches/modules-2/modules-2.lock
+          rm -f ~/.gradle/caches/modules-2/gc.properties
+      - name: Upload to artifact respectively
+        uses: MuirProject/upload-artifact@v2-beta
+        with:
+          name: '["Fabric"]'
+          path: '["fabric/build/libs/MultiLogin-Fabric-*.jar"]'
+          retention-days: 15
