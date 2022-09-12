@@ -67,12 +67,6 @@ subprojects {
         options.encoding = "UTF-8"
         file.encoding = "UTF-8"
     }
-
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(11))
-        }
-    }
 }
 
 

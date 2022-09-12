@@ -8,7 +8,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.MutableText;
+
+import java.util.Objects;
 
 /**
  * Fabric 的命令执行者对象
@@ -42,7 +45,7 @@ public class FabricSender implements ISender {
     @Override
     public void sendMessagePL(String message) {
         for (String s : message.split("\\r?\\n")) {
-            sender.sendFeedback(new LiteralText(message), false);
+            sender.sendFeedback(MutableText.of(new LiteralTextContent(message)), false);
         }
     }
 
@@ -54,6 +57,6 @@ public class FabricSender implements ISender {
     @SneakyThrows
     @Override
     public IPlayer getAsPlayer() {
-        return new FabricPlayer(sender.getPlayer());
+        return new FabricPlayer(Objects.requireNonNull(sender.getPlayer()));
     }
 }

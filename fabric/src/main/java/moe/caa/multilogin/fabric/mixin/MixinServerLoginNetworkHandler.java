@@ -1,11 +1,11 @@
 package moe.caa.multilogin.fabric.mixin;
 
+import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.fabric.event.LoginStatePlayerDisconnectEvent;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,8 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class MixinServerLoginNetworkHandler {
 
-    @Shadow @Final private static Logger LOGGER;
-
     @Shadow public abstract String getConnectionInfo();
 
     @Shadow @Final public ClientConnection connection;
@@ -32,11 +30,11 @@ public abstract class MixinServerLoginNetworkHandler {
         if(reason.equals(eventData.getDisconnectText())) return;
         ci.cancel();
         try {
-            LOGGER.info((String)"Disconnecting {}: {}", this.getConnectionInfo(), reason.getString());
+            LoggerProvider.getLogger().info(String.format("Disconnecting %s: %s", this.getConnectionInfo(), reason.getString()));
             this.connection.send(new LoginDisconnectS2CPacket(reason));
             this.connection.disconnect(reason);
         } catch (Exception var3) {
-            LOGGER.error((String)"Error whilst disconnecting player", var3);
+            LoggerProvider.getLogger().error("Error whilst disconnecting player", var3);
         }
     }
 }

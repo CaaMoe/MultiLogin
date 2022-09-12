@@ -2,7 +2,8 @@ package moe.caa.multilogin.fabric.impl;
 
 import moe.caa.multilogin.api.plugin.IPlayer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.LiteralTextContent;
+import net.minecraft.text.MutableText;
 
 import java.net.SocketAddress;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public class FabricPlayer extends FabricSender implements IPlayer {
 
     @Override
     public void kickPlayer(String message) {
-        player.networkHandler.disconnect(new LiteralText(message));
+        player.networkHandler.disconnect(MutableText.of(new LiteralTextContent(message)));
     }
 
     @Override
