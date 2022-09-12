@@ -43,7 +43,7 @@ jobs:
         uses: gradle/gradle-command-action@v1
         with:
           arguments: shadowJar
-          gradle-version: 7.4
+          gradle-version: 7.5.1
 
       - name: Cleanup Gradle Cache
         run: |
