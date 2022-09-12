@@ -67,6 +67,10 @@ subprojects {
         options.encoding = "UTF-8"
         file.encoding = "UTF-8"
     }
+
+    compileJava {
+        sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
+    }
 }
 
 

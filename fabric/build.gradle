@@ -7,8 +7,8 @@ configurations {
     extra
 }
 
-repositories {
-
+compileJava {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_18
 }
 
 shadowJar {
