@@ -8,7 +8,7 @@ configurations {
 }
 
 compileJava {
-    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_18
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 }
 
 shadowJar {
