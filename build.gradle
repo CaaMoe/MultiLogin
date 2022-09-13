@@ -1,8 +1,6 @@
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
-
 import java.text.SimpleDateFormat
-
 
 plugins {
     id "net.nemerosa.versioning" version "3.0.0" apply false
@@ -10,13 +8,10 @@ plugins {
 
 apply from: './constant.gradle'
 
-static def getCheckedOutGitCommitHash() {
-    return 'git rev-parse --verify --short HEAD'.execute().text.trim()
-}
-
 allprojects {
     apply plugin: "java"
     apply plugin: 'net.nemerosa.versioning'
+    version = versioning.info.build
 }
 
 subprojects {
@@ -63,7 +58,7 @@ subprojects {
         if (env == "final") {
             ver = (project.plugin_version as String)
         } else {
-            ver = "Build_" + getCheckedOutGitCommitHash()
+            ver = "Build_" + version
         }
 
         filter ReplaceTokens, tokens: [
