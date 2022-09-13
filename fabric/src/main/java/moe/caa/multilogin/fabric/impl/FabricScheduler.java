@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Fabric 的积分榜对象
+ */
 public class FabricScheduler extends BaseScheduler {
     private final List<Entry> entries = Collections.synchronizedList(new ArrayList<>());
 

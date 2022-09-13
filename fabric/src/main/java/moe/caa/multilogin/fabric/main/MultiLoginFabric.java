@@ -6,6 +6,7 @@ import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.fabric.event.PluginEnableEvent;
 import moe.caa.multilogin.fabric.impl.FabricServer;
+import moe.caa.multilogin.fabric.inject.reflect.FabricInjector;
 import moe.caa.multilogin.fabric.logger.Log4j2LoggerBridge;
 import moe.caa.multilogin.fabric.logger.Slf4jLoggerBridge;
 import moe.caa.multilogin.loader.main.PluginLoader;
@@ -17,8 +18,12 @@ import net.minecraft.server.MinecraftServer;
 
 import java.io.File;
 
+/**
+ * Fabric 主类
+ */
 @Environment(EnvType.SERVER)
 public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin {
+    @Getter
     private MinecraftServer server;
     @Getter
     private FabricServer runServer;
@@ -63,12 +68,12 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
         try {
             multiCoreAPI = pluginLoader.getCoreObject();
             multiCoreAPI.load();
+            new FabricInjector().inject(multiCoreAPI);
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.stop(false);
             return;
         }
-        throw new RuntimeException("Fabric is not supported. Please wait for a later version");
     }
 
     private void loggerInit() {

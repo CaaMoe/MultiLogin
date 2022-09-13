@@ -3,7 +3,7 @@ package moe.caa.multilogin.fabric.impl;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.fabric.inject.mixin.IServerCommandSource;
+import moe.caa.multilogin.fabric.inject.mixin.IServerCommandSource_MLA;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
@@ -34,7 +34,7 @@ public class FabricSender implements ISender {
 
     @Override
     public boolean isConsole() {
-        return ((IServerCommandSource) sender).mlHandler_getCommandOutput() instanceof MinecraftServer;
+        return ((IServerCommandSource_MLA) sender).mlHandler_getCommandOutput() instanceof MinecraftServer;
     }
 
     @Override

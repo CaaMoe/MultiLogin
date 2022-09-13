@@ -8,6 +8,9 @@ import net.minecraft.text.MutableText;
 import java.net.SocketAddress;
 import java.util.UUID;
 
+/**
+ * Fabric 的玩家对象
+ */
 public class FabricPlayer extends FabricSender implements IPlayer {
     private final ServerPlayerEntity player;
 

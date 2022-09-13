@@ -6,6 +6,9 @@ import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
 import net.minecraft.server.MinecraftServer;
 
+/**
+ * Fabric 服务器对象
+ */
 public class FabricServer implements IServer {
     private final MinecraftServer server;
     private final BaseScheduler scheduler;

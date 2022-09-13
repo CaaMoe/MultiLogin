@@ -5,12 +5,13 @@
   "compatibilityLevel": "JAVA_11",
   "server": [
     "MixinMinecraftDedicatedServer",
-    "MixinServerCommandSource"
+    "MixinServerCommandSourceMLA"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
+    "MixinMinecraftServer",
     "MixinServerLoginNetworkHandler"
   ]
 }
