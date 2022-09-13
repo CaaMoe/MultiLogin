@@ -25,7 +25,7 @@ shadowJar {
     if (System.getProperty("env", "AUTO") == "final") {
         archiveVersion.set(project.plugin_version as String)
     } else {
-        String ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+        String ver = "Build_" + getCheckedOutGitCommitHash()
         archiveVersion.set(ver)
     }
     archiveClassifier.set("")
