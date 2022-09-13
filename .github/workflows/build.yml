@@ -56,7 +56,7 @@ jobs:
       - name: Build Fabric
         uses: gradle/gradle-command-action@v1
         with:
-          arguments: :faric:build
+          arguments: :fabric:build
           gradle-version: 7.4
 
       - name: Cleanup Gradle Cache
