@@ -32,8 +32,7 @@ jobs:
       - name: Build Bukkit
         uses: gradle/gradle-command-action@v1
         with:
-          arguments: ShadowJar
-          gradle-executable: '/bukkit/gradle'
+          arguments: :bukkit:ShadowJar
           gradle-version: 7.4
 
       - name: Cleanup Gradle Cache
