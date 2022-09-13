@@ -67,5 +67,5 @@ jobs:
         uses: MuirProject/upload-artifact@v2-beta
         with:
           name: '["Output"]'
-          path: '["*/build/libs/MultiLogin-*.jar"]'
+          path: '*/build/libs/MultiLogin-*.jar'
           retention-days: 15
