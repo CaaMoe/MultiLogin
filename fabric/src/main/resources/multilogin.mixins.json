@@ -4,14 +4,16 @@
   "package": "moe.caa.multilogin.fabric.mixin",
   "compatibilityLevel": "JAVA_11",
   "server": [
-    "MixinMinecraftDedicatedServer",
-    "MixinServerCommandSourceMLA"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "mixins": [
+    "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer",
-    "MixinServerLoginNetworkHandler"
+    "MixinPlayerManager",
+    "MixinServerCommandSourceMLA",
+    "MixinServerLoginNetworkHandler",
+    "MixinServerLoginNetworkHandler_AuthenticatorThread"
   ]
 }

@@ -1,11 +1,15 @@
 package moe.caa.multilogin.fabric.main;
 
+import com.mojang.brigadier.CommandDispatcher;
 import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.fabric.command.MultiLoginCommand;
 import moe.caa.multilogin.fabric.event.PluginEnableEvent;
+import moe.caa.multilogin.fabric.event.PrepareAcceptLoginPlayerEvent;
 import moe.caa.multilogin.fabric.impl.FabricServer;
+import moe.caa.multilogin.fabric.inject.mixin.IServerLoginNetworkHandler_MLA;
 import moe.caa.multilogin.fabric.inject.reflect.FabricInjector;
 import moe.caa.multilogin.fabric.logger.Log4j2LoggerBridge;
 import moe.caa.multilogin.fabric.logger.Slf4jLoggerBridge;
@@ -13,8 +17,14 @@ import moe.caa.multilogin.loader.main.PluginLoader;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 
 import java.io.File;
 
@@ -30,22 +40,47 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
     private File dataFolder;
     private PluginLoader pluginLoader;
     @Getter
-    private MultiCoreAPI multiCoreAPI;
+    private MultiCoreAPI api;
 
     @Override
     public void onInitializeServer() {
-        PluginEnableEvent.INSTANCE.register(MultiLoginFabric.this::onLEnable);
         ServerLifecycleEvents.SERVER_STOPPING.register(MultiLoginFabric.this::onDisable);
+        CommandRegistrationCallback.EVENT.register(MultiLoginFabric.this::onRegisterCommand);
+
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> preparePlayerQuit(handler));
+        PrepareAcceptLoginPlayerEvent.INSTANCE.register(MultiLoginFabric.this::prepareAcceptLoginPlayer);
+        PluginEnableEvent.INSTANCE.register(MultiLoginFabric.this::onLEnable);
+    }
+
+    private void preparePlayerQuit(ServerPlayNetworkHandler handler) {
+        api.getPlayerHandler().pushPlayerQuitGame(
+                handler.getPlayer().getGameProfile().getId(),
+                handler.getPlayer().getGameProfile().getName()
+        );
+    }
+
+    private void prepareAcceptLoginPlayer(PrepareAcceptLoginPlayerEvent.EventData eventData) {
+        IServerLoginNetworkHandler_MLA handlerMla = (IServerLoginNetworkHandler_MLA) eventData.serverLoginNetworkHandler();
+        api.getPlayerHandler().pushPlayerJoinGame(handlerMla.mlHandler_getGameProfile().getId(), handlerMla.mlHandler_getGameProfile().getName());
+    }
+
+    private void onRegisterCommand(CommandDispatcher<ServerCommandSource> dispatcher,
+                                   CommandRegistryAccess commandRegistryAccess,
+                                   CommandManager.RegistrationEnvironment environment) {
+        if (!environment.dedicated) {
+            return;
+        }
+        new MultiLoginCommand(this).register(dispatcher);
     }
 
     private void onDisable(MinecraftServer server) {
         try {
-            multiCoreAPI.close();
+            api.close();
             pluginLoader.close();
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while close the plugin", e);
         } finally {
-            multiCoreAPI = null;
+            api = null;
             server.stop(false);
         }
     }
@@ -66,9 +101,9 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
         }
 
         try {
-            multiCoreAPI = pluginLoader.getCoreObject();
-            multiCoreAPI.load();
-            new FabricInjector().inject(multiCoreAPI);
+            api = pluginLoader.getCoreObject();
+            api.load();
+            new FabricInjector().inject(api);
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             server.stop(false);
