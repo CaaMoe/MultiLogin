@@ -2,14 +2,13 @@ package moe.caa.multilogin.fabric.main;
 
 import com.mojang.brigadier.CommandDispatcher;
 import lombok.Getter;
+import moe.caa.multilogin.api.handle.HandleResult;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.fabric.command.MultiLoginCommand;
 import moe.caa.multilogin.fabric.event.PluginEnableEvent;
-import moe.caa.multilogin.fabric.event.PrepareAcceptLoginPlayerEvent;
 import moe.caa.multilogin.fabric.impl.FabricServer;
-import moe.caa.multilogin.fabric.inject.mixin.IServerLoginNetworkHandler_MLA;
 import moe.caa.multilogin.fabric.inject.reflect.FabricInjector;
 import moe.caa.multilogin.fabric.logger.Log4j2LoggerBridge;
 import moe.caa.multilogin.fabric.logger.Slf4jLoggerBridge;
@@ -25,6 +24,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.text.Text;
 
 import java.io.File;
 
@@ -46,9 +46,9 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
     public void onInitializeServer() {
         ServerLifecycleEvents.SERVER_STOPPING.register(MultiLoginFabric.this::onDisable);
         CommandRegistrationCallback.EVENT.register(MultiLoginFabric.this::onRegisterCommand);
-
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> preparePlayerQuit(handler));
-        PrepareAcceptLoginPlayerEvent.INSTANCE.register(MultiLoginFabric.this::prepareAcceptLoginPlayer);
+        ServerPlayConnectionEvents.INIT.register((handler, server) -> prepareAcceptLoginPlayer(handler));
+
         PluginEnableEvent.INSTANCE.register(MultiLoginFabric.this::onLEnable);
     }
 
@@ -59,9 +59,14 @@ public class MultiLoginFabric implements DedicatedServerModInitializer, IPlugin 
         );
     }
 
-    private void prepareAcceptLoginPlayer(PrepareAcceptLoginPlayerEvent.EventData eventData) {
-        IServerLoginNetworkHandler_MLA handlerMla = (IServerLoginNetworkHandler_MLA) eventData.serverLoginNetworkHandler();
-        api.getPlayerHandler().pushPlayerJoinGame(handlerMla.mlHandler_getGameProfile().getId(), handlerMla.mlHandler_getGameProfile().getName());
+    private void prepareAcceptLoginPlayer(ServerPlayNetworkHandler handler) {
+        HandleResult result = api.getPlayerHandler().pushPlayerJoinGame(
+                handler.getPlayer().getGameProfile().getId(),
+                handler.getPlayer().getGameProfile().getName()
+        );
+        if (result.getType() == HandleResult.Type.KICK) {
+            handler.disconnect(Text.of(result.getKickMessage()));
+        }
     }
 
     private void onRegisterCommand(CommandDispatcher<ServerCommandSource> dispatcher,

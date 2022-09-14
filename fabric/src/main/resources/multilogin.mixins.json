@@ -11,9 +11,7 @@
   "mixins": [
     "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer",
-    "MixinPlayerManager",
     "MixinServerCommandSourceMLA",
     "MixinServerLoginNetworkHandler",
-    "MixinServerLoginNetworkHandler_AuthenticatorThread"
   ]
 }
