@@ -26,6 +26,7 @@ public class MultiLoginCommand implements SuggestionProvider<ServerCommandSource
     public void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 CommandManager.literal("multilogin")
+                        .executes(this)
                         .then(CommandManager.argument("args", StringArgumentType.greedyString())
                                 .suggests(this)
                                 .executes(this)
@@ -36,25 +37,18 @@ public class MultiLoginCommand implements SuggestionProvider<ServerCommandSource
     @Override
     public CompletableFuture<Suggestions> getSuggestions(CommandContext<ServerCommandSource> context, SuggestionsBuilder builder) throws CommandSyntaxException {
         FabricSender sender = new FabricSender(context.getSource());
-        String s = builder.getRemainingLowerCase();
-        String[] args = s.split("\\s+");
-        String[] ns = new String[args.length + 1];
-        System.arraycopy(args, 0, ns, 1, args.length);
-        ns[0] = "multilogin";
-        builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + 1);
-        List<String> list = plugin.getApi().getCommandHandler().tabComplete(sender, ns);
+        String input = builder.getInput();
+        builder = builder.createOffset(input.lastIndexOf(' ') + 1);
+        List<String> list = plugin.getApi().getCommandHandler().tabComplete(sender, input.substring(1));
         list.forEach(builder::suggest);
         return builder.buildFuture();
     }
 
     @Override
-    public int run(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+    public int run(CommandContext<ServerCommandSource> context) {
+        String input = context.getRange().get(context.getInput());
         FabricSender sender = new FabricSender(context.getSource());
-        String[] args = StringArgumentType.getString(context, "args").split("\\s+");
-        String[] ns = new String[args.length + 1];
-        System.arraycopy(args, 0, ns, 1, args.length);
-        ns[0] = "multilogin";
-        plugin.getApi().getCommandHandler().execute(sender, ns);
+        plugin.getApi().getCommandHandler().execute(sender, input);
         return 0;
     }
 }
