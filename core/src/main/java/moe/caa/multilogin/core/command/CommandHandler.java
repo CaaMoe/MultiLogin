@@ -47,9 +47,14 @@ public class CommandHandler implements CommandAPI {
 
     @Override
     public void execute(ISender sender, String[] args) {
+        execute(sender, String.join(" ", args));
+    }
+
+    @Override
+    public void execute(ISender sender, String args) {
         core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
             try {
-                dispatcher.execute(String.join(" ", args), sender);
+                dispatcher.execute(args, sender);
             } catch (CommandSyntaxException e) {
                 sender.sendMessagePL(e.getRawMessage().getString());
             } catch (Exception e) {
@@ -61,10 +66,15 @@ public class CommandHandler implements CommandAPI {
 
     @Override
     public List<String> tabComplete(ISender sender, String[] args) {
+        return tabComplete(sender, String.join(" ", args));
+    }
+
+    @Override
+    public List<String> tabComplete(ISender sender, String args) {
         if (!sender.hasPermission(Permissions.COMMAND_TAB_COMPLETE)) {
             return Collections.emptyList();
         }
-        CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(String.join(" ", args), sender));
+        CompletableFuture<Suggestions> suggestions = dispatcher.getCompletionSuggestions(dispatcher.parse(args, sender));
         List<String> ret = new ArrayList<>();
         try {
             Suggestions suggestions1 = suggestions.get();

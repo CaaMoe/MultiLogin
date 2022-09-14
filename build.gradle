@@ -1,10 +1,17 @@
 import groovy.json.JsonOutput
 import org.apache.tools.ant.filters.ReplaceTokens
+import java.text.SimpleDateFormat
+
+plugins {
+    id "net.nemerosa.versioning" version "3.0.0" apply false
+}
 
 apply from: './constant.gradle'
 
 allprojects {
     apply plugin: "java"
+    apply plugin: 'net.nemerosa.versioning'
+    version = versioning.info.build
 }
 
 subprojects {
@@ -51,7 +58,7 @@ subprojects {
         if (env == "final") {
             ver = (project.plugin_version as String)
         } else {
-            ver = "Build_" + ((System.currentTimeMillis() / 1000) as int)
+            ver = "Build_" + version
         }
 
         filter ReplaceTokens, tokens: [
@@ -63,15 +70,26 @@ subprojects {
         ]
     }
 
+    jar {
+        manifest {
+            attributes(
+                    'Built-By'       : System.properties['user.name'],
+                    'Build-Timestamp': new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(new Date()),
+                    'Build-Revision' : versioning.info.commit,
+                    'Created-By'     : "Gradle ${gradle.gradleVersion}",
+                    'Build-Jdk'      : "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})",
+                    'Build-OS'       : "${System.properties['os.name']} ${System.properties['os.arch']} ${System.properties['os.version']}"
+            )
+        }
+    }
+
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
         file.encoding = "UTF-8"
     }
 
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(11))
-        }
+    compileJava {
+        sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
     }
 }
 

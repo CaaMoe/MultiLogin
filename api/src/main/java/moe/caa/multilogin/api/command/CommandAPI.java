@@ -17,6 +17,8 @@ public interface CommandAPI {
      */
     void execute(ISender sender, String[] args);
 
+    void execute(ISender sender, String args);
+
     /**
      * 执行指令建议补全
      *
@@ -24,4 +26,6 @@ public interface CommandAPI {
      * @param args   指令参数
      */
     List<String> tabComplete(ISender sender, String[] args);
+
+    List<String> tabComplete(ISender sender, String args);
 }

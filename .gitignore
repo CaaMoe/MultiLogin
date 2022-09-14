@@ -10,3 +10,4 @@
 /output/
 run/
 fabric/.gradle/*
+fabric/.gradle/
