@@ -7,6 +7,7 @@ _✨ 多 Yggdrasil 共存的实现 ✨_
 [![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCaaMoe%2FMultiLogin.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCaaMoe%2FMultiLogin?ref=badge_shield)
 
 </div>
 
@@ -69,3 +70,7 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 </a>
 
 [我也想为贡献者之一？](https://github.com/CaaMoe/MultiLogin/pulls)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCaaMoe%2FMultiLogin.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FCaaMoe%2FMultiLogin?ref=badge_large)
