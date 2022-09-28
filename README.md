@@ -2,7 +2,7 @@
 
 # MultiLogin
 
-_✨ 多 Yggdrasil 共存的实现 ✨_
+_✨ 正版与多种外置登录共存 ✨_
 
 [![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
