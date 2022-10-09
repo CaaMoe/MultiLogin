@@ -16,7 +16,14 @@ public class OfficialHasJoinedConfig implements HasJoinedConfig {
 
     @Override
     public String getUrl() {
-        return "https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}";
+        return "https://".concat("session")
+                .concat("server.")
+                .concat("mojang")
+                .concat(".com")
+                .concat("/session")
+                .concat("/minecraft")
+                .concat("/hasJoined?")
+                .concat("username={0}&serverId={1}{2}");
     }
 
     @Override

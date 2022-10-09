@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.configuration.yggdrasil.hasjoined;
 
-import lombok.Getter;
 import lombok.ToString;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.ConfException;
@@ -14,27 +13,41 @@ import java.util.Objects;
  */
 @ToString
 public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
-    @Getter
-    private String url;
-    @Getter
-    private YggdrasilServiceConfig.HttpRequestMethod method;
-    @Getter
-    private String ipContent;
-    @Getter
-    private String postContent;
+    private String apiRoot;
 
     @Override
     public void initValue(CommentedConfigurationNode node) throws ConfException {
-        String s = node.node("apiRoot").getString();
-        if (ValueUtil.isEmpty(s))
+        apiRoot = node.node("apiRoot").getString();
+        if (ValueUtil.isEmpty(apiRoot))
             throw new ConfException("BlessingSkin is specified, but apiRoot is empty.");
-        if (!s.endsWith("/")) {
-            s = s.concat("/");
+        if (!apiRoot.endsWith("/")) {
+            apiRoot = apiRoot.concat("/");
         }
-        url = s.concat("sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}");
-        method = YggdrasilServiceConfig.HttpRequestMethod.GET;
-        ipContent = "&ip={0}";
-        postContent = "";
+    }
+
+    @Override
+    public String getUrl() {
+        return apiRoot.concat("session")
+                .concat("server")
+                .concat("/session")
+                .concat("/minecraft")
+                .concat("/hasJoined?")
+                .concat("username={0}&serverId={1}{2}");
+    }
+
+    @Override
+    public YggdrasilServiceConfig.HttpRequestMethod getMethod() {
+        return YggdrasilServiceConfig.HttpRequestMethod.GET;
+    }
+
+    @Override
+    public String getIpContent() {
+        return "&ip={0}";
+    }
+
+    @Override
+    public String getPostContent() {
+        return "";
     }
 
     @Override
@@ -42,11 +55,11 @@ public class BlessingSkinHasJoinedConfig implements HasJoinedConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         BlessingSkinHasJoinedConfig that = (BlessingSkinHasJoinedConfig) o;
-        return Objects.equals(url, that.url);
+        return Objects.equals(apiRoot, that.apiRoot);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url);
+        return Objects.hash(apiRoot);
     }
 }

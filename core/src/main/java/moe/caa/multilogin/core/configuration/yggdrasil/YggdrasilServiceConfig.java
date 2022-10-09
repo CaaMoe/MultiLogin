@@ -46,7 +46,7 @@ public class YggdrasilServiceConfig {
 
         HasJoinedConfig hasJoined = HasJoinedConfig.getHasJoinedConfig(node.node("hasJoined"));
 
-        boolean passIp = node.node("passIp").getBoolean(true);
+        boolean passIp = node.node("passIp").getBoolean(false);
         int timeout = node.node("timeout").getInt(10000);
         int retry = node.node("retry").getInt(0);
         int retryDelay = node.node("retryDelay").getInt(0);

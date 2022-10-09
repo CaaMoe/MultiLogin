@@ -118,8 +118,8 @@ hasJoined:
 #
 # 本地测试时请保持此值为 false，否则可能返回无效的会话的登录结果。
 #
-# 默认值 ‘true’
-passIp: true
+# 默认值 ‘false’
+passIp: false
 
 # 设置 hasJoined 验证超时时间。
 #

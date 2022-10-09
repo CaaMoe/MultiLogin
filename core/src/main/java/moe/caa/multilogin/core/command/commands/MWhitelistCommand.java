@@ -139,9 +139,11 @@ public class MWhitelistCommand {
                 new Pair<>("username", username),
                 new Pair<>("count", count)
         ));
-        IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
-        if (player != null) {
-            player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
+        if(inGameUUID != null){
+            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
+            if (player != null) {
+                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
+            }
         }
         return 0;
     }
