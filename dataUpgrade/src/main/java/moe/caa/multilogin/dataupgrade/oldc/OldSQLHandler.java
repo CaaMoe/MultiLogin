@@ -22,7 +22,7 @@ public class OldSQLHandler {
     private final Connection connection;
     private final String tableName;
 
-    public OldSQLHandler(File folder, OldConfig config, OldAdvancedConfig advancedConfig) throws Throwable {
+    public OldSQLHandler(OldConfig config, OldAdvancedConfig advancedConfig) throws Throwable {
         tableName = advancedConfig.getDatabase_user_data_table_name()
                 .replace("{prefix}", config.getS_prefix())
                 .replace("{_}", config.getS_prefix().trim().length() != 0 ? "_" : "");
@@ -37,7 +37,7 @@ public class OldSQLHandler {
             Field driverField = aClass.getDeclaredField("INSTANCE");
             driverField.setAccessible(true);
             driver = ((Driver) driverField.get(null));
-            connection = driver.connect("jdbc:h2:" + new File(folder, "multilogin").getAbsolutePath(), properties);
+            connection = driver.connect("jdbc:h2:" + new File( "multilogin").getAbsolutePath(), properties);
         } else {
             urlClassLoader = new URLClassLoader(new URL[]{
                     new URL("https://maven.aliyun.com/repository/public/mysql/mysql-connector-java/8.0.25/mysql-connector-java-8.0.25.jar"),

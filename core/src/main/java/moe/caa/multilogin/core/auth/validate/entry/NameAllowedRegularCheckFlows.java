@@ -32,6 +32,6 @@ public class NameAllowedRegularCheckFlows extends BaseFlows<ValidateContext> {
             ));
             return Signal.TERMINATED;
         }
-        return null;
+        return Signal.PASSED;
     }
 }

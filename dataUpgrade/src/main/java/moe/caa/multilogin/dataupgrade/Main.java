@@ -27,6 +27,10 @@ public class Main {
     private static OldConfig oldConfig;
 
     public static void main(String[] args) throws InterruptedException {
+        if (new File("output").exists()) {
+            System.err.println("Folder output already exists, has it been upgraded before?");
+            return;
+        }
         long timeMillis = System.currentTimeMillis();
         readOldData();
         if (oldUserDataList == null || oldConfig == null) {
@@ -155,13 +159,12 @@ public class Main {
 
     // 读老数据
     public static void readOldData() {
-        File inputFile = new File("input");
-        File configFile = new File(inputFile, "config.yml");
-        File advancedConfigFile = new File(inputFile, "advanced_setting.properties");
+        File configFile = new File("config.yml");
+        File advancedConfigFile = new File("advanced_setting.properties");
 
         if (!configFile.exists()) {
             System.err.println("The config.yml file could not be found.");
-            System.err.println("You need to create the input folder in the program's sibling directory, and then put the old files into it, Try again.");
+            System.err.println("You need to move this program to the same directory as config.yml(old), Try again.");
             return;
         }
 
@@ -212,7 +215,7 @@ public class Main {
         OldSQLHandler oldSQLHandler;
         try {
             System.out.println("Loading the old " + oldConfig.getS_backend().name().toLowerCase() + " database driver...");
-            oldSQLHandler = new OldSQLHandler(inputFile, oldConfig, oldAdvancedConfig);
+            oldSQLHandler = new OldSQLHandler(oldConfig, oldAdvancedConfig);
         } catch (Throwable e) {
             System.err.println("Cannot process old database, please check.");
             e.printStackTrace();

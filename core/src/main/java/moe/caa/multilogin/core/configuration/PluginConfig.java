@@ -32,7 +32,8 @@ public class PluginConfig {
     private boolean forceUseLogin;
     @Getter
     private boolean checkUpdate;
-
+    @Getter
+    private boolean disableDuplicateNamesCheck;
     @Getter
     private SqlConfig sqlConfig;
     @Getter
@@ -72,6 +73,8 @@ public class PluginConfig {
         forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(true);
 
         checkUpdate = configConfigurationNode.node("checkUpdate").getBoolean(true);
+
+        disableDuplicateNamesCheck = configConfigurationNode.node("disableDuplicateNamesCheck").getBoolean(false);
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
@@ -115,6 +118,10 @@ public class PluginConfig {
                 "Added %d Yggdrasil services.", idMap.size()
         ));
         this.idMap = Collections.unmodifiableMap(idMap);
+
+        if(disableDuplicateNamesCheck){
+            LoggerProvider.getLogger().warn("Duplicate name checker has been disabled!!!");
+        }
     }
 
     public void saveResource(String path, boolean cover) throws IOException {
