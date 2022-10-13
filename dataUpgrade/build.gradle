@@ -15,7 +15,7 @@ dependencies {
 
 shadowJar {
     archiveBaseName.set('MultiLogin-DataUpgrade')
-    archiveVersion.set('1.0')
+    archiveVersion.set('1.1')
     archiveClassifier.set("")
 
     manifest {
