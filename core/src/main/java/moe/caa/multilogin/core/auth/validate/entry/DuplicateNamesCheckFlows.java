@@ -24,6 +24,11 @@ public class DuplicateNamesCheckFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
+        if (core.getPluginConfig().isDisableDuplicateNamesCheck()) {
+            core.getSqlManager().getInGameProfileTable().
+                    updateUsername(validateContext.getInGameProfile().getId(), validateContext.getInGameProfile().getName());
+            return Signal.PASSED;
+        }
         UUID inGameUUID = core.getSqlManager().getInGameProfileTable()
                 .getInGameUUID(validateContext.getInGameProfile().getName());
         // 如果 数据库中记录的 username 使用者为空，或使用者就是它本身，就更新
