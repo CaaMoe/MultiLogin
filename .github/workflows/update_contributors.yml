@@ -18,7 +18,8 @@ jobs:
             | grep login \
             | sed 's#    "login": "##g' \
             | sed 's#",##g' \
-            | sed "s#github-actions[bot]\n##g" \
+            | sed 's#github-actions\[bot\]##g' \
+            | sed '/^[[:space:]]*$/d' \
             > contributors
           git config user.name 'github-actions'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
