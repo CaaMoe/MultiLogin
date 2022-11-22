@@ -43,6 +43,8 @@ public class DuplicateNamesCheckFlows extends BaseFlows<ValidateContext> {
 
             // 踢出
             for (IPlayer player : core.getPlugin().getRunServer().getPlayerManager().getPlayers(validateContext.getInGameProfile().getName())) {
+                // 这里如果是它自己，就不进行操作，抛给 RepeatedLoginCheckFlows 进行处理
+                if(player.getUniqueId().equals(inGameUUID)) continue;
                 player.kickPlayer(kickMsg);
             }
             return Signal.PASSED;
