@@ -4,16 +4,12 @@ import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerChat;
-import com.velocitypowered.proxy.protocol.packet.chat.PlayerCommand;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
-import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerChat;
-import moe.caa.multilogin.velocity.injector.redirect.MultiPlayerCommand;
 import moe.caa.multilogin.velocity.injector.redirect.MultiServerLogin;
 
 import java.lang.reflect.Field;
@@ -31,19 +27,10 @@ public class VelocityInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException {
         MultiInitialLoginSessionHandler.init();
-        MultiPlayerChat.init();
-        MultiPlayerCommand.init();
 
         // auth
         redirectInput(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
         redirectInput(StateRegistry.LOGIN.serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
-
-        // chat
-        redirectInput(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat::new);
-        redirectInput(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand::new);
-
-        redirectOutput(StateRegistry.PLAY.serverbound, PlayerChat.class, MultiPlayerChat.class);
-        redirectOutput(StateRegistry.PLAY.serverbound, PlayerCommand.class, MultiPlayerCommand.class);
     }
 
     /**
