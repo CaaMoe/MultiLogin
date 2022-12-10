@@ -28,12 +28,6 @@ jobs:
       - name: Patch Gradle Repositories
         run:
           sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
-
-      - name: Build Bukkit
-        uses: gradle/gradle-command-action@v1
-        with:
-          arguments: :bukkit:ShadowJar
-          gradle-version: 7.4
           
       - name: Build Bungee
         uses: gradle/gradle-command-action@v1
@@ -45,18 +39,6 @@ jobs:
         uses: gradle/gradle-command-action@v1
         with:
           arguments: :velocity:ShadowJar
-          gradle-version: 7.4
-          
-      - name: Build DataUpgrade
-        uses: gradle/gradle-command-action@v1
-        with:
-          arguments: :dataUpgrade:ShadowJar
-          gradle-version: 7.4
-
-      - name: Build Fabric
-        uses: gradle/gradle-command-action@v1
-        with:
-          arguments: :fabric:build
           gradle-version: 7.4
 
       - name: Cleanup Gradle Cache

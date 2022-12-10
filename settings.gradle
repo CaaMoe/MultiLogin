@@ -20,11 +20,3 @@ include 'dataUpgrade'
 include 'velocity'
 include 'velocity:injector'
 
-include 'bukkit'
-include 'bukkit:injector'
-
-include 'bungee'
-include 'bungee:injector'
-
-include 'fabric'
-
