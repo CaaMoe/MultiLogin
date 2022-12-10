@@ -1,22 +1,13 @@
-pluginManagement {
-    repositories {
-        maven {
-            name = 'Fabric'
-            url = 'https://maven.fabricmc.net/'
-        }
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-
 rootProject.name = 'MultiLogin'
 
 include 'api'
 include 'core'
 include 'flows'
 include 'loader'
-include 'dataUpgrade'
 
 include 'velocity'
 include 'velocity:injector'
+
+include 'bungee'
+include 'bungee:injector'
 
