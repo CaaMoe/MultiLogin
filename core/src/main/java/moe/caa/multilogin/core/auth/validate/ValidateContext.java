@@ -17,6 +17,8 @@ public class ValidateContext {
     private final GameProfile inGameProfile;
     private String disallowMessage;
 
+    private boolean needWait;
+
     protected ValidateContext(String username, String serverId, String ip, YggdrasilAuthenticationResult yggdrasilAuthenticationResult) {
         this.username = username;
         this.serverId = serverId;

@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.auth.validate;
 
+import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.validate.entry.*;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -39,7 +40,16 @@ public class ValidateAuthenticationService {
                                                 YggdrasilAuthenticationResult yggdrasilAuthenticationResult) {
         ValidateContext context = new ValidateContext(username, serverId, ip, yggdrasilAuthenticationResult);
         Signal run = sequenceFlows.run(context);
-        if (run == Signal.PASSED) return ValidateAuthenticationResult.ofAllowed(context.getInGameProfile());
+        if (run == Signal.PASSED) {
+            if (context.isNeedWait()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    LoggerProvider.getLogger().debug(e);
+                }
+            }
+            return ValidateAuthenticationResult.ofAllowed(context.getInGameProfile());
+        }
         return ValidateAuthenticationResult.ofDisallowed(context.getDisallowMessage());
     }
 }

@@ -24,6 +24,7 @@ public class RepeatedLoginCheckFlows extends BaseFlows<ValidateContext> {
         }
         if (!validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().isRefuseRepeatedLogin()) {
             player.kickPlayer(core.getLanguageHandler().getMessage("in_game_repeated_login"));
+            validateContext.setNeedWait(true);
             return Signal.PASSED;
         }
         validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_repeat_login"));
