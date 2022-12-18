@@ -49,7 +49,7 @@ public class MultiCore implements MultiCoreAPI {
     @Getter
     private final Gson gson;
     @Getter
-    private final SemVersion semVersion;
+    private SemVersion semVersion;
 
 
     /**
@@ -63,7 +63,6 @@ public class MultiCore implements MultiCoreAPI {
         this.sqlManager = new SQLManager(this);
         this.authHandler = new AuthHandler(this);
         this.commandHandler = new CommandHandler(this);
-        this.semVersion = SemVersion.of(buildManifest.getVersion());
         this.playerHandler = new PlayerHandler(this);
         this.cacheWhitelistHandler = new CacheWhitelistHandler();
         this.gson = new GsonBuilder()
@@ -87,6 +86,7 @@ public class MultiCore implements MultiCoreAPI {
         playerHandler.register();
         new CheckUpdater(this).start();
 
+        this.semVersion = SemVersion.of(buildManifest.getVersion());
         LoggerProvider.getLogger().info(
                 String.format("Loaded, using MultiLogin v%s on %s - %s",
                         buildManifest.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
