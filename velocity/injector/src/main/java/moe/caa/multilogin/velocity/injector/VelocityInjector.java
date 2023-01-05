@@ -29,8 +29,11 @@ public class VelocityInjector implements Injector {
         MultiInitialLoginSessionHandler.init();
 
         // auth
-        redirectInput(StateRegistry.LOGIN.serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
-        redirectInput(StateRegistry.LOGIN.serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
+        StateRegistry stateRegistry = StateRegistry.LOGIN;
+        Field serverboundField = ReflectUtil.handleAccessible(StateRegistry.class.getDeclaredField("serverbound"));
+        StateRegistry.PacketRegistry serverbound = (StateRegistry.PacketRegistry) serverboundField.get(stateRegistry);
+        redirectInput(serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
+        redirectInput(serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
     }
 
     /**
