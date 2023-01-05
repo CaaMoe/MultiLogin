@@ -35,6 +35,8 @@ public class PluginConfig {
     @Getter
     private boolean disableDuplicateNamesCheck;
     @Getter
+    private boolean disableForwardingCheck;
+    @Getter
     private SqlConfig sqlConfig;
     @Getter
     private Map<Integer, YggdrasilServiceConfig> idMap;
@@ -75,6 +77,8 @@ public class PluginConfig {
         checkUpdate = configConfigurationNode.node("checkUpdate").getBoolean(true);
 
         disableDuplicateNamesCheck = configConfigurationNode.node("disableDuplicateNamesCheck").getBoolean(false);
+
+        disableForwardingCheck = configConfigurationNode.node("disableForwardingCheck").getBoolean(false);
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 

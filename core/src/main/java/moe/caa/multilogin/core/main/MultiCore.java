@@ -78,7 +78,7 @@ public class MultiCore implements MultiCoreAPI {
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
         buildManifest.read();
         buildManifest.checkStable();
-        checkEnvironment();
+
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
@@ -92,7 +92,7 @@ public class MultiCore implements MultiCoreAPI {
                         buildManifest.getVersion(), plugin.getRunServer().getName(), plugin.getRunServer().getVersion()
                 )
         );
-
+        checkEnvironment();
     }
 
     private void checkEnvironment() {
@@ -102,6 +102,10 @@ public class MultiCore implements MultiCoreAPI {
             throw new EnvironmentException("offline mode.");
         }
         if (!plugin.getRunServer().isForwarded()) {
+            if (getPluginConfig().isDisableForwardingCheck()) {
+                LoggerProvider.getLogger().warn("Please enable forwarding, otherwise the plugin will not work properly!!!");
+                return;
+            }
             LoggerProvider.getLogger().error("Please enable forwarding, otherwise the plugin will not work!!!");
             LoggerProvider.getLogger().error("Server is closing!!!");
             throw new EnvironmentException("do not forward.");
