@@ -37,28 +37,35 @@ body:
         请填写您所使用的是哪种架构，例如`linux/amd64`, `windows/amd64`
     validations:
       required: true
-  - type: textarea
+  - type: input
+    id: server-core
+    attributes:
+      label: |
+        服务器核心
+      description: |
+        请填写您所使用的是哪种服务器核心，例如`vanilla`, `spigot`
+    validations:
+      required: true
+  - type: input
     id: config
     attributes:
       label: |
         配置文件
       description: |
-        需要您的所配置的文件我们才能弄懂错误大致是因为什么发生的
-      placeholder: |
-        请注意隐藏私密信息
-        请注意，过长文本为避免影响体验，我们建议您提交到<pastebin.com>
+        需要您的配置的文件我们才能弄懂错误大致是因为什么发生的，请注意隐藏私密信息
+        为避免影响体验，我们需要您提交到<pastebin.com>或者<pastebin.mozilla.org>以及类似的在线剪切板
+        然后将生成的链接粘贴至此
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: log
     attributes:
       label: |
         日志
       description: |
-        需要日志我们才能帮助您解决问题
-      placeholder: |
-        请注意隐藏私密信息
-        请注意，过长文本为避免影响体验，我们建议您提交到<pastebin.com>
+        需要日志我们才能帮助您解决问题，请注意隐藏私密信息
+        为避免影响体验，我们需要您提交到<pastebin.com>或者<pastebin.mozilla.org>以及类似的在线剪切板
+        然后将生成的链接粘贴至此
   - type: textarea
     id: steps-to-reproduce
     attributes:

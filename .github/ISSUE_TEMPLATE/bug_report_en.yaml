@@ -37,28 +37,35 @@ body:
         Include which architecture you used, such as `linux/amd64`, `windows/amd64`
     validations:
       required: true
-  - type: textarea
+  - type: input
+    id: server-core
+    attributes:
+      label: |
+        Server Core
+      description: |
+        Please fill in what kind of server core you are using, such as `vanilla`, `spigot`
+    validations:
+      required: true
+  - type: input
     id: config
     attributes:
       label: |
-        Configurations
+        Configuration file
       description: |
-        Include what configurrations you used and ran into this problem
-      placeholder: |
-        Pay attention to hiding the token and password in your output
-        Please note that we recommend that you submit long text to <pastebin.com> to avoid disruption to your experience
+        We need your profile to find out the cause of the error, please be careful to hide private information.
+        To avoid disruption, we need you to submit to <pastebin.com> or <pastebin.mozilla.org> and similar online clipboards.
+        Then paste the generated link here.
     validations:
       required: true
-  - type: textarea
+  - type: input
     id: log
     attributes:
       label: |
         Logs
       description: |
-        A log is required for us to help you with your problem
-      placeholder: |
-        Pay attention to hiding the token and password in your output
-        Please note that we recommend that you submit long text to <pastebin.com> to avoid disruption to your experience
+        We need a log to help you solve your problem, please be careful to hide private information.
+        To avoid disruption, we need you to submit to <pastebin.com> or <pastebin.mozilla.org> and similar online clipboards.
+        Then paste the generated link here.
   - type: textarea
     id: steps-to-reproduce
     attributes:
