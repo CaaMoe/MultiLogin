@@ -160,14 +160,6 @@ public class PluginLoader {
             loadNestJar(addition, pluginClassLoader);
         }
 
-        //show banner
-        LoggerProvider.getLogger().info("\033[40;31m __  __       _ _   _ _                _       \033[0m");
-        LoggerProvider.getLogger().info("\033[40;33m|  \\/  |_   _| | |_(_) |    ___   __ _(_)_ __  \033[0m");
-        LoggerProvider.getLogger().info("\033[40;32m| |\\/| | | | | | __| | |   / _ \\ / _` | | '_ \\ \033[0m");
-        LoggerProvider.getLogger().info("\033[40;36m| |  | | |_| | | |_| | |__| (_) | (_| | | | | |\033[0m");
-        LoggerProvider.getLogger().info("\033[40;34m|_|  |_|\\__,_|_|\\__|_|_____\\___/ \\__, |_|_| |_|\033[0m");
-        LoggerProvider.getLogger().info("\033[40;35m                                 |___/         \033[0m");
-
         loadCore();
     }
 
