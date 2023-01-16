@@ -66,11 +66,13 @@ public class AuthHandler implements AuthAPI {
             ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(username, serverId, ip, yggdrasilAuthenticationResult);
             if (validateAuthenticationResult.getReason() == ValidateAuthenticationResult.Reason.ALLOWED) {
                 LoggerProvider.getLogger().info(
-                        String.format("The in game uuid of player %s is %s, and the online uuid is %s, which comes from the authentication result of yggdrasil id %d.",
+                        String.format("Player %s(uuid: %s) from yggdrasil service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
+                                yggdrasilAuthenticationResult.getResponse().getName(),
+                                yggdrasilAuthenticationResult.getResponse().getId().toString(),
+                                yggdrasilAuthenticationResult.getYggdrasilServiceConfig().getName(),
+                                yggdrasilAuthenticationResult.getYggdrasilId(),
                                 validateAuthenticationResult.getInGameProfile().getName(),
-                                validateAuthenticationResult.getInGameProfile().getId().toString(),
-                                yggdrasilAuthenticationResult.getResponse().getId(),
-                                yggdrasilAuthenticationResult.getYggdrasilId()
+                                validateAuthenticationResult.getInGameProfile().getId().toString()
                         )
                 );
                 GameProfile restoredSkinProfile = null;
