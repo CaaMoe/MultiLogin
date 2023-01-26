@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 @Getter
 @ToString
 public class YggdrasilServiceConfig {
+    public static final String YGGDRASIL_DEFAULT_NAME = "Unnamed";
     private final int id;
     private final String name;
 
@@ -42,7 +43,7 @@ public class YggdrasilServiceConfig {
 
     public static YggdrasilServiceConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
         int id = node.node("id").getInt();
-        String name = node.node("name").getString("Unnamed");
+        String name = node.node("name").getString(YGGDRASIL_DEFAULT_NAME);
 
         HasJoinedConfig hasJoined = HasJoinedConfig.getHasJoinedConfig(node.node("hasJoined"));
 

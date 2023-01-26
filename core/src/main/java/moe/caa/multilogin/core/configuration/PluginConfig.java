@@ -110,6 +110,9 @@ public class PluginConfig {
         }
 
         idMap.forEach((i, y) -> {
+            if (YggdrasilServiceConfig.YGGDRASIL_DEFAULT_NAME.equals(y.getName())) {
+                LoggerProvider.getLogger().warn(String.format("The name of yggdrasil whose id is %d has not been set.", i));
+            }
             LoggerProvider.getLogger().info(String.format(
                     "Add a yggdrasil service with id %d and name %s.", i, y.getName()
             ));
@@ -119,7 +122,7 @@ public class PluginConfig {
                 "The server has not added any yggdrasil service, which will prevent all players from logging in."
         );
         else LoggerProvider.getLogger().info(String.format(
-                "Added %d Yggdrasil services.", idMap.size()
+                "Added %d yggdrasil services.", idMap.size()
         ));
         this.idMap = Collections.unmodifiableMap(idMap);
 
