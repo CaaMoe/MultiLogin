@@ -44,7 +44,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
             synchronized (this) {
                 // 取没有被占用的 UUID
                 while (core.getSqlManager().getInGameProfileTable().dataExists(inGameUUID)) {
-                    LoggerProvider.getLogger().warn("UUID xxx has been used and will take a random value.");
+                    LoggerProvider.getLogger().warn(String.format("UUID %s has been used and will take a random value.", inGameUUID.toString()));
                     inGameUUID = UUID.randomUUID();
                 }
                 // 身份卡UUID数据被确定
