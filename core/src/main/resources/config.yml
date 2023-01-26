@@ -26,16 +26,6 @@ checkUpdate: true
 # 默认值 true
 forceUseLogin: true
 
-# 全局禁用重名检查
-#
-# 默认值 false
-disableDuplicateNamesCheck: false
-
-# 禁用转发检查
-#
-# 默认值 false
-disableForwardingCheck: false
-
 # 插件数据设置
 sql:
 

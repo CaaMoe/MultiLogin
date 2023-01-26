@@ -113,10 +113,6 @@ public class MultiCore implements MultiCoreAPI {
             throw new EnvironmentException("offline mode.");
         }
         if (!plugin.getRunServer().isForwarded()) {
-            if (getPluginConfig().isDisableForwardingCheck()) {
-                LoggerProvider.getLogger().warn("Please enable forwarding, otherwise the plugin will not work properly!!!");
-                return;
-            }
             LoggerProvider.getLogger().error("Please enable forwarding, otherwise the plugin will not work!!!");
             LoggerProvider.getLogger().error("Server is closing!!!");
             throw new EnvironmentException("do not forward.");
