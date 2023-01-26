@@ -37,8 +37,6 @@ public class YggdrasilServiceConfig {
     private final InitUUID initUUID;
     private final String nameAllowedRegular;
     private final boolean whitelist;
-    private final boolean refuseRepeatedLogin;
-    private final boolean compulsoryUsername;
     private final SkinRestorerConfig skinRestorer;
 
     public static YggdrasilServiceConfig read(CommentedConfigurationNode node) throws SerializationException, ConfException {
@@ -56,8 +54,6 @@ public class YggdrasilServiceConfig {
         InitUUID initUUID = node.node("initUUID").get(InitUUID.class, InitUUID.DEFAULT);
         String nameAllowedRegular = node.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
         boolean whitelist = node.node("whitelist").getBoolean(false);
-        boolean refuseRepeatedLogin = node.node("refuseRepeatedLogin").getBoolean(false);
-        boolean compulsoryUsername = node.node("compulsoryUsername").getBoolean(false);
         SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(node.node("skinRestorer"));
 
         return checkValid(
@@ -65,7 +61,7 @@ public class YggdrasilServiceConfig {
                         id, name, hasJoined,
                         passIp, timeout, retry, retryDelay, proxy,
                         initUUID, nameAllowedRegular, whitelist,
-                        refuseRepeatedLogin, compulsoryUsername, skinRestorer
+                        skinRestorer
                 )
         );
     }

@@ -27,9 +27,7 @@ public class ValidateAuthenticationService {
                 // 重名检查和抢占名称检查和名字更新
                 new DuplicateNamesCheckFlows(core),
                 // 白名单检查
-                new WhitelistCheckFlows(core),
-                // 重复上线检查
-                new RepeatedLoginCheckFlows(core)
+                new WhitelistCheckFlows(core)
         ));
     }
 

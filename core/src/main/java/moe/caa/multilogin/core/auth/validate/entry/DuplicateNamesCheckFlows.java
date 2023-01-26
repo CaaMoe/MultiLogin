@@ -45,25 +45,6 @@ public class DuplicateNamesCheckFlows extends BaseFlows<ValidateContext> {
             }
             return Signal.PASSED;
         }
-        // 否则，看他有没有权限占用这个用户名
-        if (validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().isCompulsoryUsername()) {
-            core.getSqlManager().getInGameProfileTable().eraseUsername(validateContext.getInGameProfile().getName());
-            core.getSqlManager().getInGameProfileTable().
-                    updateUsername(validateContext.getInGameProfile().getId(), validateContext.getInGameProfile().getName());
-
-            String kickMsg = core.getLanguageHandler().getMessage("in_game_username_occupy",
-                    new Pair<>("current_username", validateContext.getInGameProfile().getName()));
-
-            // 踢出
-            for (IPlayer player : core.getPlugin().getRunServer().getPlayerManager().getPlayers(validateContext.getInGameProfile().getName())) {
-                player.kickPlayer(kickMsg);
-                validateContext.setNeedWait(true);
-            }
-            LoggerProvider.getLogger().info(String.format("The user whose in game uuid is %s forcibly occupies the username %s.",
-                    validateContext.getInGameProfile().getId().toString(), validateContext.getInGameProfile().getName()
-            ));
-            return Signal.PASSED;
-        }
         // 没有的话就踹了
         validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_repeated",
                 new Pair<>("current_username", validateContext.getInGameProfile().getName())
