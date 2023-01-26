@@ -26,6 +26,13 @@ checkUpdate: true
 # 默认值 true
 forceUseLogin: true
 
+# 设置用户名正则约束。
+# 若不匹配将会拒绝指令或当前玩家的登录请求。
+# 如果此值留空，则不启用此功能。
+#
+# 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
+nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
+
 # 插件数据设置
 sql:
 

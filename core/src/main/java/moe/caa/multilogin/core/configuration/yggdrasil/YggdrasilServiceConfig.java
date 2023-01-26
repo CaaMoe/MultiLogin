@@ -33,9 +33,7 @@ public class YggdrasilServiceConfig {
     private final int retry;
     private final int retryDelay;
     private final ProxyConfig proxy;
-
     private final InitUUID initUUID;
-    private final String nameAllowedRegular;
     private final boolean whitelist;
     private final SkinRestorerConfig skinRestorer;
 
@@ -52,7 +50,6 @@ public class YggdrasilServiceConfig {
         ProxyConfig proxy = ProxyConfig.read(node.node("proxy"));
 
         InitUUID initUUID = node.node("initUUID").get(InitUUID.class, InitUUID.DEFAULT);
-        String nameAllowedRegular = node.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
         boolean whitelist = node.node("whitelist").getBoolean(false);
         SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(node.node("skinRestorer"));
 
@@ -60,7 +57,7 @@ public class YggdrasilServiceConfig {
                 new YggdrasilServiceConfig(
                         id, name, hasJoined,
                         passIp, timeout, retry, retryDelay, proxy,
-                        initUUID, nameAllowedRegular, whitelist,
+                        initUUID, whitelist,
                         skinRestorer
                 )
         );

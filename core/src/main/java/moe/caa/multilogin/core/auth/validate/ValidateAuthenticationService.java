@@ -1,7 +1,10 @@
 package moe.caa.multilogin.core.auth.validate;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.core.auth.validate.entry.*;
+import moe.caa.multilogin.core.auth.validate.entry.AssignInGameFlows;
+import moe.caa.multilogin.core.auth.validate.entry.InitialLoginDataFlows;
+import moe.caa.multilogin.core.auth.validate.entry.NameAllowedRegularCheckFlows;
+import moe.caa.multilogin.core.auth.validate.entry.WhitelistCheckFlows;
 import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.SequenceFlows;
@@ -20,14 +23,14 @@ public class ValidateAuthenticationService {
         this.core = core;
         // 注意 flows 顺序不能乱
         this.sequenceFlows = new SequenceFlows<>(Arrays.asList(
-                // 处理玩家的游戏内 UUID 和保存数据
-                new InitialInGameUUIDFlows(core),
+                // 登录记录
+                new InitialLoginDataFlows(core),
                 // 名称正则检查
                 new NameAllowedRegularCheckFlows(core),
-                // 重名检查和抢占名称检查和名字更新
-                new DuplicateNamesCheckFlows(core),
                 // 白名单检查
-                new WhitelistCheckFlows(core)
+                new WhitelistCheckFlows(core),
+                // 处理玩家的游戏内 UUID 和分配
+                new AssignInGameFlows(core)
         ));
     }
 

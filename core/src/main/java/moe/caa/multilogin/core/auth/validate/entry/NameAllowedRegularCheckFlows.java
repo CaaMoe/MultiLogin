@@ -21,7 +21,7 @@ public class NameAllowedRegularCheckFlows extends BaseFlows<ValidateContext> {
 
     @Override
     public Signal run(ValidateContext validateContext) {
-        String nameAllowedRegular = validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().getNameAllowedRegular();
+        String nameAllowedRegular = core.getPluginConfig().getNameAllowedRegular();
         if (ValueUtil.isEmpty(nameAllowedRegular)) {
             return Signal.PASSED;
         }

@@ -34,6 +34,10 @@ public class PluginConfig {
     private boolean checkUpdate;
     @Getter
     private SqlConfig sqlConfig;
+
+    @Getter
+    private String nameAllowedRegular;
+
     @Getter
     private Map<Integer, YggdrasilServiceConfig> idMap;
 
@@ -117,6 +121,9 @@ public class PluginConfig {
                 "Added %d yggdrasil services.", idMap.size()
         ));
         this.idMap = Collections.unmodifiableMap(idMap);
+
+
+        nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
     }
 
     public void saveResource(String path, boolean cover) throws IOException {

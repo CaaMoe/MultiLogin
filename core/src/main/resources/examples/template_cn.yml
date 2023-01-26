@@ -182,13 +182,6 @@ proxy:
 # 默认值 ‘DEFAULT’
 initUUID: 'DEFAULT'
 
-# 设置当前 Yggdrasil 下的用户名正则约束。
-# 若不匹配将会拒绝当前玩家的登录请求。
-# 如果此值留空或未设置，则不启用此功能。
-#
-# 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
-nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
-
 # 是否为当前 Yggdrasil 单独开启白名单功能。
 #
 # 默认值 ‘false’

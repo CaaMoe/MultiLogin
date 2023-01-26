@@ -129,6 +129,25 @@ public class InGameProfileTable {
     }
 
     /**
+     * 插入一条新的数据
+     *
+     * @param inGameUUID 游戏内 UUID
+     */
+    public void insertNewData(UUID inGameUUID, String currentUsername) throws SQLException {
+        String sql = String.format(
+                "INSERT INTO %s (%s, %s) VALUES (?, ?)"
+                , tableName, fieldInGameUuid, fieldCurrentUsername
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            statement.setString(2, currentUsername);
+            statement.executeUpdate();
+        }
+    }
+
+    /**
      * 更新用户名
      *
      * @param inGameUUID      游戏内 UUID
