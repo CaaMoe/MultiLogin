@@ -28,7 +28,8 @@ public class MWhitelistCommand {
     }
 
     public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
-        return literalArgumentBuilder.then(handler.literal("add")
+        return literalArgumentBuilder
+                .then(handler.literal("add")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_ADD))
                         .then(handler.argument("username", StringArgumentType.string())
                                 .executes(this::executeAddUsername)

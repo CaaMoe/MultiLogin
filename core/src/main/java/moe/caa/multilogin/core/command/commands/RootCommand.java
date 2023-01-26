@@ -22,12 +22,14 @@ public class RootCommand {
     private final MWhitelistCommand mWhitelistCommand;
     private final MSearchCommand mSearchCommand;
     private final MUserCommand mUserCommand;
+    private final MRenameCommand mRenameCommand;
 
     public RootCommand(CommandHandler handler) {
         this.handler = handler;
         this.mWhitelistCommand = new MWhitelistCommand(handler);
         this.mSearchCommand = new MSearchCommand(handler);
         this.mUserCommand = new MUserCommand(handler);
+        this.mRenameCommand = new MRenameCommand(handler);
     }
 
     public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
@@ -46,7 +48,8 @@ public class RootCommand {
                         .executes(this::executeConfirm))
                 .then(mSearchCommand.register(handler.literal("search")))
                 .then(mUserCommand.register(handler.literal("user")))
-                .then(mWhitelistCommand.register(handler.literal("whitelist")));
+                .then(mWhitelistCommand.register(handler.literal("whitelist")))
+                .then(mRenameCommand.register(handler.literal("rename")));
     }
 
     // /MultiLogin confirm

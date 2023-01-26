@@ -162,7 +162,7 @@ public class InGameProfileTable {
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            statement.setString(1, currentUsername.toLowerCase(Locale.ROOT));
+            statement.setString(1, currentUsername);
             statement.setBytes(2, ValueUtil.uuidToBytes(inGameUUID));
             statement.executeUpdate();
         }
@@ -175,14 +175,14 @@ public class InGameProfileTable {
      */
     public int eraseUsername(String currentUsername) throws SQLException {
         String sql = String.format(
-                "UPDATE %s SET %s = ? WHERE %s = ?"
+                "UPDATE %s SET %s = ? WHERE LOWER(%s) = ?"
                 , tableName, fieldCurrentUsername, fieldCurrentUsername
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setString(1, null);
-            statement.setString(2, currentUsername.toLowerCase(Locale.ROOT));
+            statement.setString(2, currentUsername);
             return statement.executeUpdate();
         }
     }

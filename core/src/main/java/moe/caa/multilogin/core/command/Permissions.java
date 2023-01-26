@@ -28,4 +28,6 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_USER_MERGEME_BYNAME = "command.multilogin.user.mergeme.byname";
     public static final String COMMAND_MULTI_LOGIN_USER_MERGEME_BYINGAMEUUID = "command.multilogin.user.mergeme.byingameuuid";
     public static final String COMMAND_MULTI_LOGIN_USER_REMOVE_PROFILE = "command.multilogin.user.remove.profile";
+    public static final String COMMAND_MULTILOGIN_RENAME_ONESELF = "command.multilogin.rename.oneself";
+    public static final String COMMAND_MULTILOGIN_RENAME_OTHER = "command.multilogin.rename.other";
 }
