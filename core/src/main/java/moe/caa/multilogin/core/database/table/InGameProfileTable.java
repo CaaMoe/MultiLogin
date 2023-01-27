@@ -94,7 +94,7 @@ public class InGameProfileTable {
      */
     public String getUsername(UUID inGameUUID) throws SQLException {
         String sql = String.format(
-                "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
+                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
                 , fieldCurrentUsername, tableName, fieldInGameUuid
         );
         try (Connection connection = sqlManager.getPool().getConnection();
@@ -108,24 +108,6 @@ public class InGameProfileTable {
             }
         }
         return null;
-    }
-
-    /**
-     * 插入一条新的数据
-     *
-     * @param inGameUUID 游戏内 UUID
-     */
-    public void insertNewData(UUID inGameUUID) throws SQLException {
-        String sql = String.format(
-                "INSERT INTO %s (%s) VALUES (?)"
-                , tableName, fieldInGameUuid
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            statement.executeUpdate();
-        }
     }
 
     /**
@@ -182,7 +164,20 @@ public class InGameProfileTable {
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setString(1, null);
-            statement.setString(2, currentUsername);
+            statement.setString(2, currentUsername.toLowerCase(Locale.ROOT));
+            return statement.executeUpdate();
+        }
+    }
+
+    public int eraseAllUsername() throws SQLException {
+        String sql = String.format(
+                "UPDATE %s SET %s = ?"
+                , tableName, fieldCurrentUsername
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, null);
             return statement.executeUpdate();
         }
     }

@@ -38,43 +38,50 @@ public class MRenameCommand {
         String newname = StringArgumentType.getString(context, "newname");
         String oldname = StringArgumentType.getString(context, "oldname");
 
-        if (newname.equals(oldname)) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_identical"));
-            return 0;
-        }
-        String nameAllowedRegular = CommandHandler.getCore().getPluginConfig().getNameAllowedRegular();
-        if (!ValueUtil.isEmpty(nameAllowedRegular)) {
-            if (!Pattern.matches(nameAllowedRegular, newname)) {
-                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_mismatch",
-                        new Pair<>("current_username", newname),
-                        new Pair<>("name_allowed_regular", nameAllowedRegular)
-                ));
-                return 0;
-            }
-        }
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(oldname);
-        if (gameUUID == null) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_nonexistence",
-                    new Pair<>("name", oldname)));
-            return 0;
-        }
-        try {
-            CommandHandler.getCore().getSqlManager().getInGameProfileTable().updateUsername(gameUUID, newname);
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_succeed",
-                    new Pair<>("old_name", oldname),
-                    new Pair<>("new_name", newname)));
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+                    if (newname.equals(oldname)) {
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_identical"));
+                        return;
+                    }
+                    String nameAllowedRegular = CommandHandler.getCore().getPluginConfig().getNameAllowedRegular();
+                    if (!ValueUtil.isEmpty(nameAllowedRegular)) {
+                        if (!Pattern.matches(nameAllowedRegular, newname)) {
+                            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_mismatch",
+                                    new Pair<>("current_username", newname),
+                                    new Pair<>("name_allowed_regular", nameAllowedRegular)
+                            ));
+                            return;
+                        }
+                    }
+                    UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(oldname);
+                    if (gameUUID == null) {
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_nonexistence",
+                                new Pair<>("name", oldname)));
+                        return;
+                    }
+                    try {
+                        CommandHandler.getCore().getSqlManager().getInGameProfileTable().updateUsername(gameUUID, newname);
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_succeed",
+                                new Pair<>("old_name", oldname),
+                                new Pair<>("new_name", newname)));
 
-            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(gameUUID);
-            if (player != null) {
-                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_succeed_kickmessage",
-                        new Pair<>("old_name", player.getName()),
-                        new Pair<>("new_name", newname)));
-            }
-        } catch (SQLIntegrityConstraintViolationException e) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_occupied",
-                    new Pair<>("name", newname)));
-            return 0;
-        }
+                        IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(gameUUID);
+                        if (player != null) {
+                            player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_succeed_kickmessage",
+                                    new Pair<>("old_name", player.getName()),
+                                    new Pair<>("new_name", newname)));
+                        }
+                    } catch (SQLIntegrityConstraintViolationException e) {
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_occupied",
+                                new Pair<>("name", newname)));
+                        return;
+                    }
+                    return;
+                }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_desc",
+                        new Pair<>("old_name", oldname),
+                        new Pair<>("new_name", newname)),
+                CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_cq",
+                        new Pair<>("old_name", oldname)));
         return 0;
     }
 
@@ -83,33 +90,42 @@ public class MRenameCommand {
         handler.requireDataCacheArgument(context);
         IPlayer player = context.getSource().getAsPlayer();
         String newname = StringArgumentType.getString(context, "newname");
-        if (player.getName().equals(newname)) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_identical"));
-            return 0;
-        }
 
-        String nameAllowedRegular = CommandHandler.getCore().getPluginConfig().getNameAllowedRegular();
-        if (!ValueUtil.isEmpty(nameAllowedRegular)) {
-            if (!Pattern.matches(nameAllowedRegular, newname)) {
-                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_mismatch",
-                        new Pair<>("current_username", newname),
-                        new Pair<>("name_allowed_regular", nameAllowedRegular)
-                ));
-                return 0;
-            }
-        }
-        try {
-            CommandHandler.getCore().getSqlManager().getInGameProfileTable().updateUsername(player.getUniqueId(), newname);
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_succeed",
-                    new Pair<>("old_name", player.getName()),
-                    new Pair<>("new_name", newname)));
-            player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_succeed_kickmessage",
-                    new Pair<>("old_name", player.getName()),
-                    new Pair<>("new_name", newname)));
-        } catch (SQLIntegrityConstraintViolationException e) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_occupied",
-                    new Pair<>("name", newname)));
-        }
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+                    if (player.getName().equals(newname)) {
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_identical"));
+                        return;
+                    }
+
+                    String nameAllowedRegular = CommandHandler.getCore().getPluginConfig().getNameAllowedRegular();
+                    if (!ValueUtil.isEmpty(nameAllowedRegular)) {
+                        if (!Pattern.matches(nameAllowedRegular, newname)) {
+                            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_mismatch",
+                                    new Pair<>("current_username", newname),
+                                    new Pair<>("name_allowed_regular", nameAllowedRegular)
+                            ));
+                            return;
+                        }
+                    }
+                    try {
+                        CommandHandler.getCore().getSqlManager().getInGameProfileTable().updateUsername(player.getUniqueId(), newname);
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_succeed",
+                                new Pair<>("old_name", player.getName()),
+                                new Pair<>("new_name", newname)));
+                        player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_succeed_kickmessage",
+                                new Pair<>("old_name", player.getName()),
+                                new Pair<>("new_name", newname)));
+                    } catch (SQLIntegrityConstraintViolationException e) {
+                        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_occupied",
+                                new Pair<>("name", newname)));
+                    }
+                    return;
+                }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_desc",
+                        new Pair<>("old_name", player.getName()),
+                        new Pair<>("new_name", newname)),
+                CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_oneself_cq",
+                        new Pair<>("old_name", player.getName())));
+
         return 0;
     }
 }
