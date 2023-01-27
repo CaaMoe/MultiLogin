@@ -22,4 +22,6 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_CURRENT_ONESELF = "command.multilogin.current.oneself";
     public static final String COMMAND_MULTI_LOGIN_CURRENT_OTHER = "command.multilogin.current.other";
     public static final String COMMAND_MULTI_LOGIN_CREATE_PROFILE = "command.multilogin.createprofile";
+    public static final String COMMAND_MULTI_LOGIN_LOGIN_TO_ONESELF = "command.multilogin.loginto.oneself";
+    public static final String COMMAND_MULTI_LOGIN_LOGIN_TO_OTHER = "command.multilogin.loginto.other";
 }

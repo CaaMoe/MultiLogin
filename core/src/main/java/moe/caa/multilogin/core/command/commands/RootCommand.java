@@ -14,7 +14,6 @@ import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.Locale;
 import java.util.Set;
@@ -52,6 +51,10 @@ public class RootCommand {
                                 .executes(this::executeCurrentOther))
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_ONESELF))
                         .executes(this::executeCurrentOneself))
+                .then(handler.literal("loginto")
+                        .then(handler.argument("username", StringArgumentType.string())
+                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LOGIN_TO_ONESELF))
+                                .executes(this::executeLoginToOneself)))
                 .then(handler.literal("confirm")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
                         .executes(this::executeConfirm))
@@ -62,6 +65,38 @@ public class RootCommand {
                                         .executes(this::executeCreateProfile))))
                 .then(mWhitelistCommand.register(handler.literal("whitelist")))
                 .then(mRenameCommand.register(handler.literal("rename")));
+    }
+
+    @SneakyThrows
+    private int executeLoginToOneself(CommandContext<ISender> context) {
+        String username = StringArgumentType.getString(context, "username");
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        if (gameUUID == null) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_loginto_oneself_nonexistence",
+                            new Pair<>("current_username", username)
+                    )
+            );
+            return 0;
+        }
+        Pair<Pair<UUID, String>, Integer> pair = handler.requireDataCacheArgument(context);
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(pair.getValue1().getValue1(), pair.getValue2(), gameUUID);
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_loginto_oneself_succeed",
+                            new Pair<>("current_username", username)
+                    )
+            );
+
+            context.getSource().getAsPlayer().kickPlayer(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_loginto_oneself_succeed_kickmessage",
+                            new Pair<>("current_username", username)
+                    )
+            );
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_loginto_oneself_desc",
+                new Pair<>("current_username", username)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_loginto_oneself_cq"));
+        return 0;
     }
 
     @SneakyThrows
