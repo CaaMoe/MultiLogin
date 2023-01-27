@@ -27,9 +27,9 @@ public interface HandlerAPI {
      * 获得玩家的在线游戏档案
      *
      * @param inGameUUID 玩家的游戏内 UUID
-     * @return 一个表示玩家在线 UUID 和验证它的 Yggdrasil ID 的复合类
+     * @return 一个表示玩家在线数据和验证它的 Yggdrasil ID 的复合类
      */
-    Pair<UUID, Integer> getPlayerOnlineProfile(UUID inGameUUID);
+    Pair<Pair<UUID, String>, Integer> getPlayerOnlineProfile(UUID inGameUUID);
 
     /**
      * 获得玩家游戏内 UUID

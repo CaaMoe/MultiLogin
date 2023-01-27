@@ -125,9 +125,9 @@ public class CommandHandler implements CommandAPI {
     /**
      * 检查是通过猫踢螺钉登录的玩家
      */
-    public final Pair<UUID, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
+    public final Pair<Pair<UUID, String>, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
         requirePlayer(context);
-        Pair<UUID, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
+        Pair<Pair<UUID, String>, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
         if (profile == null) {
             throw builtInExceptions.cacheNotFoundSelf().create();
         }

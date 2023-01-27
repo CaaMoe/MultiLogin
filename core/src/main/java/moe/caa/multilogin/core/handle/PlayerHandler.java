@@ -69,10 +69,10 @@ public class PlayerHandler implements HandlerAPI {
     }
 
     @Override
-    public Pair<UUID, Integer> getPlayerOnlineProfile(UUID inGameUUID) {
+    public Pair<Pair<UUID, String>, Integer> getPlayerOnlineProfile(UUID inGameUUID) {
         Entry entry = cache.get(inGameUUID);
         if (entry == null) return null;
-        return new Pair<>(entry.onlineUUID, entry.yggdrasilID);
+        return new Pair<>(new Pair<>(entry.onlineUUID, entry.onlineUsername), entry.yggdrasilID);
     }
 
     @Override
@@ -126,6 +126,7 @@ public class PlayerHandler implements HandlerAPI {
     @AllArgsConstructor
     public static class Entry {
         private final UUID onlineUUID;
+        private final String onlineUsername;
         private final int yggdrasilID;
         private final long signTimeMillis;
 
