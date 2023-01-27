@@ -5,19 +5,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  velocity-lib:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v1
+      - name: Get Velocity
+        uses: actions/checkout@v3
         with:
-          java-version: 17
+          repository: 'PaperMC/Velocity'
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 11
 
       - name: Cache Gradle packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
@@ -25,21 +28,60 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: Build Velocity
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: current
+          arguments: build
+
+      - name: Collection Library
+        run: |
+          mkdir -p velocity/libraries
+          cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
+          cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
+      - name: Cache Velocity Library
+        uses: actions/cache@v3
+        with:
+          path: libraries
+          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
+
+  build:
+    runs-on: ubuntu-latest
+    needs: velocity-lib
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: 11
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Get Velocity Library
+        uses: actions/cache@v3
+        with:
+          path: velocity/libraries
+          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
+
       - name: Patch Gradle Repositories
         run:
           sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
-          
-      - name: Build Bungee
-        uses: gradle/gradle-command-action@v1
+
+      - name: Build
+        uses: gradle/gradle-build-action@v2
         with:
-          arguments: :bungee:ShadowJar
-          gradle-version: 7.4
-          
-      - name: Build Velocity
-        uses: gradle/gradle-command-action@v1
-        with:
-          arguments: :velocity:ShadowJar
-          gradle-version: 7.4
+          gradle-version: current
+          arguments: ShadowJar
 
       - name: Cleanup Gradle Cache
         run: |
@@ -48,6 +90,6 @@ jobs:
       - name: Upload to artifact respectively
         uses: MuirProject/upload-artifact@v2-beta
         with:
-          name: 'Output'
-          path: '*/build/libs/MultiLogin-*.jar'
+          name: '["Velocity","Bungee"]'
+          path: '["velocity/build/libs/MultiLogin-Velocity-*.jar","bungee/build/libs/MultiLogin-Bungee-*.jar"]'
           retention-days: 15

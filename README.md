@@ -47,8 +47,9 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 ## 构建
 
 1. 克隆这个项目
-2. 执行 `gradle shadowJar`
-3. 在 `*/build/libs` 下寻找你需要的
+2. 参照说明补全 velocity 的依赖
+3. 执行 `gradle shadowJar`
+4. 在 `*/build/libs` 下寻找你需要的
 
 或者你也可以
 
