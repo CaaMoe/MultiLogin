@@ -42,7 +42,7 @@ jobs:
       - name: Cache Velocity Library
         uses: actions/cache@v3
         with:
-          path: libraries
+          path: velocity/libraries
           key: ${{ runner.os }}-build-${{ env.cache-name }}}}
 
   build:
