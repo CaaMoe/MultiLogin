@@ -20,3 +20,4 @@ fabric/.gradle/
 /api/bin
 /bungee/bin
 /bungee/injector/bin
+/velocity/libraries/*.jar
