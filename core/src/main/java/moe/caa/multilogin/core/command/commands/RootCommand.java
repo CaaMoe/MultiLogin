@@ -7,14 +7,19 @@ import lombok.SneakyThrows;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
+import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.main.MultiCore;
+import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * /MultiLogin * 指令处理程序和分发程序
@@ -50,8 +55,65 @@ public class RootCommand {
                 .then(handler.literal("confirm")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
                         .executes(this::executeConfirm))
+                .then(handler.literal("createProfile")
+                        .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CREATE_PROFILE))
+                        .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
+                                .then(handler.argument("username", StringArgumentType.string())
+                                        .executes(this::executeCreateProfile))))
                 .then(mWhitelistCommand.register(handler.literal("whitelist")))
                 .then(mRenameCommand.register(handler.literal("rename")));
+    }
+
+    @SneakyThrows
+    private int executeCreateProfile(CommandContext<ISender> context) {
+        String username = StringArgumentType.getString(context, "username");
+        UUID ingameuuid = UUIDArgumentType.getUuid(context, "ingameuuid");
+        MultiCore core = CommandHandler.getCore();
+        String nameAllowedRegular = core.getPluginConfig().getNameAllowedRegular();
+        if (!ValueUtil.isEmpty(nameAllowedRegular)) {
+            if (!Pattern.matches(nameAllowedRegular, username)) {
+                context.getSource().sendMessagePL(
+                        core.getLanguageHandler().getMessage("command_message_createprofile_namemismatch",
+                                new Pair<>("current_username", username),
+                                new Pair<>("name_allowed_regular", nameAllowedRegular)
+                        )
+                );
+                return 0;
+            }
+        }
+        if (ingameuuid.version() < 2) {
+            context.getSource().sendMessagePL(
+                    core.getLanguageHandler().getMessage("command_message_createprofile_uuidmismatch",
+                            new Pair<>("uuid", ingameuuid)
+                    )
+            );
+            return 0;
+        }
+        if (core.getSqlManager().getInGameProfileTable().dataExists(ingameuuid)) {
+            context.getSource().sendMessagePL(
+                    core.getLanguageHandler().getMessage("command_message_createprofile_uuidoccupied",
+                            new Pair<>("uuid", ingameuuid)
+                    )
+            );
+            return 0;
+        }
+        if (core.getSqlManager().getInGameProfileTable().getInGameUUID(username) != null){
+            context.getSource().sendMessagePL(
+                    core.getLanguageHandler().getMessage("command_message_createprofile_nameoccupied",
+                            new Pair<>("username", username)
+                    )
+            );
+            return 0;
+        }
+        core.getSqlManager().getInGameProfileTable().insertNewData(ingameuuid, username);
+        context.getSource().sendMessagePL(
+                core.getLanguageHandler().getMessage("command_message_createprofile",
+                        new Pair<>("username", username),
+                        new Pair<>("ingameuuid", ingameuuid)
+                )
+        );
+
+        return 0;
     }
 
     private int executeCurrentOther(CommandContext<ISender> context) throws CommandSyntaxException {
