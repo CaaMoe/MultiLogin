@@ -39,9 +39,15 @@ public class OnlinePlayersArgumentType implements ArgumentType<Set<IPlayer>> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        int limit = CommandHandler.getCore().getPluginConfig().getCommandPlayerNameSuggestLimit();
         for (IPlayer key : CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers()) {
-            if (key.getName().toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
-                builder.suggest(key.getName());
+            if (key.getName().toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase())) {
+                if (--limit > 0) {
+                    builder.suggest(key.getName());
+                } else {
+                    break;
+                }
+            }
         }
         return builder.buildFuture();
     }

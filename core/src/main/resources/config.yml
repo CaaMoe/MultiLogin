@@ -33,6 +33,13 @@ forceUseLogin: true
 # 默认值 ‘^[0-9a-zA-Z_]{3,16}$’
 nameAllowedRegular: '^[0-9a-zA-Z_]{3,16}$'
 
+# 设置指令补全玩家名字数量限制。
+# 若指令建议即将补全的玩家名字列表超过这个值，
+# 则超过部分的补全建议将不再发送给指令执行者。
+#
+# 默认值 '60'
+commandPlayerNameSuggestLimit: 60
+
 # 插件数据设置
 sql:
 
