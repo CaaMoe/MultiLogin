@@ -11,14 +11,15 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
-import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -108,18 +109,6 @@ public class CommandHandler implements CommandAPI {
         if (!context.getSource().isPlayer()) {
             throw builtInExceptions.requirePlayer().create();
         }
-    }
-
-    /**
-     * 检查输入玩家参数
-     */
-    public final Set<IPlayer> requirePlayersArgument(CommandContext<ISender> context, String name) throws CommandSyntaxException {
-        String string = StringArgumentType.getString(context, name);
-        Set<IPlayer> players = core.getPlugin().getRunServer().getPlayerManager().getPlayers(string);
-        if (players.size() == 0)
-            throw builtInExceptions.playerNotOnline().create(string);
-
-        return players;
     }
 
     /**

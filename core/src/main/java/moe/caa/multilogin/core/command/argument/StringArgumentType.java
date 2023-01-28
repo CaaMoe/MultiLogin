@@ -17,8 +17,7 @@ public class StringArgumentType implements ArgumentType<String> {
         return context.getArgument(name, String.class);
     }
 
-    @Override
-    public String parse(StringReader reader) {
+    public static String readString(StringReader reader) {
         int argBeginning = reader.getCursor();
         if (!reader.canRead()) {
             reader.skip();
@@ -27,5 +26,10 @@ public class StringArgumentType implements ArgumentType<String> {
             reader.skip();
         }
         return reader.getString().substring(argBeginning, reader.getCursor());
+    }
+
+    @Override
+    public String parse(StringReader reader) {
+        return readString(reader);
     }
 }
