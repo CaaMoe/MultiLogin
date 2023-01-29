@@ -11,6 +11,7 @@ import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
 import moe.caa.multilogin.core.command.argument.YggdrasilIdArgumentType;
+import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.UUID;
@@ -56,7 +57,52 @@ public class MProfileCommand {
         return 0;
     }
 
+    @SneakyThrows
     private int executeSetOther(CommandContext<ISender> context) {
+        String username = StringArgumentType.getString(context, "username");
+        YggdrasilServiceConfig yggdrasilServiceConfig = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
+        UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        if (gameUUID == null) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_namenonexistence",
+                            new Pair<>("current_username", username)
+                    )
+            );
+            return 0;
+        }
+        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, yggdrasilServiceConfig.getId())) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_onlinenonexistence",
+                            new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                            new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                            new Pair<>("online_uuid", onlineUUID)
+                    )
+            );
+            return 0;
+        }
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(onlineUUID, yggdrasilServiceConfig.getId(), gameUUID);
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_succeed",
+                            new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                            new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                            new Pair<>("online_uuid", onlineUUID),
+                            new Pair<>("current_username", username)
+                    )
+            );
+
+            context.getSource().getAsPlayer().kickPlayer(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_succeed_kickmessage",
+                            new Pair<>("current_username", username)
+                    )
+            );
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_desc",
+                new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                new Pair<>("online_uuid", onlineUUID),
+                new Pair<>("current_username", username)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_cq"));
         return 0;
     }
 
@@ -144,7 +190,6 @@ public class MProfileCommand {
                         new Pair<>("ingameuuid", ingameuuid)
                 )
         );
-
         return 0;
     }
 }
