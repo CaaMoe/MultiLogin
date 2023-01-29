@@ -25,12 +25,12 @@ public class MProfileCommand {
 
     public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
         return literalArgumentBuilder
-                .then(handler.argument("create", StringArgumentType.string())
+                .then(handler.literal("create")
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_CREATE))
                         .then(handler.argument("ingameuuid", UUIDArgumentType.uuid())
                                 .then(handler.argument("username", StringArgumentType.string())
                                         .executes(this::executeCreate))))
-                .then(handler.argument("set", StringArgumentType.string())
+                .then(handler.literal("set")
                         .then(handler.argument("username", StringArgumentType.string())
                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_ONESELF))
                                 .executes(this::executeSetOneself)));

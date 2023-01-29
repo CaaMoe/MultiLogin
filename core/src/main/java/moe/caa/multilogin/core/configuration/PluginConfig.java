@@ -38,7 +38,7 @@ public class PluginConfig {
     @Getter
     private String nameAllowedRegular;
     @Getter
-    private int commandPlayerNameSuggestLimit;
+    private int commandSuggestionLimit;
     @Getter
     private Map<Integer, YggdrasilServiceConfig> idMap;
 
@@ -126,7 +126,7 @@ public class PluginConfig {
 
         nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
 
-        commandPlayerNameSuggestLimit = configConfigurationNode.node("configConfigurationNode").getInt(60);
+        commandSuggestionLimit = configConfigurationNode.node("commandSuggestionLimit").getInt(60);
     }
 
     public void saveResource(String path, boolean cover) throws IOException {

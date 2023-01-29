@@ -9,8 +9,8 @@ import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
-import moe.caa.multilogin.core.command.argument.OnlinePlayersArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
+import moe.caa.multilogin.core.command.argument.suggestion.OnlinePlayerNameSuggestion;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class RootCommand {
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAME))
                         .executes(this::executeEraseAllUsername))
                 .then(handler.literal("current")
-                        .then(handler.argument("username", OnlinePlayersArgumentType.players())
+                        .then(handler.argument("username", StringArgumentType.string(OnlinePlayerNameSuggestion.suggestion()))
                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_OTHER))
                                 .executes(this::executeCurrentOther))
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_ONESELF))
@@ -54,7 +54,8 @@ public class RootCommand {
 
 
     private int executeCurrentOther(CommandContext<ISender> context) throws CommandSyntaxException {
-        Set<IPlayer> players = OnlinePlayersArgumentType.getPlayers(context, "username");
+        String username = StringArgumentType.getString(context, "username");
+        Set<IPlayer> players = handler.requirePlayersArgument(username);
         if (players.size() > 1) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_multi",
                     new Pair<>("count", players.size())
