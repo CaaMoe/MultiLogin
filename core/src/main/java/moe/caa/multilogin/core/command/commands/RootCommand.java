@@ -10,7 +10,6 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
-import moe.caa.multilogin.core.command.argument.suggestion.OnlinePlayerNameSuggestion;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
 import java.util.Locale;
@@ -39,7 +38,7 @@ public class RootCommand {
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAME))
                         .executes(this::executeEraseAllUsername))
                 .then(handler.literal("current")
-                        .then(handler.argument("username", StringArgumentType.string(OnlinePlayerNameSuggestion.suggestion()))
+                        .then(handler.argument("username", StringArgumentType.string())
                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_OTHER))
                                 .executes(this::executeCurrentOther))
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_ONESELF))

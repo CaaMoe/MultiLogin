@@ -10,6 +10,7 @@ import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
+import moe.caa.multilogin.core.command.argument.YggdrasilIdArgumentType;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.UUID;
@@ -33,7 +34,34 @@ public class MProfileCommand {
                 .then(handler.literal("set")
                         .then(handler.argument("username", StringArgumentType.string())
                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_ONESELF))
-                                .executes(this::executeSetOneself)));
+                                .executes(this::executeSetOneself))
+                        .then(handler.argument("username", StringArgumentType.string())
+                                .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
+                                        .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
+                                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_OTHER))
+                                                .executes(this::executeSetOther)))
+                        ))
+                .then(handler.literal("settemp")
+                        .then(handler.argument("username", StringArgumentType.string())
+                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_ONESELF))
+                                .executes(this::executeSetTempOneself))
+                        .then(handler.argument("username", StringArgumentType.string())
+                                .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
+                                        .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
+                                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_OTHER))
+                                                .executes(this::executeSetTempOther)))));
+    }
+
+    private int executeSetTempOther(CommandContext<ISender> context) {
+        return 0;
+    }
+
+    private int executeSetOther(CommandContext<ISender> context) {
+        return 0;
+    }
+
+    private int executeSetTempOneself(CommandContext<ISender> context) {
+        return 0;
     }
 
     @SneakyThrows

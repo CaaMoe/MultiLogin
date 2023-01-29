@@ -38,8 +38,6 @@ public class PluginConfig {
     @Getter
     private String nameAllowedRegular;
     @Getter
-    private int commandSuggestionLimit;
-    @Getter
     private Map<Integer, YggdrasilServiceConfig> idMap;
 
     public PluginConfig(File dataFolder) {
@@ -125,8 +123,6 @@ public class PluginConfig {
 
 
         nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
-
-        commandSuggestionLimit = configConfigurationNode.node("commandSuggestionLimit").getInt(60);
     }
 
     public void saveResource(String path, boolean cover) throws IOException {

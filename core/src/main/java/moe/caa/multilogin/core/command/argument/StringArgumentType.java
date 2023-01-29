@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import moe.caa.multilogin.core.command.argument.suggestion.Suggestion;
+
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,18 +17,8 @@ import java.util.function.Function;
  */
 public class StringArgumentType implements ArgumentType<String> {
 
-    private final Suggestion suggestion;
-
-    public StringArgumentType(Suggestion suggestion) {
-        this.suggestion = suggestion;
-    }
-
     public static StringArgumentType string() {
-        return new StringArgumentType((s) -> new HashSet<>());
-    }
-
-    public static StringArgumentType string(Suggestion suggestion){
-        return new StringArgumentType(suggestion);
+        return new StringArgumentType();
     }
 
     public static String getString(final CommandContext<?> context, final String name) {
@@ -49,13 +39,5 @@ public class StringArgumentType implements ArgumentType<String> {
     @Override
     public String parse(StringReader reader) {
         return readString(reader);
-    }
-
-    @Override
-    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        for (String s : suggestion.suggestion(builder.getRemaining())) {
-            builder.suggest(s);
-        }
-        return builder.buildFuture();
     }
 }

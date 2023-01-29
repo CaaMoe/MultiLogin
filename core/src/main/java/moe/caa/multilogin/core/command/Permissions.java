@@ -24,4 +24,6 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_PROFILE_CREATE = "command.multilogin.profile.create";
     public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_ONESELF = "command.multilogin.profile.set.oneself";
     public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_OTHER = "command.multilogin.profile.set.other";
+    public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_ONESELF = "command.multilogin.profile.set.temp.oneself";
+    public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_OTHER = "command.multilogin.profile.set.temp.other";
 }
