@@ -60,8 +60,13 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         if (exist) {
             String username = core.getSqlManager().getInGameProfileTable().getUsername(inGameUUID);
             if (!ValueUtil.isEmpty(username)) {
+                // 绑定name
                 validateContext.getInGameProfile().setId(inGameUUID);
-                validateContext.getInGameProfile().setName(username);
+                // 这里为了兼容老的版本，老版本的数据库存的全是小写 ID ，而新版本存的决定了玩家的游戏内名字，老的数据会让玩家在游戏内的名字全小写，不太合理
+                // 当玩家在线 ID 和数据库的 ID 判断相等（忽略大小写），则优先用玩家在线 ID，这样也许会有点问题。
+                if(!validateContext.getYggdrasilAuthenticationResult().getResponse().getName().equalsIgnoreCase(username)){
+                    validateContext.getInGameProfile().setName(username);
+                }
                 return Signal.PASSED;
             }
         }
