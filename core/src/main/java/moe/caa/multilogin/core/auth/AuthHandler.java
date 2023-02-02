@@ -66,7 +66,7 @@ public class AuthHandler implements AuthAPI {
             ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(username, serverId, ip, yggdrasilAuthenticationResult);
             if (validateAuthenticationResult.getReason() == ValidateAuthenticationResult.Reason.ALLOWED) {
                 LoggerProvider.getLogger().info(
-                        String.format("Player %s(uuid: %s) from yggdrasil service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
+                        String.format("%s(uuid: %s) from yggdrasil service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
                                 yggdrasilAuthenticationResult.getResponse().getName(),
                                 yggdrasilAuthenticationResult.getResponse().getId().toString(),
                                 yggdrasilAuthenticationResult.getYggdrasilServiceConfig().getName(),
