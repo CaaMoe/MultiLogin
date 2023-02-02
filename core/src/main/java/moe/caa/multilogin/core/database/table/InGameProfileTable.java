@@ -42,6 +42,19 @@ public class InGameProfileTable {
         }
     }
 
+    public boolean remove(UUID uuid) throws SQLException {
+        String sql = String.format(
+                "DELETE FROM %s WHERE %s = ?"
+                , tableName, fieldInGameUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(uuid));
+            return statement.executeUpdate() == 1;
+        }
+    }
+
     /**
      * 查询数据是否存在
      *

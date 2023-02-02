@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.command.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
@@ -14,6 +15,8 @@ import moe.caa.multilogin.core.command.argument.YggdrasilIdArgumentType;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -50,7 +53,62 @@ public class MProfileCommand {
                                 .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_OTHER))
-                                                .executes(this::executeSetTempOther)))));
+                                                .executes(this::executeSetTempOther)))))
+                .then(handler.literal("remove")
+                        .then(handler.argument("arg", StringArgumentType.string())
+                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_REMOVE))
+                                .executes(this::executeRemove)));
+    }
+
+    @SneakyThrows
+    private int executeRemove(CommandContext<ISender> context) {
+        String arg = StringArgumentType.getString(context, "arg");
+        UUID target = ValueUtil.getUuidOrNull(arg);
+        if (target != null) {
+            if (!CommandHandler.getCore().getSqlManager().getInGameProfileTable().dataExists(target)) {
+                context.getSource().sendMessagePL(
+                        CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_uuid_not_found",
+                                new Pair<>("uuid", target)
+                        )
+                );
+                return 0;
+            }
+        } else {
+            target = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(arg);
+            if (target == null) {
+                context.getSource().sendMessagePL(
+                        CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_name_not_found",
+                                new Pair<>("name", arg)
+                        )
+                );
+                return 0;
+            }
+        }
+        String name = Optional.ofNullable(
+                CommandHandler.getCore().getSqlManager().getInGameProfileTable().getUsername(target)
+        ).orElse(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_unnamed"));
+
+        UUID finalTarget = target;
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            CommandHandler.getCore().getSqlManager().getInGameProfileTable().remove(finalTarget);
+            Map<Pair<Integer, UUID>, UUID> map = CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap();
+            map.entrySet().removeIf(e -> e.getValue().equals(finalTarget));
+
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_succeed",
+                            new Pair<>("name", name),
+                            new Pair<>("uuid", finalTarget)
+                    ));
+            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(finalTarget);
+            if (player != null) {
+                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_kickmessage"));
+            }
+
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_desc",
+                new Pair<>("name", name),
+                new Pair<>("uuid", target)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_cq"));
+        return 0;
     }
 
     @SneakyThrows
@@ -92,11 +150,14 @@ public class MProfileCommand {
                     )
             );
 
-            context.getSource().getAsPlayer().kickPlayer(
-                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_succeed_kickmessage",
-                            new Pair<>("current_username", username)
-                    )
-            );
+            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(gameUUID);
+            if (player != null) {
+                player.kickPlayer(
+                        CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_succeed_kickmessage",
+                                new Pair<>("current_username", username)
+                        )
+                );
+            }
         }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_desc",
                 new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
                 new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
@@ -141,11 +202,14 @@ public class MProfileCommand {
                     )
             );
 
-            context.getSource().getAsPlayer().kickPlayer(
-                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_succeed_kickmessage",
-                            new Pair<>("current_username", username)
-                    )
-            );
+            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(gameUUID);
+            if (player != null) {
+                player.kickPlayer(
+                        CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_succeed_kickmessage",
+                                new Pair<>("current_username", username)
+                        )
+                );
+            }
         }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_desc",
                 new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
                 new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
