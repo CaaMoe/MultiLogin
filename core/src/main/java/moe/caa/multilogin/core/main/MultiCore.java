@@ -16,6 +16,7 @@ import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.database.SQLManager;
 import moe.caa.multilogin.core.handle.CacheWhitelistHandler;
 import moe.caa.multilogin.core.handle.PlayerHandler;
+import moe.caa.multilogin.core.handle.TemplateProfileRedirectHandler;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.semver.CheckUpdater;
 import moe.caa.multilogin.core.semver.SemVersion;
@@ -47,6 +48,8 @@ public class MultiCore implements MultiCoreAPI {
     @Getter
     private final CacheWhitelistHandler cacheWhitelistHandler;
     @Getter
+    private final TemplateProfileRedirectHandler templateProfileRedirectHandler;
+    @Getter
     private final Gson gson;
     @Getter
     private SemVersion semVersion;
@@ -65,6 +68,7 @@ public class MultiCore implements MultiCoreAPI {
         this.commandHandler = new CommandHandler(this);
         this.playerHandler = new PlayerHandler(this);
         this.cacheWhitelistHandler = new CacheWhitelistHandler();
+        this.templateProfileRedirectHandler = new TemplateProfileRedirectHandler();
         this.gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .registerTypeAdapter(GameProfile.class, new GameProfileSerializer())

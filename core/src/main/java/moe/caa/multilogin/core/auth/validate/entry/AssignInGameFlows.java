@@ -26,12 +26,21 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
     @Override
     public Signal run(ValidateContext validateContext) {
 
-
-        // 首先从数据库里面读登录档案的游戏内 UUID
-        UUID inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(
-                validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
+        // 从 temp redirect 中读游戏内 UUID
+        UUID inGameUUID = core.getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().remove(
+                new Pair<>(
+                        validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
+                        validateContext.getYggdrasilAuthenticationResult().getResponse().getId()
+                )
         );
+
+        if (inGameUUID == null) {
+            // 如果不在，那就从数据库里面读登录档案的游戏内 UUID
+            inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(
+                    validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
+                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
+            );
+        }
 
         // 如果这个 UUID 不存在，表示是个预新玩家或是档案被清理的新玩家。这时需要分配个全新的身份卡给它。
         if (inGameUUID == null) {

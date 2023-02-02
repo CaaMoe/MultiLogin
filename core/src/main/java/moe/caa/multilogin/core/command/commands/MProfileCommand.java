@@ -53,7 +53,56 @@ public class MProfileCommand {
                                                 .executes(this::executeSetTempOther)))));
     }
 
+    @SneakyThrows
     private int executeSetTempOther(CommandContext<ISender> context) {
+        String username = StringArgumentType.getString(context, "username");
+        YggdrasilServiceConfig yggdrasilServiceConfig = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
+        UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        if (gameUUID == null) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_namenonexistence",
+                            new Pair<>("current_username", username)
+                    )
+            );
+            return 0;
+        }
+        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, yggdrasilServiceConfig.getId())) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_onlinenonexistence",
+                            new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                            new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                            new Pair<>("online_uuid", onlineUUID)
+                    )
+            );
+            return 0;
+        }
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().put(
+                    new Pair<>(yggdrasilServiceConfig.getId(), onlineUUID),
+                    gameUUID
+            );
+            CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(onlineUUID, yggdrasilServiceConfig.getId(), gameUUID);
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_succeed",
+                            new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                            new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                            new Pair<>("online_uuid", onlineUUID),
+                            new Pair<>("current_username", username)
+                    )
+            );
+
+            context.getSource().getAsPlayer().kickPlayer(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_succeed_kickmessage",
+                            new Pair<>("current_username", username)
+                    )
+            );
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_desc",
+                new Pair<>("yggdrasil_name", yggdrasilServiceConfig.getName()),
+                new Pair<>("yggdrasil_id", yggdrasilServiceConfig.getId()),
+                new Pair<>("online_uuid", onlineUUID),
+                new Pair<>("current_username", username)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_cq"));
         return 0;
     }
 
@@ -106,7 +155,38 @@ public class MProfileCommand {
         return 0;
     }
 
+    @SneakyThrows
     private int executeSetTempOneself(CommandContext<ISender> context) {
+        String username = StringArgumentType.getString(context, "username");
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        if (gameUUID == null) {
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_nonexistence",
+                            new Pair<>("current_username", username)
+                    )
+            );
+            return 0;
+        }
+        Pair<Pair<UUID, String>, Integer> pair = handler.requireDataCacheArgument(context);
+        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
+            CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().put(
+                    new Pair<>(pair.getValue2(), pair.getValue1().getValue1()),
+                    gameUUID
+            );
+            context.getSource().sendMessagePL(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_succeed",
+                            new Pair<>("current_username", username)
+                    )
+            );
+
+            context.getSource().getAsPlayer().kickPlayer(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_succeed_kickmessage",
+                            new Pair<>("current_username", username)
+                    )
+            );
+        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_desc",
+                new Pair<>("current_username", username)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_cq"));
         return 0;
     }
 
