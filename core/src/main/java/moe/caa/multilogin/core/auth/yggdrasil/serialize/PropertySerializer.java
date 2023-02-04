@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.auth.yggdrasil.serialize;
 import com.google.gson.*;
 import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.auth.Property;
+import moe.caa.multilogin.core.auth.yggdrasil.UnmodifiableGameProfile;
 
 import java.lang.reflect.Type;
 
@@ -21,7 +22,7 @@ public class PropertySerializer implements JsonSerializer<Property>, JsonDeseria
             ret.setValue(root.get("value").getAsString());
             if (root.has("signature")) ret.setSignature(root.get("signature").getAsString());
         }
-        return ret;
+        return UnmodifiableGameProfile.UnmodifiableProperty.unmodifiable(ret);
     }
 
     @Override

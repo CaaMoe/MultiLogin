@@ -1,11 +1,15 @@
 package moe.caa.multilogin.api.auth;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 用户配置
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Property {
     private String name;
     private String value;
@@ -13,10 +17,6 @@ public class Property {
 
     @Override
     public Property clone() {
-        Property property = new Property();
-        property.name = name;
-        property.value = value;
-        property.signature = signature;
-        return property;
+        return new Property(name, value, signature);
     }
 }

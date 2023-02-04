@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.auth.yggdrasil.UnmodifiableGameProfile;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class GameProfileSerializer implements JsonSerializer<GameProfile>, JsonD
                 }
             }
         }
-        return ret;
+        return UnmodifiableGameProfile.unmodifiable(ret);
     }
 
     @Override
