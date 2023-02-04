@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Velocity 玩家对象
@@ -47,9 +48,10 @@ public class VelocityPlayer extends VelocitySender implements IPlayer {
     }
 
     @Override
-    public void resetGameProfile(Pair<UUID, String> infoPair) throws Throwable {
+    public void resetGameProfile(moe.caa.multilogin.api.auth.GameProfile profile) throws Throwable {
 //        生成新的
-        GameProfile gameProfile = new GameProfile(infoPair.getValue1(), infoPair.getValue2(), player.getGameProfile().getProperties());
+        GameProfile gameProfile = new GameProfile(profile.getId(), profile.getName(), profile.getPropertyMap().values().stream().map(
+                p -> new GameProfile.Property(p.getName(), p.getValue(), p.getSignature())).collect(Collectors.toList()));
 //        reset给player
         setProfileField.invoke(player, gameProfile);
         reconnect();

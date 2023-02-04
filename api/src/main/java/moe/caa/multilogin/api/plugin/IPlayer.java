@@ -1,5 +1,6 @@
 package moe.caa.multilogin.api.plugin;
 
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.util.Pair;
 
 import java.net.SocketAddress;
@@ -29,10 +30,9 @@ public interface IPlayer extends ISender {
 
     /**
      *  重设该玩家的档案信息
-     * @param infoPair 新的UUID和name组合
      * @throws Throwable 反射调用过程中可能会出现异常
      */
-    void resetGameProfile(Pair<UUID, String> infoPair) throws Throwable;
+    void resetGameProfile(GameProfile profile) throws Throwable;
 
     /**
      * 让玩家重连
