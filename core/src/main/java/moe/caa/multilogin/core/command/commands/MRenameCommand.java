@@ -72,14 +72,14 @@ public class MRenameCommand {
 //                        这里直接对IPlayer进行修改 重联重置名字
 
                         if (player != null) {
-                            try {
-                                player.resetGameProfile(new Pair<>(UUID.randomUUID(),newname));
-                            }catch (Throwable throwable){
+//                            try {
+//                                player.resetGameProfile(new Pair<>(UUID.randomUUID(),newname));
+//                            }catch (Throwable throwable){
                             player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_succeed_kickmessage",
                                     new Pair<>("old_name", player.getName()),
                                     new Pair<>("new_name", newname)));
-                            throwable.printStackTrace();
-                            }
+//                            throwable.printStackTrace();
+//                            }
                         }
                     } catch (SQLIntegrityConstraintViolationException e) {
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_occupied",
