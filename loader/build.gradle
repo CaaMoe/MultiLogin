@@ -13,6 +13,9 @@ dependencies {
     compileOnly 'org.ow2.asm:asm-commons:9.3'
 }
 
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
 processResources {
     // 存放已计算摘要的依赖列表(value: sha256 as String)
     def digestList = new HashMap<Dependency, String>()
