@@ -7,6 +7,9 @@ dependencies {
     compileOnly project(":flows")
 }
 
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
 shadowJar {
     archiveFileName = 'MultiLogin-Core.JarFile'
 }
