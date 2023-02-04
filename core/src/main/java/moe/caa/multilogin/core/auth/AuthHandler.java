@@ -96,8 +96,7 @@ public class AuthHandler implements AuthAPI {
                     finalProfile = validateAuthenticationResult.getInGameProfile();
                 }
                 core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
-                        yggdrasilAuthenticationResult.getResponse().getId(),
-                        yggdrasilAuthenticationResult.getResponse().getName(),
+                        yggdrasilAuthenticationResult.getResponse(),
                         yggdrasilAuthenticationResult.getYggdrasilId(),
                         System.currentTimeMillis()
                 ));

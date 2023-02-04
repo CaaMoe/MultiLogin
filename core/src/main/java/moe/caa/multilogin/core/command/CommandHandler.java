@@ -9,12 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
-import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
@@ -121,9 +121,9 @@ public class CommandHandler implements CommandAPI {
     /**
      * 检查是通过猫踢螺钉登录的玩家
      */
-    public final Pair<Pair<UUID, String>, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
+    public final Pair<GameProfile, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
         requirePlayer(context);
-        Pair<Pair<UUID, String>, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
+        Pair<GameProfile, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
         if (profile == null) {
             throw builtInExceptions.cacheNotFoundSelf().create();
         }

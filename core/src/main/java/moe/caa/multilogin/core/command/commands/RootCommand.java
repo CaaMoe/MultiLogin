@@ -4,6 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
@@ -14,7 +15,6 @@ import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 
 import java.util.Locale;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * /MultiLogin * 指令处理程序和分发程序
@@ -61,7 +61,7 @@ public class RootCommand {
             ));
         }
         for (IPlayer player : players) {
-            Pair<Pair<UUID, String>, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
+            Pair<GameProfile, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
             if (profile == null) {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_unknown"));
             } else {
@@ -77,8 +77,8 @@ public class RootCommand {
                         new Pair<>("in_game_uuid", player.getUniqueId()),
                         new Pair<>("yggdrasil_name", yggName),
                         new Pair<>("yggdrasil_id", profile.getValue2()),
-                        new Pair<>("online_username", profile.getValue1().getValue2()),
-                        new Pair<>("online_uuid", profile.getValue1().getValue1())
+                        new Pair<>("online_username", profile.getValue1().getName()),
+                        new Pair<>("online_uuid", profile.getValue1().getId())
                 ));
             }
         }
@@ -86,7 +86,7 @@ public class RootCommand {
     }
 
     private int executeCurrentOneself(CommandContext<ISender> context) throws CommandSyntaxException {
-        Pair<Pair<UUID, String>, Integer> profile = handler.requireDataCacheArgument(context);
+        Pair<GameProfile, Integer> profile = handler.requireDataCacheArgument(context);
 
         String yggName;
         YggdrasilServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getIdMap().get(profile.getValue2());
@@ -101,8 +101,8 @@ public class RootCommand {
                 new Pair<>("in_game_uuid", context.getSource().getAsPlayer().getUniqueId()),
                 new Pair<>("yggdrasil_name", yggName),
                 new Pair<>("yggdrasil_id", profile.getValue2()),
-                new Pair<>("online_username", profile.getValue1().getValue2()),
-                new Pair<>("online_uuid", profile.getValue1().getValue1())
+                new Pair<>("online_username", profile.getValue1().getName()),
+                new Pair<>("online_uuid", profile.getValue1().getId())
         ));
         return 0;
     }

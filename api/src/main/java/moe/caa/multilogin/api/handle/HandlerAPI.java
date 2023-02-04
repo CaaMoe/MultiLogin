@@ -1,5 +1,6 @@
 package moe.caa.multilogin.api.handle;
 
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.util.Pair;
 
 import java.util.UUID;
@@ -29,7 +30,7 @@ public interface HandlerAPI {
      * @param inGameUUID 玩家的游戏内 UUID
      * @return 一个表示玩家在线数据和验证它的 Yggdrasil ID 的复合类
      */
-    Pair<Pair<UUID, String>, Integer> getPlayerOnlineProfile(UUID inGameUUID);
+    Pair<GameProfile, Integer> getPlayerOnlineProfile(UUID inGameUUID);
 
     /**
      * 获得玩家游戏内 UUID

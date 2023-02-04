@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.command.commands;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
@@ -231,10 +232,10 @@ public class MProfileCommand {
             );
             return 0;
         }
-        Pair<Pair<UUID, String>, Integer> pair = handler.requireDataCacheArgument(context);
+        Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
             CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().put(
-                    new Pair<>(pair.getValue2(), pair.getValue1().getValue1()),
+                    new Pair<>(pair.getValue2(), pair.getValue1().getId()),
                     gameUUID
             );
             context.getSource().sendMessagePL(
@@ -266,9 +267,9 @@ public class MProfileCommand {
             );
             return 0;
         }
-        Pair<Pair<UUID, String>, Integer> pair = handler.requireDataCacheArgument(context);
+        Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
-            CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(pair.getValue1().getValue1(), pair.getValue2(), gameUUID);
+            CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(pair.getValue1().getId(), pair.getValue2(), gameUUID);
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_oneself_succeed",
                             new Pair<>("current_username", username)

@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.handle;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.handle.HandleResult;
 import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
@@ -69,16 +70,17 @@ public class PlayerHandler implements HandlerAPI {
     }
 
     @Override
-    public Pair<Pair<UUID, String>, Integer> getPlayerOnlineProfile(UUID inGameUUID) {
+    public Pair<GameProfile, Integer> getPlayerOnlineProfile(UUID inGameUUID) {
         Entry entry = cache.get(inGameUUID);
         if (entry == null) return null;
-        return new Pair<>(new Pair<>(entry.onlineUUID, entry.onlineUsername), entry.yggdrasilID);
+        return new Pair<>(entry.onlineProfile, entry.yggdrasilID);
     }
 
     @Override
     public UUID getInGameUUID(UUID onlineUUID, int yggdrasilId) {
         for (Map.Entry<UUID, Entry> entry : cache.entrySet()) {
-            if (entry.getValue().onlineUUID.equals(onlineUUID) && entry.getValue().yggdrasilID == yggdrasilId)
+            if (entry.getValue().onlineProfile.getId().equals(onlineUUID)
+                    && entry.getValue().yggdrasilID == yggdrasilId)
                 return entry.getKey();
         }
         return null;
@@ -125,8 +127,7 @@ public class PlayerHandler implements HandlerAPI {
 
     @AllArgsConstructor
     public static class Entry {
-        private final UUID onlineUUID;
-        private final String onlineUsername;
+        private final GameProfile onlineProfile;
         private final int yggdrasilID;
         private final long signTimeMillis;
 
@@ -135,12 +136,12 @@ public class PlayerHandler implements HandlerAPI {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Entry entry = (Entry) o;
-            return yggdrasilID == entry.yggdrasilID && signTimeMillis == entry.signTimeMillis && Objects.equals(onlineUUID, entry.onlineUUID);
+            return yggdrasilID == entry.yggdrasilID && signTimeMillis == entry.signTimeMillis && Objects.equals(onlineProfile, entry.onlineProfile);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(onlineUUID, yggdrasilID, signTimeMillis);
+            return Objects.hash(onlineProfile, yggdrasilID, signTimeMillis);
         }
     }
 }
