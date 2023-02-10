@@ -9,6 +9,7 @@ repositories {
     }
     mavenCentral()
     maven { url = 'https://nexus.ksnb.fun/repository/multilogin/' }
+    maven { url = 'https://repo.opencollab.dev/main' }
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -26,6 +27,8 @@ dependencies {
 
 //    下面是用来补充proxy引用的 为自编译库 如果不可用清参照libraries下README.MD
     compileOnly 'com.velocitypowered:velocity-proxy:3.2.0'
+
+    compileOnly 'org.geysermc.geyser:api:2.1.0-SNAPSHOT'
 
     compileOnly 'com.velocitypowered:velocity-api:3.1.0'
     annotationProcessor 'com.velocitypowered:velocity-api:3.1.0'

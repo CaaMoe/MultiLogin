@@ -1,36 +1,35 @@
 package moe.caa.multilogin.api.auth;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 /**
  * 验证结果
  */
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class AuthResult {
-    @Getter
-    private final String kickMessage;
-    @Getter
-    private final GameProfile response;
-    @Getter
-    private final boolean allowed;
+public interface AuthResult {
 
     /**
-     * 构建一个允许登录的验证结果
+     * 返回最终验证通过的游戏档案数据
      *
-     * @param response 游戏档案
+     * @return 最终验证通过的游戏档案数据
      */
-    public static AuthResult ofAllowed(GameProfile response) {
-        return new AuthResult(null, response, true);
-    }
+    GameProfile getResponse();
 
     /**
-     * 构建一个不允许登录的验证结果
+     * 返回最终验证不通过的踢出提示
      *
-     * @param kickMessage 踢出消息
+     * @return 最终验证不通过的踢出提示
      */
-    public static AuthResult ofDisallowed(String kickMessage) {
-        return new AuthResult(kickMessage, null, false);
+    String getKickMessage();
+
+    /**
+     * 返回登录结果
+     *
+     * @return 登录结果
+     */
+    Result getResult();
+
+    enum Result {
+        ALLOW,
+        DISALLOW_BY_YGGDRASIL_AUTHENTICATOR,
+        DISALLOW_BY_VALIDATE_AUTHENTICATOR,
+        ERROR
     }
 }

@@ -19,6 +19,7 @@ import moe.caa.multilogin.api.util.reflect.Accessor;
 import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
+import moe.caa.multilogin.core.auth.LoginAuthResult;
 import net.kyori.adventure.text.Component;
 
 import java.lang.invoke.MethodHandle;
@@ -178,7 +179,7 @@ public class MultiInitialLoginSessionHandler {
             String serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
             String playerIp = ((InetSocketAddress) this.mcConnection.getRemoteAddress()).getHostString();
 
-            AuthResult result = multiCoreAPI.getAuthHandler().auth(username, serverId, playerIp);
+            LoginAuthResult result = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(username, serverId, playerIp);
 
             if (this.mcConnection.isClosed()) return;
             try {
@@ -188,7 +189,8 @@ public class MultiInitialLoginSessionHandler {
                 this.mcConnection.close(true);
                 return;
             }
-            if (result.isAllowed()) {
+            if (result.getResult() == AuthResult.Result.ALLOW) {
+                // TODO: 2023/2/10 需要在这里进行皮肤修复操作
                 this.mcConnection.setSessionHandler(
                         (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
                                 this.server, inbound, generateGameProfile(result.getResponse()), true

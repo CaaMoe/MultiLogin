@@ -12,6 +12,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     compileOnly project(":api")
+    compileOnly project(":core")
     compileOnly project(":bungee")
 
     compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.19-R0.1-SNAPSHOT'

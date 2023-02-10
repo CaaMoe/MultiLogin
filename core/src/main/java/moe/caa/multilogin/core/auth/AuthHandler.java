@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.auth;
 
 import moe.caa.multilogin.api.auth.AuthAPI;
-import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationResult;
@@ -11,7 +10,6 @@ import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.handle.PlayerHandler;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
-import moe.caa.multilogin.core.skinrestorer.SkinRestorerResult;
 
 /**
  * 验证核心
@@ -39,27 +37,27 @@ public class AuthHandler implements AuthAPI {
      * @param ip       用户IP
      */
     @Override
-    public AuthResult auth(String username, String serverId, String ip) {
+    public LoginAuthResult auth(String username, String serverId, String ip) {
         YggdrasilAuthenticationResult yggdrasilAuthenticationResult;
         try {
             yggdrasilAuthenticationResult = yggdrasilAuthenticationService.hasJoined(username, serverId, ip);
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.NO_SERVICE) {
-                return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_no_server"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_no_server"));
             }
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.SERVER_BREAKDOWN) {
-                return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_server_down"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_server_down"));
             }
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.VALIDATION_FAILED) {
-                return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_validation_failed"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_validation_failed"));
             }
             if (yggdrasilAuthenticationResult.getReason() != YggdrasilAuthenticationResult.Reason.ALLOWED ||
                     yggdrasilAuthenticationResult.getResponse() == null ||
                     yggdrasilAuthenticationResult.getYggdrasilId() == -1) {
-                return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_failed_unknown"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_unknown"));
             }
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception occurred while processing the hasJoined request.", e);
-            return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_yggdrasil_error"));
+            return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(null, core.getLanguageHandler().getMessage("auth_yggdrasil_error"));
         }
 
         try {
@@ -75,37 +73,38 @@ public class AuthHandler implements AuthAPI {
                                 validateAuthenticationResult.getInGameProfile().getId().toString()
                         )
                 );
-                GameProfile restoredSkinProfile = null;
-                try {
-                    SkinRestorerResult skinRestorerResult = skinRestorerCore.doRestorer(
-                            yggdrasilAuthenticationResult.getYggdrasilServiceConfig(),
-                            validateAuthenticationResult.getInGameProfile()
-                    );
-                    SkinRestorerResult.handleSkinRestoreResult(skinRestorerResult);
-                    restoredSkinProfile = skinRestorerResult.getResponse();
-                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), skinRestorerResult.getReason()));
-                } catch (Exception e) {
-                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), "error"));
-                    SkinRestorerResult.handleSkinRestoreResult(e);
-                }
-
-                GameProfile finalProfile;
-                if (restoredSkinProfile != null) {
-                    finalProfile = restoredSkinProfile;
-                } else {
-                    finalProfile = validateAuthenticationResult.getInGameProfile();
-                }
+                GameProfile finalProfile = validateAuthenticationResult.getInGameProfile();
+//                GameProfile restoredSkinProfile = null;
+//                try {
+//                    SkinRestorerResult skinRestorerResult = skinRestorerCore.doRestorer(
+//                            yggdrasilAuthenticationResult.getYggdrasilServiceConfig(),
+//                            validateAuthenticationResult.getInGameProfile()
+//                    );
+//                    SkinRestorerResult.handleSkinRestoreResult(skinRestorerResult);
+//                    restoredSkinProfile = skinRestorerResult.getResponse();
+//                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), skinRestorerResult.getReason()));
+//                } catch (Exception e) {
+//                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), "error"));
+//                    SkinRestorerResult.handleSkinRestoreResult(e);
+//                }
+//
+//                GameProfile finalProfile;
+//                if (restoredSkinProfile != null) {
+//                    finalProfile = restoredSkinProfile;
+//                } else {
+//                    finalProfile = validateAuthenticationResult.getInGameProfile();
+//                }
                 core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
                         yggdrasilAuthenticationResult.getResponse(),
                         yggdrasilAuthenticationResult.getYggdrasilId(),
                         System.currentTimeMillis()
                 ));
-                return AuthResult.ofAllowed(finalProfile);
+                return LoginAuthResult.ofAllowed(yggdrasilAuthenticationResult, validateAuthenticationResult, finalProfile);
             }
-            return AuthResult.ofDisallowed(validateAuthenticationResult.getDisallowedMessage());
+            return LoginAuthResult.ofDisallowedByValidateAuthenticator(yggdrasilAuthenticationResult, validateAuthenticationResult, validateAuthenticationResult.getDisallowedMessage());
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception occurred while processing the validation request.", e);
-            return AuthResult.ofDisallowed(core.getLanguageHandler().getMessage("auth_validate_error"));
+            return LoginAuthResult.ofDisallowedByValidateAuthenticator(yggdrasilAuthenticationResult, null, core.getLanguageHandler().getMessage("auth_validate_error"));
         }
     }
 }

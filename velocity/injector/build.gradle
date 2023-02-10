@@ -16,6 +16,7 @@ targetCompatibility = JavaVersion.VERSION_11
 
 dependencies {
     compileOnly project(":api")
+    compileOnly project(":core")
     compileOnly project(":velocity")
     compileOnly fileTree(dir: './../libraries', include: ['*.jar'])
 

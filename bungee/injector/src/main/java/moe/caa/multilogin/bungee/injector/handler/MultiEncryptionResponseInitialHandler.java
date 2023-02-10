@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.core.auth.LoginAuthResult;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.connection.InitialHandler;
@@ -79,8 +80,9 @@ public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialH
         multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
 
             try {
-                AuthResult authResult = multiCoreAPI.getAuthHandler().auth(encName, encodedHash, ip);
-                if (authResult.isAllowed()) {
+                LoginAuthResult authResult = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(encName, encodedHash, ip);
+                if (authResult.getResult() == AuthResult.Result.ALLOW) {
+                    // TODO: 2023/2/10 需要在这里进行皮肤修复操作
                     GameProfile response = authResult.getResponse();
                     loginProfileFieldSetter.invoke(initialHandler, generateGameProfile(response));
                     nameFieldSetter.invoke(initialHandler, response.getName());
