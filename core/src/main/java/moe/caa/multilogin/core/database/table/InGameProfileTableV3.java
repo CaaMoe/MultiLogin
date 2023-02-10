@@ -7,10 +7,7 @@ import moe.caa.multilogin.core.database.SQLManager;
 
 import java.sql.*;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
 
 public class InGameProfileTableV3 {
     private static final String fieldInGameUuid = "in_game_uuid";
@@ -88,12 +85,7 @@ public class InGameProfileTableV3 {
                         )
                 )) {
                     statement.setBytes(1, datum.getValue1());
-
-                    if (datum.getValue2() == null) {
-                        statement.setNull(2, Types.VARCHAR);
-                    } else {
-                        statement.setString(2, datum.getValue2().toLowerCase(Locale.ROOT));
-                    }
+                    statement.setString(2, Optional.ofNullable(datum.getValue2()).map(String::toLowerCase).orElse(null));
                     statement.executeUpdate();
                 }
             }

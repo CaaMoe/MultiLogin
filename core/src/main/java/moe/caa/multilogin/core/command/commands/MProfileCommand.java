@@ -86,7 +86,7 @@ public class MProfileCommand {
             }
         }
         String name = Optional.ofNullable(
-                CommandHandler.getCore().getSqlManager().getInGameProfileTable().getUsername(target)
+                CommandHandler.getCore().getSqlManager().getInGameProfileTable().getUsernameIgnoreIncomplete(target)
         ).orElse(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_unnamed"));
 
         UUID finalTarget = target;
