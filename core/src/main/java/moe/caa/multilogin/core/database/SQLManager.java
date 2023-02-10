@@ -6,9 +6,9 @@ import moe.caa.multilogin.core.configuration.SqlConfig;
 import moe.caa.multilogin.core.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.database.pool.ISQLConnectionPool;
 import moe.caa.multilogin.core.database.pool.MysqlConnectionPool;
-import moe.caa.multilogin.core.database.table.InGameProfileTable;
-import moe.caa.multilogin.core.database.table.SkinRestoredCacheTable;
-import moe.caa.multilogin.core.database.table.UserDataTable;
+import moe.caa.multilogin.core.database.table.InGameProfileTableV3;
+import moe.caa.multilogin.core.database.table.SkinRestoredCacheTableV3;
+import moe.caa.multilogin.core.database.table.UserDataTableV3;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.sql.SQLException;
@@ -22,11 +22,11 @@ public class SQLManager {
     @Getter
     private ISQLConnectionPool pool;
     @Getter
-    private InGameProfileTable inGameProfileTable;
+    private InGameProfileTableV3 inGameProfileTable;
     @Getter
-    private UserDataTable userDataTable;
+    private UserDataTableV3 userDataTable;
     @Getter
-    private SkinRestoredCacheTable skinRestoredCacheTable;
+    private SkinRestoredCacheTableV3 skinRestoredCacheTable;
 
 
     public SQLManager(MultiCore core) {
@@ -49,12 +49,14 @@ public class SQLManager {
         }
         String tablePrefix = sqlConfig.getTablePrefix() + '_';
 
-        final String inGameProfileTableName = tablePrefix + "in_game_profile_v2";
+        final String inGameProfileTableNameV2 = tablePrefix + "in_game_profile_v2";
+        final String inGameProfileTableNameV3 = tablePrefix + "in_game_profile_v3";
         final String userDataTableName = tablePrefix + "user_data_v2";
         final String skinRestorerCacheTableName = tablePrefix + "skin_restored_cache_v2";
-        inGameProfileTable = new InGameProfileTable(this, inGameProfileTableName);
-        userDataTable = new UserDataTable(this, userDataTableName);
-        skinRestoredCacheTable = new SkinRestoredCacheTable(this, skinRestorerCacheTableName);
+        userDataTable = new UserDataTableV3(this, userDataTableName);
+        skinRestoredCacheTable = new SkinRestoredCacheTableV3(this, skinRestorerCacheTableName);
+        inGameProfileTable = new InGameProfileTableV3(this, inGameProfileTableNameV3, inGameProfileTableNameV2);
+
         inGameProfileTable.init();
         userDataTable.init();
         skinRestoredCacheTable.init();

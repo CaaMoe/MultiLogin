@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 /**
  * 皮肤修复缓存表
  */
-public class SkinRestoredCacheTable {
+public class SkinRestoredCacheTableV3 {
     private static final String fieldCurrentSkinUrlSha256 = "current_skin_url_sha256";
     private static final String fieldCurrentSkinModel = "current_skin_model";
     private static final String fieldRestorerValue = "restorer_value";
@@ -20,7 +20,7 @@ public class SkinRestoredCacheTable {
     private final SQLManager sqlManager;
     private final String tableName;
 
-    public SkinRestoredCacheTable(SQLManager sqlManager, String tableName) {
+    public SkinRestoredCacheTableV3(SQLManager sqlManager, String tableName) {
         this.sqlManager = sqlManager;
         this.tableName = tableName;
     }

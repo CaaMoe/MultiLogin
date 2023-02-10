@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * 玩家数据表
  */
-public class UserDataTable {
+public class UserDataTableV3 {
     private static final String fieldOnlineUUID = "online_uuid";
     private static final String fieldYggdrasilId = "yggdrasil_id";
     private static final String fieldInGameProfileUuid = "in_game_profile_uuid";
@@ -22,7 +22,7 @@ public class UserDataTable {
     private final SQLManager sqlManager;
     private final String tableName;
 
-    public UserDataTable(SQLManager sqlManager, String tableName) {
+    public UserDataTableV3(SQLManager sqlManager, String tableName) {
         this.sqlManager = sqlManager;
         this.tableName = tableName;
     }
