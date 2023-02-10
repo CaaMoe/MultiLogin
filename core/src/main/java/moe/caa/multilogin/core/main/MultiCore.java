@@ -20,6 +20,7 @@ import moe.caa.multilogin.core.handle.TemplateProfileRedirectHandler;
 import moe.caa.multilogin.core.language.LanguageHandler;
 import moe.caa.multilogin.core.semver.CheckUpdater;
 import moe.caa.multilogin.core.semver.SemVersion;
+import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -39,6 +40,8 @@ public class MultiCore implements MultiCoreAPI {
     private final PluginConfig pluginConfig;
     @Getter
     private final AuthHandler authHandler;
+    @Getter
+    private final SkinRestorerCore skinRestorerHandler;
     @Getter
     private final CommandHandler commandHandler;
     @Getter
@@ -65,6 +68,7 @@ public class MultiCore implements MultiCoreAPI {
         this.pluginConfig = new PluginConfig(plugin.getDataFolder());
         this.sqlManager = new SQLManager(this);
         this.authHandler = new AuthHandler(this);
+        this.skinRestorerHandler = new SkinRestorerCore(this);
         this.commandHandler = new CommandHandler(this);
         this.playerHandler = new PlayerHandler(this);
         this.cacheWhitelistHandler = new CacheWhitelistHandler();

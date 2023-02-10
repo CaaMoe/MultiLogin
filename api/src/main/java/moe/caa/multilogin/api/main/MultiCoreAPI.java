@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.language.LanguageAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.api.skinrestorer.SkinRestorerAPI;
 
 public interface MultiCoreAPI {
 
@@ -32,6 +33,11 @@ public interface MultiCoreAPI {
      * 返回混合验证处理程序
      */
     AuthAPI getAuthHandler();
+
+    /**
+     * 返回皮肤修复程序
+     */
+    SkinRestorerAPI getSkinRestorerHandler();
 
     /**
      * 获得缓存

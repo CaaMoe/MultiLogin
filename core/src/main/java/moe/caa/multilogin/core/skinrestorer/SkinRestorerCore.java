@@ -3,11 +3,14 @@ package moe.caa.multilogin.core.skinrestorer;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.skinrestorer.SkinRestorerAPI;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.auth.LoginAuthResult;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
@@ -27,7 +30,7 @@ import java.util.Map;
 /**
  * 皮肤修复程序核心
  */
-public class SkinRestorerCore {
+public class SkinRestorerCore implements SkinRestorerAPI {
     private static final String[] ALLOWED_DOMAINS = new String[]{".minecraft.net", ".mojang.com"};
     private static final String[] BLOCKED_DOMAINS = new String[]{"bugs.mojang.com", "education.minecraft.net", "feedback.minecraft.net"};
     private static PublicKey publicKey;
@@ -88,25 +91,27 @@ public class SkinRestorerCore {
      * 进行修复
      */
     @SneakyThrows
-    public SkinRestorerResult doRestorer(YggdrasilServiceConfig yggdrasilServiceConfig, GameProfile profile) {
-        profile = profile.clone();
+    public SkinRestorerResultImpl doRestorer(AuthResult result0) {
+        LoginAuthResult result = ((LoginAuthResult) result0);
+        GameProfile profile = result.getResponse().clone();
+        YggdrasilServiceConfig serviceConfig = result.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig();
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(new RetryInterceptor(yggdrasilServiceConfig.getSkinRestorer().getRetry(),
-                        yggdrasilServiceConfig.getSkinRestorer().getRetryDelay()))
+                .addInterceptor(new RetryInterceptor(serviceConfig.getSkinRestorer().getRetry(),
+                        serviceConfig.getSkinRestorer().getRetryDelay()))
                 .addInterceptor(new LoggingInterceptor())
-                .writeTimeout(Duration.ofMillis(yggdrasilServiceConfig.getSkinRestorer().getTimeout()))
-                .readTimeout(Duration.ofMillis(yggdrasilServiceConfig.getSkinRestorer().getTimeout()))
-                .connectTimeout(Duration.ofMillis(yggdrasilServiceConfig.getSkinRestorer().getTimeout()))
-                .proxy(yggdrasilServiceConfig.getSkinRestorer().getProxy().getProxy())
-                .proxyAuthenticator(yggdrasilServiceConfig.getSkinRestorer().getProxy().getProxyAuthenticator())
+                .writeTimeout(Duration.ofMillis(serviceConfig.getSkinRestorer().getTimeout()))
+                .readTimeout(Duration.ofMillis(serviceConfig.getSkinRestorer().getTimeout()))
+                .connectTimeout(Duration.ofMillis(serviceConfig.getSkinRestorer().getTimeout()))
+                .proxy(serviceConfig.getSkinRestorer().getProxy().getProxy())
+                .proxyAuthenticator(serviceConfig.getSkinRestorer().getProxy().getProxyAuthenticator())
                 .build();
 
-        if (yggdrasilServiceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.OFF) {
-            return SkinRestorerResult.ofNoRestorer();
+        if (serviceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.OFF) {
+            return SkinRestorerResultImpl.ofNoRestorer();
         }
         Map<String, Property> propertyMap = profile.getPropertyMap();
         if (propertyMap == null || !propertyMap.containsKey("textures")) {
-            return SkinRestorerResult.ofNoSkin();
+            return SkinRestorerResultImpl.ofNoSkin();
         }
         Property textures = propertyMap.get("textures");
         JsonObject jsonObject = JsonParser.parseString(new String(Base64.getDecoder().decode(textures.getValue()), StandardCharsets.UTF_8)).getAsJsonObject();
@@ -114,7 +119,7 @@ public class SkinRestorerCore {
                 || !jsonObject.getAsJsonObject("textures").has("SKIN")
                 || !jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").has("url")
         ) {
-            return SkinRestorerResult.ofNoSkin();
+            return SkinRestorerResultImpl.ofNoSkin();
         }
         JsonObject skinData = jsonObject.getAsJsonObject("textures").getAsJsonObject("SKIN").getAsJsonObject();
         String url = skinData.getAsJsonPrimitive("url").getAsString();
@@ -132,27 +137,27 @@ public class SkinRestorerCore {
             restoredProperty.setSignature(cacheRestored.getValue2());
             profile.getPropertyMap().remove("textures");
             profile.getPropertyMap().put("textures", restoredProperty);
-            return SkinRestorerResult.ofUseCache(profile);
+            return SkinRestorerResultImpl.ofUseCache(profile);
         }
 
         if (isSignatureValid(textures.getValue(), textures.getSignature())) {
             if (isAllowedTextureDomain(url)) {
-                return SkinRestorerResult.ofSignatureValid();
+                return SkinRestorerResultImpl.ofSignatureValid();
             } else {
                 LoggerProvider.getLogger().warn(profile.getName() + " has a valid skin signature, but the skin URL is invalid.");
             }
         }
 
-        SkinRestorerFlows srf = new SkinRestorerFlows(core, yggdrasilServiceConfig, okHttpClient, url, model, profile);
-        if (yggdrasilServiceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.ASYNC) {
+        SkinRestorerFlows srf = new SkinRestorerFlows(core, serviceConfig, okHttpClient, url, model, profile);
+        if (serviceConfig.getSkinRestorer().getRestorer() == SkinRestorerConfig.RestorerType.ASYNC) {
             core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                 try {
-                    SkinRestorerResult.handleSkinRestoreResult(srf.call());
+                    SkinRestorerResultImpl.handleSkinRestoreResult(srf.call());
                 } catch (Exception e) {
-                    SkinRestorerResult.handleSkinRestoreResult(e);
+                    SkinRestorerResultImpl.handleSkinRestoreResult(e);
                 }
             });
-            return SkinRestorerResult.ofRestorerAsync();
+            return SkinRestorerResultImpl.ofRestorerAsync();
         }
         return srf.call();
     }

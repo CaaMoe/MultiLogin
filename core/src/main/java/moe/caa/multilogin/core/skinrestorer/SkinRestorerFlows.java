@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 /**
  * 皮肤修复工作流
  */
-public class SkinRestorerFlows implements Callable<SkinRestorerResult> {
+public class SkinRestorerFlows implements Callable<SkinRestorerResultImpl> {
     private final MultiCore core;
     private final YggdrasilServiceConfig config;
     private final OkHttpClient okHttpClient;
@@ -42,12 +42,12 @@ public class SkinRestorerFlows implements Callable<SkinRestorerResult> {
     /**
      * 进行皮肤修复
      */
-    public SkinRestorerResult call() throws Exception {
+    public SkinRestorerResultImpl call() throws Exception {
         byte[] bytes;
         try {
             bytes = requireValidSkin(skinUrl, skinModel);
         } catch (Exception e) {
-            return SkinRestorerResult.ofBadSkin(e);
+            return SkinRestorerResultImpl.ofBadSkin(e);
         }
         Request request;
 
@@ -97,7 +97,7 @@ public class SkinRestorerFlows implements Callable<SkinRestorerResult> {
         restoredProperty.setSignature(signature);
         profile.getPropertyMap().remove("textures");
         profile.getPropertyMap().put("textures", restoredProperty);
-        return SkinRestorerResult.ofRestorerSucceed(profile);
+        return SkinRestorerResultImpl.ofRestorerSucceed(profile);
     }
 
     private byte[] requireValidSkin(String skinUrl, String model) throws IOException {

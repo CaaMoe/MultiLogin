@@ -15,6 +15,7 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.skinrestorer.SkinRestorerResult;
 import moe.caa.multilogin.api.util.reflect.Accessor;
 import moe.caa.multilogin.api.util.reflect.EnumAccessor;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
@@ -190,10 +191,26 @@ public class MultiInitialLoginSessionHandler {
                 return;
             }
             if (result.getResult() == AuthResult.Result.ALLOW) {
-                // TODO: 2023/2/10 需要在这里进行皮肤修复操作
+                GameProfile gameProfile = result.getResponse();
+
+                try {
+                    SkinRestorerResult restorerResult = multiCoreAPI.getSkinRestorerHandler().doRestorer(result);
+                    if (restorerResult.getThrowable() != null) {
+                        LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", restorerResult.getThrowable());
+                    }
+                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
+
+                    if (restorerResult.getResponse() != null) {
+                        gameProfile = restorerResult.getResponse();
+                    }
+                } catch (Exception e) {
+                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), "error"));
+                    LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
+                }
+
                 this.mcConnection.setSessionHandler(
                         (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
-                                this.server, inbound, generateGameProfile(result.getResponse()), true
+                                this.server, inbound, generateGameProfile(gameProfile), true
                         )
                 );
             } else {

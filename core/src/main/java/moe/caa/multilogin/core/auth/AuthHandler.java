@@ -74,26 +74,6 @@ public class AuthHandler implements AuthAPI {
                         )
                 );
                 GameProfile finalProfile = validateAuthenticationResult.getInGameProfile();
-//                GameProfile restoredSkinProfile = null;
-//                try {
-//                    SkinRestorerResult skinRestorerResult = skinRestorerCore.doRestorer(
-//                            yggdrasilAuthenticationResult.getYggdrasilServiceConfig(),
-//                            validateAuthenticationResult.getInGameProfile()
-//                    );
-//                    SkinRestorerResult.handleSkinRestoreResult(skinRestorerResult);
-//                    restoredSkinProfile = skinRestorerResult.getResponse();
-//                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), skinRestorerResult.getReason()));
-//                } catch (Exception e) {
-//                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", yggdrasilAuthenticationResult.getResponse().getName(), "error"));
-//                    SkinRestorerResult.handleSkinRestoreResult(e);
-//                }
-//
-//                GameProfile finalProfile;
-//                if (restoredSkinProfile != null) {
-//                    finalProfile = restoredSkinProfile;
-//                } else {
-//                    finalProfile = validateAuthenticationResult.getInGameProfile();
-//                }
                 core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
                         yggdrasilAuthenticationResult.getResponse(),
                         yggdrasilAuthenticationResult.getYggdrasilId(),

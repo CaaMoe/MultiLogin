@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.skinrestorer.SkinRestorerResult;
 import moe.caa.multilogin.core.auth.LoginAuthResult;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -80,16 +81,31 @@ public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialH
         multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
 
             try {
-                LoginAuthResult authResult = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(encName, encodedHash, ip);
-                if (authResult.getResult() == AuthResult.Result.ALLOW) {
-                    // TODO: 2023/2/10 需要在这里进行皮肤修复操作
-                    GameProfile response = authResult.getResponse();
-                    loginProfileFieldSetter.invoke(initialHandler, generateGameProfile(response));
-                    nameFieldSetter.invoke(initialHandler, response.getName());
-                    uniqueIdFieldSetter.invoke(initialHandler, response.getId());
+                LoginAuthResult result = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(encName, encodedHash, ip);
+                if (result.getResult() == AuthResult.Result.ALLOW) {
+                    GameProfile gameProfile = result.getResponse();
+
+                    try {
+                        SkinRestorerResult restorerResult = multiCoreAPI.getSkinRestorerHandler().doRestorer(result);
+                        if (restorerResult.getThrowable() != null) {
+                            LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", restorerResult.getThrowable());
+                        }
+                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
+
+                        if (restorerResult.getResponse() != null) {
+                            gameProfile = restorerResult.getResponse();
+                        }
+                    } catch (Exception e) {
+                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), "error"));
+                        LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
+                    }
+
+                    loginProfileFieldSetter.invoke(initialHandler, generateGameProfile(gameProfile));
+                    nameFieldSetter.invoke(initialHandler, gameProfile.getName());
+                    uniqueIdFieldSetter.invoke(initialHandler, gameProfile.getId());
                     finishMethod.invoke(initialHandler);
                 } else {
-                    initialHandler.disconnect(authResult.getKickMessage());
+                    initialHandler.disconnect(result.getKickMessage());
                 }
             } catch (Throwable e) {
                 initialHandler.disconnect(new TextComponent(multiCoreAPI.getLanguageHandler().getMessage("auth_error")));
