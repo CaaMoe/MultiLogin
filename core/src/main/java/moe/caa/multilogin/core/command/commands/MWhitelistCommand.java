@@ -8,10 +8,10 @@ import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
+import moe.caa.multilogin.core.command.argument.ServiceIdArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
-import moe.caa.multilogin.core.command.argument.YggdrasilIdArgumentType;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -43,7 +43,7 @@ public class MWhitelistCommand {
                 ).then(handler.literal("permanent")
                         .then(handler.literal("add")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_ADD))
-                                .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
+                                .then(handler.argument("serviceid", ServiceIdArgumentType.service())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .executes(this::executeAdd)
                                         )
@@ -51,7 +51,7 @@ public class MWhitelistCommand {
                         )
                         .then(handler.literal("remove")
                                 .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_REMOVE))
-                                .then(handler.argument("yggdrasilid", YggdrasilIdArgumentType.yggdrasilid())
+                                .then(handler.argument("serviceid", ServiceIdArgumentType.service())
                                         .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
                                                 .executes(this::executeRemove)
                                         )
@@ -60,16 +60,16 @@ public class MWhitelistCommand {
                 );
     }
 
-    // /MultiLogin whitelist permanent remove <yggdrasilid> <onlineuuid>
+    // /MultiLogin whitelist permanent remove <serviceid> <onlineuuid>
     @SneakyThrows
     private int executeRemove(CommandContext<ISender> context) {
-        YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
+        BaseServiceConfig ysc = ServiceIdArgumentType.getService(context, "serviceid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
         if (!CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(onlineUUID, ysc.getId())) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove_repeat",
                     new Pair<>("online_uuid", onlineUUID),
-                    new Pair<>("yggdrasil_name", ysc.getName()),
-                    new Pair<>("yggdrasil_id", ysc.getId())
+                    new Pair<>("service_name", ysc.getName()),
+                    new Pair<>("service_id", ysc.getId())
             ));
             return 0;
         }
@@ -77,8 +77,8 @@ public class MWhitelistCommand {
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), false);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove",
                 new Pair<>("online_uuid", onlineUUID),
-                new Pair<>("yggdrasil_name", ysc.getName()),
-                new Pair<>("yggdrasil_id", ysc.getId())
+                new Pair<>("service_name", ysc.getName()),
+                new Pair<>("service_id", ysc.getId())
         ));
         UUID inGameUUID = CommandHandler.getCore().getSqlManager().getUserDataTable().getInGameUUID(onlineUUID, ysc.getId());
         if (inGameUUID != null) {
@@ -90,16 +90,16 @@ public class MWhitelistCommand {
         return 0;
     }
 
-    // /MultiLogin whitelist permanent add <yggdrasilid> <onlineuuid>
+    // /MultiLogin whitelist permanent add <serviceid> <onlineuuid>
     @SneakyThrows
     private int executeAdd(CommandContext<ISender> context) {
-        YggdrasilServiceConfig ysc = YggdrasilIdArgumentType.getYggdrasil(context, "yggdrasilid");
+        BaseServiceConfig ysc = ServiceIdArgumentType.getService(context, "serviceid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
         if (CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(onlineUUID, ysc.getId())) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add_repeat",
                     new Pair<>("online_uuid", onlineUUID),
-                    new Pair<>("yggdrasil_name", ysc.getName()),
-                    new Pair<>("yggdrasil_id", ysc.getId())
+                    new Pair<>("service_name", ysc.getName()),
+                    new Pair<>("service_id", ysc.getId())
             ));
             return 0;
         }
@@ -109,8 +109,8 @@ public class MWhitelistCommand {
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), true);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",
                 new Pair<>("online_uuid", onlineUUID),
-                new Pair<>("yggdrasil_name", ysc.getName()),
-                new Pair<>("yggdrasil_id", ysc.getId())
+                new Pair<>("service_name", ysc.getName()),
+                new Pair<>("service_id", ysc.getId())
         ));
         return 0;
     }

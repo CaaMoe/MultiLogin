@@ -8,7 +8,7 @@ import moe.caa.multilogin.api.handle.HandlerAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.util.Map;
@@ -77,18 +77,18 @@ public class PlayerHandler implements HandlerAPI {
     }
 
     @Override
-    public UUID getInGameUUID(UUID onlineUUID, int yggdrasilId) {
+    public UUID getInGameUUID(UUID onlineUUID, int serviceId) {
         for (Map.Entry<UUID, Entry> entry : cache.entrySet()) {
             if (entry.getValue().onlineProfile.getId().equals(onlineUUID)
-                    && entry.getValue().yggdrasilID == yggdrasilId)
+                    && entry.getValue().yggdrasilID == serviceId)
                 return entry.getKey();
         }
         return null;
     }
 
     @Override
-    public String getYggdrasilName(int yggdrasilId) {
-        YggdrasilServiceConfig config = core.getPluginConfig().getIdMap().get(yggdrasilId);
+    public String getServiceName(int serviceId) {
+        BaseServiceConfig config = core.getPluginConfig().getServiceIdMap().get(serviceId);
         if (config == null) return null;
         return config.getName();
     }

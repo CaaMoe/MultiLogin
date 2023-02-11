@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.auth.yggdrasil;
+package moe.caa.multilogin.core.auth.service.yggdrasil;
 
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.auth.Property;

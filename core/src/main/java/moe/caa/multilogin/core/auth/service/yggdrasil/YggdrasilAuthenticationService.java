@@ -1,7 +1,9 @@
-package moe.caa.multilogin.core.auth.yggdrasil;
+package moe.caa.multilogin.core.auth.service.yggdrasil;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
+import moe.caa.multilogin.core.configuration.service.yggdrasil.BaseYggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.EntrustFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
@@ -27,7 +29,7 @@ public class YggdrasilAuthenticationService {
      * 开始验证
      */
     public YggdrasilAuthenticationResult hasJoined(String username, String serverId, String ip) throws SQLException {
-        final Set<Integer> ids = core.getPluginConfig().getIdMap().keySet();
+        final Set<Integer> ids = core.getPluginConfig().getServiceIdMap().keySet();
         if (ids.size() == 0) return YggdrasilAuthenticationResult.ofNoService();
 
 
@@ -80,8 +82,14 @@ public class YggdrasilAuthenticationService {
     }
 
     private YggdrasilAuthenticationResult hasJoined0(String username, String serverId, String ip, Set<Integer> ids) {
-        EntrustFlows<HasJoinedContext> flows = new EntrustFlows<>(ids.stream()
-                .filter(i -> core.getPluginConfig().getIdMap().containsKey(i))
+        Set<BaseYggdrasilServiceConfig> serviceConfigs = new HashSet<>();
+        for (Integer id : ids) {
+            BaseServiceConfig config = core.getPluginConfig().getServiceIdMap().get(id);
+            if (config instanceof BaseYggdrasilServiceConfig) {
+                serviceConfigs.add((BaseYggdrasilServiceConfig) config);
+            }
+        }
+        EntrustFlows<HasJoinedContext> flows = new EntrustFlows<>(serviceConfigs.stream()
                 .map(i -> new YggdrasilAuthenticationFlows(core, username, serverId, ip, i))
                 .collect(Collectors.toList())
         );
@@ -91,12 +99,11 @@ public class YggdrasilAuthenticationService {
         if (run == Signal.PASSED) {
             return YggdrasilAuthenticationResult.ofAllowed(
                     context.getResponse().get().getValue1(),
-                    context.getResponse().get().getValue2().getValue1(),
-                    context.getResponse().get().getValue2().getValue2()
+                    context.getResponse().get().getValue2()
             );
         }
         if (context.getServiceUnavailable().size() != 0) {
-            for (Map.Entry<Integer, Throwable> entry : context.getServiceUnavailable().entrySet()) {
+            for (Map.Entry<BaseYggdrasilServiceConfig, Throwable> entry : context.getServiceUnavailable().entrySet()) {
                 LoggerProvider.getLogger().debug("An exception occurred during authentication of the yggdrasil service whose ID is " + entry.getKey(), entry.getValue());
             }
             return YggdrasilAuthenticationResult.ofServerBreakdown();

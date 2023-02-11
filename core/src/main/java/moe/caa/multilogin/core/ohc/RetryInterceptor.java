@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class RetryInterceptor implements Interceptor {
     private final int retry;
-    private final int delay;
+    private final long delay;
 
-    public RetryInterceptor(int retry, int delay) {
+    public RetryInterceptor(int retry, long delay) {
         this.retry = retry;
         this.delay = delay;
     }

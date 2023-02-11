@@ -22,17 +22,17 @@ public class WhitelistCheckFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
-        boolean removed = core.getCacheWhitelistHandler().getCachedWhitelist().remove(validateContext.getYggdrasilAuthenticationResult().getResponse().getName().toLowerCase(Locale.ROOT));
+        boolean removed = core.getCacheWhitelistHandler().getCachedWhitelist().remove(validateContext.getBaseServiceAuthenticationResult().getResponse().getName().toLowerCase(Locale.ROOT));
         if (removed) {
-            core.getSqlManager().getUserDataTable().setWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(), validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(), true);
+            core.getSqlManager().getUserDataTable().setWhitelist(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(), validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(), true);
         }
         // 如果没有开启白名单验证
-        if (!validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().isWhitelist()) {
+        if (!validateContext.getBaseServiceAuthenticationResult().getServiceConfig().isWhitelist()) {
             return Signal.PASSED;
         }
         // 如果有白名单
-        if (core.getSqlManager().getUserDataTable().hasWhitelist(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                validateContext.getYggdrasilAuthenticationResult().getYggdrasilId())) {
+        if (core.getSqlManager().getUserDataTable().hasWhitelist(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId())) {
             return Signal.PASSED;
         }
         // 踹了

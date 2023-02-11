@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.plugin.IPlayerManager;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.plugin.IServer;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.conf.Configuration;
 
 /**
@@ -59,5 +60,15 @@ public class BungeeServer implements IServer {
     @Override
     public ISender getConsoleSender() {
         return new BungeeSender(bungeeCord.getConsole());
+    }
+
+    @Override
+    public boolean pluginHasEnabled(String id) {
+        for (Plugin plugin : bungeeCord.getPluginManager().getPlugins()) {
+            if (plugin.getDescription().getName().equalsIgnoreCase(id)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

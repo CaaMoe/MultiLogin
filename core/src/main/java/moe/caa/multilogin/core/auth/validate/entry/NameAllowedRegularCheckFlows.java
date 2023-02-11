@@ -25,9 +25,9 @@ public class NameAllowedRegularCheckFlows extends BaseFlows<ValidateContext> {
         if (ValueUtil.isEmpty(nameAllowedRegular)) {
             return Signal.PASSED;
         }
-        if (!Pattern.matches(nameAllowedRegular, validateContext.getYggdrasilAuthenticationResult().getResponse().getName())) {
+        if (!Pattern.matches(nameAllowedRegular, validateContext.getBaseServiceAuthenticationResult().getResponse().getName())) {
             validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_mismatch",
-                    new Pair<>("current_username", validateContext.getYggdrasilAuthenticationResult().getResponse().getName()),
+                    new Pair<>("current_username", validateContext.getBaseServiceAuthenticationResult().getResponse().getName()),
                     new Pair<>("name_allowed_regular", nameAllowedRegular)
             ));
             return Signal.TERMINATED;

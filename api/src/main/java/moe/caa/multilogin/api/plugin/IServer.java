@@ -51,4 +51,9 @@ public interface IServer {
      * 获得控制台对象
      */
     ISender getConsoleSender();
+
+    /**
+     * 判断一个插件有没有被加载
+     */
+    boolean pluginHasEnabled(String id);
 }

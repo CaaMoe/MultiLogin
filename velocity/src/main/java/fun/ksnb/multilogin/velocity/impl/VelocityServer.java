@@ -1,5 +1,6 @@
 package fun.ksnb.multilogin.velocity.impl;
 
+import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.config.PlayerInfoForwarding;
 import com.velocitypowered.proxy.config.VelocityConfiguration;
@@ -60,5 +61,15 @@ public class VelocityServer implements IServer {
     @Override
     public ISender getConsoleSender() {
         return new VelocitySender(server.getConsoleCommandSource());
+    }
+
+    @Override
+    public boolean pluginHasEnabled(String id) {
+        for (PluginContainer plugin : server.getPluginManager().getPlugins()) {
+            if (plugin.getDescription().getName().map(name -> name.equalsIgnoreCase(id)).orElse(false)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

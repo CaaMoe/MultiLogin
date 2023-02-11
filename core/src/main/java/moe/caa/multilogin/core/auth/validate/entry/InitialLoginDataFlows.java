@@ -17,12 +17,12 @@ public class InitialLoginDataFlows extends BaseFlows<ValidateContext> {
     @Override
     public Signal run(ValidateContext validateContext) {
         if (!core.getSqlManager().getUserDataTable().dataExists(
-                validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
+                validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId()
         )) {
             core.getSqlManager().getUserDataTable().insertNewData(
-                    validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
+                    validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                    validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
                     null
             );
         }

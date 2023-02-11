@@ -4,9 +4,16 @@ import lombok.Getter;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.logger.bridges.DebugLoggerBridge;
 import moe.caa.multilogin.api.util.IOUtil;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
-import moe.caa.multilogin.core.configuration.yggdrasil.hasjoined.HasJoinedConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
+import moe.caa.multilogin.core.configuration.service.FloodgateServiceConfig;
+import moe.caa.multilogin.core.configuration.service.ServiceType;
+import moe.caa.multilogin.core.configuration.service.yggdrasil.BaseYggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.yggdrasil.BlessingSkinYggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.yggdrasil.CustomYggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.yggdrasil.OfficialYggdrasilServiceConfig;
+import moe.caa.multilogin.core.main.MultiCore;
 import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
@@ -27,21 +34,33 @@ import java.util.stream.Stream;
  */
 public class PluginConfig {
     private final File dataFolder;
-
+    private static final Map<ServiceType, String> onlyOneServiceInfoMap = Map.of(
+            ServiceType.OFFICIAL, "official",
+            ServiceType.FLOODGATE, "floodgate");
     @Getter
     private boolean forceUseLogin;
     @Getter
     private boolean checkUpdate;
     @Getter
     private SqlConfig sqlConfig;
-
     @Getter
     private String nameAllowedRegular;
+    private final MultiCore core;
     @Getter
-    private Map<Integer, YggdrasilServiceConfig> idMap;
+    private Map<Integer, BaseServiceConfig> serviceIdMap = new HashMap<>();
 
-    public PluginConfig(File dataFolder) {
+    public PluginConfig(File dataFolder, MultiCore core) {
         this.dataFolder = dataFolder;
+        this.core = core;
+    }
+
+    public FloodgateServiceConfig getFloodgateAuthenticationService() {
+        for (BaseServiceConfig value : serviceIdMap.values()) {
+            if (value instanceof FloodgateServiceConfig) {
+                return (FloodgateServiceConfig) value;
+            }
+        }
+        return null;
     }
 
     public void reload() throws IOException, URISyntaxException {
@@ -53,6 +72,7 @@ public class PluginConfig {
             Files.createDirectory(servicesFolder.toPath());
         }
 
+        IOUtil.removeAllFiles(new File("examples"));
         saveResource("config.yml", false);
         saveResourceDir("examples", true);
 
@@ -77,52 +97,123 @@ public class PluginConfig {
 
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
 
-        Map<Integer, YggdrasilServiceConfig> idMap = new HashMap<>();
+        Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
-            List<YggdrasilServiceConfig> tmp = new ArrayList<>();
+            List<BaseServiceConfig> tmp = new ArrayList<>();
             list.forEach(path -> {
                 if (!path.toFile().getName().toLowerCase().endsWith(".yml")) return;
                 try {
-                    tmp.add(YggdrasilServiceConfig.read(YamlConfigurationLoader.builder().path(path).build().load()));
+                    tmp.add(readServiceConfig(YamlConfigurationLoader.builder().path(path).build().load()));
                 } catch (Exception e) {
-                    LoggerProvider.getLogger().error(new ConfException("Unable to read Yggdrasil config under file " + path, e));
+                    LoggerProvider.getLogger().error(new ConfException("Unable to read authentication service config under file " + path, e));
                 }
             });
 
-            for (YggdrasilServiceConfig config : tmp) {
+            Set<ServiceType> notRepeat = new HashSet<>();
+            for (BaseServiceConfig config : tmp) {
+                if (onlyOneServiceInfoMap.containsKey(config.getServiceType())) {
+                    if (!notRepeat.add(config.getServiceType())) {
+                        throw new ConfException(
+                                String.format("Duplicates are not allowed for authentication services of type %s, but more than one was found.",
+                                        onlyOneServiceInfoMap.get(config.getServiceType())));
+                    }
+                }
+            }
+
+            for (BaseServiceConfig config : tmp) {
                 if (idMap.containsKey(config.getId())) {
-                    throw new ConfException(String.format("The same yggdrasil id value %d exists.", config.getId()));
+                    throw new ConfException(String.format("The same authentication service id value %d exists.", config.getId()));
                 }
                 idMap.put(config.getId(), config);
             }
-        }
 
-        List<HasJoinedConfig> collect = idMap.values().stream().map(YggdrasilServiceConfig::getHasJoined)
-                .collect(Collectors.toMap(e -> e, e -> 1, Integer::sum))
-                .entrySet().stream().filter(e -> e.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toList());
-        for (HasJoinedConfig ignored : collect) {
-            throw new ConfException("There are duplicate configurations of hasJoined.");
+            if (!core.isFloodgateSupported()) {
+                for (BaseServiceConfig config : tmp) {
+                    if (config.getServiceType() == ServiceType.FLOODGATE) {
+                        LoggerProvider.getLogger().warn(String.format("Floodgate not detected, authentication service with id %d and name %s will be invalid.", config.getId(), config.getName()));
+                        break;
+                    }
+                }
+            }
+
         }
 
         idMap.forEach((i, y) -> {
-            if (YggdrasilServiceConfig.YGGDRASIL_DEFAULT_NAME.equals(y.getName())) {
-                LoggerProvider.getLogger().warn(String.format("The name of yggdrasil whose id is %d has not been set.", i));
+            if ((y.getName()).equalsIgnoreCase("unnamed")) {
+                LoggerProvider.getLogger().warn(String.format("The name of authentication service whose id is %d has not been set.", i));
             }
             LoggerProvider.getLogger().info(String.format(
-                    "Add a yggdrasil service with id %d and name %s.", i, y.getName()
+                    "Add a authentication service with id %d and name %s.", i, y.getName()
             ));
         });
 
         if (idMap.size() == 0) LoggerProvider.getLogger().warn(
-                "The server has not added any yggdrasil service, which will prevent all players from logging in."
+                "The server has not added any authentication service, which will prevent all players from logging in."
         );
         else LoggerProvider.getLogger().info(String.format(
-                "Added %d yggdrasil services.", idMap.size()
+                "Added %d authentication services.", idMap.size()
         ));
-        this.idMap = Collections.unmodifiableMap(idMap);
-
+        this.serviceIdMap = Collections.unmodifiableMap(idMap);
 
         nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
+    }
+
+    private BaseServiceConfig readServiceConfig(CommentedConfigurationNode load) throws SerializationException, ConfException {
+        CommentedConfigurationNode nodeId = load.node("id");
+        if (nodeId.empty()) {
+            throw new ConfException("service id is null.");
+        }
+        int id = nodeId.getInt();
+        String name = load.node("name").getString("Unnamed");
+        ServiceType serviceType = load.node("serviceType").get(ServiceType.class);
+
+        if (serviceType == null) {
+            throw new ConfException("service type is null.");
+        }
+
+        BaseServiceConfig.InitUUID initUUID = load.node("initUUID").get(BaseServiceConfig.InitUUID.class, BaseServiceConfig.InitUUID.DEFAULT);
+        boolean whitelist = load.node("whitelist").getBoolean(false);
+        SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(load.node("skinRestorer"));
+
+        if (serviceType.isYggdrasilService()) {
+            CommentedConfigurationNode yggdrasilAuthNode = load.node("yggdrasilAuth");
+            boolean trackIp = yggdrasilAuthNode.node("trackIp").getBoolean(false);
+            int timeout = yggdrasilAuthNode.node("timeout").getInt(10000);
+            int retry = yggdrasilAuthNode.node("retry").getInt(0);
+            long retryDelay = yggdrasilAuthNode.node("retryDelay").getLong(0L);
+            ProxyConfig authProxy = ProxyConfig.read(yggdrasilAuthNode.node("authProxy"));
+
+            if (serviceType == ServiceType.OFFICIAL) {
+                return new OfficialYggdrasilServiceConfig(id, name,
+                        initUUID, whitelist,
+                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+            }
+
+            if (serviceType == ServiceType.BLESSING_SKIN) {
+                return new BlessingSkinYggdrasilServiceConfig(id, name,
+                        initUUID, whitelist,
+                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy,
+                        yggdrasilAuthNode.node("blessingSkin").node("apiRoot").getString());
+            }
+
+            if (serviceType == ServiceType.CUSTOM_YGGDRASIL) {
+                CommentedConfigurationNode customNode = yggdrasilAuthNode.node("custom");
+                String url = customNode.node("url").getString();
+                BaseYggdrasilServiceConfig.HttpRequestMethod method = customNode.node("method").get(BaseYggdrasilServiceConfig.HttpRequestMethod.class, BaseYggdrasilServiceConfig.HttpRequestMethod.GET);
+                String trackIpContent = customNode.node("trackIpContent").getString();
+                String postContent = customNode.node("postContent").getString();
+
+                return new CustomYggdrasilServiceConfig(id, name, initUUID, whitelist,
+                        skinRestorer, trackIp, timeout, retry, retryDelay,
+                        authProxy, url, postContent, trackIpContent, method);
+            }
+        }
+
+        if (serviceType == ServiceType.FLOODGATE) {
+            return new FloodgateServiceConfig(id, name, initUUID, whitelist, skinRestorer);
+        }
+
+        throw new ConfException("Unknown service type " + serviceType.name());
     }
 
     public void saveResource(String path, boolean cover) throws IOException {

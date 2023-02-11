@@ -35,17 +35,17 @@ public interface HandlerAPI {
     /**
      * 获得玩家游戏内 UUID
      *
-     * @param onlineUUID  玩家的在线 UUID
-     * @param yggdrasilId yggdrasil id
+     * @param onlineUUID 玩家的在线 UUID
+     * @param serviceId  service id
      * @return 玩家游戏内 UUID
      */
-    UUID getInGameUUID(UUID onlineUUID, int yggdrasilId);
+    UUID getInGameUUID(UUID onlineUUID, int serviceId);
 
     /**
-     * 获得 Yggdrasil name
+     * 获得 service name
      *
-     * @param yggdrasilId yggdrasil id
+     * @param serviceId service id
      * @return Yggdrasil name
      */
-    String getYggdrasilName(int yggdrasilId);
+    String getServiceName(int serviceId);
 }

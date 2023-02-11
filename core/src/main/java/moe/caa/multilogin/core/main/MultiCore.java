@@ -9,8 +9,9 @@ import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.plugin.IPlugin;
 import moe.caa.multilogin.core.auth.AuthHandler;
-import moe.caa.multilogin.core.auth.yggdrasil.serialize.GameProfileSerializer;
-import moe.caa.multilogin.core.auth.yggdrasil.serialize.PropertySerializer;
+import moe.caa.multilogin.core.auth.service.floodgate.FloodgateAuthenticationService;
+import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.GameProfileSerializer;
+import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.database.SQLManager;
@@ -56,6 +57,8 @@ public class MultiCore implements MultiCoreAPI {
     private final Gson gson;
     @Getter
     private SemVersion semVersion;
+    @Getter
+    private boolean floodgateSupported = false;
 
 
     /**
@@ -65,7 +68,7 @@ public class MultiCore implements MultiCoreAPI {
         this.plugin = plugin;
         this.buildManifest = new BuildManifest(this);
         this.languageHandler = new LanguageHandler(this);
-        this.pluginConfig = new PluginConfig(plugin.getDataFolder());
+        this.pluginConfig = new PluginConfig(plugin.getDataFolder(), this);
         this.sqlManager = new SQLManager(this);
         this.authHandler = new AuthHandler(this);
         this.skinRestorerHandler = new SkinRestorerCore(this);
@@ -79,7 +82,19 @@ public class MultiCore implements MultiCoreAPI {
                 .registerTypeAdapter(Property.class, new PropertySerializer()).create();
     }
 
-    private void showBanner(){
+    private void setupFloodgate() {
+        if (plugin.getRunServer().pluginHasEnabled("floodgate")) {
+            try {
+                new FloodgateAuthenticationService(this).register();
+                LoggerProvider.getLogger().info("Floodgate detected, service registered.");
+                floodgateSupported = true;
+            } catch (Throwable e) {
+                LoggerProvider.getLogger().error("Unable to load floodgate handler, is it up to date?", e);
+            }
+        }
+    }
+
+    private void showBanner() {
         //show banner
         plugin.getRunServer().getConsoleSender().sendMessagePL("\033[40;31m __  __       _ _   _ _                _       \033[0m");
         plugin.getRunServer().getConsoleSender().sendMessagePL("\033[40;33m|  \\/  |_   _| | |_(_) |    ___   __ _(_)_ __  \033[0m");
@@ -98,12 +113,14 @@ public class MultiCore implements MultiCoreAPI {
         buildManifest.read();
         buildManifest.checkStable();
 
+        setupFloodgate();
         languageHandler.init();
         pluginConfig.reload();
         sqlManager.init();
         commandHandler.init();
         playerHandler.register();
         new CheckUpdater(this).start();
+
 
         this.semVersion = SemVersion.of(buildManifest.getVersion());
         LoggerProvider.getLogger().info(

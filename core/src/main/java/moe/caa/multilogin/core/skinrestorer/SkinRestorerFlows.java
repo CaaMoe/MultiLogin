@@ -7,7 +7,7 @@ import moe.caa.multilogin.api.auth.Property;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 import okhttp3.*;
 
@@ -24,13 +24,13 @@ import java.util.concurrent.Callable;
  */
 public class SkinRestorerFlows implements Callable<SkinRestorerResultImpl> {
     private final MultiCore core;
-    private final YggdrasilServiceConfig config;
+    private final BaseServiceConfig config;
     private final OkHttpClient okHttpClient;
     private final String skinUrl;
     private final String skinModel;
     private final GameProfile profile;
 
-    protected SkinRestorerFlows(MultiCore core, YggdrasilServiceConfig config, OkHttpClient okHttpClient, String skinUrl, String skinModel, GameProfile profile) {
+    protected SkinRestorerFlows(MultiCore core, BaseServiceConfig config, OkHttpClient okHttpClient, String skinUrl, String skinModel, GameProfile profile) {
         this.core = core;
         this.config = config;
         this.okHttpClient = okHttpClient;

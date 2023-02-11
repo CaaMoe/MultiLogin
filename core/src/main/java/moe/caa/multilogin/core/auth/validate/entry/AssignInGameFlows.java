@@ -29,25 +29,25 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         // 从 temp redirect 中读游戏内 UUID
         UUID inGameUUID = core.getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().remove(
                 new Pair<>(
-                        validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
-                        validateContext.getYggdrasilAuthenticationResult().getResponse().getId()
+                        validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
+                        validateContext.getBaseServiceAuthenticationResult().getResponse().getId()
                 )
         );
 
         if (inGameUUID == null) {
             // 如果不在，那就从数据库里面读登录档案的游戏内 UUID
             inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(
-                    validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                    validateContext.getYggdrasilAuthenticationResult().getYggdrasilId()
+                    validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                    validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId()
             );
         }
 
         // 如果这个 UUID 不存在，表示是个预新玩家或是档案被清理的新玩家。这时需要分配个全新的身份卡给它。
         if (inGameUUID == null) {
 
-            inGameUUID = validateContext.getYggdrasilAuthenticationResult().getYggdrasilServiceConfig().getInitUUID()
-                    .generateUUID(validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                            validateContext.getYggdrasilAuthenticationResult().getResponse().getName());
+            inGameUUID = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getInitUUID()
+                    .generateUUID(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                            validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
 
             // 需要线程安全
             synchronized (this) {
@@ -59,8 +59,8 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                 // 身份卡UUID数据被确定
                 // 更新数据
                 core.getSqlManager().getUserDataTable().setInGameUUID(
-                        validateContext.getYggdrasilAuthenticationResult().getResponse().getId(),
-                        validateContext.getYggdrasilAuthenticationResult().getYggdrasilId(),
+                        validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                        validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
                         inGameUUID);
             }
         }
@@ -79,7 +79,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         if (exist) {
             try {
                 core.getSqlManager().getInGameProfileTable().updateUsername(inGameUUID,
-                        validateContext.getYggdrasilAuthenticationResult().getResponse().getName());
+                        validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
                 validateContext.getInGameProfile().setId(inGameUUID);
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {
@@ -91,7 +91,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         } else {
             try {
                 core.getSqlManager().getInGameProfileTable().insertNewData(inGameUUID,
-                        validateContext.getYggdrasilAuthenticationResult().getResponse().getName());
+                        validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
                 validateContext.getInGameProfile().setId(inGameUUID);
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {

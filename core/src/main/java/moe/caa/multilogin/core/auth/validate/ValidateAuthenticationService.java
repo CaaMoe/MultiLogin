@@ -1,11 +1,11 @@
 package moe.caa.multilogin.core.auth.validate;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
 import moe.caa.multilogin.core.auth.validate.entry.AssignInGameFlows;
 import moe.caa.multilogin.core.auth.validate.entry.InitialLoginDataFlows;
 import moe.caa.multilogin.core.auth.validate.entry.NameAllowedRegularCheckFlows;
 import moe.caa.multilogin.core.auth.validate.entry.WhitelistCheckFlows;
-import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.SequenceFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
@@ -37,9 +37,8 @@ public class ValidateAuthenticationService {
     /**
      * 开始游戏内验证
      */
-    public ValidateAuthenticationResult checkIn(String username, String serverId, String ip,
-                                                YggdrasilAuthenticationResult yggdrasilAuthenticationResult) {
-        ValidateContext context = new ValidateContext(username, serverId, ip, yggdrasilAuthenticationResult);
+    public ValidateAuthenticationResult checkIn(BaseServiceAuthenticationResult baseServiceAuthenticationResult) {
+        ValidateContext context = new ValidateContext(baseServiceAuthenticationResult);
         Signal run = sequenceFlows.run(context);
         if (run == Signal.PASSED) {
             if (context.isNeedWait()) {

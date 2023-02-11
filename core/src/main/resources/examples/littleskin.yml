@@ -4,7 +4,9 @@
 # Please edit before use.
 id: -1
 
+name: 'Little Skin'
 # Don't change it unless you really want to.
-hasJoined:
+serviceType: BLESSING_SKIN
+yggdrasilAuth:
   blessingSkin:
     apiRoot: 'https://littleskin.cn/api/yggdrasil'

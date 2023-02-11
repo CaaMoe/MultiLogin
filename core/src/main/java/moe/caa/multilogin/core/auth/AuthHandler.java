@@ -1,31 +1,31 @@
 package moe.caa.multilogin.core.auth;
 
+import lombok.Getter;
 import moe.caa.multilogin.api.auth.AuthAPI;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
+import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticationResult;
+import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationResult;
 import moe.caa.multilogin.core.auth.validate.ValidateAuthenticationService;
-import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationResult;
-import moe.caa.multilogin.core.auth.yggdrasil.YggdrasilAuthenticationService;
 import moe.caa.multilogin.core.handle.PlayerHandler;
 import moe.caa.multilogin.core.main.MultiCore;
-import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 
 /**
  * 验证核心
  */
+@Getter
 public class AuthHandler implements AuthAPI {
     private final MultiCore core;
     private final YggdrasilAuthenticationService yggdrasilAuthenticationService;
     private final ValidateAuthenticationService validateAuthenticationService;
-    private final SkinRestorerCore skinRestorerCore;
 
 
     public AuthHandler(MultiCore core) {
         this.core = core;
         this.yggdrasilAuthenticationService = new YggdrasilAuthenticationService(core);
         this.validateAuthenticationService = new ValidateAuthenticationService(core);
-        this.skinRestorerCore = new SkinRestorerCore(core);
     }
 
 
@@ -42,7 +42,7 @@ public class AuthHandler implements AuthAPI {
         try {
             yggdrasilAuthenticationResult = yggdrasilAuthenticationService.hasJoined(username, serverId, ip);
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.NO_SERVICE) {
-                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_no_server"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_failed_no_service"));
             }
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.SERVER_BREAKDOWN) {
                 return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_server_down"));
@@ -52,7 +52,7 @@ public class AuthHandler implements AuthAPI {
             }
             if (yggdrasilAuthenticationResult.getReason() != YggdrasilAuthenticationResult.Reason.ALLOWED ||
                     yggdrasilAuthenticationResult.getResponse() == null ||
-                    yggdrasilAuthenticationResult.getYggdrasilId() == -1) {
+                    yggdrasilAuthenticationResult.getServiceConfig().getId() == -1) {
                 return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_unknown"));
             }
         } catch (Exception e) {
@@ -60,31 +60,35 @@ public class AuthHandler implements AuthAPI {
             return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(null, core.getLanguageHandler().getMessage("auth_yggdrasil_error"));
         }
 
+        return checkIn(yggdrasilAuthenticationResult);
+    }
+
+    public LoginAuthResult checkIn(BaseServiceAuthenticationResult baseServiceAuthenticationResult) {
         try {
-            ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(username, serverId, ip, yggdrasilAuthenticationResult);
+            ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(baseServiceAuthenticationResult);
             if (validateAuthenticationResult.getReason() == ValidateAuthenticationResult.Reason.ALLOWED) {
                 LoggerProvider.getLogger().info(
-                        String.format("%s(uuid: %s) from yggdrasil service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
-                                yggdrasilAuthenticationResult.getResponse().getName(),
-                                yggdrasilAuthenticationResult.getResponse().getId().toString(),
-                                yggdrasilAuthenticationResult.getYggdrasilServiceConfig().getName(),
-                                yggdrasilAuthenticationResult.getYggdrasilId(),
+                        String.format("%s(uuid: %s) from authentication service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
+                                baseServiceAuthenticationResult.getResponse().getName(),
+                                baseServiceAuthenticationResult.getResponse().getId().toString(),
+                                baseServiceAuthenticationResult.getServiceConfig().getName(),
+                                baseServiceAuthenticationResult.getServiceConfig().getId(),
                                 validateAuthenticationResult.getInGameProfile().getName(),
                                 validateAuthenticationResult.getInGameProfile().getId().toString()
                         )
                 );
                 GameProfile finalProfile = validateAuthenticationResult.getInGameProfile();
                 core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
-                        yggdrasilAuthenticationResult.getResponse(),
-                        yggdrasilAuthenticationResult.getYggdrasilId(),
+                        baseServiceAuthenticationResult.getResponse(),
+                        baseServiceAuthenticationResult.getServiceConfig().getId(),
                         System.currentTimeMillis()
                 ));
-                return LoginAuthResult.ofAllowed(yggdrasilAuthenticationResult, validateAuthenticationResult, finalProfile);
+                return LoginAuthResult.ofAllowed(baseServiceAuthenticationResult, validateAuthenticationResult, finalProfile);
             }
-            return LoginAuthResult.ofDisallowedByValidateAuthenticator(yggdrasilAuthenticationResult, validateAuthenticationResult, validateAuthenticationResult.getDisallowedMessage());
+            return LoginAuthResult.ofDisallowedByValidateAuthenticator(baseServiceAuthenticationResult, validateAuthenticationResult, validateAuthenticationResult.getDisallowedMessage());
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception occurred while processing the validation request.", e);
-            return LoginAuthResult.ofDisallowedByValidateAuthenticator(yggdrasilAuthenticationResult, null, core.getLanguageHandler().getMessage("auth_validate_error"));
+            return LoginAuthResult.ofDisallowedByValidateAuthenticator(baseServiceAuthenticationResult, null, core.getLanguageHandler().getMessage("auth_validate_error"));
         }
     }
 }

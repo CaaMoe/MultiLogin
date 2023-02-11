@@ -90,13 +90,13 @@ public class MultiEncryptionResponseInitialHandler extends AbstractMultiInitialH
                         if (restorerResult.getThrowable() != null) {
                             LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", restorerResult.getThrowable());
                         }
-                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
+                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
 
                         if (restorerResult.getResponse() != null) {
                             gameProfile = restorerResult.getResponse();
                         }
                     } catch (Exception e) {
-                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getYggdrasilAuthenticationResult().getResponse().getName(), "error"));
+                        LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), "error"));
                         LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
                     }
 

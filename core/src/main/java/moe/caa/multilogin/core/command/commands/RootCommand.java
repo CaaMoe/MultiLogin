@@ -11,7 +11,7 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
-import moe.caa.multilogin.core.configuration.yggdrasil.YggdrasilServiceConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
 import java.util.Locale;
 import java.util.Set;
@@ -66,7 +66,7 @@ public class RootCommand {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_unknown"));
             } else {
                 String yggName;
-                YggdrasilServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getIdMap().get(profile.getValue2());
+                BaseServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(profile.getValue2());
                 if (ysc == null) {
                     yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_unidentified_name");
                 } else {
@@ -75,8 +75,8 @@ public class RootCommand {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other",
                         new Pair<>("in_game_username", player.getName()),
                         new Pair<>("in_game_uuid", player.getUniqueId()),
-                        new Pair<>("yggdrasil_name", yggName),
-                        new Pair<>("yggdrasil_id", profile.getValue2()),
+                        new Pair<>("service_name", yggName),
+                        new Pair<>("service_id", profile.getValue2()),
                         new Pair<>("online_username", profile.getValue1().getName()),
                         new Pair<>("online_uuid", profile.getValue1().getId())
                 ));
@@ -89,7 +89,7 @@ public class RootCommand {
         Pair<GameProfile, Integer> profile = handler.requireDataCacheArgument(context);
 
         String yggName;
-        YggdrasilServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getIdMap().get(profile.getValue2());
+        BaseServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(profile.getValue2());
         if (ysc == null) {
             yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_oneself_unidentified_name");
         } else {
@@ -99,8 +99,8 @@ public class RootCommand {
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_oneself",
                 new Pair<>("in_game_username", context.getSource().getAsPlayer().getName()),
                 new Pair<>("in_game_uuid", context.getSource().getAsPlayer().getUniqueId()),
-                new Pair<>("yggdrasil_name", yggName),
-                new Pair<>("yggdrasil_id", profile.getValue2()),
+                new Pair<>("service_name", yggName),
+                new Pair<>("service_id", profile.getValue2()),
                 new Pair<>("online_username", profile.getValue1().getName()),
                 new Pair<>("online_uuid", profile.getValue1().getId())
         ));

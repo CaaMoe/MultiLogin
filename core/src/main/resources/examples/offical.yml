@@ -4,6 +4,6 @@
 # Please edit before use.
 id: -1
 
+name: 'Official'
 # Don't change it unless you really want to.
-hasJoined:
-  official: { }
+serviceType: OFFICIAL

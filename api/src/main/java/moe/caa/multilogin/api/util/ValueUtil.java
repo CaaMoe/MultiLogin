@@ -113,4 +113,8 @@ public class ValueUtil {
     public static byte[] sha256(String str) throws NoSuchAlgorithmException {
         return MessageDigest.getInstance("SHA-256").digest(str.getBytes(StandardCharsets.UTF_8));
     }
+
+    public static UUID xuidToUUID(String xuid) {
+        return new UUID(0, Long.parseLong(xuid));
+    }
 }
