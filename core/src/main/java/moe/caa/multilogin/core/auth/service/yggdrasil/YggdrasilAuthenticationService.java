@@ -48,7 +48,7 @@ public class YggdrasilAuthenticationService {
             // 如果获取到了它的 inGameUUID，就去获取 Yggdrasil ID
             if (inGameUUID != null) {
                 // 可能有多个
-                primaries.addAll(core.getSqlManager().getUserDataTable().getOnlineYggdrasilIds(inGameUUID));
+                primaries.addAll(core.getSqlManager().getUserDataTable().getOnlineServiceIds(inGameUUID));
             }
         }
 

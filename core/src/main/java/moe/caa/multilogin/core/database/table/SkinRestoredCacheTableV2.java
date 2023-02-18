@@ -12,7 +12,7 @@ import java.text.MessageFormat;
 /**
  * 皮肤修复缓存表
  */
-public class SkinRestoredCacheTableV3 {
+public class SkinRestoredCacheTableV2 {
     private static final String fieldCurrentSkinUrlSha256 = "current_skin_url_sha256";
     private static final String fieldCurrentSkinModel = "current_skin_model";
     private static final String fieldRestorerValue = "restorer_value";
@@ -20,12 +20,12 @@ public class SkinRestoredCacheTableV3 {
     private final SQLManager sqlManager;
     private final String tableName;
 
-    public SkinRestoredCacheTableV3(SQLManager sqlManager, String tableName) {
+    public SkinRestoredCacheTableV2(SQLManager sqlManager, String tableName) {
         this.sqlManager = sqlManager;
         this.tableName = tableName;
     }
 
-    public void init() throws SQLException {
+    public void init(Connection connection) throws SQLException {
         String sql = MessageFormat.format(
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(32) NOT NULL, " +
@@ -34,8 +34,7 @@ public class SkinRestoredCacheTableV3 {
                         "{4} LONGTEXT NOT NULL, " +
                         "PRIMARY KEY ( {1}, {2} ))"
                 , tableName, fieldCurrentSkinUrlSha256, fieldCurrentSkinModel, fieldRestorerValue, fieldRestorerSignature);
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
         }
     }

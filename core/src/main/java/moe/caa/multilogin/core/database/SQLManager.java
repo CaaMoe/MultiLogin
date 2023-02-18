@@ -7,10 +7,11 @@ import moe.caa.multilogin.core.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.database.pool.ISQLConnectionPool;
 import moe.caa.multilogin.core.database.pool.MysqlConnectionPool;
 import moe.caa.multilogin.core.database.table.InGameProfileTableV3;
-import moe.caa.multilogin.core.database.table.SkinRestoredCacheTableV3;
+import moe.caa.multilogin.core.database.table.SkinRestoredCacheTableV2;
 import moe.caa.multilogin.core.database.table.UserDataTableV3;
 import moe.caa.multilogin.core.main.MultiCore;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
@@ -26,7 +27,7 @@ public class SQLManager {
     @Getter
     private UserDataTableV3 userDataTable;
     @Getter
-    private SkinRestoredCacheTableV3 skinRestoredCacheTable;
+    private SkinRestoredCacheTableV2 skinRestoredCacheTable;
 
 
     public SQLManager(MultiCore core) {
@@ -51,15 +52,19 @@ public class SQLManager {
 
         final String inGameProfileTableNameV2 = tablePrefix + "in_game_profile_v2";
         final String inGameProfileTableNameV3 = tablePrefix + "in_game_profile_v3";
-        final String userDataTableName = tablePrefix + "user_data_v2";
-        final String skinRestorerCacheTableName = tablePrefix + "skin_restored_cache_v2";
-        userDataTable = new UserDataTableV3(this, userDataTableName);
-        skinRestoredCacheTable = new SkinRestoredCacheTableV3(this, skinRestorerCacheTableName);
+        final String userDataTableNameV2 = tablePrefix + "user_data_v2";
+        final String userDataTableNameV3 = tablePrefix + "user_data_v3";
+        final String skinRestorerCacheTableNameV2 = tablePrefix + "skin_restored_cache_v2";
+        userDataTable = new UserDataTableV3(this, userDataTableNameV3, userDataTableNameV2);
+        skinRestoredCacheTable = new SkinRestoredCacheTableV2(this, skinRestorerCacheTableNameV2);
         inGameProfileTable = new InGameProfileTableV3(this, inGameProfileTableNameV3, inGameProfileTableNameV2);
 
-        inGameProfileTable.init();
-        userDataTable.init();
-        skinRestoredCacheTable.init();
+        try (Connection connection = getPool().getConnection()){
+            connection.setAutoCommit(false);
+            userDataTable.init(connection);
+            inGameProfileTable.init(connection);
+            skinRestoredCacheTable.init(connection);
+        }
     }
 
     public void close() {

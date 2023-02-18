@@ -5,7 +5,10 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -24,7 +27,7 @@ public class InGameProfileTableV3 {
     }
 
 
-    public void init() throws SQLException {
+    public void init(Connection connection) throws SQLException {
         String sql = MessageFormat.format(
                 "CREATE TABLE IF NOT EXISTS {0} ( " +
                         "{1} BINARY(16) NOT NULL, " +
@@ -33,8 +36,7 @@ public class InGameProfileTableV3 {
                         "CONSTRAINT IGPT_V3_PR PRIMARY KEY ( {1} ), " +
                         "CONSTRAINT IGPT_V3_UN UNIQUE ( {2} ))"
                 , tableName, fieldInGameUuid, fieldCurrentUsernameLowerCase, fieldCurrentUsernameOriginal);
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.executeUpdate();
             // 查新表有没有数据，没有的话就尝试一下数据升级
             try (
@@ -62,37 +64,29 @@ public class InGameProfileTableV3 {
             }
         }
 
-
-        try (Connection connection = sqlManager.getPool().getConnection()) {
-            LoggerProvider.getLogger().info("Updating in game profile data...");
-            connection.setAutoCommit(false);
-
-            // 读老表，用新的Connection
-            List<Pair<byte[], String>> oldData = new ArrayList<>();
-            try (Connection conn = sqlManager.getPool().getConnection();
-                 PreparedStatement statement = conn.prepareStatement("SELECT in_game_uuid, current_username FROM " + tableNameV2);
-                 ResultSet resultSet = statement.executeQuery();
-            ) {
-                while (resultSet.next()) {
-                    oldData.add(new Pair<>(resultSet.getBytes(1), resultSet.getString(2)));
-                }
+        LoggerProvider.getLogger().info("Updating in game profile data...");
+        connection.setAutoCommit(false);
+        // 读老表，用新的Connection
+        List<Pair<byte[], String>> oldData = new ArrayList<>();
+        try (Connection conn = sqlManager.getPool().getConnection();
+             PreparedStatement statement = conn.prepareStatement("SELECT in_game_uuid, current_username FROM " + tableNameV2);
+             ResultSet resultSet = statement.executeQuery();) {
+            while (resultSet.next()) {
+                oldData.add(new Pair<>(resultSet.getBytes(1), resultSet.getString(2)));
             }
-
-            for (Pair<byte[], String> datum : oldData) {
-                try (PreparedStatement statement = connection.prepareStatement(
-                        String.format(
-                                "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, fieldInGameUuid, fieldCurrentUsernameLowerCase
-                        )
-                )) {
-                    statement.setBytes(1, datum.getValue1());
-                    statement.setString(2, Optional.ofNullable(datum.getValue2()).map(String::toLowerCase).orElse(null));
-                    statement.executeUpdate();
-                }
-            }
-
-            connection.commit();
-            LoggerProvider.getLogger().info("Updated in game profile data, total " + oldData.size() + ".");
         }
+        for (Pair<byte[], String> datum : oldData) {
+            try (PreparedStatement statement = connection.prepareStatement(
+                    String.format(
+                            "INSERT INTO %s (%s, %s) VALUES (?, ?)", tableName, fieldInGameUuid, fieldCurrentUsernameLowerCase
+                    )
+            )) {
+                statement.setBytes(1, datum.getValue1());
+                statement.setString(2, Optional.ofNullable(datum.getValue2()).map(String::toLowerCase).orElse(null));
+                statement.executeUpdate();
+            }
+        }
+        LoggerProvider.getLogger().info("Updated in game profile data, total " + oldData.size() + ".");
     }
 
     /**
