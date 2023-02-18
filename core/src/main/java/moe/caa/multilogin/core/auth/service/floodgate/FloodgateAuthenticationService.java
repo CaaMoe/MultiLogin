@@ -29,6 +29,9 @@ public class FloodgateAuthenticationService implements HandshakeHandler {
 
     @Override
     public void handle(HandshakeData handshakeData) {
+        if(!multiCore.getPluginConfig().isFloodgateSupport()){
+            return;
+        }
         BedrockData data = handshakeData.getBedrockData();
         String xuid = data.getXuid();
         UUID uuid = ValueUtil.xuidToUUID(xuid);

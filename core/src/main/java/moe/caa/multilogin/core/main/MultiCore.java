@@ -89,6 +89,7 @@ public class MultiCore implements MultiCoreAPI {
                 LoggerProvider.getLogger().info("Floodgate detected, service registered.");
                 floodgateSupported = true;
             } catch (Throwable e) {
+                floodgateSupported = false;
                 LoggerProvider.getLogger().error("Unable to load floodgate handler, is it up to date?", e);
             }
         }

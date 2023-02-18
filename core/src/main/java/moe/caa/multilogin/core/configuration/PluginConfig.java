@@ -42,6 +42,8 @@ public class PluginConfig {
     @Getter
     private boolean checkUpdate;
     @Getter
+    private boolean floodgateSupport;
+    @Getter
     private SqlConfig sqlConfig;
     @Getter
     private String nameAllowedRegular;
@@ -86,10 +88,10 @@ public class PluginConfig {
         }
 
         forceUseLogin = configConfigurationNode.node("forceUseLogin").getBoolean(true);
-
         checkUpdate = configConfigurationNode.node("checkUpdate").getBoolean(true);
-
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
+        nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
+        floodgateSupport = configConfigurationNode.node("floodgateSupport").getBoolean(false);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
@@ -121,6 +123,7 @@ public class PluginConfig {
                 idMap.put(config.getId(), config);
             }
 
+            // 不支持当前 Floodgate
             if (!core.isFloodgateSupported()) {
                 for (BaseServiceConfig config : tmp) {
                     if (config.getServiceType() == ServiceType.FLOODGATE) {
@@ -128,8 +131,17 @@ public class PluginConfig {
                         break;
                     }
                 }
+            } else {
+                // Floodgate 支持，但是未启用
+                if (!floodgateSupport) {
+                    for (BaseServiceConfig config : tmp) {
+                        if (config.getServiceType() == ServiceType.FLOODGATE) {
+                            LoggerProvider.getLogger().warn(String.format("Floodgate support is not enabled, authentication service with id %d and name %s will be invalid.", config.getId(), config.getName()));
+                            break;
+                        }
+                    }
+                }
             }
-
         }
 
         idMap.forEach((i, y) -> {
@@ -149,7 +161,7 @@ public class PluginConfig {
         ));
         this.serviceIdMap = Collections.unmodifiableMap(idMap);
 
-        nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
+
     }
 
     private BaseServiceConfig readServiceConfig(CommentedConfigurationNode load) throws SerializationException, ConfException {
