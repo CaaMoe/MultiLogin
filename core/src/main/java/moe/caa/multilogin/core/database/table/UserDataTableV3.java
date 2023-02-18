@@ -69,7 +69,6 @@ public class UserDataTableV3 {
 
 
         LoggerProvider.getLogger().info("Updating user data...");
-        connection.setAutoCommit(false);
         @AllArgsConstructor
         class V2Entry {
             private final byte[] onlineUUID;
@@ -77,10 +76,9 @@ public class UserDataTableV3 {
             private final byte[] inGameProfileUUID;
             private final boolean whitelist;
         }
-        // 读老表，用新的Connection
+        // 读老表
         List<V2Entry> oldData = new ArrayList<>();
-        try (Connection conn = sqlManager.getPool().getConnection();
-             PreparedStatement statement = conn.prepareStatement("SELECT online_uuid, yggdrasil_id, in_game_profile_uuid, whitelist FROM " + tableNameV2);
+        try (PreparedStatement statement = connection.prepareStatement("SELECT online_uuid, yggdrasil_id, in_game_profile_uuid, whitelist FROM " + tableNameV2);
              ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 oldData.add(new V2Entry(resultSet.getBytes(1),
@@ -190,7 +188,7 @@ public class UserDataTableV3 {
      * 设置游戏内 UUID
      *
      * @param onlineUUID    在线 UUID
-     * @param serviceId   Yggdrasil ID
+     * @param serviceId     service ID
      * @param newInGameUUID 新的游戏内 UUID
      */
     public int setInGameUUID(UUID onlineUUID, int serviceId, UUID newInGameUUID) throws SQLException {
@@ -212,7 +210,7 @@ public class UserDataTableV3 {
      * 查询数据是否存在
      *
      * @param onlineUUID  在线UUID
-     * @param serviceId Yggdrasil Id
+     * @param serviceId service Id
      */
     public boolean dataExists(UUID onlineUUID, int serviceId) throws SQLException {
         String sql = String.format(
@@ -261,7 +259,7 @@ public class UserDataTableV3 {
      * 设置白名单
      *
      * @param onlineUUID  在线 UUID
-     * @param serviceId Yggdrasil Id
+     * @param serviceId service Id
      * @param whitelist   新的白名单
      */
     public void setWhitelist(UUID onlineUUID, int serviceId, boolean whitelist) throws SQLException {

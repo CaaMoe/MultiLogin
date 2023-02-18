@@ -64,6 +64,7 @@ public class SQLManager {
             userDataTable.init(connection);
             inGameProfileTable.init(connection);
             skinRestoredCacheTable.init(connection);
+            connection.commit();
         }
     }
 

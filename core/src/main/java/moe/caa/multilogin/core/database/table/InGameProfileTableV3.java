@@ -65,11 +65,9 @@ public class InGameProfileTableV3 {
         }
 
         LoggerProvider.getLogger().info("Updating in game profile data...");
-        connection.setAutoCommit(false);
-        // 读老表，用新的Connection
+        // 读老表
         List<Pair<byte[], String>> oldData = new ArrayList<>();
-        try (Connection conn = sqlManager.getPool().getConnection();
-             PreparedStatement statement = conn.prepareStatement("SELECT in_game_uuid, current_username FROM " + tableNameV2);
+        try (PreparedStatement statement = connection.prepareStatement("SELECT in_game_uuid, current_username FROM " + tableNameV2);
              ResultSet resultSet = statement.executeQuery();) {
             while (resultSet.next()) {
                 oldData.add(new Pair<>(resultSet.getBytes(1), resultSet.getString(2)));
