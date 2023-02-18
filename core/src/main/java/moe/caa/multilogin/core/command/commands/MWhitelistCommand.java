@@ -104,7 +104,7 @@ public class MWhitelistCommand {
             return 0;
         }
         if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, ysc.getId())) {
-            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(onlineUUID, ysc.getId(), null);
+            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(onlineUUID, ysc.getId(), null, null);
         }
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), true);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",

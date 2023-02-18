@@ -236,20 +236,21 @@ public class UserDataTableV3 {
      * @param inGameUUID  新的用户在游戏内的 UUID
      * @return 数据操作量
      */
-    public int insertNewData(UUID onlineUUID, int serviceId, UUID inGameUUID) throws SQLException {
+    public int insertNewData(UUID onlineUUID, int serviceId, String onlineName, UUID inGameUUID) throws SQLException {
         String sql = String.format(
-                "INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?) "
-                , tableName, fieldOnlineUUID, fieldServiceId, fieldInGameProfileUuid
+                "INSERT INTO %s (%s, %s, %s, %s) VALUES (?, ?, ?, ?) "
+                , tableName, fieldOnlineUUID, fieldServiceId, fieldOnlineName, fieldInGameProfileUuid
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
             statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
             statement.setInt(2, serviceId);
+            statement.setString(3, onlineName);
             if (inGameUUID == null) {
-                statement.setNull(3, Types.BINARY);
+                statement.setNull(4, Types.BINARY);
             } else {
-                statement.setBytes(3, ValueUtil.uuidToBytes(inGameUUID));
+                statement.setBytes(4, ValueUtil.uuidToBytes(inGameUUID));
             }
             return statement.executeUpdate();
         }
@@ -337,19 +338,17 @@ public class UserDataTableV3 {
         }
     }
 
-    /**
-     * 删除数据
-     */
-    public void delete(UUID onlineUUID, int serviceId) throws SQLException {
+    public void setOnlineName(UUID onlineUUID, int serviceId, String onlineName) throws SQLException {
         String sql = String.format(
-                "DELETE FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
-                , tableName, fieldOnlineUUID, fieldServiceId
+                "UPDATE %s SET %s = ? WHERE %s = ? AND %s = ? LIMIT 1"
+                , tableName, fieldOnlineName, fieldOnlineUUID, fieldServiceId
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
-            statement.setInt(2, serviceId);
+            statement.setString(1, onlineName);
+            statement.setBytes(2, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setInt(3, serviceId);
             statement.executeUpdate();
         }
     }

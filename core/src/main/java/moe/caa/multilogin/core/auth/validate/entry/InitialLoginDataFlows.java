@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.auth.validate.entry;
 
 import lombok.SneakyThrows;
 import moe.caa.multilogin.core.auth.validate.ValidateContext;
+import moe.caa.multilogin.core.database.table.UserDataTableV3;
 import moe.caa.multilogin.core.main.MultiCore;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
@@ -16,14 +17,22 @@ public class InitialLoginDataFlows extends BaseFlows<ValidateContext> {
     @SneakyThrows
     @Override
     public Signal run(ValidateContext validateContext) {
-        if (!core.getSqlManager().getUserDataTable().dataExists(
+        UserDataTableV3 dataTable = core.getSqlManager().getUserDataTable();
+        if (!dataTable.dataExists(
                 validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
                 validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId()
         )) {
-            core.getSqlManager().getUserDataTable().insertNewData(
+            dataTable.insertNewData(
                     validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
                     validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
+                    validateContext.getBaseServiceAuthenticationResult().getResponse().getName(),
                     null
+            );
+        } else {
+            dataTable.setOnlineName(
+                    validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                    validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
+                    validateContext.getBaseServiceAuthenticationResult().getResponse().getName()
             );
         }
         return Signal.PASSED;
