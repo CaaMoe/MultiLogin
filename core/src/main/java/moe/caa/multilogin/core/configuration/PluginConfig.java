@@ -79,12 +79,6 @@ public class PluginConfig {
         CommentedConfigurationNode configConfigurationNode =
                 YamlConfigurationLoader.builder().file(new File(dataFolder, "config.yml")).build().load();
 
-        if (configConfigurationNode.hasChild("services")) {
-            LoggerProvider.getLogger().error("There is old configuration data in 'config.yml file.");
-            LoggerProvider.getLogger().error("Did you not update the data file?");
-            throw new RuntimeException("Have services element.");
-        }
-
         if (configConfigurationNode.node("debug").getBoolean(false)) {
             DebugLoggerBridge.startDebugMode();
         } else {
