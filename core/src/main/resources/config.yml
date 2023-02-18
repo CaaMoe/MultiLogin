@@ -26,6 +26,13 @@ checkUpdate: true
 # 默认值 true
 forceUseLogin: true
 
+# floodgate 支持
+# 启用此闸门支持将会代理 floodgate 入口以让猫踢螺钉控制 floodgate 入口的玩家档案
+#
+# 警告：此功能将会使 floodgate 的账户连接功能失效，包括全球连接！
+# 默认组 false
+floodgateSupport: false
+
 # 设置用户名正则约束。
 # 若不匹配将会拒绝指令或当前玩家的登录请求。
 # 如果此值留空，则不启用此功能。
