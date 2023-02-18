@@ -72,7 +72,7 @@ public class PluginConfig {
             Files.createDirectory(servicesFolder.toPath());
         }
 
-        IOUtil.removeAllFiles(new File("examples"));
+        IOUtil.removeAllFiles(new File(dataFolder, "examples"));
         saveResource("config.yml", false);
         saveResourceDir("examples", true);
 
