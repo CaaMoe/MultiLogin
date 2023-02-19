@@ -104,7 +104,7 @@ public class YggdrasilAuthenticationService {
         }
         if (context.getServiceUnavailable().size() != 0) {
             for (Map.Entry<BaseYggdrasilServiceConfig, Throwable> entry : context.getServiceUnavailable().entrySet()) {
-                LoggerProvider.getLogger().debug("An exception occurred during authentication of the yggdrasil service whose ID is " + entry.getKey(), entry.getValue());
+                LoggerProvider.getLogger().debug("An exception occurred during authentication of the yggdrasil service whose ID is " + entry.getKey().getId(), entry.getValue());
             }
             return YggdrasilAuthenticationResult.ofServerBreakdown();
         }
