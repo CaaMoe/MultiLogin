@@ -13,6 +13,9 @@ public class BlessingSkinYggdrasilServiceConfig extends BaseYggdrasilServiceConf
 
     public BlessingSkinYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String apiRoot) throws ConfException {
         super(id, name, initUUID, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+        if (!apiRoot.endsWith("/")) {
+            apiRoot = apiRoot.concat("/");
+        }
         this.apiRoot = apiRoot;
     }
 
