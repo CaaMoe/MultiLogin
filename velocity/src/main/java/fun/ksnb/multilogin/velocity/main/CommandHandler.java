@@ -18,7 +18,7 @@ public class CommandHandler {
             String[] arguments = invocation.arguments();
             String[] ns = new String[arguments.length + 1];
             System.arraycopy(arguments, 0, ns, 1, arguments.length);
-            ns[0] = invocation.alias();
+            ns[0] = invocation.alias() + " ";
             multiLoginVelocity.getMultiCoreAPI().getCommandHandler().execute(new VelocitySender(invocation.source()), ns);
         }
 

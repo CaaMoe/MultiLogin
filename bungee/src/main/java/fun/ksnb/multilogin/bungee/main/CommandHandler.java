@@ -29,7 +29,7 @@ public class CommandHandler {
         public void execute(CommandSender sender, String[] args) {
             String[] ns = new String[args.length + 1];
             System.arraycopy(args, 0, ns, 1, args.length);
-            ns[0] = getName();
+            ns[0] = getName() + " ";
             multiLoginBungee.getMultiCoreAPI().getCommandHandler().execute(new BungeeSender(sender), ns);
         }
 
