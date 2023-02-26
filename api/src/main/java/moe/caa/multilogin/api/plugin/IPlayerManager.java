@@ -43,6 +43,12 @@ public interface IPlayerManager {
         }
     }
 
+    default void kickAll(String message) {
+        for (IPlayer player : getOnlinePlayers()) {
+            player.kickPlayer(message);
+        }
+    }
+
     /**
      * 踢出玩家，如果这名玩家存在的话
      *

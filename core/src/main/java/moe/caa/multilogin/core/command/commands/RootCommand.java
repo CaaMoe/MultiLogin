@@ -2,7 +2,6 @@ package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.plugin.IPlayer;
@@ -13,8 +12,8 @@ import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * /MultiLogin * 指令处理程序和分发程序
@@ -34,87 +33,89 @@ public class RootCommand {
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_USERNAME))
                         .then(handler.argument("username", StringArgumentType.string())
                                 .executes(this::executeEraseUsername)))
-                .then(handler.literal("eraseAllUsername")
+                .then(handler.literal("eraseAllUsernames")
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAME))
-                        .executes(this::executeEraseAllUsername))
-                .then(handler.literal("current")
-                        .then(handler.argument("username", StringArgumentType.string())
-                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_OTHER))
-                                .executes(this::executeCurrentOther))
-                        .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_ONESELF))
-                        .executes(this::executeCurrentOneself))
+                        .executes(this::executeEraseAllUsernames))
                 .then(handler.literal("confirm")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
                         .executes(this::executeConfirm))
+                .then(handler.literal("list")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_LIST))
+                        .executes(this::executeList))
                 .then(new MWhitelistCommand(handler).register(handler.literal("whitelist")))
                 .then(new MProfileCommand(handler).register(handler.literal("profile")))
-                .then(new MRenameCommand(handler).register(handler.literal("rename")));
+                .then(new MRenameCommand(handler).register(handler.literal("rename")))
+                .then(new MFindCommand(handler).register(handler.literal("find")))
+                .then(new MInfoCommand(handler).register(handler.literal("info")));
     }
 
-    private int executeCurrentOther(CommandContext<ISender> context) throws CommandSyntaxException {
-        String username = StringArgumentType.getString(context, "username");
-        Set<IPlayer> players = handler.requirePlayersArgument(username);
-        if (players.size() > 1) {
-            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_multi",
-                    new Pair<>("count", players.size())
-            ));
-        }
-        for (IPlayer player : players) {
+    private int executeList(CommandContext<ISender> context) {
+        Set<IPlayer> onlinePlayers = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers();
+
+        // service id 分组
+        Map<Integer, List<IPlayer>> identifiedPlayerMap = new HashMap<>();
+        for (IPlayer player : onlinePlayers) {
             Pair<GameProfile, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
-            if (profile == null) {
-                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_unknown"));
-            } else {
-                String yggName;
-                BaseServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(profile.getValue2());
-                if (ysc == null) {
-                    yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other_unidentified_name");
-                } else {
-                    yggName = ysc.getName();
-                }
-                context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_other",
-                        new Pair<>("in_game_username", player.getName()),
-                        new Pair<>("in_game_uuid", player.getUniqueId()),
-                        new Pair<>("service_name", yggName),
-                        new Pair<>("service_id", profile.getValue2()),
-                        new Pair<>("online_username", profile.getValue1().getName()),
-                        new Pair<>("online_uuid", profile.getValue1().getId())
-                ));
+
+            int sid = -1;
+            if (profile != null) {
+                sid = profile.getValue2();
             }
+            List<IPlayer> list = identifiedPlayerMap.getOrDefault(sid, new ArrayList<>());
+            list.add(player);
+            identifiedPlayerMap.put(sid, list);
         }
+
+        CommandHandler.getCore().getPluginConfig().getServiceIdMap().forEach((key, value) -> {
+            if (!identifiedPlayerMap.containsKey(key)) {
+                identifiedPlayerMap.put(key, new ArrayList<>());
+            }
+        });
+
+        String message = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list",
+                new Pair<>("list", identifiedPlayerMap.entrySet().stream().map(entry -> {
+                    // 获得 service name
+                    String sname;
+                    if (entry.getKey() == -1) {
+                        sname = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_unidentified_entry_name");
+                    } else {
+                        BaseServiceConfig baseServiceConfig = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(entry.getKey());
+                        if (baseServiceConfig == null) {
+                            sname = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_unknown_entry_name");
+                        } else {
+                            sname = baseServiceConfig.getName();
+                        }
+                    }
+
+                    // 玩家列表
+                    String playerListString = entry.getValue().stream()
+                            .map(s -> CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_entry",
+                                    new Pair<>("player_name", s.getName())
+                            ))
+                            .collect(Collectors.joining(
+                                            CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_delimiter")
+                                    )
+                            );
+
+                    return CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_entry",
+                            new Pair<>("service_name", sname),
+                            new Pair<>("service_id", entry.getKey()),
+                            new Pair<>("player_count", entry.getValue().size()),
+                            new Pair<>("player_list", playerListString)
+                    );
+                }).collect(Collectors.joining(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_delimiter")))),
+                new Pair<>("count", onlinePlayers.size())
+        );
+        context.getSource().sendMessagePL(message);
         return 0;
     }
 
-    private int executeCurrentOneself(CommandContext<ISender> context) throws CommandSyntaxException {
-        Pair<GameProfile, Integer> profile = handler.requireDataCacheArgument(context);
 
-        String yggName;
-        BaseServiceConfig ysc = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(profile.getValue2());
-        if (ysc == null) {
-            yggName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_oneself_unidentified_name");
-        } else {
-            yggName = ysc.getName();
-        }
-
-        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_current_oneself",
-                new Pair<>("in_game_username", context.getSource().getAsPlayer().getName()),
-                new Pair<>("in_game_uuid", context.getSource().getAsPlayer().getUniqueId()),
-                new Pair<>("service_name", yggName),
-                new Pair<>("service_id", profile.getValue2()),
-                new Pair<>("online_username", profile.getValue1().getName()),
-                new Pair<>("online_uuid", profile.getValue1().getId())
-        ));
-        return 0;
-    }
-
-    private int executeEraseAllUsername(CommandContext<ISender> context) {
+    private int executeEraseAllUsernames(CommandContext<ISender> context) {
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
                     int i = CommandHandler.getCore().getSqlManager().getInGameProfileTable().eraseAllUsername();
-                    // 更新前先踢一下
                     String kickMsg = CommandHandler.getCore().getLanguageHandler().getMessage("in_game_username_occupy_all");
-                    // 踢出
-                    for (IPlayer player : CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers()) {
-                        player.kickPlayer(kickMsg);
-                    }
+                    CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickAll(kickMsg);
                     context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_all_username_done",
                             new Pair<>("count", i)
                     ));
@@ -134,15 +135,21 @@ public class RootCommand {
     @SneakyThrows
     private int executeEraseUsername(CommandContext<ISender> context) {
         String string = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
+
+        UUID ignoreCase = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(string);
+        if (ignoreCase == null) {
+            context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
+                    new Pair<>("current_username", string)
+            ));
+            return 0;
+        }
+
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
                     int i = CommandHandler.getCore().getSqlManager().getInGameProfileTable().eraseUsername(string);
-                    // 更新前先踢一下
                     String kickMsg = CommandHandler.getCore().getLanguageHandler().getMessage("in_game_username_occupy",
                             new Pair<>("current_username", string));
-                    // 踢出
-                    for (IPlayer player : CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayers(string)) {
-                        player.kickPlayer(kickMsg);
-                    }
+
+                    CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(string, kickMsg);
                     if (i == 0) {
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
                                 new Pair<>("current_username", string)
@@ -154,11 +161,11 @@ public class RootCommand {
                     }
                 }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_desc",
                         new Pair<>("username", string)),
-                CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_cq"));
+                CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_cq",
+                        new Pair<>("username", string)));
         return 0;
     }
 
-    // /MultiLogin reload
     @SneakyThrows
     private int executeReload(CommandContext<ISender> context) {
         CommandHandler.getCore().reload();

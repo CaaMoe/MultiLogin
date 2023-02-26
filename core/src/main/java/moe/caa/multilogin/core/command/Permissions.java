@@ -14,8 +14,8 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_ERASE_USERNAME = "command.multilogin.eraseusername";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_ADD = "command.multilogin.whitelist.add";
     public static final String COMMAND_MULTI_LOGIN_WHITELIST_REMOVE = "command.multilogin.whitelist.remove";
-    public static final String COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_ADD = "command.multilogin.whitelist.permanent.add";
-    public static final String COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_REMOVE = "command.multilogin.whitelist.permanent.remove";
+    public static final String COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_ADD = "command.multilogin.whitelist.specific.add";
+    public static final String COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_REMOVE = "command.multilogin.whitelist.specific.remove";
     public static final String COMMAND_MULTILOGIN_RENAME_ONESELF = "command.multilogin.rename.oneself";
     public static final String COMMAND_MULTILOGIN_RENAME_OTHER = "command.multilogin.rename.other";
     public static final String COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAME = "command.multilogin.eraseallusername";
@@ -24,7 +24,9 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_PROFILE_CREATE = "command.multilogin.profile.create";
     public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_ONESELF = "command.multilogin.profile.set.oneself";
     public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_OTHER = "command.multilogin.profile.set.other";
-    public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_ONESELF = "command.multilogin.profile.set.temp.oneself";
-    public static final String COMMAND_MULTI_LOGIN_PROFILE_SET_TEMP_OTHER = "command.multilogin.profile.set.temp.other";
     public static final String COMMAND_MULTI_LOGIN_PROFILE_REMOVE = "command.multilogin.profile.remove";
+    public static final String COMMAND_MULTI_LOGIN_LIST = "command.multilogin.list";
+    public static final String COMMAND_MULTI_LOGIN_FIND_ONLINE = "command.multilogin.find.online";
+    public static final String COMMAND_MULTI_LOGIN_FIND_PROFILE = "command.multilogin.find.profile";
+
 }

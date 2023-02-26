@@ -8,10 +8,8 @@ import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
-import moe.caa.multilogin.core.command.argument.ServiceIdArgumentType;
+import moe.caa.multilogin.core.command.argument.OnlineArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
-import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
-import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -40,22 +38,20 @@ public class MWhitelistCommand {
                         .then(handler.argument("username", StringArgumentType.string())
                                 .executes(this::executeRemoveUsername)
                         )
-                ).then(handler.literal("permanent")
+                ).then(handler.literal("specific")
                         .then(handler.literal("add")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_ADD))
-                                .then(handler.argument("serviceid", ServiceIdArgumentType.service())
-                                        .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
-                                                .executes(this::executeAdd)
-                                        )
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_ADD))
+                                .then(handler.argument("online", OnlineArgumentType.online())
+                                        .executes(this::executeAdd)
+
                                 )
                         )
                         .then(handler.literal("remove")
-                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_PERMANENT_REMOVE))
-                                .then(handler.argument("serviceid", ServiceIdArgumentType.service())
-                                        .then(handler.argument("onlineuuid", UUIDArgumentType.uuid())
-                                                .executes(this::executeRemove)
-                                        )
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_SPECIFIC_REMOVE))
+                                .then(handler.argument("online", OnlineArgumentType.online())
+                                        .executes(this::executeRemove)
                                 )
+
                         )
                 );
     }
@@ -63,29 +59,27 @@ public class MWhitelistCommand {
     // /MultiLogin whitelist permanent remove <serviceid> <onlineuuid>
     @SneakyThrows
     private int executeRemove(CommandContext<ISender> context) {
-        BaseServiceConfig ysc = ServiceIdArgumentType.getService(context, "serviceid");
-        UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
-        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(onlineUUID, ysc.getId())) {
+        OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
+        if (!online.isWhitelist()) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove_repeat",
-                    new Pair<>("online_uuid", onlineUUID),
-                    new Pair<>("service_name", ysc.getName()),
-                    new Pair<>("service_id", ysc.getId())
+                    new Pair<>("online_uuid", online.getOnlineUUID()),
+                    new Pair<>("online_uuid", online.getOnlineName()),
+                    new Pair<>("service_name", online.getBaseServiceConfig().getName()),
+                    new Pair<>("service_id", online.getBaseServiceConfig().getId())
             ));
             return 0;
         }
         // 如果有白名单的话，表示有数据，直接更新不需要额外判断
-        CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), false);
+        CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), false);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove",
-                new Pair<>("online_uuid", onlineUUID),
-                new Pair<>("service_name", ysc.getName()),
-                new Pair<>("service_id", ysc.getId())
+                new Pair<>("online_uuid", online.getOnlineUUID()),
+                new Pair<>("online_uuid", online.getOnlineName()),
+                new Pair<>("service_name", online.getBaseServiceConfig().getName()),
+                new Pair<>("service_id", online.getBaseServiceConfig().getId())
         ));
-        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getUserDataTable().getInGameUUID(onlineUUID, ysc.getId());
+        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getUserDataTable().getInGameUUID(online.getOnlineUUID(), online.getBaseServiceConfig().getId());
         if (inGameUUID != null) {
-            IPlayer player = CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getPlayer(inGameUUID);
-            if (player != null) {
-                player.kickPlayer(CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
-            }
+            CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(inGameUUID, CommandHandler.getCore().getLanguageHandler().getMessage("in_game_whitelist_removed"));
         }
         return 0;
     }
@@ -93,24 +87,25 @@ public class MWhitelistCommand {
     // /MultiLogin whitelist permanent add <serviceid> <onlineuuid>
     @SneakyThrows
     private int executeAdd(CommandContext<ISender> context) {
-        BaseServiceConfig ysc = ServiceIdArgumentType.getService(context, "serviceid");
-        UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
-        if (CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(onlineUUID, ysc.getId())) {
+        OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
+        if (online.isWhitelist()) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add_repeat",
-                    new Pair<>("online_uuid", onlineUUID),
-                    new Pair<>("service_name", ysc.getName()),
-                    new Pair<>("service_id", ysc.getId())
+                    new Pair<>("online_uuid", online.getOnlineUUID()),
+                    new Pair<>("online_uuid", online.getOnlineName()),
+                    new Pair<>("service_name", online.getBaseServiceConfig().getName()),
+                    new Pair<>("service_id", online.getBaseServiceConfig().getId())
             ));
             return 0;
         }
-        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(onlineUUID, ysc.getId())) {
-            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(onlineUUID, ysc.getId(), null, null);
+        if (!CommandHandler.getCore().getSqlManager().getUserDataTable().dataExists(online.getOnlineUUID(), online.getBaseServiceConfig().getId())) {
+            CommandHandler.getCore().getSqlManager().getUserDataTable().insertNewData(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), null, null);
         }
-        CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(onlineUUID, ysc.getId(), true);
+        CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), true);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",
-                new Pair<>("online_uuid", onlineUUID),
-                new Pair<>("service_name", ysc.getName()),
-                new Pair<>("service_id", ysc.getId())
+                new Pair<>("online_uuid", online.getOnlineUUID()),
+                new Pair<>("online_uuid", online.getOnlineName()),
+                new Pair<>("service_name", online.getBaseServiceConfig().getName()),
+                new Pair<>("service_id", online.getBaseServiceConfig().getId())
         ));
         return 0;
     }

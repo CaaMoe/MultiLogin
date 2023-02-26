@@ -3,8 +3,6 @@ package moe.caa.multilogin.core.command.argument;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.util.Pair;
@@ -62,10 +60,11 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
         return new ProfileArgument(uuid, username);
     }
 
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Data
     public static class ProfileArgument {
         private final UUID profileUUID;
         private final String profileName;
+
+
     }
 }
