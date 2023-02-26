@@ -51,7 +51,6 @@ public class RootCommand {
                 .then(new MRenameCommand(handler).register(handler.literal("rename")));
     }
 
-
     private int executeCurrentOther(CommandContext<ISender> context) throws CommandSyntaxException {
         String username = StringArgumentType.getString(context, "username");
         Set<IPlayer> players = handler.requirePlayersArgument(username);

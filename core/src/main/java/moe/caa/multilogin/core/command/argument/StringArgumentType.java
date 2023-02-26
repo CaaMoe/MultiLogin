@@ -19,10 +19,9 @@ public class StringArgumentType implements ArgumentType<String> {
 
     public static String readString(StringReader reader) {
         int argBeginning = reader.getCursor();
-        if (!reader.canRead()) {
-            reader.skip();
-        }
+        // 如果能读，并且下一个格子内容不是空
         while (reader.canRead() && reader.peek() != ' ') {
+            // 游标++
             reader.skip();
         }
         return reader.getString().substring(argBeginning, reader.getCursor());

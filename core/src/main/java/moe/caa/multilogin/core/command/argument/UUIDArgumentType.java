@@ -6,8 +6,10 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.command.UniversalCommandExceptionType;
 
 import java.util.UUID;
 
@@ -28,16 +30,14 @@ public class UUIDArgumentType implements ArgumentType<UUID> {
     @Override
     public UUID parse(StringReader reader) throws CommandSyntaxException {
         int argBeginning = reader.getCursor();
-        if (!reader.canRead()) {
-            reader.skip();
-        }
-        while (reader.canRead() && reader.peek() != ' ') {
-            reader.skip();
-        }
-        String uuidString = reader.getString().substring(argBeginning, reader.getCursor());
+
+        String uuidString = StringArgumentType.readString(reader);
         UUID ret = ValueUtil.getUuidOrNull(uuidString);
         if (ret == null) {
-            throw CommandHandler.getBuiltInExceptions().readerInvalidUUID().createWithContext(reader, uuidString);
+            reader.setCursor(argBeginning);
+            throw UniversalCommandExceptionType.create(CommandHandler.getCore().getLanguageHandler().getMessage("command_exception_reader_invalid_uuid",
+                    new Pair<>("string", uuidString)
+            ), reader);
         }
         return ret;
     }

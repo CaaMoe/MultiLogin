@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.database.table;
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.util.There;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
 
@@ -104,11 +105,54 @@ public class UserDataTableV3 {
         LoggerProvider.getLogger().info("Updated user data, total " + oldData.size() + ".");
     }
 
+    public There<String, UUID, Boolean> get(UUID onlineUUID, int serviceId) throws SQLException {
+        String sql = String.format(
+                "SELECT %s, %s, %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
+                , fieldOnlineName, fieldInGameProfileUuid, fieldWhitelist, tableName, fieldOnlineUUID, fieldServiceId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setInt(2, serviceId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new There<>(
+                            resultSet.getString(1),
+                            ValueUtil.bytesToUuid(resultSet.getBytes(2)),
+                            resultSet.getBoolean(3));
+                }
+            }
+        }
+        return null;
+    }
+
+    public UUID getOnlineUUID(String username, int serviceId) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE lower(%s) = ? AND %s = ? LIMIT 1"
+                , fieldOnlineUUID, tableName, fieldOnlineName, fieldServiceId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setString(1, username.toLowerCase(Locale.ROOT));
+            statement.setInt(2, serviceId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    byte[] bytes = resultSet.getBytes(1);
+                    if (bytes == null) return null;
+                    return ValueUtil.bytesToUuid(bytes);
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * 从数据库中检索用户游戏内 UUID
      *
-     * @param onlineUUID  用户在线 UUID
-     * @param serviceId 用户在线 UUID 提供的验证服务器 ID
+     * @param onlineUUID 用户在线 UUID
+     * @param serviceId  用户在线 UUID 提供的验证服务器 ID
      * @return 检索到的用户游戏内 UUID
      */
     public UUID getInGameUUID(UUID onlineUUID, int serviceId) throws SQLException {

@@ -53,7 +53,7 @@ public class MRenameCommand {
             }
         }
 
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(oldname);
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(oldname);
         if (gameUUID == null) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_other_nonexistence",
                     new Pair<>("name", oldname)));

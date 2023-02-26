@@ -43,7 +43,7 @@ public class YggdrasilAuthenticationService {
             primaries.add(ids.iterator().next());
         } else {
             // 首先获取数据库里面保存的他的 inGameUUID
-            UUID inGameUUID = core.getSqlManager().getInGameProfileTable().getInGameUUID(username);
+            UUID inGameUUID = core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
 
             // 如果获取到了它的 inGameUUID，就去获取 Yggdrasil ID
             if (inGameUUID != null) {

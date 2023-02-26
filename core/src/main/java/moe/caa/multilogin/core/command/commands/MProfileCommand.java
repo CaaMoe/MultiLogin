@@ -75,7 +75,7 @@ public class MProfileCommand {
                 return 0;
             }
         } else {
-            target = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(arg);
+            target = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(arg);
             if (target == null) {
                 context.getSource().sendMessagePL(
                         CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_name_not_found",
@@ -117,7 +117,7 @@ public class MProfileCommand {
         String username = StringArgumentType.getString(context, "username");
         BaseServiceConfig serviceConfig = ServiceIdArgumentType.getService(context, "serviceid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (gameUUID == null) {
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_other_namenonexistence",
@@ -173,7 +173,7 @@ public class MProfileCommand {
         String username = StringArgumentType.getString(context, "username");
         BaseServiceConfig serviceConfig = ServiceIdArgumentType.getService(context, "serviceid");
         UUID onlineUUID = UUIDArgumentType.getUuid(context, "onlineuuid");
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (gameUUID == null) {
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_other_namenonexistence",
@@ -223,7 +223,7 @@ public class MProfileCommand {
     @SneakyThrows
     private int executeSetTempOneself(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (gameUUID == null) {
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_oneself_nonexistence",
@@ -258,7 +258,7 @@ public class MProfileCommand {
     @SneakyThrows
     private int executeSetOneself(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username");
-        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID gameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (gameUUID == null) {
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_oneself_nonexistence",
@@ -320,7 +320,7 @@ public class MProfileCommand {
             );
             return 0;
         }
-        if (core.getSqlManager().getInGameProfileTable().getInGameUUID(username) != null) {
+        if (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username) != null) {
             context.getSource().sendMessagePL(
                     core.getLanguageHandler().getMessage("command_message_profile_create_nameoccupied",
                             new Pair<>("username", username)

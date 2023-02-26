@@ -123,7 +123,7 @@ public class MWhitelistCommand {
         if (CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist().remove(username)) {
             count++;
         }
-        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (inGameUUID != null) {
             if (CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(inGameUUID)) {
                 count++;
@@ -154,7 +154,7 @@ public class MWhitelistCommand {
     private int executeAddUsername(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
         boolean have = false;
-        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUID(username);
+        UUID inGameUUID = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(username);
         if (inGameUUID != null) {
             have = CommandHandler.getCore().getSqlManager().getUserDataTable().hasWhitelist(inGameUUID);
         }

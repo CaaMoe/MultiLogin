@@ -12,7 +12,6 @@ import moe.caa.multilogin.core.main.MultiCore;
  * 自定义消息
  */
 public class BuiltInExceptions implements BuiltInExceptionProvider {
-    private final DynamicCommandExceptionType SERVICE_ID_NOT_FOUND;
     private final Dynamic2CommandExceptionType DOUBLE_TOO_SMALL;
     private final Dynamic2CommandExceptionType DOUBLE_TOO_BIG;
     private final Dynamic2CommandExceptionType FLOAT_TOO_SMALL;
@@ -42,12 +41,10 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private final DynamicCommandExceptionType DISPATCHER_PARSE_EXCEPTION;
 
     // custom
-    private final DynamicCommandExceptionType READER_INVALID_UUID;
     private final SimpleCommandExceptionType REQUIRE_PLAYER;
     private final DynamicCommandExceptionType PLAYER_NOT_ONLINE;
 
     private final SimpleCommandExceptionType CACHE_NOT_FOUND_SELF;
-    private final Dynamic2CommandExceptionType CACHE_NOT_FOUND;
 
     public BuiltInExceptions(MultiCore core) {
 
@@ -123,15 +120,6 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
                 new Pair<>("message", message)
         )));
 
-        READER_INVALID_UUID = new DynamicCommandExceptionType(value -> new LiteralMessage(
-                core.getLanguageHandler().getMessage("command_exception_reader_invalid_uuid",
-                        new Pair<>("value", value)
-                )));
-
-        SERVICE_ID_NOT_FOUND = new DynamicCommandExceptionType(value -> new LiteralMessage(
-                core.getLanguageHandler().getMessage("command_exception_serviceid_not_found",
-                        new Pair<>("value", value)
-                )));
 
         REQUIRE_PLAYER = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_require_player")));
 
@@ -141,11 +129,6 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
                 )));
 
         CACHE_NOT_FOUND_SELF = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_cache_not_found_self")));
-        CACHE_NOT_FOUND = new Dynamic2CommandExceptionType((value1, value2) -> new LiteralMessage(
-                core.getLanguageHandler().getMessage("command_message_cache_not_found",
-                        new Pair<>("name", value1),
-                        new Pair<>("in_game_uuid", value2)
-                )));
     }
 
     @Override
@@ -283,24 +266,12 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
         return DISPATCHER_PARSE_EXCEPTION;
     }
 
-    public DynamicCommandExceptionType readerInvalidUUID() {
-        return READER_INVALID_UUID;
-    }
-
-    public DynamicCommandExceptionType serviceidNotFound() {
-        return SERVICE_ID_NOT_FOUND;
-    }
-
     public SimpleCommandExceptionType requirePlayer() {
         return REQUIRE_PLAYER;
     }
 
     public DynamicCommandExceptionType playerNotOnline() {
         return PLAYER_NOT_ONLINE;
-    }
-
-    public Dynamic2CommandExceptionType cacheNotFound() {
-        return CACHE_NOT_FOUND;
     }
 
     public SimpleCommandExceptionType cacheNotFoundSelf() {

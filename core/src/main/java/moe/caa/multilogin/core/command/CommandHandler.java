@@ -18,7 +18,10 @@ import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -66,6 +69,9 @@ public class CommandHandler implements CommandAPI {
 
     @Override
     public List<String> tabComplete(ISender sender, String[] args) {
+        if (args.length == 1) {
+            return tabComplete(sender, args[0] + " ");
+        }
         return tabComplete(sender, String.join(" ", args));
     }
 

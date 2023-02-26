@@ -93,7 +93,7 @@ public class InGameProfileTableV3 {
      * @param currentUsername 用户名
      * @return 游戏内 UUID
      */
-    public UUID getInGameUUID(String currentUsername) throws SQLException {
+    public UUID getInGameUUIDIgnoreCase(String currentUsername) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE LOWER(%s) = ? LIMIT 1"
                 , fieldInGameUuid, tableName, fieldCurrentUsernameLowerCase
