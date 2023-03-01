@@ -70,7 +70,7 @@ public class MInfoCommand {
                         new Pair<>("uuid", player.getUniqueId()),
                         new Pair<>("service_name", serviceName),
                         new Pair<>("service_id", profile.getValue2()),
-                        new Pair<>("online_username", profile.getValue1().getName()),
+                        new Pair<>("online_name", profile.getValue1().getName()),
                         new Pair<>("online_uuid", profile.getValue1().getId())
                 ));
             }
