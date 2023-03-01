@@ -59,8 +59,8 @@ public class MRenameCommand {
         if (!ValueUtil.isEmpty(nameAllowedRegular)) {
             if (!Pattern.matches(nameAllowedRegular, newName)) {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_mismatch",
-                        new Pair<>("current_username", newName),
-                        new Pair<>("name_allowed_regular", nameAllowedRegular)
+                        new Pair<>("name", newName),
+                        new Pair<>("regular", nameAllowedRegular)
                 ));
                 return;
             }
@@ -70,25 +70,26 @@ public class MRenameCommand {
                     try {
                         CommandHandler.getCore().getSqlManager().getInGameProfileTable().updateUsername(argument.getProfileUUID(), newName);
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_succeed",
-                                new Pair<>("old_name", argument.getProfileName()),
+                                new Pair<>("profile_name", argument.getProfileName()),
                                 new Pair<>("new_name", newName),
-                                new Pair<>("profile_uuid", argument.getProfileUUID())
-                        ));
+                                new Pair<>("profile_uuid", argument.getProfileUUID()))
+                        );
 
                         CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(argument.getProfileUUID(), (CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_succeed_kickmessage",
-                                new Pair<>("old_name", argument.getProfileName()),
-                                new Pair<>("new_name", newName))));
+                                new Pair<>("profile_name", argument.getProfileName()),
+                                new Pair<>("new_name", newName),
+                                new Pair<>("profile_uuid", argument.getProfileUUID()))));
                     } catch (SQLIntegrityConstraintViolationException e) {
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_occupied",
                                 new Pair<>("name", newName)));
                     }
                 }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_desc",
-                        new Pair<>("old_name", argument.getProfileName()),
+                        new Pair<>("profile_name", argument.getProfileName()),
                         new Pair<>("new_name", newName),
                         new Pair<>("profile_uuid", argument.getProfileUUID())),
 
                 CommandHandler.getCore().getLanguageHandler().getMessage("command_message_rename_cq",
-                        new Pair<>("old_name", argument.getProfileName()),
+                        new Pair<>("profile_name", argument.getProfileName()),
                         new Pair<>("new_name", newName),
                         new Pair<>("profile_uuid", argument.getProfileUUID()))
         );

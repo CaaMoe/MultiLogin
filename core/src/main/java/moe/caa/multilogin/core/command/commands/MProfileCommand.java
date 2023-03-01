@@ -97,7 +97,7 @@ public class MProfileCommand {
     private int executeSetTempOther(CommandContext<ISender> context) {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
-        processSetTemp(context, online.getOnlineUUID(), online.getBaseServiceConfig().getId(), profile);
+        processSetTemp(context, online.getOnlineUUID(), online.getOnlineName(), online.getBaseServiceConfig().getId(), profile);
         return 0;
     }
 
@@ -105,7 +105,7 @@ public class MProfileCommand {
     private int executeSetOther(CommandContext<ISender> context) {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
-        processSet(context, online.getOnlineUUID(), online.getBaseServiceConfig().getId(), profile);
+        processSet(context, online.getOnlineUUID(), online.getOnlineName(), online.getBaseServiceConfig().getId(), profile);
         return 0;
     }
 
@@ -114,7 +114,7 @@ public class MProfileCommand {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
 
-        processSetTemp(context, pair.getValue1().getId(), pair.getValue2(), profile);
+        processSetTemp(context, pair.getValue1().getId(), pair.getValue1().getName(), pair.getValue2(), profile);
         return 0;
     }
 
@@ -123,31 +123,45 @@ public class MProfileCommand {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
 
-        processSet(context, pair.getValue1().getId(), pair.getValue2(), profile);
+        processSet(context, pair.getValue1().getId(), pair.getValue1().getName(), pair.getValue2(), profile);
         return 0;
     }
 
-    private void processSet(CommandContext<ISender> context, UUID from, int serviceId, ProfileArgumentType.ProfileArgument to) {
+    private void processSet(CommandContext<ISender> context, UUID from, String fromName, int serviceId, ProfileArgumentType.ProfileArgument to) {
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
 
             CommandHandler.getCore().getSqlManager().getUserDataTable().setInGameUUID(from, serviceId, to.getProfileUUID());
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_succeed",
-                            new Pair<>("current_username", to.getProfileName())
+                            new Pair<>("redirect_name", to.getProfileName()),
+                            new Pair<>("redirect_uuid", to.getProfileUUID()),
+                            new Pair<>("online_uuid", from),
+                            new Pair<>("online_name", fromName)
                     )
             );
 
             context.getSource().getAsPlayer().kickPlayer(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_succeed_kickmessage",
-                            new Pair<>("current_username", to.getProfileName())
+                            new Pair<>("redirect_name", to.getProfileName()),
+                            new Pair<>("redirect_uuid", to.getProfileUUID()),
+                            new Pair<>("online_uuid", from),
+                            new Pair<>("online_name", fromName)
                     )
             );
         }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_desc",
-                new Pair<>("current_username", to.getProfileName())
-        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_cq"));
+                new Pair<>("redirect_name", to.getProfileName()),
+                new Pair<>("redirect_uuid", to.getProfileUUID()),
+                new Pair<>("online_uuid", from),
+                new Pair<>("online_name", fromName)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_cq",
+                new Pair<>("redirect_name", to.getProfileName()),
+                new Pair<>("redirect_uuid", to.getProfileUUID()),
+                new Pair<>("online_uuid", from),
+                new Pair<>("online_name", fromName)
+        ));
     }
 
-    private void processSetTemp(CommandContext<ISender> context, UUID from, int serviceId, ProfileArgumentType.ProfileArgument to) {
+    private void processSetTemp(CommandContext<ISender> context, UUID from, String fromName, int serviceId, ProfileArgumentType.ProfileArgument to) {
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
 
             CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().put(
@@ -156,18 +170,32 @@ public class MProfileCommand {
             );
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_succeed",
-                            new Pair<>("current_username", to.getProfileName())
+                            new Pair<>("redirect_name", to.getProfileName()),
+                            new Pair<>("redirect_uuid", to.getProfileUUID()),
+                            new Pair<>("online_uuid", from),
+                            new Pair<>("online_name", fromName)
                     )
             );
 
             context.getSource().getAsPlayer().kickPlayer(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_succeed_kickmessage",
-                            new Pair<>("current_username", to.getProfileName())
+                            new Pair<>("redirect_name", to.getProfileName()),
+                            new Pair<>("redirect_uuid", to.getProfileUUID()),
+                            new Pair<>("online_uuid", from),
+                            new Pair<>("online_name", fromName)
                     )
             );
         }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_desc",
-                new Pair<>("current_username", to.getProfileName())
-        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_cq"));
+                new Pair<>("redirect_name", to.getProfileName()),
+                new Pair<>("redirect_uuid", to.getProfileUUID()),
+                new Pair<>("online_uuid", from),
+                new Pair<>("online_name", fromName)
+        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_cq",
+                new Pair<>("redirect_name", to.getProfileName()),
+                new Pair<>("redirect_uuid", to.getProfileUUID()),
+                new Pair<>("online_uuid", from),
+                new Pair<>("online_name", fromName)
+        ));
     }
 
     private void processCreate(CommandContext<ISender> context, String name, UUID uuid) throws SQLException {
@@ -177,8 +205,8 @@ public class MProfileCommand {
             if (!Pattern.matches(nameAllowedRegular, name)) {
                 context.getSource().sendMessagePL(
                         core.getLanguageHandler().getMessage("command_message_profile_create_namemismatch",
-                                new Pair<>("current_username", name),
-                                new Pair<>("name_allowed_regular", nameAllowedRegular)
+                                new Pair<>("name", name),
+                                new Pair<>("regular", nameAllowedRegular)
                         )
                 );
                 return;
@@ -192,18 +220,22 @@ public class MProfileCommand {
             );
             return;
         }
-        if (core.getSqlManager().getInGameProfileTable().dataExists(uuid)) {
+        Pair<UUID, String> pair = core.getSqlManager().getInGameProfileTable().get(uuid);
+        if (pair != null) {
             context.getSource().sendMessagePL(
                     core.getLanguageHandler().getMessage("command_message_profile_create_uuidoccupied",
-                            new Pair<>("uuid", uuid)
+                            new Pair<>("uuid", uuid),
+                            new Pair<>("name", pair.getValue2())
                     )
             );
             return;
         }
-        if (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(name) != null) {
+        UUID uuidIgnoreCase = core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(name);
+        if (uuidIgnoreCase != null) {
             context.getSource().sendMessagePL(
                     core.getLanguageHandler().getMessage("command_message_profile_create_nameoccupied",
-                            new Pair<>("username", name)
+                            new Pair<>("name", name),
+                            new Pair<>("uuid", uuidIgnoreCase)
                     )
             );
             return;
@@ -211,8 +243,8 @@ public class MProfileCommand {
         core.getSqlManager().getInGameProfileTable().insertNewData(uuid, name);
         context.getSource().sendMessagePL(
                 core.getLanguageHandler().getMessage("command_message_profile_create",
-                        new Pair<>("username", name),
-                        new Pair<>("ingameuuid", uuid)
+                        new Pair<>("uuid", name),
+                        new Pair<>("name", uuid)
                 )
         );
     }

@@ -54,8 +54,8 @@ public class MInfoCommand {
             Pair<GameProfile, Integer> profile = CommandHandler.getCore().getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
             if (profile == null) {
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_info_unknown",
-                        new Pair<>("in_game_username", player.getName()),
-                        new Pair<>("in_game_uuid", player.getUniqueId())
+                        new Pair<>("name", player.getName()),
+                        new Pair<>("uuid", player.getUniqueId())
                 ));
             } else {
                 String serviceName;
@@ -66,8 +66,8 @@ public class MInfoCommand {
                     serviceName = bsc.getName();
                 }
                 context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_info",
-                        new Pair<>("in_game_username", player.getName()),
-                        new Pair<>("in_game_uuid", player.getUniqueId()),
+                        new Pair<>("name", player.getName()),
+                        new Pair<>("uuid", player.getUniqueId()),
                         new Pair<>("service_name", serviceName),
                         new Pair<>("service_id", profile.getValue2()),
                         new Pair<>("online_username", profile.getValue1().getName()),

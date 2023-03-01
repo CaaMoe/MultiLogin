@@ -27,8 +27,8 @@ public class NameAllowedRegularCheckFlows extends BaseFlows<ValidateContext> {
         }
         if (!Pattern.matches(nameAllowedRegular, validateContext.getBaseServiceAuthenticationResult().getResponse().getName())) {
             validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_mismatch",
-                    new Pair<>("current_username", validateContext.getBaseServiceAuthenticationResult().getResponse().getName()),
-                    new Pair<>("name_allowed_regular", nameAllowedRegular)
+                    new Pair<>("name", validateContext.getBaseServiceAuthenticationResult().getResponse().getName()),
+                    new Pair<>("regular", nameAllowedRegular)
             ));
             return Signal.TERMINATED;
         }

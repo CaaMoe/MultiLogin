@@ -84,7 +84,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {
                 validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_repeated",
-                        new Pair<>("current_username", validateContext.getInGameProfile().getName())
+                        new Pair<>("name", validateContext.getInGameProfile().getName())
                 ));
                 return Signal.TERMINATED;
             }
@@ -96,7 +96,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {
                 validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_repeated",
-                        new Pair<>("current_username", validateContext.getInGameProfile().getName())
+                        new Pair<>("name", validateContext.getInGameProfile().getName())
                 ));
                 return Signal.TERMINATED;
             }

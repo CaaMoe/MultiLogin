@@ -90,7 +90,7 @@ public class RootCommand {
                     // 玩家列表
                     String playerListString = entry.getValue().stream()
                             .map(s -> CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_entry",
-                                    new Pair<>("player_name", s.getName())
+                                    new Pair<>("name", s.getName())
                             ))
                             .collect(Collectors.joining(
                                             CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_player_delimiter")
@@ -100,8 +100,8 @@ public class RootCommand {
                     return CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_entry",
                             new Pair<>("service_name", sname),
                             new Pair<>("service_id", entry.getKey()),
-                            new Pair<>("player_count", entry.getValue().size()),
-                            new Pair<>("player_list", playerListString)
+                            new Pair<>("count", entry.getValue().size()),
+                            new Pair<>("list", playerListString)
                     );
                 }).collect(Collectors.joining(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_list_delimiter")))),
                 new Pair<>("count", onlinePlayers.size())
@@ -139,7 +139,7 @@ public class RootCommand {
         UUID ignoreCase = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(string);
         if (ignoreCase == null) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
-                    new Pair<>("current_username", string)
+                    new Pair<>("name", string)
             ));
             return 0;
         }
@@ -147,22 +147,22 @@ public class RootCommand {
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
                     int i = CommandHandler.getCore().getSqlManager().getInGameProfileTable().eraseUsername(string);
                     String kickMsg = CommandHandler.getCore().getLanguageHandler().getMessage("in_game_username_occupy",
-                            new Pair<>("current_username", string));
+                            new Pair<>("name", string));
 
                     CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(string, kickMsg);
                     if (i == 0) {
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_none",
-                                new Pair<>("current_username", string)
+                                new Pair<>("name", string)
                         ));
                     } else {
                         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_done",
-                                new Pair<>("current_username", string)
+                                new Pair<>("name", string)
                         ));
                     }
                 }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_desc",
-                        new Pair<>("username", string)),
+                        new Pair<>("name", string)),
                 CommandHandler.getCore().getLanguageHandler().getMessage("command_message_erase_username_cq",
-                        new Pair<>("username", string)));
+                        new Pair<>("name", string)));
         return 0;
     }
 

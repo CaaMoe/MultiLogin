@@ -63,7 +63,7 @@ public class MWhitelistCommand {
         if (!online.isWhitelist()) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove_repeat",
                     new Pair<>("online_uuid", online.getOnlineUUID()),
-                    new Pair<>("online_uuid", online.getOnlineName()),
+                    new Pair<>("online_name", online.getOnlineName()),
                     new Pair<>("service_name", online.getBaseServiceConfig().getName()),
                     new Pair<>("service_id", online.getBaseServiceConfig().getId())
             ));
@@ -73,7 +73,7 @@ public class MWhitelistCommand {
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), false);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_remove",
                 new Pair<>("online_uuid", online.getOnlineUUID()),
-                new Pair<>("online_uuid", online.getOnlineName()),
+                new Pair<>("online_name", online.getOnlineName()),
                 new Pair<>("service_name", online.getBaseServiceConfig().getName()),
                 new Pair<>("service_id", online.getBaseServiceConfig().getId())
         ));
@@ -91,7 +91,7 @@ public class MWhitelistCommand {
         if (online.isWhitelist()) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add_repeat",
                     new Pair<>("online_uuid", online.getOnlineUUID()),
-                    new Pair<>("online_uuid", online.getOnlineName()),
+                    new Pair<>("online_name", online.getOnlineName()),
                     new Pair<>("service_name", online.getBaseServiceConfig().getName()),
                     new Pair<>("service_id", online.getBaseServiceConfig().getId())
             ));
@@ -103,7 +103,7 @@ public class MWhitelistCommand {
         CommandHandler.getCore().getSqlManager().getUserDataTable().setWhitelist(online.getOnlineUUID(), online.getBaseServiceConfig().getId(), true);
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_permanent_add",
                 new Pair<>("online_uuid", online.getOnlineUUID()),
-                new Pair<>("online_uuid", online.getOnlineName()),
+                new Pair<>("online_name", online.getOnlineName()),
                 new Pair<>("service_name", online.getBaseServiceConfig().getName()),
                 new Pair<>("service_id", online.getBaseServiceConfig().getId())
         ));
@@ -127,12 +127,12 @@ public class MWhitelistCommand {
         }
         if (count == 0) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove_repeat",
-                    new Pair<>("username", username)
+                    new Pair<>("name", username)
             ));
             return 0;
         }
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_remove",
-                new Pair<>("username", username),
+                new Pair<>("name", username),
                 new Pair<>("count", count)
         ));
         if(inGameUUID != null){
@@ -155,19 +155,19 @@ public class MWhitelistCommand {
         }
         if (have) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat",
-                    new Pair<>("username", username)
+                    new Pair<>("name", username)
             ));
             return 0;
         }
         if (!CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist().add(username)) {
             context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add_repeat",
-                    new Pair<>("username", username)
+                    new Pair<>("name", username)
             ));
             return 0;
         }
 
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage("command_message_whitelist_add",
-                new Pair<>("username", username)
+                new Pair<>("name", username)
         ));
         return 0;
     }

@@ -38,7 +38,7 @@ public class OnlinePlayerArgumentType implements ArgumentType<Set<IPlayer>> {
                 reader.setCursor(i);
                 throw UniversalCommandExceptionType.create(
                         CommandHandler.getCore().getLanguageHandler().getMessage("command_message_player_not_online_by_uuid",
-                                new Pair<>("online_player_uuid", string)
+                                new Pair<>("uuid", string)
                         ), reader);
             }
             HashSet<IPlayer> players = new HashSet<>();
@@ -50,7 +50,7 @@ public class OnlinePlayerArgumentType implements ArgumentType<Set<IPlayer>> {
             reader.setCursor(i);
             throw UniversalCommandExceptionType.create(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_player_not_online_by_name",
-                            new Pair<>("online_player_name", string)
+                            new Pair<>("name", string)
                     ), reader);
         }
         return players;

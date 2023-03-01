@@ -87,6 +87,25 @@ public class InGameProfileTableV3 {
         LoggerProvider.getLogger().info("Updated in game profile data, total " + oldData.size() + ".");
     }
 
+    public Pair<UUID, String> get(UUID inGameUUID) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
+                , fieldCurrentUsernameOriginal, tableName, fieldInGameUuid
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String string = resultSet.getString(1);
+                    return new Pair<>(inGameUUID, string);
+                }
+            }
+        }
+        return null;
+    }
+
     /**
      * 获得游戏内 UUID
      *

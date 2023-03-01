@@ -43,7 +43,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
                 reader.setCursor(i);
                 throw UniversalCommandExceptionType.create(
                         CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_not_found_by_name",
-                                new Pair<>("profile_name", nameOrUuid)
+                                new Pair<>("name", nameOrUuid)
                         ), reader);
             }
 
@@ -54,7 +54,7 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
             reader.setCursor(i);
             throw UniversalCommandExceptionType.create(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_not_found_by_uuid",
-                            new Pair<>("profile_uuid", uuid)
+                            new Pair<>("uuid", uuid)
                     ), reader);
         }
         return new ProfileArgument(uuid, username);
