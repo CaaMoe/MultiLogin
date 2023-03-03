@@ -9,10 +9,7 @@ import moe.caa.multilogin.flows.workflows.EntrustFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -29,7 +26,9 @@ public class YggdrasilAuthenticationService {
      * 开始验证
      */
     public YggdrasilAuthenticationResult hasJoined(String username, String serverId, String ip) throws SQLException {
-        final Set<Integer> ids = core.getPluginConfig().getServiceIdMap().keySet();
+        final Set<Integer> ids = core.getPluginConfig().getServiceIdMap().entrySet().stream()
+                .filter(e -> e.getValue() instanceof BaseYggdrasilServiceConfig)
+                .map(Map.Entry::getKey).collect(Collectors.toSet());
         if (ids.size() == 0) return YggdrasilAuthenticationResult.ofNoService();
 
 

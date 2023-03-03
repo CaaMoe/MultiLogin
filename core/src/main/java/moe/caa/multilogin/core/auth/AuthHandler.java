@@ -42,7 +42,7 @@ public class AuthHandler implements AuthAPI {
         try {
             yggdrasilAuthenticationResult = yggdrasilAuthenticationService.hasJoined(username, serverId, ip);
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.NO_SERVICE) {
-                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_failed_no_service"));
+                return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_failed_no_yggdrasil_service"));
             }
             if (yggdrasilAuthenticationResult.getReason() == YggdrasilAuthenticationResult.Reason.SERVER_BREAKDOWN) {
                 return LoginAuthResult.ofDisallowedByYggdrasilAuthenticator(yggdrasilAuthenticationResult, core.getLanguageHandler().getMessage("auth_yggdrasil_failed_server_down"));
