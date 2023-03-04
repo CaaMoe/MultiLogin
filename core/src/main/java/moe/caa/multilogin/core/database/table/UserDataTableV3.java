@@ -2,7 +2,6 @@ package moe.caa.multilogin.core.database.table;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.There;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
@@ -201,16 +200,17 @@ public class UserDataTableV3 {
         return Collections.unmodifiableSet(result);
     }
 
+
     /**
      * 返回档案集合
      *
      * @param inGameUUID 游戏内 UUID
      */
-    public Set<Pair<UUID, Integer>> getOnlineProfiles(UUID inGameUUID) throws SQLException {
-        Set<Pair<UUID, Integer>> result = new HashSet<>();
+    public Set<There<UUID, String, Integer>> getOnlineProfiles(UUID inGameUUID) throws SQLException {
+        Set<There<UUID, String, Integer>> result = new HashSet<>();
         String sql = String.format(
-                "SELECT %s, %s FROM %s WHERE %s = ?"
-                , fieldOnlineUUID, fieldServiceId, tableName, fieldInGameProfileUuid
+                "SELECT %s, %s, %s FROM %s WHERE %s = ?"
+                , fieldOnlineUUID, fieldOnlineName, fieldServiceId, tableName, fieldInGameProfileUuid
         );
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
@@ -218,9 +218,10 @@ public class UserDataTableV3 {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    result.add(new Pair<>(
+                    result.add(new There<>(
                             ValueUtil.bytesToUuid(resultSet.getBytes(1)),
-                            resultSet.getInt(2)
+                            resultSet.getString(2),
+                            resultSet.getInt(3)
                     ));
                 }
             }
