@@ -12,7 +12,6 @@ import lombok.Getter;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.commands.RootCommand;
@@ -21,7 +20,6 @@ import moe.caa.multilogin.core.main.MultiCore;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -114,14 +112,6 @@ public class CommandHandler implements CommandAPI {
         if (!context.getSource().isPlayer()) {
             throw builtInExceptions.requirePlayer().create();
         }
-    }
-
-    public final Set<IPlayer> requirePlayersArgument(String string) throws CommandSyntaxException {
-        Set<IPlayer> players = core.getPlugin().getRunServer().getPlayerManager().getPlayers(string);
-        if (players.size() == 0)
-            throw builtInExceptions.playerNotOnline().create(string);
-
-        return players;
     }
 
     /**
