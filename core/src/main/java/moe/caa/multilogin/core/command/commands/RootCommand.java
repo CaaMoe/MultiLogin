@@ -34,7 +34,7 @@ public class RootCommand {
                         .then(handler.argument("username", StringArgumentType.string())
                                 .executes(this::executeEraseUsername)))
                 .then(handler.literal("eraseAllUsernames")
-                        .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAME))
+                        .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_ERASE_ALL_USERNAMES))
                         .executes(this::executeEraseAllUsernames))
                 .then(handler.literal("confirm")
                         .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CONFIRM))
