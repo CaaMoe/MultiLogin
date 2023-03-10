@@ -73,8 +73,8 @@ public class ValueUtil {
 
     public static String transPapi(String s, Pair<?, ?>... pairs) {
         for (int i = 0; i < pairs.length; i++) {
-            s = s.replace("{" + pairs[i].getValue1() + "}", pairs[i].getValue2().toString());
-            s = s.replace("{" + i + "}", pairs[i].getValue2().toString());
+            s = s.replace("{" + pairs[i].getValue1() + "}", pairs[i].getValue2() + "");
+            s = s.replace("{" + i + "}", pairs[i].getValue2() + "");
         }
         return s;
     }

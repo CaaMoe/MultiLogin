@@ -156,29 +156,6 @@ public class InGameProfileTableV3 {
      *
      * @param inGameUUID 游戏内 UUID
      */
-    public String getUsernameIgnoreIncomplete(UUID inGameUUID) throws SQLException {
-        String sql = String.format(
-                "SELECT %s FROM %s WHERE %s = ? LIMIT 1"
-                , fieldCurrentUsernameLowerCase, tableName, fieldInGameUuid
-        );
-        try (Connection connection = sqlManager.getPool().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)
-        ) {
-            statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return resultSet.getString(1);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 获得游戏内名字
-     *
-     * @param inGameUUID 游戏内 UUID
-     */
     public String getUsername(UUID inGameUUID) throws SQLException {
         String sql = String.format(
                 "SELECT %s FROM %s WHERE %s = ? LIMIT 1"

@@ -81,9 +81,13 @@ public class MFindCommand {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         UUID profileUUID = profile.getProfileUUID();
         Set<There<UUID, String, Integer>> onlineProfiles = CommandHandler.getCore().getSqlManager().getUserDataTable().getOnlineProfiles(profileUUID);
+        String profileName = CommandHandler.getCore().getSqlManager().getInGameProfileTable().getUsername(profileUUID);
+        if (profileName == null) {
+            profileName = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_find_profile_entry_unnamed");
+        }
         String message = CommandHandler.getCore().getLanguageHandler().getMessage("command_message_find_profile",
                 new Pair<>("profile_uuid", profileUUID),
-                new Pair<>("profile_name", profile.getProfileName()),
+                new Pair<>("profile_name", profileName),
                 new Pair<>("count", onlineProfiles.size()),
                 new Pair<>("list", onlineProfiles.stream().map(p -> {
                     BaseServiceConfig serviceConfig = CommandHandler.getCore().getPluginConfig().getServiceIdMap().get(p.getValue3());
