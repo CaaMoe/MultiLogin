@@ -1,8 +1,6 @@
 package fun.ksnb.multilogin.bungee.impl;
 
-import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.util.Pair;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -39,16 +37,6 @@ public class BungeePlayer extends BungeeSender implements IPlayer {
     @Override
     public SocketAddress getAddress() {
         return player.getSocketAddress();
-    }
-
-    @Override
-    public void resetGameProfile(GameProfile infoPair) throws Throwable {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void reconnect() throws Throwable {
-        throw new UnsupportedOperationException();
     }
 
     @Override

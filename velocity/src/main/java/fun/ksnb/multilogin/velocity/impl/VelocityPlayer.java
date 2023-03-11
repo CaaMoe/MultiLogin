@@ -1,11 +1,7 @@
 package fun.ksnb.multilogin.velocity.impl;
 
 import com.velocitypowered.api.proxy.Player;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
-import com.velocitypowered.api.util.GameProfile;
-import com.velocitypowered.proxy.connection.backend.VelocityServerConnection;
 import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import net.kyori.adventure.text.Component;
 
@@ -15,7 +11,6 @@ import java.lang.reflect.Field;
 import java.net.SocketAddress;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Velocity 玩家对象
@@ -45,25 +40,6 @@ public class VelocityPlayer extends VelocitySender implements IPlayer {
         super(player);
         this.player = player;
 
-    }
-
-    @Override
-    public void resetGameProfile(moe.caa.multilogin.api.auth.GameProfile profile) throws Throwable {
-//        生成新的
-        GameProfile gameProfile = new GameProfile(profile.getId(), profile.getName(), profile.getPropertyMap().values().stream().map(
-                p -> new GameProfile.Property(p.getName(), p.getValue(), p.getSignature())).collect(Collectors.toList()));
-//        reset给player
-        setProfileField.invoke(player, gameProfile);
-        reconnect();
-    }
-
-    @Override
-    public void reconnect() throws Throwable {
-        VelocityServerConnection connection = (VelocityServerConnection) player.getCurrentServer().get();
-        RegisteredServer server = connection.getServer();
-        connection.disconnect();
-        setConnectedServerField.invoke(player, (Object) null);
-        player.createConnectionRequest(server).connect();
     }
 
     @Override
