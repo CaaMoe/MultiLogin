@@ -4,6 +4,7 @@ import com.velocitypowered.api.event.PostOrder;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
+import fun.ksnb.multilogin.velocity.impl.VelocityPlayer;
 import moe.caa.multilogin.api.handle.HandleResult;
 import net.kyori.adventure.text.Component;
 
@@ -33,7 +34,10 @@ public class GlobalListener {
             } else {
                 event.getPlayer().disconnect(Component.text(result.getKickMessage()));
             }
+            return;
         }
+
+        multiLoginVelocity.getMultiCoreAPI().getPlayerHandler().callPlayerJoinGame(new VelocityPlayer(event.getPlayer()));
     }
 
     @Subscribe(order = PostOrder.FIRST)

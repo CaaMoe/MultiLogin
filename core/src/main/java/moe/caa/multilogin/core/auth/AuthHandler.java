@@ -80,7 +80,7 @@ public class AuthHandler implements AuthAPI {
                 GameProfile finalProfile = validateAuthenticationResult.getInGameProfile();
                 core.getPlayerHandler().getLoginCache().put(finalProfile.getId(), new PlayerHandler.Entry(
                         baseServiceAuthenticationResult.getResponse(),
-                        baseServiceAuthenticationResult.getServiceConfig().getId(),
+                        baseServiceAuthenticationResult.getServiceConfig(),
                         System.currentTimeMillis()
                 ));
                 return LoginAuthResult.ofAllowed(baseServiceAuthenticationResult, validateAuthenticationResult, finalProfile);

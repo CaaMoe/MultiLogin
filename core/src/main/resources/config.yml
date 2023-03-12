@@ -14,6 +14,11 @@
 # 默认值 false
 debug: false
 
+# 向登录成功的玩家发送欢迎消息。
+#
+# 默认值 true
+welcomeMsg: true
+
 # 开启更新检查
 #
 # 插件将半天进行一次更新检查

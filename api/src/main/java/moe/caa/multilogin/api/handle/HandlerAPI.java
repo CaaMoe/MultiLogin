@@ -1,6 +1,7 @@
 package moe.caa.multilogin.api.handle;
 
 import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
 
 import java.util.UUID;
@@ -23,6 +24,8 @@ public interface HandlerAPI {
      * @param inGameUUID 玩家的游戏内 UUID
      */
     HandleResult pushPlayerJoinGame(UUID inGameUUID, String username);
+
+    void callPlayerJoinGame(IPlayer player);
 
     /**
      * 获得玩家的在线游戏档案

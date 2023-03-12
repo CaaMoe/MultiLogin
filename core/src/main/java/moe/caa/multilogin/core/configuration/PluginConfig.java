@@ -49,6 +49,8 @@ public class PluginConfig {
     private String nameAllowedRegular;
     private final MultiCore core;
     @Getter
+    private boolean welcomeMsg;
+    @Getter
     private Map<Integer, BaseServiceConfig> serviceIdMap = new HashMap<>();
 
     public PluginConfig(File dataFolder, MultiCore core) {
@@ -92,6 +94,7 @@ public class PluginConfig {
         sqlConfig = SqlConfig.read(configConfigurationNode.node("sql"));
         nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
         floodgateSupport = configConfigurationNode.node("floodgateSupport").getBoolean(false);
+        welcomeMsg = configConfigurationNode.node("welcomeMsg").getBoolean(true);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {

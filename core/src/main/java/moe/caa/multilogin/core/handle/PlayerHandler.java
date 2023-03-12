@@ -70,17 +70,50 @@ public class PlayerHandler implements HandlerAPI {
     }
 
     @Override
+    public void callPlayerJoinGame(IPlayer player) {
+        if (!core.getPluginConfig().isWelcomeMsg()) {
+            return;
+        }
+
+        core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
+            Pair<GameProfile, BaseServiceConfig> pair = getPlayerOnlineProfile0(player.getUniqueId());
+            String msg;
+            if (pair == null) {
+                msg = core.getLanguageHandler().getMessage("welcome_msg_to_unknown",
+                        new Pair<>("profile_name", player.getName()),
+                        new Pair<>("profile_uuid", player.getName()));
+            } else {
+                msg = core.getLanguageHandler().getMessage("welcome_msg",
+                        new Pair<>("online_name", pair.getValue1().getName()),
+                        new Pair<>("online_uuid", pair.getValue1().getId()),
+                        new Pair<>("service_name", pair.getValue2().getName()),
+                        new Pair<>("service_id", pair.getValue2().getId()),
+                        new Pair<>("profile_name", player.getName()),
+                        new Pair<>("profile_uuid", player.getUniqueId())
+                );
+            }
+            player.sendMessagePL(msg);
+        }, 2000);
+    }
+
+    @Override
     public Pair<GameProfile, Integer> getPlayerOnlineProfile(UUID inGameUUID) {
         Entry entry = cache.get(inGameUUID);
         if (entry == null) return null;
-        return new Pair<>(entry.onlineProfile, entry.yggdrasilID);
+        return new Pair<>(entry.onlineProfile, entry.serviceConfig.getId());
+    }
+
+    public Pair<GameProfile, BaseServiceConfig> getPlayerOnlineProfile0(UUID inGameUUID) {
+        Entry entry = cache.get(inGameUUID);
+        if (entry == null) return null;
+        return new Pair<>(entry.onlineProfile, entry.serviceConfig);
     }
 
     @Override
     public UUID getInGameUUID(UUID onlineUUID, int serviceId) {
         for (Map.Entry<UUID, Entry> entry : cache.entrySet()) {
             if (entry.getValue().onlineProfile.getId().equals(onlineUUID)
-                    && entry.getValue().yggdrasilID == serviceId)
+                    && entry.getValue().serviceConfig.getId() == serviceId)
                 return entry.getKey();
         }
         return null;
@@ -128,7 +161,7 @@ public class PlayerHandler implements HandlerAPI {
     @AllArgsConstructor
     public static class Entry {
         private final GameProfile onlineProfile;
-        private final int yggdrasilID;
+        private final BaseServiceConfig serviceConfig;
         private final long signTimeMillis;
 
         @Override
@@ -136,12 +169,12 @@ public class PlayerHandler implements HandlerAPI {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Entry entry = (Entry) o;
-            return yggdrasilID == entry.yggdrasilID && signTimeMillis == entry.signTimeMillis && Objects.equals(onlineProfile, entry.onlineProfile);
+            return Objects.equals(serviceConfig, entry.serviceConfig) && signTimeMillis == entry.signTimeMillis && Objects.equals(onlineProfile, entry.onlineProfile);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(onlineProfile, yggdrasilID, signTimeMillis);
+            return Objects.hash(onlineProfile, serviceConfig, signTimeMillis);
         }
     }
 }
