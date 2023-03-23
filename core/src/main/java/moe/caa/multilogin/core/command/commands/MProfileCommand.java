@@ -140,14 +140,14 @@ public class MProfileCommand {
                     )
             );
 
-            context.getSource().getAsPlayer().kickPlayer(
+            UUID inGameUUID = CommandHandler.getCore().getPlayerHandler().getInGameUUID(from, serviceId);
+            CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(inGameUUID,
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_succeed_kickmessage",
                             new Pair<>("redirect_name", to.getProfileName()),
                             new Pair<>("redirect_uuid", to.getProfileUUID()),
                             new Pair<>("online_uuid", from),
                             new Pair<>("online_name", fromName)
-                    )
-            );
+                    ));
         }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_desc",
                 new Pair<>("redirect_name", to.getProfileName()),
                 new Pair<>("redirect_uuid", to.getProfileUUID()),
@@ -177,7 +177,8 @@ public class MProfileCommand {
                     )
             );
 
-            context.getSource().getAsPlayer().kickPlayer(
+            UUID inGameUUID = CommandHandler.getCore().getPlayerHandler().getInGameUUID(from, serviceId);
+            CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(inGameUUID,
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_succeed_kickmessage",
                             new Pair<>("redirect_name", to.getProfileName()),
                             new Pair<>("redirect_uuid", to.getProfileUUID()),
