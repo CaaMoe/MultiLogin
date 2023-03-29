@@ -26,6 +26,8 @@ import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 猫踢核心
@@ -59,6 +61,8 @@ public class MultiCore implements MultiCoreAPI {
     private SemVersion semVersion;
     @Getter
     private boolean floodgateSupported = false;
+    @Getter
+    private final String httpRequestHeaderUserAgent = "MultiLogin/v2.0";
 
 
     /**
