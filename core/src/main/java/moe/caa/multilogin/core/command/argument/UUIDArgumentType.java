@@ -36,7 +36,7 @@ public class UUIDArgumentType implements ArgumentType<UUID> {
         if (ret == null) {
             reader.setCursor(argBeginning);
             throw UniversalCommandExceptionType.create(CommandHandler.getCore().getLanguageHandler().getMessage("command_exception_reader_invalid_uuid",
-                    new Pair<>("string", uuidString)
+                    new Pair<>("value", uuidString)
             ), reader);
         }
         return ret;
