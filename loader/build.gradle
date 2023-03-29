@@ -25,7 +25,7 @@ processResources {
     def needDigestList = new ArrayList<Dependency>()
 
     // 扫描并添加所有依赖
-    try (def scanner = new Scanner(file.libraries)) {
+    try (def scanner = new Scanner(file.libraries as File)) {
         while (scanner.hasNextLine()) {
             def line = scanner.nextLine()
             if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
@@ -39,7 +39,7 @@ processResources {
         file.digests.createNewFile()
     } else {
         // 否则就把他们全部读出来放着
-        try (def scanner = new Scanner(file.digests)) {
+        try (def scanner = new Scanner(file.digests as File)) {
             while (scanner.hasNextLine()) {
                 def args = scanner.nextLine().split("=")
                 digestList.put(Dependency.of(args[0].trim()), args[1].trim())
@@ -61,7 +61,7 @@ processResources {
         // 存放Maven仓库根链接
         def repositoryList = new ArrayList<String>()
         // 扫描并添加所有仓库根链接
-        try (def scanner = new Scanner(file.repositories)) {
+        try (def scanner = new Scanner(file.repositories as File)) {
             while (scanner.hasNextLine()) {
                 def line = scanner.nextLine()
                 if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
@@ -97,7 +97,7 @@ processResources {
             System.out.println("The digest of file " + entry.simpleName + " is " + result)
             digestList.put(entry, result)
         }
-        try (def fw = new FileWriter(file.digests)) {
+        try (def fw = new FileWriter(file.digests as File)) {
             for (final def e in digestList.entrySet()) {
                 fw.write(e.key.toString() + "=" + e.value)
                 fw.append("\n")

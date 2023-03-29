@@ -16,7 +16,7 @@ allprojects {
 
 subprojects {
     repositories {
-        try (def scanner = new Scanner(file.repositories)) {
+        try (def scanner = new Scanner(file.repositories as File)) {
             while (scanner.hasNextLine()) {
                 def line = scanner.nextLine()
                 if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
@@ -31,7 +31,7 @@ subprojects {
         compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 
-        try (def scanner = new Scanner(file.libraries)) {
+        try (def scanner = new Scanner(file.libraries as File)) {
             while (scanner.hasNextLine()) {
                 def line = scanner.nextLine()
                 if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
@@ -45,7 +45,7 @@ subprojects {
         setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 
         def contributors = new HashSet<String>()
-        try (def scanner = new Scanner(file.contributors)) {
+        try (def scanner = new Scanner(file.contributors as File)) {
             while (scanner.hasNextLine()) {
                 def line = scanner.nextLine()
                 if (line.trim().length() == 0 || (line.charAt(0) as String) == '#') continue
@@ -83,7 +83,7 @@ subprojects {
         }
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
         file.encoding = "UTF-8"
     }
@@ -92,5 +92,4 @@ subprojects {
         sourceCompatibility = targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
