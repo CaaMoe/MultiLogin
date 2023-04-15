@@ -46,7 +46,8 @@ public class RootCommand {
                 .then(new MProfileCommand(handler).register(handler.literal("profile")))
                 .then(new MRenameCommand(handler).register(handler.literal("rename")))
                 .then(new MFindCommand(handler).register(handler.literal("find")))
-                .then(new MInfoCommand(handler).register(handler.literal("info")));
+                .then(new MInfoCommand(handler).register(handler.literal("info")))
+                .then(new MDataConvert(handler).register(handler.literal("dataconvert")));
     }
 
     private int executeList(CommandContext<ISender> context) {

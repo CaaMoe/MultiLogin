@@ -28,5 +28,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_LIST = "command.multilogin.list";
     public static final String COMMAND_MULTI_LOGIN_FIND_ONLINE = "command.multilogin.find.online";
     public static final String COMMAND_MULTI_LOGIN_FIND_PROFILE = "command.multilogin.find.profile";
+    public static final String COMMAND_MULTI_LOGIN_DATA_CONVERT = "command.multilogin.data.convert";
+    public static final String COMMAND_MULTI_LOGIN_PROFILE_UPDATENAME = "command.multilogin.profile.updatename";
 
 }

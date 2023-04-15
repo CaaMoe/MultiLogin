@@ -40,6 +40,8 @@ public class PluginConfig {
     @Getter
     private boolean forceUseLogin;
     @Getter
+    private boolean nameCorrect;
+    @Getter
     private boolean checkUpdate;
     @Getter
     private boolean floodgateSupport;
@@ -95,6 +97,7 @@ public class PluginConfig {
         nameAllowedRegular = configConfigurationNode.node("nameAllowedRegular").getString("^[0-9a-zA-Z_]{3,16}$");
         floodgateSupport = configConfigurationNode.node("floodgateSupport").getBoolean(false);
         welcomeMsg = configConfigurationNode.node("welcomeMsg").getBoolean(true);
+        nameCorrect = configConfigurationNode.node("nameCorrect").getBoolean(true);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {

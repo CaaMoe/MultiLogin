@@ -43,11 +43,11 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         }
 
         // 如果这个 UUID 不存在，表示是个预新玩家或是档案被清理的新玩家。这时需要分配个全新的身份卡给它。
+        String loginName = validateContext.getBaseServiceAuthenticationResult().getResponse().getName();
         if (inGameUUID == null) {
 
             inGameUUID = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getInitUUID()
-                    .generateUUID(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
-                            validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
+                    .generateUUID(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(), loginName);
 
             // 需要线程安全
             synchronized (this) {
@@ -75,12 +75,21 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
             }
         }
 
+        String fixName = loginName;
+        if (core.getPluginConfig().isNameCorrect()) {
+            int i = 0;
+            while (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName) != null) {
+                fixName = loginName + ++i;
+            }
+        }
+
         // Username 需要更新
         if (exist) {
             try {
                 core.getSqlManager().getInGameProfileTable().updateUsername(inGameUUID,
-                        validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
+                        fixName);
                 validateContext.getInGameProfile().setId(inGameUUID);
+                validateContext.getInGameProfile().setName(fixName);
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {
                 validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_repeated",
@@ -91,8 +100,9 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         } else {
             try {
                 core.getSqlManager().getInGameProfileTable().insertNewData(inGameUUID,
-                        validateContext.getBaseServiceAuthenticationResult().getResponse().getName());
+                        fixName);
                 validateContext.getInGameProfile().setId(inGameUUID);
+                validateContext.getInGameProfile().setName(fixName);
                 return Signal.PASSED;
             } catch (SQLIntegrityConstraintViolationException e) {
                 validateContext.setDisallowMessage(core.getLanguageHandler().getMessage("auth_validate_failed_username_repeated",
