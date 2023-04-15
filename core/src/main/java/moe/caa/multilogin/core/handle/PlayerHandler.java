@@ -93,7 +93,7 @@ public class PlayerHandler implements HandlerAPI {
                 );
             }
             player.sendMessagePL(msg);
-        }, 2000);
+        }, 3000);
     }
 
     @Override

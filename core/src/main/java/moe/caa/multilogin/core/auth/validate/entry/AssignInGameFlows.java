@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.auth.validate.entry;
 
 import lombok.SneakyThrows;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.auth.validate.ValidateContext;
@@ -78,8 +79,21 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         String fixName = loginName;
         if (core.getPluginConfig().isNameCorrect()) {
             int i = 0;
+            boolean modified = false;
             while (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName) != null) {
                 fixName = loginName + ++i;
+                modified = true;
+            }
+            if(modified){
+                UUID finalInGameUUID = inGameUUID;
+                String finalFixName = fixName;
+                core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
+                    IPlayer player = core.getPlugin().getRunServer().getPlayerManager().getPlayer(finalInGameUUID);
+                    player.sendMessagePL(core.getLanguageHandler().getMessage("name_correct_info",
+                            new Pair<>("old_name", loginName),
+                            new Pair<>("new_name", finalFixName)
+                    ));
+                }, 2000);
             }
         }
 
