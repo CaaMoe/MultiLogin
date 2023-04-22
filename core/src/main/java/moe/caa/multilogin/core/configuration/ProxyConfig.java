@@ -43,7 +43,7 @@ public class ProxyConfig {
 
     public Authenticator getProxyAuthenticator() {
         return (route, response) -> {
-            if (!ValueUtil.isEmpty(username)) return null;
+            if (ValueUtil.isEmpty(username)) return null;
             String credential = Credentials.basic(username, password);
             return response.request().newBuilder()
                     .header("Proxy-Authorization", credential)
