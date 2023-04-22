@@ -24,4 +24,9 @@ public interface IPlayer extends ISender {
      * @return 玩家的 IP 地址
      */
     SocketAddress getAddress();
+
+    /**
+     * 返回玩家还在不在线
+     */
+    boolean isOnline();
 }

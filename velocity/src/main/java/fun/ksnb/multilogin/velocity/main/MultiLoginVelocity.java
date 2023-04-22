@@ -23,6 +23,8 @@ import java.nio.file.Path;
  * Velocity Main
  */
 public class MultiLoginVelocity implements IPlugin {
+    @Getter
+    private static MultiLoginVelocity instance;
     private final Path dataDirectory;
     @Getter
     private final com.velocitypowered.proxy.VelocityServer server;
@@ -34,7 +36,7 @@ public class MultiLoginVelocity implements IPlugin {
 
     @Inject
     public MultiLoginVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory) {
-
+        instance = this;
         this.server = (com.velocitypowered.proxy.VelocityServer) server;
         this.runServer = new VelocityServer(this.server);
         this.dataDirectory = dataDirectory;

@@ -17,6 +17,8 @@ import java.io.File;
  */
 public class MultiLoginBungee extends Plugin implements IPlugin {
     @Getter
+    private static MultiLoginBungee instance;
+    @Getter
     private BungeeServer runServer;
     private PluginLoader pluginLoader;
     @Getter
@@ -24,6 +26,7 @@ public class MultiLoginBungee extends Plugin implements IPlugin {
 
     @Override
     public void onLoad() {
+        instance = this;
         LoggerProvider.setLogger(new JavaLoggerBridge(getLogger()));
         this.runServer = new BungeeServer(getProxy());
         this.pluginLoader = new PluginLoader(this);

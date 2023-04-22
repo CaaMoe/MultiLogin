@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -26,5 +27,18 @@ public class GameProfile {
             response.propertyMap.put(entry.getKey(), entry.getValue().clone());
         }
         return response;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        GameProfile that = (GameProfile) o;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(propertyMap, that.propertyMap);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, propertyMap);
     }
 }

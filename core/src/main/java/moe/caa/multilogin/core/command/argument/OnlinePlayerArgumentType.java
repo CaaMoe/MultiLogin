@@ -27,7 +27,7 @@ public class OnlinePlayerArgumentType implements ArgumentType<Set<IPlayer>> {
 
     @SneakyThrows
     @Override
-    public Set<IPlayer> parse(StringReader reader) throws CommandSyntaxException {
+    public Set<IPlayer> parse(StringReader reader) {
         int i = reader.getCursor();
         String string = StringArgumentType.readString(reader);
 

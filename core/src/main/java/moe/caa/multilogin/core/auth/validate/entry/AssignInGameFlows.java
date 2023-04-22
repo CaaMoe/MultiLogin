@@ -87,6 +87,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
             if(modified){
                 UUID finalInGameUUID = inGameUUID;
                 String finalFixName = fixName;
+                LoggerProvider.getLogger().warn(String.format("The name %s is occupied, change it to %s.", loginName, fixName));
                 core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                     IPlayer player = core.getPlugin().getRunServer().getPlayerManager().getPlayer(finalInGameUUID);
                     player.sendMessagePL(core.getLanguageHandler().getMessage("name_correct_info",

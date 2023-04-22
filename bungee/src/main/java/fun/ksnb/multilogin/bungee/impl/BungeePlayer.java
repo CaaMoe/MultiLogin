@@ -1,5 +1,6 @@
 package fun.ksnb.multilogin.bungee.impl;
 
+import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
 import moe.caa.multilogin.api.plugin.IPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -37,6 +38,11 @@ public class BungeePlayer extends BungeeSender implements IPlayer {
     @Override
     public SocketAddress getAddress() {
         return player.getSocketAddress();
+    }
+
+    @Override
+    public boolean isOnline() {
+        return MultiLoginBungee.getInstance().getRunServer().getPlayerManager().getPlayer(player.getUniqueId()) != null;
     }
 
     @Override
