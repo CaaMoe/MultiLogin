@@ -8,12 +8,8 @@ import moe.caa.multilogin.bukkit.injector.protocol.PacketLoginDisconnectHandler
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler
 import moe.caa.multilogin.bukkit.injector.proxy.YggdrasilMinecraftSessionServiceInvocationHandler
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
-import java.lang.reflect.Proxy
-import java.lang.reflect.Type
+import java.lang.reflect.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.stream.Collectors
 
 
 class BukkitInjector : Injector {
@@ -83,17 +79,18 @@ class BukkitInjector : Injector {
                         SignatureValidatorInvocationHandler(anyPair.second)
                     )
                 }
-                if (!modified) throw RuntimeException("Unsupported server.")
-
-                val newServices = services.javaClass.getDeclaredConstructor(
-                    *constructorArg.stream().map { it.first.type }.collect(Collectors.toList()).toTypedArray()
-                ).newInstance(constructorArg.stream().map { it.second }.toArray())
-
-                pairMinecraftServerAndGetServiceField.second[minecraftServer] = newServices
-                return
             }
-        } catch (_: java.lang.Exception) {
 
+            if (!modified) throw RuntimeException("Unsupported server.")
+
+            val declaredConstructor: Constructor<*> = servicesRecordClass.getDeclaredConstructor(
+                *constructorArg.map { it.first.type }.toTypedArray()
+            )
+
+            val newServices = declaredConstructor.newInstance(*constructorArg.map { it.second }.toTypedArray())
+            pairMinecraftServerAndGetServiceField.second[minecraftServer] = newServices
+            return
+        } catch (_: java.lang.Exception) {
         }
         val pair = forceGetNMS((api.plugin as MultiLoginBukkit).server, MinecraftSessionService::class.java, HashSet())
         pair.second.isAccessible = true

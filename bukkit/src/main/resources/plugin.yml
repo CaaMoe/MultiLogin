@@ -4,6 +4,6 @@ main: moe.caa.multilogin.bukkit.main.MultiLoginBukkit
 author: @contributors@
 softdepend:
   - ProtocolLib
-  - PlaceholderAPI
+api-version: 1.13
 commands:
   multilogin: { }
