@@ -5,6 +5,7 @@ import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 import org.bukkit.entity.Player;
 
 import java.net.SocketAddress;
+import java.util.Objects;
 import java.util.UUID;
 
 public class BukkitPlayer extends BukkitSender implements IPlayer {
@@ -17,9 +18,7 @@ public class BukkitPlayer extends BukkitSender implements IPlayer {
 
     @Override
     public void kickPlayer(String message) {
-        MultiLoginBukkit.getInstance().getServer().getScheduler().runTask(MultiLoginBukkit.getInstance(), () -> {
-            player.kickPlayer(message);
-        });
+        MultiLoginBukkit.getInstance().getServer().getScheduler().runTask(MultiLoginBukkit.getInstance(), () -> player.kickPlayer(message));
     }
 
     @Override
@@ -35,5 +34,23 @@ public class BukkitPlayer extends BukkitSender implements IPlayer {
     @Override
     public boolean isOnline() {
         return player.isOnline();
+    }
+
+    @Override
+    public String getName() {
+        return player.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BukkitPlayer that = (BukkitPlayer) o;
+        return Objects.equals(player.getUniqueId(), that.player.getUniqueId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player);
     }
 }
