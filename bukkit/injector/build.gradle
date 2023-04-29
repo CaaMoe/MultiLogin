@@ -1,0 +1,31 @@
+plugins {
+    id 'com.github.johnrengelman.shadow'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.0'
+}
+
+repositories {
+    maven { url "https://repo.codemc.io/repository/maven-public/" }
+    maven { url "https://repo.codemc.io/repository/nms/" }
+    maven { url "https://papermc.io/repo/repository/maven-public/" }
+    maven { url "https://repo.dmulloy2.net/repository/public/" }
+}
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+dependencies {
+    compileOnly project(":api")
+    compileOnly project(":core")
+    compileOnly project(":bukkit")
+
+    compileOnly 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
+}
+
+shadowJar {
+    archiveFileName = 'MultiLogin-Bukkit-Injector.JarFile'
+}
+
+artifacts {
+    archives shadowJar
+}

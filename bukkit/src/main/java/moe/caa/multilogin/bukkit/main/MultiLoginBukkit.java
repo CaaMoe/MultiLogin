@@ -1,6 +1,7 @@
 package moe.caa.multilogin.bukkit.main;
 
 import lombok.Getter;
+import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.logger.bridges.JavaLoggerBridge;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
@@ -27,7 +28,7 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         runServer = new BukkitServer(this);
         this.pluginLoader = new PluginLoader(this);
         try {
-            pluginLoader.load();
+            pluginLoader.load("MultiLogin-Bukkit-Injector.JarFile");
         } catch (Exception e) {
             LoggerProvider.getLogger().error("An exception was encountered while initializing the plugin.", e);
             runServer.shutdown();
@@ -40,8 +41,8 @@ public class MultiLoginBukkit extends JavaPlugin implements IPlugin {
         try {
             multiCoreAPI = pluginLoader.getCoreObject();
             multiCoreAPI.load();
-//            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.bungee.injector.BungeeInjector").getConstructor().newInstance();
-//            injector.inject(multiCoreAPI);
+            Injector injector = (Injector) pluginLoader.findClass("moe.caa.multilogin.bukkit.injector.BukkitInjector").getConstructor().newInstance();
+            injector.inject(multiCoreAPI);
         } catch (Throwable e) {
             LoggerProvider.getLogger().error("An exception was encountered while loading the plugin.", e);
             runServer.shutdown();

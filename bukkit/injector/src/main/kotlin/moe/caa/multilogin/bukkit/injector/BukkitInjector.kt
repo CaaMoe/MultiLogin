@@ -1,0 +1,128 @@
+package moe.caa.multilogin.bukkit.injector
+
+import com.mojang.authlib.minecraft.MinecraftSessionService
+import moe.caa.multilogin.api.injector.Injector
+import moe.caa.multilogin.api.logger.LoggerProvider
+import moe.caa.multilogin.api.main.MultiCoreAPI
+import moe.caa.multilogin.bukkit.injector.protocol.PacketLoginDisconnectHandler
+import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler
+import moe.caa.multilogin.bukkit.injector.proxy.YggdrasilMinecraftSessionServiceInvocationHandler
+import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import java.lang.reflect.Proxy
+import java.lang.reflect.Type
+import java.util.concurrent.ConcurrentHashMap
+import java.util.stream.Collectors
+
+
+class BukkitInjector : Injector {
+    companion object {
+        val kickMsg: MutableMap<Thread, String> = ConcurrentHashMap()
+    }
+
+    override fun inject(api: MultiCoreAPI) {
+        var protocolHook = false
+        if (api.plugin.runServer.pluginHasEnabled("ProtocolLib")) {
+            try {
+                PacketLoginDisconnectHandler().init()
+                protocolHook = true
+            } catch (e: java.lang.Exception) {
+                LoggerProvider.getLogger().error("Unable to load ProtocolLib handler, is it up to date?", e)
+            }
+        }
+        if (!protocolHook) {
+            LoggerProvider.getLogger().warn(
+                "It is strongly recommended that you install ProtocolLib," +
+                        " otherwise the client will always prompt 'invalid session' when kicked out by MultiLogin during the login phase."
+            )
+        }
+        try {
+            // Service 存在，是高版本的！
+            val servicesRecordClass = Class.forName("net.minecraft.server.Services")
+
+            val signatureValidatorClass: Class<*>? = try {
+                Class.forName("net.minecraft.util.SignatureValidator")
+            } catch (ignored: Exception) {
+                null
+            }
+
+            val pairMinecraftServerAndGetServiceField =
+                forceGetNMS((api.plugin as MultiLoginBukkit).server, servicesRecordClass, HashSet())
+            val minecraftServer = pairMinecraftServerAndGetServiceField.first
+            val services = pairMinecraftServerAndGetServiceField.second[minecraftServer]
+
+            val servicesRecordFields = servicesRecordClass.declaredFields
+
+            class ModifiedPair<A, B>(
+                var first: A,
+                var second: B
+            )
+
+            val constructorArg = arrayListOf<ModifiedPair<Field, Any>>()
+
+            var modified = false
+            for (field in servicesRecordFields) {
+                if (Modifier.isStatic(field.modifiers)) continue
+                field.isAccessible = true
+                val anyPair = ModifiedPair(field, field[services])
+                constructorArg.add(anyPair)
+                if (anyPair.second is MinecraftSessionService) {
+                    // 替换MinecraftSessionService
+                    anyPair.second = Proxy.newProxyInstance(
+                        Thread.currentThread().contextClassLoader,
+                        arrayOf(MinecraftSessionService::class.java),
+                        YggdrasilMinecraftSessionServiceInvocationHandler(anyPair.second as MinecraftSessionService)
+                    )
+                    modified = true
+                } else if (signatureValidatorClass != null && anyPair.second.javaClass.name.contains("SignatureValidator")) {
+                    // 替换SignatureValidator
+                    anyPair.second = Proxy.newProxyInstance(
+                        Thread.currentThread().contextClassLoader,
+                        arrayOf(signatureValidatorClass),
+                        SignatureValidatorInvocationHandler(anyPair.second)
+                    )
+                }
+                if (!modified) throw RuntimeException("Unsupported server.")
+
+                val newServices = services.javaClass.getDeclaredConstructor(
+                    *constructorArg.stream().map { it.first.type }.collect(Collectors.toList()).toTypedArray()
+                ).newInstance(constructorArg.stream().map { it.second }.toArray())
+
+                pairMinecraftServerAndGetServiceField.second[minecraftServer] = newServices
+                return
+            }
+        } catch (_: java.lang.Exception) {
+
+        }
+        val pair = forceGetNMS((api.plugin as MultiLoginBukkit).server, MinecraftSessionService::class.java, HashSet())
+        pair.second.isAccessible = true
+        pair.second[pair.first] = Proxy.newProxyInstance(
+            Thread.currentThread().contextClassLoader,
+            arrayOf(MinecraftSessionService::class.java),
+            YggdrasilMinecraftSessionServiceInvocationHandler(pair.second[pair.first] as MinecraftSessionService)
+        )
+    }
+
+    private fun forceGetNMS(source: Any, needGet: Type, ignore: MutableSet<Type>): Pair<Any, Field> {
+        var sourceClass: Class<*> = source.javaClass
+        // 双重遍历确保能获取到本类和父类所有的Field
+        do {
+            for (declaredField in sourceClass.declaredFields) {
+                try {
+                    declaredField.isAccessible = true
+                    // 类型匹配，返回Field所在的类的实例和Field
+                    if (declaredField.type === needGet) {
+                        if (sourceClass.name.startsWith("net.minecraft.")) {
+                            return Pair(source, declaredField)
+                        }
+                    }
+                    val o = declaredField[source]
+                    if (ignore.add(o.javaClass)) return forceGetNMS(o, needGet, ignore)
+                } catch (ignored: Throwable) {
+                }
+            }
+        } while (sourceClass.superclass.also { sourceClass = it } != null)
+        throw ClassNotFoundException(needGet.typeName)
+    }
+}

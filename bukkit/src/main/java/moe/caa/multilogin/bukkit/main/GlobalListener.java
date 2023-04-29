@@ -22,7 +22,6 @@ public class GlobalListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerLoginEvent event) {
-        // TODO: 2023/3/12 PostLogin???
         HandleResult result = multiLoginBukkit.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         if (result.getType() == HandleResult.Type.KICK) {
             if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
