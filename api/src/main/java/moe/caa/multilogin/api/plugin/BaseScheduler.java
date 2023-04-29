@@ -64,5 +64,7 @@ public abstract class BaseScheduler {
      *
      * @param run 任务
      */
-    public abstract void runTask(Runnable run);
+    public void runTask(Runnable run) {
+        runTask(run, 0);
+    }
 }

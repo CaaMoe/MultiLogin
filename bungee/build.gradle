@@ -32,9 +32,6 @@ shadowJar {
         project(':core').tasks.shadowJar.archiveFile
     }
     from {
-        project(':core').tasks.shadowJar.archiveFile
-    }
-    from {
         project(':bungee:injector').tasks.shadowJar.archiveFile
     }
 }

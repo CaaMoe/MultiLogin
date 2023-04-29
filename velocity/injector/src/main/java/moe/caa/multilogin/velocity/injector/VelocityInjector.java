@@ -4,7 +4,6 @@ import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
-import fun.ksnb.multilogin.velocity.impl.VelocityPlayer;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
@@ -28,7 +27,6 @@ public class VelocityInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException {
         MultiInitialLoginSessionHandler.init();
-        VelocityPlayer.init();
         // auth
         StateRegistry stateRegistry = StateRegistry.LOGIN;
         Field serverboundField = ReflectUtil.handleAccessible(StateRegistry.class.getDeclaredField("serverbound"));

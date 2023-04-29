@@ -1,25 +1,21 @@
-package fun.ksnb.multilogin.bungee.impl;
+package moe.caa.multilogin.bukkit.impl;
 
 import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.command.ConsoleCommandSender;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
-/**
- * Bungee 的命令执行者对象
- */
-public class BungeeSender implements ISender {
+public class BukkitSender implements ISender {
     private final CommandSender sender;
 
-    public BungeeSender(CommandSender sender) {
+    public BukkitSender(CommandSender sender) {
         this.sender = sender;
     }
 
     @Override
     public boolean isPlayer() {
-        return sender instanceof ProxiedPlayer;
+        return sender instanceof Player;
     }
 
     @Override
@@ -35,7 +31,7 @@ public class BungeeSender implements ISender {
     @Override
     public void sendMessagePL(String message) {
         for (String s : message.split("\\r?\\n")) {
-            sender.sendMessage(new TextComponent(s));
+            sender.sendMessage((s));
         }
     }
 
@@ -46,6 +42,6 @@ public class BungeeSender implements ISender {
 
     @Override
     public IPlayer getAsPlayer() {
-        return new BungeePlayer(((ProxiedPlayer) sender));
+        return new BukkitPlayer(((Player) sender));
     }
 }

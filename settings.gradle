@@ -11,4 +11,5 @@ include 'velocity:injector'
 
 include 'bungee'
 include 'bungee:injector'
+include 'bukkit'
 

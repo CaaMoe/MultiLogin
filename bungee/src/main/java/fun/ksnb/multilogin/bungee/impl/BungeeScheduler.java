@@ -10,9 +10,4 @@ public class BungeeScheduler extends BaseScheduler {
     public void runTask(Runnable run, long delay) {
         runTaskAsync(run, delay);
     }
-
-    @Override
-    public void runTask(Runnable run) {
-        runTaskAsync(run);
-    }
 }
