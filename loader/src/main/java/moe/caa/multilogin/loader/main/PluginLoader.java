@@ -14,12 +14,14 @@ import moe.caa.multilogin.loader.library.Library;
 import moe.caa.multilogin.loader.task.LibraryDownloadFlows;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 表示插件加载器
@@ -82,7 +84,8 @@ public class PluginLoader {
     private final IPlugin plugin;
     private final AtomicBoolean loaded = new AtomicBoolean(false);
     @Getter
-    private IExtURLClassLoader pluginClassLoader = new PriorAllURLClassLoader(new URL[0], PluginLoader.class.getClassLoader());
+    private IExtURLClassLoader pluginClassLoader = new PriorAllURLClassLoader(new URL[0], PluginLoader.class.getClassLoader(),
+            Stream.of("moe.caa.multilogin.").collect(Collectors.toSet()));
     @Getter
     private MultiCoreAPI coreObject;
 
@@ -179,7 +182,14 @@ public class PluginLoader {
 
     private void loadCore() throws Exception {
         Class<?> coreClass = findClass(coreClassName);
-        coreObject = (MultiCoreAPI) coreClass.getConstructor(IPlugin.class).newInstance(plugin);
+        for (Constructor<?> constructor : coreClass.getDeclaredConstructors()) {
+            Class<?>[] parameterTypes = constructor.getParameterTypes();
+            if (parameterTypes.length == 1 && parameterTypes[0] == IPlugin.class) {
+                coreObject = (MultiCoreAPI) constructor.newInstance(plugin);
+                return;
+            }
+        }
+        throw new RuntimeException("Not found constructor");
     }
 
 
