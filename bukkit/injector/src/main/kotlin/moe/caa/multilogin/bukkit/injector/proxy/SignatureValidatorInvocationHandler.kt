@@ -11,6 +11,6 @@ class SignatureValidatorInvocationHandler(
         if (method.returnType == Boolean.Companion::class.java) {
             return true
         }
-        return method.invoke(obj, args)
+        return method.invoke(obj, *args)
     }
 }

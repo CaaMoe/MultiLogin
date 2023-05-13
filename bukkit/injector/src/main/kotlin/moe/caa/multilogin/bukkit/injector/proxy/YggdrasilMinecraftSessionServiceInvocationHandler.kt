@@ -28,7 +28,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
             ) else ""
             return handle(profile, serverId, ip)
         }
-        return method.invoke(vanillaSessionService, args)
+        return method.invoke(vanillaSessionService, *args)
     }
 
     private fun handle(profile: GameProfile, serverId: String, ip: String): GameProfile? {
