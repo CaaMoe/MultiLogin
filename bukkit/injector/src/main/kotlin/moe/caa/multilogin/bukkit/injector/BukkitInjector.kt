@@ -23,7 +23,7 @@ class BukkitInjector : Injector {
             try {
                 PacketLoginDisconnectHandler().init()
                 protocolHook = true
-            } catch (e: java.lang.Exception) {
+            } catch (e: Throwable) {
                 LoggerProvider.getLogger().error("Unable to load ProtocolLib handler, is it up to date?", e)
             }
         }
