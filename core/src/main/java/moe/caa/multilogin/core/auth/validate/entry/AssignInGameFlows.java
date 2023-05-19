@@ -55,6 +55,13 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                         inGameUUID);
             }
         }
+        if (core.getPluginConfig().isAutoNameChange() && validateContext.isOnlineNameUpdated()) {
+            String username = core.getSqlManager().getInGameProfileTable().getUsername(inGameUUID);
+            if (!ValueUtil.isEmpty(username)) {
+                core.getSqlManager().getInGameProfileTable().eraseUsername(username);
+            }
+        }
+
         // 身份卡UUID数据存在，看看数据库中有没有对应的记录
         boolean exist = core.getSqlManager().getInGameProfileTable().dataExists(inGameUUID);
         if (exist) {

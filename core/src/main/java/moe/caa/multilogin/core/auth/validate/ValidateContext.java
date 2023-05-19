@@ -13,8 +13,9 @@ public class ValidateContext {
 
     private final GameProfile inGameProfile;
     private String disallowMessage;
-
     private boolean needWait;
+    private boolean onlineNameUpdated = false;
+
 
     protected ValidateContext(BaseServiceAuthenticationResult baseServiceAuthenticationResult) {
         this.baseServiceAuthenticationResult = baseServiceAuthenticationResult;

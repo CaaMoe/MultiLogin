@@ -46,6 +46,8 @@ public class PluginConfig {
     @Getter
     private boolean floodgateSupport;
     @Getter
+    private boolean autoNameChange;
+    @Getter
     private SqlConfig sqlConfig;
     @Getter
     private String nameAllowedRegular;
@@ -98,6 +100,7 @@ public class PluginConfig {
         floodgateSupport = configConfigurationNode.node("floodgateSupport").getBoolean(false);
         welcomeMsg = configConfigurationNode.node("welcomeMsg").getBoolean(true);
         nameCorrect = configConfigurationNode.node("nameCorrect").getBoolean(true);
+        autoNameChange = configConfigurationNode.node("autoNameChange").getBoolean(true);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
