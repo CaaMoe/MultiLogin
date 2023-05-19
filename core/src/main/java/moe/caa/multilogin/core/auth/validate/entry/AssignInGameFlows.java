@@ -27,21 +27,11 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
     @Override
     public Signal run(ValidateContext validateContext) {
 
-        // 从 temp redirect 中读游戏内 UUID
-        UUID inGameUUID = core.getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().remove(
-                new Pair<>(
-                        validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId(),
-                        validateContext.getBaseServiceAuthenticationResult().getResponse().getId()
-                )
+        // 从数据库里面读登录档案的游戏内 UUID
+        UUID inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(
+                validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
+                validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId()
         );
-
-        if (inGameUUID == null) {
-            // 如果不在，那就从数据库里面读登录档案的游戏内 UUID
-            inGameUUID = core.getSqlManager().getUserDataTable().getInGameUUID(
-                    validateContext.getBaseServiceAuthenticationResult().getResponse().getId(),
-                    validateContext.getBaseServiceAuthenticationResult().getServiceConfig().getId()
-            );
-        }
 
         // 如果这个 UUID 不存在，表示是个预新玩家或是档案被清理的新玩家。这时需要分配个全新的身份卡给它。
         String loginName = validateContext.getBaseServiceAuthenticationResult().getResponse().getName();
@@ -51,7 +41,7 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                     .generateUUID(validateContext.getBaseServiceAuthenticationResult().getResponse().getId(), loginName);
 
             // 需要线程安全
-            synchronized (this) {
+            synchronized (AssignInGameFlows.class) {
                 // 取没有被占用的 UUID
                 while (core.getSqlManager().getInGameProfileTable().dataExists(inGameUUID)) {
                     LoggerProvider.getLogger().warn(String.format("UUID %s has been used and will take a random value.", inGameUUID.toString()));

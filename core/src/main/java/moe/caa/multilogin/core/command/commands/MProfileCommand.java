@@ -17,7 +17,6 @@ import moe.caa.multilogin.core.command.argument.UUIDArgumentType;
 import moe.caa.multilogin.core.main.MultiCore;
 
 import java.sql.SQLException;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -47,15 +46,6 @@ public class MProfileCommand {
                                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_OTHER))
                                         .executes(this::executeSetOther)))
                 )
-                .then(handler.literal("settemp")
-                        .then(handler.argument("profile", ProfileArgumentType.profile())
-                                .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_ONESELF))
-                                .executes(this::executeSetTempOneself))
-                        .then(handler.argument("profile", ProfileArgumentType.profile())
-                                .then(handler.argument("online", OnlineArgumentType.online())
-                                        .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_SET_OTHER))
-                                        .executes(this::executeSetTempOther)))
-                )
                 .then(handler.literal("remove")
                         .then(handler.argument("profile", ProfileArgumentType.profile())
                                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_PROFILE_REMOVE))
@@ -72,8 +62,6 @@ public class MProfileCommand {
 
         handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
             CommandHandler.getCore().getSqlManager().getInGameProfileTable().remove(profile.getProfileUUID());
-            Map<Pair<Integer, UUID>, UUID> map = CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap();
-            map.entrySet().removeIf(e -> e.getValue().equals(profile.getProfileUUID()));
 
             context.getSource().sendMessagePL(
                     CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_remove_succeed",
@@ -94,27 +82,10 @@ public class MProfileCommand {
     }
 
     @SneakyThrows
-    private int executeSetTempOther(CommandContext<ISender> context) {
-        ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
-        OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
-        processSetTemp(context, online.getOnlineUUID(), online.getOnlineName(), online.getBaseServiceConfig().getId(), profile);
-        return 0;
-    }
-
-    @SneakyThrows
     private int executeSetOther(CommandContext<ISender> context) {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
         OnlineArgumentType.OnlineArgument online = OnlineArgumentType.getOnline(context, "online");
         processSet(context, online.getOnlineUUID(), online.getOnlineName(), online.getBaseServiceConfig().getId(), profile);
-        return 0;
-    }
-
-    @SneakyThrows
-    private int executeSetTempOneself(CommandContext<ISender> context) {
-        ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
-        Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
-
-        processSetTemp(context, pair.getValue1().getId(), pair.getValue1().getName(), pair.getValue2(), profile);
         return 0;
     }
 
@@ -156,46 +127,6 @@ public class MProfileCommand {
                 new Pair<>("online_uuid", from),
                 new Pair<>("online_name", fromName)
         ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_cq",
-                new Pair<>("redirect_name", to.getProfileName()),
-                new Pair<>("redirect_uuid", to.getProfileUUID()),
-                new Pair<>("online_uuid", from),
-                new Pair<>("online_name", fromName)
-        ));
-    }
-
-    private void processSetTemp(CommandContext<ISender> context, UUID from, String fromName, int serviceId, ProfileArgumentType.ProfileArgument to) {
-        handler.getSecondaryConfirmationHandler().submit(context.getSource(), () -> {
-
-            CommandHandler.getCore().getTemplateProfileRedirectHandler().getTemplateProfileRedirectMap().put(
-                    new Pair<>(serviceId, from),
-                    to.getProfileUUID()
-            );
-            context.getSource().sendMessagePL(
-                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_succeed",
-                            new Pair<>("redirect_name", to.getProfileName()),
-                            new Pair<>("redirect_uuid", to.getProfileUUID()),
-                            new Pair<>("online_uuid", from),
-                            new Pair<>("online_name", fromName)
-                    )
-            );
-
-            UUID inGameUUID = CommandHandler.getCore().getPlayerHandler().getInGameUUID(from, serviceId);
-            if(inGameUUID != null){
-                CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().kickPlayerIfOnline(inGameUUID,
-                        CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_succeed_kickmessage",
-                                new Pair<>("redirect_name", to.getProfileName()),
-                                new Pair<>("redirect_uuid", to.getProfileUUID()),
-                                new Pair<>("online_uuid", from),
-                                new Pair<>("online_name", fromName)
-                        )
-                );
-            }
-        }, CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_desc",
-                new Pair<>("redirect_name", to.getProfileName()),
-                new Pair<>("redirect_uuid", to.getProfileUUID()),
-                new Pair<>("online_uuid", from),
-                new Pair<>("online_name", fromName)
-        ), CommandHandler.getCore().getLanguageHandler().getMessage("command_message_profile_set_temp_cq",
                 new Pair<>("redirect_name", to.getProfileName()),
                 new Pair<>("redirect_uuid", to.getProfileUUID()),
                 new Pair<>("online_uuid", from),
