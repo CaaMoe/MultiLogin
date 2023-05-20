@@ -58,6 +58,7 @@ public class CommandHandler implements CommandAPI {
                 dispatcher.execute(args, sender);
             } catch (CommandSyntaxException e) {
                 sender.sendMessagePL(e.getRawMessage().getString());
+                LoggerProvider.getLogger().debug(String.format("An expected exception occurs when the %s command is executed.", String.join(" ", args)), e);
             } catch (Exception e) {
                 sender.sendMessagePL(core.getLanguageHandler().getMessage("command_error"));
                 LoggerProvider.getLogger().error(String.format("An exception occurs when the %s command is executed.", String.join(" ", args)), e);

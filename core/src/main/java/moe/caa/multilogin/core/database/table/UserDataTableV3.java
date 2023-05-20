@@ -397,4 +397,23 @@ public class UserDataTableV3 {
             statement.executeUpdate();
         }
     }
+
+    public String getOnlineName(UUID onlineUUID, int serviceId) throws SQLException {
+        String sql = String.format(
+                "SELECT %s FROM %s WHERE %s = ? AND %s = ? LIMIT 1"
+                , fieldOnlineName, tableName, fieldOnlineUUID, fieldServiceId
+        );
+        try (Connection connection = sqlManager.getPool().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)
+        ) {
+            statement.setBytes(1, ValueUtil.uuidToBytes(onlineUUID));
+            statement.setInt(2, serviceId);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString(1);
+                }
+            }
+            return null;
+        }
+    }
 }
