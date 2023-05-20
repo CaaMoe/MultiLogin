@@ -117,7 +117,7 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
         DISPATCHER_UNKNOWN_ARGUMENT = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_exception_dispatcher_unknown_argument")));
         DISPATCHER_EXPECTED_ARGUMENT_SEPARATOR = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_exception_dispatcher_exception_argument_separator")));
         DISPATCHER_PARSE_EXCEPTION = new DynamicCommandExceptionType(message -> new LiteralMessage(core.getLanguageHandler().getMessage("command_exception_dispatcher_parse_exception",
-                new Pair<>("message", message)
+                new Pair<>("command", message)
         )));
 
 
