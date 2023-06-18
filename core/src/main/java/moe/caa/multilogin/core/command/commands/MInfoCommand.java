@@ -37,6 +37,7 @@ public class MInfoCommand {
     }
 
     private int executeInfoOneself(CommandContext<ISender> context) throws CommandSyntaxException {
+        handler.requirePlayer(context);
         IPlayer player = context.getSource().getAsPlayer();
         HashSet<IPlayer> players = new HashSet<>();
         players.add(player);
