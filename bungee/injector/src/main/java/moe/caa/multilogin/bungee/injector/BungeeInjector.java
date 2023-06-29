@@ -6,15 +6,16 @@ import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
-import moe.caa.multilogin.bungee.injector.redirect.MultiEncryptionResponse;
-import moe.caa.multilogin.bungee.injector.redirect.MultiLoginRequest;
+import moe.caa.multilogin.bungee.injector.redirect.auth.MultiEncryptionResponse;
+import moe.caa.multilogin.bungee.injector.redirect.auth.MultiLoginRequest;
+import moe.caa.multilogin.bungee.injector.redirect.chat.MultiPlayerSession;
+import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.LoginRequest;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.function.Supplier;
 
 /**
@@ -25,8 +26,19 @@ public class BungeeInjector implements Injector {
     public void inject(MultiCoreAPI api) throws Throwable {
         AbstractMultiInitialHandler.init();
 
-        redirectIn(Protocol.LOGIN, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
-        redirectIn(Protocol.LOGIN, LoginRequest.class, () -> new MultiLoginRequest(api));
+        Protocol login = Protocol.LOGIN;
+        redirectIn(login, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
+        redirectIn(login, LoginRequest.class, () -> new MultiLoginRequest(api));
+
+        {
+            Protocol play = Protocol.GAME;
+            Object toServerDirectionData = getToServerDirectionData(play);
+            registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, new Object[]{
+                    createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20),
+                    createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06),
+            });
+        }
+
     }
 
 
@@ -97,5 +109,29 @@ public class BungeeInjector implements Injector {
         Object directionData = sideField.get(stage);
         TIntObjectMap<?> protocols = (TIntObjectMap<?>) f$protocols.get(directionData); // ? is ProtocolData
         return protocols.values();
+    }
+
+
+    private Object getToServerDirectionData(Protocol protocol) throws NoSuchFieldException, IllegalAccessException {
+        Field toServer = ReflectUtil.handleAccessible(protocol.getClass().getDeclaredField("TO_SERVER"));
+        return toServer.get(protocol);
+    }
+
+    private Object getToClientDirectionData(Protocol protocol) throws NoSuchFieldException, IllegalAccessException {
+        Field toClient = ReflectUtil.handleAccessible(protocol.getClass().getDeclaredField("TO_CLIENT"));
+        return toClient.get(protocol);
+    }
+
+    private void registerPacket(Object directionData, Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, Object[] mappings) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method registerPacket = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol.DirectionData")
+                .getDeclaredMethod("registerPacket", Class.class, Supplier.class, Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol.ProtocolMapping"), 10).getClass()));
+
+        registerPacket.invoke(directionData, packetClass, constructor, mappings);
+    }
+
+    private Object createProtocolMapping(int protocol, int id) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<?> constructor = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol.ProtocolMapping")
+                .getDeclaredConstructor(int.class, int.class));
+        return constructor.newInstance(protocol, id);
     }
 }

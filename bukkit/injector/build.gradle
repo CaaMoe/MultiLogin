@@ -19,7 +19,7 @@ dependencies {
     compileOnly project(":bukkit")
 
     compileOnly 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
-    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "4.7.0"
+    compileOnly group: "com.comphenix.protocol", name: "ProtocolLib", version: "5.0.0"
 }
 
 shadowJar {

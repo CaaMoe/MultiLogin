@@ -1,4 +1,4 @@
-package moe.caa.multilogin.bungee.injector.redirect;
+package moe.caa.multilogin.bungee.injector.redirect.auth;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
