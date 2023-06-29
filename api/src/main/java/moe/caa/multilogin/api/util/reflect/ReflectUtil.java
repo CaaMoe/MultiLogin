@@ -21,7 +21,7 @@ public class ReflectUtil {
     /**
      * 操作 Accessible 属性
      */
-    public static Constructor<?> handleAccessible(Constructor<?> constructor) {
+    public static<T> Constructor<T> handleAccessible(Constructor<T> constructor) {
         constructor.setAccessible(true);
         return constructor;
     }

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.velocity.injector.redirect;
+package moe.caa.multilogin.velocity.injector.redirect.auth;
 
 import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;

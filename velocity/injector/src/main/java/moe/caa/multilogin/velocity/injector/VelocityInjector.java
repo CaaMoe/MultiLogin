@@ -1,5 +1,6 @@
 package moe.caa.multilogin.velocity.injector;
 
+import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
@@ -9,9 +10,11 @@ import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.util.reflect.ReflectUtil;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
-import moe.caa.multilogin.velocity.injector.redirect.MultiEncryptionResponse;
-import moe.caa.multilogin.velocity.injector.redirect.MultiServerLogin;
+import moe.caa.multilogin.velocity.injector.redirect.auth.MultiEncryptionResponse;
+import moe.caa.multilogin.velocity.injector.redirect.auth.MultiServerLogin;
+import moe.caa.multilogin.velocity.injector.redirect.chat.MultiPlayerSession;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,14 +28,27 @@ import java.util.function.Supplier;
 public class VelocityInjector implements Injector {
 
     @Override
-    public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException {
+    public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException, InstantiationException {
         MultiInitialLoginSessionHandler.init();
+
         // auth
-        StateRegistry stateRegistry = StateRegistry.LOGIN;
+        {
+            StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.LOGIN);
+            redirectInput(serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
+            redirectInput(serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
+        }
+
+        // chat
+        {
+            StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
+            StateRegistry.PacketMapping playerSessionPacketMapping = createPacketMapping(6, ProtocolVersion.MINECRAFT_1_19_3, null, false);
+            registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, new StateRegistry.PacketMapping[]{playerSessionPacketMapping});
+        }
+    }
+
+    private StateRegistry.PacketRegistry getServerboundPacketRegistry(StateRegistry stateRegistry) throws NoSuchFieldException, IllegalAccessException {
         Field serverboundField = ReflectUtil.handleAccessible(StateRegistry.class.getDeclaredField("serverbound"));
-        StateRegistry.PacketRegistry serverbound = (StateRegistry.PacketRegistry) serverboundField.get(stateRegistry);
-        redirectInput(serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
-        redirectInput(serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
+        return  (StateRegistry.PacketRegistry) serverboundField.get(stateRegistry);
     }
 
     /**
@@ -88,5 +104,16 @@ public class VelocityInjector implements Injector {
 
         Map<?, ?> versionsObject = (Map<?, ?>) f$versions.get(bound);//Map<ProtocolVersion, ProtocolRegistry> versions;
         return versionsObject.values();
+    }
+
+    private StateRegistry.PacketMapping createPacketMapping(int id, ProtocolVersion protocolVersion, ProtocolVersion lastValidProtocolVersion, boolean packetDecoding) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Constructor<StateRegistry.PacketMapping> constructor =  ReflectUtil.handleAccessible(StateRegistry.PacketMapping.class.
+                getDeclaredConstructor(int.class, ProtocolVersion.class, ProtocolVersion.class, boolean.class));
+        return constructor.newInstance(id, protocolVersion, lastValidProtocolVersion, packetDecoding);
+    }
+
+    private <P extends MinecraftPacket> void registerPacket(StateRegistry.PacketRegistry packetRegistry, Class<P> clazz, Supplier<P> packetSupplier, StateRegistry.PacketMapping[] mappings) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method register = ReflectUtil.handleAccessible(packetRegistry.getClass().getDeclaredMethod("register", Class.class, Supplier.class, StateRegistry.PacketMapping[].class));
+        register.invoke(packetRegistry, clazz, packetSupplier, mappings);
     }
 }
