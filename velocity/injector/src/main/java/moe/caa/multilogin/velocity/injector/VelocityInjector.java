@@ -41,8 +41,11 @@ public class VelocityInjector implements Injector {
         // chat
         {
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
-            StateRegistry.PacketMapping playerSessionPacketMapping = createPacketMapping(6, ProtocolVersion.MINECRAFT_1_19_3, null, false);
-            registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, new StateRegistry.PacketMapping[]{playerSessionPacketMapping});
+            StateRegistry.PacketMapping[] playerSessionPacketMapping = {
+                    createPacketMapping(20, ProtocolVersion.MINECRAFT_1_19_3, false),
+                    createPacketMapping(6, ProtocolVersion.MINECRAFT_1_19_4, false)
+            };
+            registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, playerSessionPacketMapping);
         }
     }
 
@@ -110,6 +113,10 @@ public class VelocityInjector implements Injector {
         Constructor<StateRegistry.PacketMapping> constructor =  ReflectUtil.handleAccessible(StateRegistry.PacketMapping.class.
                 getDeclaredConstructor(int.class, ProtocolVersion.class, ProtocolVersion.class, boolean.class));
         return constructor.newInstance(id, protocolVersion, lastValidProtocolVersion, packetDecoding);
+    }
+
+    private StateRegistry.PacketMapping createPacketMapping(int id, ProtocolVersion protocolVersion, boolean packetDecoding) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return createPacketMapping(id, protocolVersion, null, packetDecoding);
     }
 
     private <P extends MinecraftPacket> void registerPacket(StateRegistry.PacketRegistry packetRegistry, Class<P> clazz, Supplier<P> packetSupplier, StateRegistry.PacketMapping[] mappings) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
