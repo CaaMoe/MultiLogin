@@ -42,8 +42,8 @@ public class VelocityInjector implements Injector {
         {
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
             StateRegistry.PacketMapping[] playerSessionPacketMapping = {
-                    createPacketMapping(20, ProtocolVersion.MINECRAFT_1_19_3, false),
-                    createPacketMapping(6, ProtocolVersion.MINECRAFT_1_19_4, false)
+                    createPacketMapping(0x20, ProtocolVersion.MINECRAFT_1_19_3, false),
+                    createPacketMapping(0x06, ProtocolVersion.MINECRAFT_1_19_4, false)
             };
             registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, playerSessionPacketMapping);
         }
