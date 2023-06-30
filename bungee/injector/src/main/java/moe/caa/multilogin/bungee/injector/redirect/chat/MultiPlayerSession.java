@@ -24,7 +24,7 @@ public class MultiPlayerSession extends DefinedPacket {
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
         sessionId = readUUID(buf);
         expires = Instant.ofEpochMilli(buf.readLong());
-        publicKey =readArray(buf, 512);
+        publicKey = readArray(buf);
         signature = readArray(buf, 4096);
     }
 
