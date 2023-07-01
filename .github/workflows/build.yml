@@ -8,46 +8,64 @@ jobs:
   velocity-lib:
     runs-on: ubuntu-latest
     steps:
+      - name: Get Velocity Library Cache
+        uses: actions/cache@v3
+        with:
+          path: velocity/libraries
+          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
+
+      - name: Check library cache validity period
+        id: check-cache
+        run: |
+          if [ ! -e velocity/libraries/velocity-api-*.jar ]; then
+            echo "cache-hit=false" >> $GITHUB_ENV
+          else
+            last_modified=$(stat -c %Y velocity/libraries/velocity-api-*.jar)
+            current_time=$(date +%s)
+            elapsed_time=$((current_time - last_modified))
+            if ((elapsed_time > 30 * 24 * 60 * 60)); then
+              echo "cache-hit=false" >> $GITHUB_ENV
+            fi
+          fi
+
       - name: Get Velocity
+        if: env.cache-hit == 'false'
         uses: actions/checkout@v3
         with:
           repository: 'PaperMC/Velocity'
 
       - name: Setup JDK 11
+        if: env.cache-hit == 'false'
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 11
+          cache: 'gradle'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
       - name: Build Velocity
+        if: env.cache-hit == 'false'
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
           arguments: build
 
       - name: Collection Library
+        if: env.cache-hit == 'false'
         run: |
           mkdir -p velocity/libraries
           cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
           cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
+
       - name: Cache Velocity Library
+        if: env.cache-hit == 'false'
         uses: actions/cache@v3
         with:
           path: velocity/libraries
           key: ${{ runner.os }}-build-${{ env.cache-name }}}}
 
   build:
-    runs-on: ubuntu-latest
     needs: velocity-lib
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v3
@@ -57,16 +75,8 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
+          cache: 'gradle'
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
       - name: Get Velocity Library
         uses: actions/cache@v3
         with:
@@ -87,9 +97,24 @@ jobs:
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
-      - name: Upload to artifact respectively
-        uses: MuirProject/upload-artifact@v2-beta
+
+      - name: Upload a version suitable for velocity to artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: '["Velocity","Bungee","Bukkit"]'
-          path: '["velocity/build/libs/MultiLogin-Velocity-*.jar","bungee/build/libs/MultiLogin-Bungee-*.jar","bukkit/build/libs/MultiLogin-Bukkit-*.jar"]'
+          name: Velocity
+          path: velocity/build/libs/MultiLogin-Velocity-*.jar
+          retention-days: 15
+
+      - name: Upload a version suitable for bungee to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Bungee
+          path: bungee/build/libs/MultiLogin-Bungee-*.jar
+          retention-days: 15
+
+      - name: Upload a version suitable for bukkit to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Bukkit
+          path: bukkit/build/libs/MultiLogin-Bukkit-*.jar
           retention-days: 15
