@@ -4,12 +4,13 @@ import com.comphenix.protocol.PacketType
 import com.comphenix.protocol.ProtocolLibrary
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
+import com.comphenix.protocol.injector.GamePhase
 import com.comphenix.protocol.wrappers.WrappedChatComponent
 import moe.caa.multilogin.api.logger.LoggerProvider
 import moe.caa.multilogin.bukkit.injector.BukkitInjector
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
 
-class PacketLoginDisconnectHandler {
+class PacketHandler {
     fun init() {
         val manager = ProtocolLibrary.getProtocolManager()
 
@@ -19,7 +20,7 @@ class PacketLoginDisconnectHandler {
 
     private class DisconnectHandler : PacketAdapter(
         params()
-        .loginPhase()
+            .loginPhase()
         .serverSide()
         .plugin(MultiLoginBukkit.getInstance())
         .types(PacketType.Login.Server.DISCONNECT)) {
@@ -34,14 +35,14 @@ class PacketLoginDisconnectHandler {
 
     private class PlayerSessionHandler() : PacketAdapter(
         params()
-            .loginPhase()
-            .serverSide()
+            .gamePhase(GamePhase.PLAYING)
+            .clientSide()
             .plugin(MultiLoginBukkit.getInstance())
             .types(PacketType.Play.Client.CHAT_SESSION_UPDATE)){
-        override fun onPacketSending(event: PacketEvent) {
+        override fun onPacketReceiving(event: PacketEvent) {
             event.isReadOnly = false
             event.isCancelled = true
-            LoggerProvider.getLogger().debug("Player session ignored: ${event.packet.uuiDs.values[0]}")
+            LoggerProvider.getLogger().debug("Player session ignored: ${event.packet.remoteChatSessionData.values[0].sessionID}")
         }
     }
 }

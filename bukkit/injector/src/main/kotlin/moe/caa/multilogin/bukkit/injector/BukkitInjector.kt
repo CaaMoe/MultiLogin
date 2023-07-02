@@ -4,7 +4,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService
 import moe.caa.multilogin.api.injector.Injector
 import moe.caa.multilogin.api.logger.LoggerProvider
 import moe.caa.multilogin.api.main.MultiCoreAPI
-import moe.caa.multilogin.bukkit.injector.protocol.PacketLoginDisconnectHandler
+import moe.caa.multilogin.bukkit.injector.protocol.PacketHandler
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler
 import moe.caa.multilogin.bukkit.injector.proxy.YggdrasilMinecraftSessionServiceInvocationHandler
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
@@ -21,7 +21,7 @@ class BukkitInjector : Injector {
         var protocolHook = false
         if (api.plugin.runServer.pluginHasEnabled("ProtocolLib")) {
             try {
-                PacketLoginDisconnectHandler().init()
+                PacketHandler().init()
                 protocolHook = true
             } catch (e: Throwable) {
                 LoggerProvider.getLogger().error("Unable to load ProtocolLib handler, is it up to date?", e)
