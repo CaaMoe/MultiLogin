@@ -32,6 +32,11 @@ class BukkitInjector : Injector {
                 "It is strongly recommended that you install ProtocolLib," +
                         " otherwise the client will always prompt 'invalid session' when kicked out by MultiLogin during the login phase."
             )
+
+            LoggerProvider.getLogger().warn(
+                "In 1.19.3+ version, MultiLogin will use it to ignore chat session, if this function is not enabled, " +
+                        "users who use non-Microsoft authentication will always be kicked out of the game because of 'Invalid signature for profile public key'"
+            )
         }
         try {
             // Service 存在，是高版本的！
