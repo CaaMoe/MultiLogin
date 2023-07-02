@@ -1,9 +1,12 @@
 package moe.caa.multilogin.api.util.reflect;
 
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 
 /**
  * 反射工具库

@@ -1,7 +1,12 @@
 package moe.caa.multilogin.bungee.injector.redirect.chat;
 
 import io.netty.buffer.ByteBuf;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import net.md_5.bungee.connection.CancelSendSignal;
 import net.md_5.bungee.protocol.AbstractPacketHandler;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.ProtocolConstants;
@@ -9,6 +14,10 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 import java.time.Instant;
 import java.util.UUID;
 
+@EqualsAndHashCode(callSuper = false)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MultiPlayerSession extends DefinedPacket {
     private UUID sessionId;
     private Instant expires;
@@ -18,6 +27,7 @@ public class MultiPlayerSession extends DefinedPacket {
     @Override
     public void handle(AbstractPacketHandler handler) {
         LoggerProvider.getLogger().debug("Player session ignored: " + sessionId);
+        throw CancelSendSignal.INSTANCE;
     }
 
     @Override
@@ -34,20 +44,5 @@ public class MultiPlayerSession extends DefinedPacket {
         buf.writeLong(expires.getEpochSecond());
         writeArray(publicKey, buf);
         writeArray(signature, buf);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return 0;
-    }
-
-    @Override
-    public String toString() {
-        return null;
     }
 }

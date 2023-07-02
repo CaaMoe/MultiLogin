@@ -16,6 +16,7 @@ import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.*;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**
@@ -33,13 +34,15 @@ public class BungeeInjector implements Injector {
         {
             Protocol play = Protocol.GAME;
             Object toServerDirectionData = getToServerDirectionData(play);
-            registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, new Object[]{
-                    createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20),
-                    createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06),
-            });
-        }
 
+            Object[] objects = (Object[]) Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 2);
+            objects[0] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20);
+            objects[1] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06);
+
+            registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, objects);
+        }
     }
+
 
 
     /**
@@ -113,24 +116,24 @@ public class BungeeInjector implements Injector {
 
 
     private Object getToServerDirectionData(Protocol protocol) throws NoSuchFieldException, IllegalAccessException {
-        Field toServer = ReflectUtil.handleAccessible(protocol.getClass().getDeclaredField("TO_SERVER"));
+        Field toServer = ReflectUtil.handleAccessible(Protocol.class.getDeclaredField("TO_SERVER"));
         return toServer.get(protocol);
     }
 
     private Object getToClientDirectionData(Protocol protocol) throws NoSuchFieldException, IllegalAccessException {
-        Field toClient = ReflectUtil.handleAccessible(protocol.getClass().getDeclaredField("TO_CLIENT"));
+        Field toClient = ReflectUtil.handleAccessible(Protocol.class.getDeclaredField("TO_CLIENT"));
         return toClient.get(protocol);
     }
 
     private void registerPacket(Object directionData, Class<? extends DefinedPacket> packetClass, Supplier<? extends DefinedPacket> constructor, Object[] mappings) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method registerPacket = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol.DirectionData")
-                .getDeclaredMethod("registerPacket", Class.class, Supplier.class, Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol.ProtocolMapping"), 10).getClass()));
+        Method registerPacket = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol$DirectionData")
+                .getDeclaredMethod("registerPacket", Class.class, Supplier.class, Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 10).getClass()));
 
         registerPacket.invoke(directionData, packetClass, constructor, mappings);
     }
 
     private Object createProtocolMapping(int protocol, int id) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        Constructor<?> constructor = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol.ProtocolMapping")
+        Constructor<?> constructor = ReflectUtil.handleAccessible(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping")
                 .getDeclaredConstructor(int.class, int.class));
         return constructor.newInstance(protocol, id);
     }
