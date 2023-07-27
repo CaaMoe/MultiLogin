@@ -124,6 +124,7 @@ class BukkitInjector : Injector {
                 } catch (ignored: Throwable) {
                 }
             }
+            if (sourceClass.superclass == null) break
         } while (sourceClass.superclass.also { sourceClass = it } != null)
         throw ClassNotFoundException(needGet.typeName)
     }
