@@ -3,15 +3,20 @@ package moe.caa.multilogin.core.command.argument;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import lombok.Data;
 import lombok.SneakyThrows;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.api.util.ValueUtil;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.UniversalCommandExceptionType;
 import moe.caa.multilogin.core.database.table.InGameProfileTableV3;
 
+import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Profile 参数阅读程序
@@ -65,7 +70,14 @@ public class ProfileArgumentType implements ArgumentType<ProfileArgumentType.Pro
         private final UUID profileUUID;
         // Nullable!!!
         private final String profileName;
+    }
 
-
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
+        for (IPlayer key : CommandHandler.getCore().getPlugin().getRunServer().getPlayerManager().getOnlinePlayers()) {
+            if (key.getName().toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
+                builder.suggest(key.getName());
+        }
+        return builder.buildFuture();
     }
 }
