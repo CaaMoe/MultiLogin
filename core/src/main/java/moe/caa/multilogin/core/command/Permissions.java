@@ -29,6 +29,7 @@ public final class Permissions {
     public static final String COMMAND_MULTI_LOGIN_FIND_ONLINE = "command.multilogin.find.online";
     public static final String COMMAND_MULTI_LOGIN_FIND_PROFILE = "command.multilogin.find.profile";
     public static final String COMMAND_MULTI_LOGIN_DATA_CONVERT = "command.multilogin.data.convert";
-    public static final String COMMAND_MULTI_LOGIN_PROFILE_UPDATENAME = "command.multilogin.profile.updatename";
-
+    public static final String COMMAND_MULTI_LOGIN_LINK_TO = "command.multilogin.link.to";
+    public static final String COMMAND_MULTI_LOGIN_LINK_ACCEPT = "command.multilogin.link.accept";
+    public static final String COMMAND_MULTI_LOGIN_LINK_CODE = "command.multilogin.link.code";
 }

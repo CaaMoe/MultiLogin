@@ -23,7 +23,7 @@ public class MInfoCommand {
     }
 
     public LiteralArgumentBuilder<ISender> register(LiteralArgumentBuilder<ISender> literalArgumentBuilder) {
-        return literalArgumentBuilder.then(handler.argument("player", OnlinePlayerArgumentType.player())
+        return literalArgumentBuilder.then(handler.argument("player", OnlinePlayerArgumentType.players())
                         .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_OTHER))
                         .executes(this::executeInfo))
                 .requires(iSender -> iSender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_CURRENT_ONESELF))
@@ -31,7 +31,7 @@ public class MInfoCommand {
     }
 
     private int executeInfo(CommandContext<ISender> context) {
-        Set<IPlayer> players = OnlinePlayerArgumentType.getPlayer(context, "player");
+        Set<IPlayer> players = OnlinePlayerArgumentType.getPlayers(context, "player");
         processInfoCommand(context, players);
         return 0;
     }

@@ -92,7 +92,7 @@ public class MProfileCommand {
     @SneakyThrows
     private int executeSetOneself(CommandContext<ISender> context) {
         ProfileArgumentType.ProfileArgument profile = ProfileArgumentType.getProfile(context, "profile");
-        Pair<GameProfile, Integer> pair = handler.requireDataCacheArgument(context);
+        Pair<GameProfile, Integer> pair = handler.requireDataCacheArgumentSelf(context);
 
         processSet(context, pair.getValue1().getId(), pair.getValue1().getName(), pair.getValue2(), profile);
         return 0;

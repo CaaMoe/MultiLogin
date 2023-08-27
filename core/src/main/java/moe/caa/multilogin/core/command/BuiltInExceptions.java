@@ -45,6 +45,9 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
     private final DynamicCommandExceptionType PLAYER_NOT_ONLINE;
 
     private final SimpleCommandExceptionType CACHE_NOT_FOUND_SELF;
+    private final SimpleCommandExceptionType NO_SELF;
+
+    private final Dynamic2CommandExceptionType CACHE_NOT_FOUND_OTHER;
 
     public BuiltInExceptions(MultiCore core) {
 
@@ -129,6 +132,14 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
                 )));
 
         CACHE_NOT_FOUND_SELF = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_cache_not_found_self")));
+        NO_SELF = new SimpleCommandExceptionType(new LiteralMessage(core.getLanguageHandler().getMessage("command_message_player_no_self")));
+
+
+        CACHE_NOT_FOUND_OTHER = new Dynamic2CommandExceptionType((uuid, name) -> new LiteralMessage(
+                core.getLanguageHandler().getMessage("command_message_cache_not_found_other",
+                        new Pair<>("uuid", uuid),
+                        new Pair<>("name", name)
+                )));
     }
 
     @Override
@@ -274,7 +285,15 @@ public class BuiltInExceptions implements BuiltInExceptionProvider {
         return PLAYER_NOT_ONLINE;
     }
 
+    public SimpleCommandExceptionType noSelf() {
+        return NO_SELF;
+    }
+
     public SimpleCommandExceptionType cacheNotFoundSelf() {
         return CACHE_NOT_FOUND_SELF;
+    }
+
+    public Dynamic2CommandExceptionType cacheNotFoundOther() {
+        return CACHE_NOT_FOUND_OTHER;
     }
 }

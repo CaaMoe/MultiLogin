@@ -12,6 +12,7 @@ import lombok.Getter;
 import moe.caa.multilogin.api.auth.GameProfile;
 import moe.caa.multilogin.api.command.CommandAPI;
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.plugin.IPlayer;
 import moe.caa.multilogin.api.plugin.ISender;
 import moe.caa.multilogin.api.util.Pair;
 import moe.caa.multilogin.core.command.commands.RootCommand;
@@ -115,14 +116,31 @@ public class CommandHandler implements CommandAPI {
         }
     }
 
+    public final void requirePlayerAndNoSelf(CommandContext<ISender> context, IPlayer player) throws CommandSyntaxException {
+        if (!context.getSource().isPlayer()) {
+            throw builtInExceptions.requirePlayer().create();
+        }
+        if(context.getSource().getAsPlayer().getUniqueId().equals(player.getUniqueId())){
+            throw builtInExceptions.noSelf().create();
+        }
+    }
+
     /**
      * 检查是通过猫踢螺钉登录的玩家
      */
-    public final Pair<GameProfile, Integer> requireDataCacheArgument(CommandContext<ISender> context) throws CommandSyntaxException {
+    public final Pair<GameProfile, Integer> requireDataCacheArgumentSelf(CommandContext<ISender> context) throws CommandSyntaxException {
         requirePlayer(context);
         Pair<GameProfile, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(context.getSource().getAsPlayer().getUniqueId());
         if (profile == null) {
             throw builtInExceptions.cacheNotFoundSelf().create();
+        }
+        return profile;
+    }
+
+    public final Pair<GameProfile, Integer> requireDataCacheArgumentOther(IPlayer player) throws CommandSyntaxException {
+        Pair<GameProfile, Integer> profile = core.getPlayerHandler().getPlayerOnlineProfile(player.getUniqueId());
+        if (profile == null) {
+            throw builtInExceptions.cacheNotFoundOther().create(player.getUniqueId(), player.getName());
         }
         return profile;
     }

@@ -44,7 +44,7 @@ public class MRenameCommand {
     @SneakyThrows
     private int executeRename(CommandContext<ISender> context) {
         String newname = StringArgumentType.getString(context, "newname");
-        handler.requireDataCacheArgument(context);
+        handler.requireDataCacheArgumentSelf(context);
 
         processRename(context, newname, new ProfileArgumentType.ProfileArgument(context.getSource().getAsPlayer().getUniqueId(), context.getSource().getAsPlayer().getName()));
         return 0;

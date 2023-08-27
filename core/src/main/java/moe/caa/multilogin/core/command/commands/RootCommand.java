@@ -47,6 +47,7 @@ public class RootCommand {
                 .then(new MRenameCommand(handler).register(handler.literal("rename")))
                 .then(new MFindCommand(handler).register(handler.literal("find")))
                 .then(new MInfoCommand(handler).register(handler.literal("info")))
+                .then(new MLinkCommand(handler).register(handler.literal("link")))
                 .then(new MDataConvert(handler).register(handler.literal("dataconvert")));
     }
 

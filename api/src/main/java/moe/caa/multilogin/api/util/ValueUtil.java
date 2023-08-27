@@ -117,4 +117,12 @@ public class ValueUtil {
     public static UUID xuidToUUID(String xuid) {
         return new UUID(0, Long.parseLong(xuid));
     }
+
+    public static String generateLinkCode(){
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            builder.append((int)(10 * Math.random()));
+        }
+        return builder.toString();
+    }
 }
