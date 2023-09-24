@@ -6,7 +6,6 @@ import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import com.comphenix.protocol.injector.GamePhase
 import com.comphenix.protocol.wrappers.WrappedChatComponent
-import moe.caa.multilogin.api.logger.LoggerProvider
 import moe.caa.multilogin.bukkit.injector.BukkitInjector
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
 
@@ -42,7 +41,6 @@ class PacketHandler {
         override fun onPacketReceiving(event: PacketEvent) {
             event.isReadOnly = false
             event.isCancelled = true
-            LoggerProvider.getLogger().debug("Player session ignored: ${event.packet.remoteChatSessionData.values[0].sessionID}")
         }
     }
 }

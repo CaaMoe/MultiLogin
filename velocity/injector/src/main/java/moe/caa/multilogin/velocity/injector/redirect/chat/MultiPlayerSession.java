@@ -32,7 +32,6 @@ public class MultiPlayerSession implements MinecraftPacket {
 
     @Override
     public boolean handle(MinecraftSessionHandler minecraftSessionHandler) {
-        LoggerProvider.getLogger().debug("Player session ignored: " + sessionId);
         return true;
     }
 }

@@ -26,7 +26,6 @@ public class MultiPlayerSession extends DefinedPacket {
 
     @Override
     public void handle(AbstractPacketHandler handler) {
-        LoggerProvider.getLogger().debug("Player session ignored: " + sessionId);
         throw CancelSendSignal.INSTANCE;
     }
 
