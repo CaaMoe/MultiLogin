@@ -11,6 +11,7 @@ import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
 import moe.caa.multilogin.core.auth.LoginAuthResult
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
+import java.lang.reflect.Type
 import java.net.InetSocketAddress
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -20,21 +21,21 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
 ) : InvocationHandler {
     override fun invoke(proxy: Any, method: Method, args: Array<out Any>): Any? {
         if (method.name.equals("hasJoinedServer")) {
-            val profile: GameProfile = args[0] as GameProfile
+            val profileName: String = if(args[0] is String) args[0] as String else (args[0] as GameProfile).name
             val serverId: String = args[1] as String
             val ip = if (args.size == 3 && args[2] is InetSocketAddress) URLEncoder.encode(
                 (args[2] as InetSocketAddress).address.hostAddress,
                 StandardCharsets.UTF_8
             ) else ""
-            return handle(profile, serverId, ip)
+            return handle(method, profileName, serverId, ip)
         }
         return method.invoke(vanillaSessionService, *args)
     }
 
-    private fun handle(profile: GameProfile, serverId: String, ip: String): GameProfile? {
+    private fun handle(method: Method, profileName: String, serverId: String, ip: String): Any? {
         val multiCoreAPI = MultiLoginBukkit.getInstance().multiCoreAPI
         try {
-            val result = multiCoreAPI.authHandler.auth(profile.name, serverId, ip) as LoginAuthResult
+            val result = multiCoreAPI.authHandler.auth(profileName, serverId, ip) as LoginAuthResult
             if (result.result == AuthResult.Result.ALLOW) {
                 var gameProfile: moe.caa.multilogin.api.auth.GameProfile = result.response
                 try {
@@ -63,26 +64,32 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
                     )
                     LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e)
                 }
-                return generateGameProfile(gameProfile)
+                return generateResponse(method.returnType, gameProfile)
             } else {
                 BukkitInjector.kickMsg[Thread.currentThread()] = result.kickMessage
-                LoggerProvider.getLogger().info("${profile.name} was kicked out for ${result.kickMessage}")
+                LoggerProvider.getLogger().info("$profileName was kicked out for ${result.kickMessage}")
                 return null
             }
         } catch (e: Throwable) {
             val message = multiCoreAPI.languageHandler.getMessage("auth_error")
             BukkitInjector.kickMsg[Thread.currentThread()] = message
-            LoggerProvider.getLogger().info("${profile.name} was kicked out for $message")
+            LoggerProvider.getLogger().info("$profileName was kicked out for $message")
             LoggerProvider.getLogger().error("An exception occurred while processing a login request.", e)
         }
         return null
     }
 
-    private fun generateGameProfile(response: moe.caa.multilogin.api.auth.GameProfile): GameProfile {
+    private fun generateResponse(returnType: Type, response: moe.caa.multilogin.api.auth.GameProfile): Any {
         val result = GameProfile(response.id, response.name)
         response.propertyMap.forEach { (k, u) ->
             result.properties.put(k, Property(u.name, u.value, u.signature))
         }
-        return result
+        if(returnType == response.javaClass){
+            return result
+        }
+
+        return Class.forName("com.mojang.authlib.yggdrasil.ProfileResult")
+            .getConstructor(Class.forName("com.mojang.authlib.GameProfile.GameProfile"))
+            .newInstance(result)
     }
 }
