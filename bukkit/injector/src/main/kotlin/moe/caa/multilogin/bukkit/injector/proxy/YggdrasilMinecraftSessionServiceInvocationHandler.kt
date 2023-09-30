@@ -89,7 +89,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         }
 
         return Class.forName("com.mojang.authlib.yggdrasil.ProfileResult")
-            .getConstructor(Class.forName("com.mojang.authlib.GameProfile.GameProfile"))
+            .getConstructor(Class.forName("com.mojang.authlib.GameProfile"))
             .newInstance(result)
     }
 }
