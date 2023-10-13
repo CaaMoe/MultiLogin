@@ -8,6 +8,7 @@ import com.velocitypowered.proxy.connection.client.AuthSessionHandler;
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection;
 import com.velocitypowered.proxy.crypto.EncryptionUtils;
+import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
 import com.velocitypowered.proxy.protocol.packet.ServerLogin;
 import lombok.Getter;
@@ -208,11 +209,10 @@ public class MultiInitialLoginSessionHandler {
                     LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
                 }
 
-                this.mcConnection.setSessionHandler(
+                this.mcConnection.setActiveSessionHandler(StateRegistry.LOGIN,
                         (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
-                                this.server, inbound, generateGameProfile(gameProfile), true
-                        )
-                );
+                        this.server, inbound, generateGameProfile(gameProfile), true
+                ));
             } else {
                 this.inbound.disconnect(Component.text(result.getKickMessage()));
             }
