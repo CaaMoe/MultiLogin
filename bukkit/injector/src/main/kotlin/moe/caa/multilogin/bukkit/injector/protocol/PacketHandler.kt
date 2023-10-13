@@ -32,7 +32,7 @@ class PacketHandler {
         }
     }
 
-    private class PlayerSessionHandler : PacketAdapter(
+    private class PlayerSessionHandler() : PacketAdapter(
         params()
             .gamePhase(GamePhase.PLAYING)
             .clientSide()
