@@ -77,7 +77,9 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
         if (core.getPluginConfig().isNameCorrect()) {
             int i = 0;
             boolean modified = false;
-            while (core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName) != null) {
+            UUID ownerUUID;
+            while ((ownerUUID = core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName)) != null) {
+                if(ownerUUID.equals(inGameUUID)) break;
                 fixName = loginName + ++i;
                 modified = true;
             }
