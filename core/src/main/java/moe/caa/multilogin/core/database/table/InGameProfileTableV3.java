@@ -189,12 +189,10 @@ public class InGameProfileTableV3 {
         try (Connection connection = sqlManager.getPool().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)
         ) {
-            connection.setAutoCommit(false);
             statement.setString(1, currentUsername.toLowerCase(Locale.ROOT));
             statement.setString(2, currentUsername);
             statement.setBytes(3, ValueUtil.uuidToBytes(inGameUUID));
             statement.executeUpdate();
-            connection.commit();
         }
     }
 
