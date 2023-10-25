@@ -94,16 +94,19 @@ public class MultiLoginRequestInitialHandler extends AbstractMultiInitialHandler
         }
 
         Callback<PreLoginEvent> callback = (result, error) -> {
-            if (result.isCancelled()) {
-                BaseComponent[] reason = result.getCancelReasonComponents();
-                initialHandler.disconnect((reason != null) ? reason : TextComponent.fromLegacyText(bungee.getTranslation("kick_message")));
-                return;
-            }
-            if (ch.isClosed()) {
-                return;
-            }
-
             try {
+                // reinit
+                initValues();
+                if (result.isCancelled()) {
+                    BaseComponent[] reason = result.getCancelReasonComponents();
+                    initialHandler.disconnect((reason != null) ? reason : TextComponent.fromLegacyText(bungee.getTranslation("kick_message")));
+                    return;
+                }
+                if (ch.isClosed()) {
+                    return;
+                }
+
+
                 if (onlineMode) {
                     thisStateFieldSetter.invoke(initialHandler, state$ENCRYPT);
 

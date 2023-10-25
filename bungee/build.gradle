@@ -12,7 +12,7 @@ dependencies {
     implementation project(":flows")
     implementation project(":loader")
 
-    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.19-R0.1-SNAPSHOT'
+    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.20-R0.1-SNAPSHOT'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
