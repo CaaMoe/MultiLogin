@@ -84,7 +84,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         response.propertyMap.forEach { (k, u) ->
             result.properties.put(k, Property(u.name, u.value, u.signature))
         }
-        if(returnType == response.javaClass){
+        if(returnType == result.javaClass){
             return result
         }
 
