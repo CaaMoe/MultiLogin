@@ -116,10 +116,9 @@ public class UserDataTableV3 {
             statement.setInt(2, serviceId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    byte[] bytes = resultSet.getBytes(2);
                     return new There<>(
                             resultSet.getString(1),
-                            bytes == null ? null : ValueUtil.bytesToUuid(bytes),
+                            ValueUtil.bytesToUuid(resultSet.getBytes(2)),
                             resultSet.getBoolean(3));
                 }
             }
@@ -194,7 +193,7 @@ public class UserDataTableV3 {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    result.add(resultSet.getInt(1));
+                    result.add(((int) resultSet.getInt(1)));
                 }
             }
         }
