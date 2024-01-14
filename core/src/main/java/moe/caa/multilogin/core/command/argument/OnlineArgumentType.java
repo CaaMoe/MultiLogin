@@ -37,7 +37,7 @@ public class OnlineArgumentType implements ArgumentType<OnlineArgumentType.Onlin
 
     @SneakyThrows
     @Override
-    public OnlineArgument parse(StringReader reader) throws CommandSyntaxException {
+    public OnlineArgument parse(StringReader reader) {
         int i = reader.getCursor();
         BaseServiceConfig serviceConfig = ServiceIdArgumentType.readServiceConfig(reader);
         if (!reader.canRead()) {
@@ -70,6 +70,15 @@ public class OnlineArgumentType implements ArgumentType<OnlineArgumentType.Onlin
                             new Pair<>("service_name", serviceConfig.getName()),
                             new Pair<>("service_id", serviceConfig.getId()),
                             new Pair<>("online_uuid", uuid)
+                    ), reader);
+        }
+        if(there.getValue2() == null){
+            throw UniversalCommandExceptionType.create(
+                    CommandHandler.getCore().getLanguageHandler().getMessage("command_message_null_profiler",
+                            new Pair<>("service_name", serviceConfig.getName()),
+                            new Pair<>("service_id", serviceConfig.getId()),
+                            new Pair<>("online_uuid", uuid),
+                            new Pair<>("online_name", there.getValue1())
                     ), reader);
         }
         return new OnlineArgument(serviceConfig, uuid, there.getValue1(), there.getValue2(), there.getValue3());
