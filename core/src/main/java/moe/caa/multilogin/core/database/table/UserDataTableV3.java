@@ -118,7 +118,7 @@ public class UserDataTableV3 {
                 if (resultSet.next()) {
                     return new There<>(
                             resultSet.getString(1),
-                            ValueUtil.bytesToUuid(resultSet.getBytes(2)),
+                            Optional.ofNullable(resultSet.getBytes(2)).map(ValueUtil::bytesToUuid).orElse(null),
                             resultSet.getBoolean(3));
                 }
             }
@@ -138,9 +138,7 @@ public class UserDataTableV3 {
             statement.setInt(2, serviceId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    byte[] bytes = resultSet.getBytes(1);
-                    if (bytes == null) return null;
-                    return ValueUtil.bytesToUuid(bytes);
+                    return Optional.ofNullable(resultSet.getBytes(1)).map(ValueUtil::bytesToUuid).orElse(null);
                 }
             }
         }
@@ -166,9 +164,7 @@ public class UserDataTableV3 {
             statement.setInt(2, serviceId);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    byte[] bytes = resultSet.getBytes(1);
-                    if (bytes == null) return null;
-                    return ValueUtil.bytesToUuid(bytes);
+                    return Optional.ofNullable(resultSet.getBytes(1)).map(ValueUtil::bytesToUuid).orElse(null);
                 }
             }
         }
@@ -193,7 +189,7 @@ public class UserDataTableV3 {
             statement.setBytes(1, ValueUtil.uuidToBytes(inGameUUID));
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    result.add(((int) resultSet.getInt(1)));
+                    result.add(resultSet.getInt(1));
                 }
             }
         }
@@ -219,7 +215,7 @@ public class UserDataTableV3 {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     result.add(new There<>(
-                            ValueUtil.bytesToUuid(resultSet.getBytes(1)),
+                            Optional.ofNullable(resultSet.getBytes(1)).map(ValueUtil::bytesToUuid).orElse(null),
                             resultSet.getString(2),
                             resultSet.getInt(3)
                     ));

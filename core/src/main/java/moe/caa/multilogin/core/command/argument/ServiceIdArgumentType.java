@@ -44,7 +44,7 @@ public class ServiceIdArgumentType implements ArgumentType<BaseServiceConfig> {
 
     public static <S> CompletableFuture<Suggestions> getSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         CommandHandler.getCore().getPluginConfig().getServiceIdMap().forEach((key, value) -> {
-            if ((key + "").startsWith(builder.getRemainingLowerCase())) {
+            if ((key + "").startsWith(builder.getRemaining().toLowerCase())) {
                 builder.suggest(key);
             }
         });

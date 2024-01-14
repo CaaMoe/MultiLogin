@@ -86,6 +86,7 @@ public class OnlineArgumentType implements ArgumentType<OnlineArgumentType.Onlin
         private final BaseServiceConfig baseServiceConfig;
         private final UUID onlineUUID;
         private final String onlineName;
+        // Nullable
         private final UUID profileUUID;
         private final boolean whitelist;
     }
