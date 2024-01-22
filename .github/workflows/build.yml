@@ -2,19 +2,39 @@ name: Java CI
 
 on:
   push:
+    tags:
+      - 'v*'
+    branches:
+      - 'v*'
+  pull_request:
+    tags:
+      - 'v*'
+    branches:
+      - 'v*'
   workflow_dispatch:
+    inputs:
+      force-update:
+        description: 'Force Flush Velocity Library Cache'
+        required: false
+        type: boolean
 
 jobs:
   velocity-lib:
     runs-on: ubuntu-latest
     steps:
+      - name: Check Ref
+        run: |
+          echo "Current ref: ${{  github.ref  }}"
+
       - name: Get Velocity Library Cache
+        if: ${{ ! inputs.force-update }}
         uses: actions/cache@v3
         with:
           path: velocity/libraries
           key: ${{ runner.os }}-build-${{ env.cache-name }}}}
 
       - name: Check library cache validity period
+        if: ${{ ! inputs.force-update }}
         id: check-cache
         run: |
           if [ ! -e velocity/libraries/velocity-api-*.jar ]; then
@@ -29,13 +49,13 @@ jobs:
           fi
 
       - name: Get Velocity
-        if: env.cache-hit == 'false'
+        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/checkout@v3
         with:
           repository: 'PaperMC/Velocity'
 
       - name: Setup JDK 17
-        if: env.cache-hit == 'false'
+        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -43,21 +63,21 @@ jobs:
           cache: 'gradle'
 
       - name: Build Velocity
-        if: env.cache-hit == 'false'
+        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
           arguments: build
 
       - name: Collection Library
-        if: env.cache-hit == 'false'
+        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         run: |
           mkdir -p velocity/libraries
           cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
           cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
 
       - name: Cache Velocity Library
-        if: env.cache-hit == 'false'
+        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/cache@v3
         with:
           path: velocity/libraries
@@ -99,6 +119,7 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/gc.properties
 
       - name: Upload a version suitable for velocity to artifact
+        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v3
         with:
           name: Velocity
@@ -106,6 +127,7 @@ jobs:
           retention-days: 15
 
       - name: Upload a version suitable for bungee to artifact
+        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v3
         with:
           name: Bungee
@@ -113,8 +135,28 @@ jobs:
           retention-days: 15
 
       - name: Upload a version suitable for bukkit to artifact
+        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         uses: actions/upload-artifact@v3
         with:
           name: Bukkit
           path: bukkit/build/libs/MultiLogin-Bukkit-*.jar
           retention-days: 15
+
+      - name: Rename Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          mkdir release
+          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/MultiLogin-Bukkit-${{ github.ref_name }}.jar
+          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/MultiLogin-Bungee-${{ github.ref_name }}.jar
+          mv velocity/build/libs/MultiLogin-Velocity-Build_*.jar release/MultiLogin-Velocity-${{ github.ref_name }}.jar
+
+      - name: Publish Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{  github.ref_name  }}"
+          draft: false
+          prerelease: false
+          title: "MultiLogin ${{  github.ref_name  }}"
+          files: release/*.jar
