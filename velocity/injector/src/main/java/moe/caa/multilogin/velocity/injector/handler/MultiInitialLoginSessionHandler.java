@@ -9,8 +9,8 @@ import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection;
 import com.velocitypowered.proxy.crypto.EncryptionUtils;
 import com.velocitypowered.proxy.protocol.StateRegistry;
-import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
-import com.velocitypowered.proxy.protocol.packet.ServerLogin;
+import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
+import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import lombok.Getter;
 import moe.caa.multilogin.api.auth.AuthResult;
 import moe.caa.multilogin.api.auth.GameProfile;
@@ -64,7 +64,7 @@ public class MultiInitialLoginSessionHandler {
     private final MinecraftConnection mcConnection;
     private final LoginInboundConnection inbound;
     // 运行时改动的实例
-    private ServerLogin login;
+    private ServerLoginPacket login;
     private byte[] verify;
     // 自己的对象，表示是否通过加密
     private boolean encrypted = false;
@@ -107,7 +107,7 @@ public class MultiInitialLoginSessionHandler {
         setCurrentStateField = lookup.unreflectSetter(currentState);
 
         getLoginField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
-                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, ServerLogin.class)
+                initialLoginSessionHandlerAccessor.findFirstFieldByType(true, ServerLoginPacket.class)
         ));
 
         getVerifyField = lookup.unreflectGetter(ReflectUtil.handleAccessible(
@@ -138,18 +138,18 @@ public class MultiInitialLoginSessionHandler {
     }
 
     private void initValues() throws Throwable {
-        this.login = (ServerLogin) getLoginField.invoke(initialLoginSessionHandler);
+        this.login = (ServerLoginPacket) getLoginField.invoke(initialLoginSessionHandler);
         this.verify = (byte[]) getVerifyField.invoke(initialLoginSessionHandler);
     }
 
-    public void handle(EncryptionResponse packet) throws Throwable {
+    public void handle(EncryptionResponsePacket packet) throws Throwable {
         initValues();
 
         // 模拟常规流程
         assertStateMethod.invoke(initialLoginSessionHandler, loginStateEnum$ENCRYPTION_REQUEST_SENT);
         setCurrentStateField.invoke(initialLoginSessionHandler, loginStateEnum$ENCRYPTION_RESPONSE_RECEIVED);
 
-        ServerLogin login = this.login;
+        ServerLoginPacket login = this.login;
         if (login == null) {
             throw new IllegalStateException("No ServerLogin packet received yet.");
         }

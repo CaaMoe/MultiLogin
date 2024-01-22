@@ -2,7 +2,7 @@ package moe.caa.multilogin.velocity.injector.redirect.auth;
 
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
-import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
+import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
@@ -13,7 +13,7 @@ import net.kyori.adventure.text.Component;
  * EncryptionResponse 数据包处理
  */
 @AllArgsConstructor
-public class MultiEncryptionResponse extends EncryptionResponse {
+public class MultiEncryptionResponse extends EncryptionResponsePacket {
     private final MultiCoreAPI multiCoreAPI;
 
     @Override
