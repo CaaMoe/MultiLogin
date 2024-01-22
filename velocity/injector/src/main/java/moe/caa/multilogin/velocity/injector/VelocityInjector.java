@@ -3,8 +3,8 @@ package moe.caa.multilogin.velocity.injector;
 import com.velocitypowered.api.network.ProtocolVersion;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.StateRegistry;
-import com.velocitypowered.proxy.protocol.packet.EncryptionResponse;
-import com.velocitypowered.proxy.protocol.packet.ServerLogin;
+import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
+import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import moe.caa.multilogin.api.injector.Injector;
 import moe.caa.multilogin.api.main.MultiCoreAPI;
 import moe.caa.multilogin.api.util.reflect.NoSuchEnumException;
@@ -34,8 +34,8 @@ public class VelocityInjector implements Injector {
         // auth
         {
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.LOGIN);
-            redirectInput(serverbound, EncryptionResponse.class, () -> new MultiEncryptionResponse(multiCoreAPI));
-            redirectInput(serverbound, ServerLogin.class, () -> new MultiServerLogin(multiCoreAPI));
+            redirectInput(serverbound, EncryptionResponsePacket.class, () -> new MultiEncryptionResponse(multiCoreAPI));
+            redirectInput(serverbound, ServerLoginPacket.class, () -> new MultiServerLogin(multiCoreAPI));
         }
 
         // chat
