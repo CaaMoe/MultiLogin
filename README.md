@@ -12,7 +12,7 @@ _✨ 正版与多种外置登录共存 ✨_
 
 ## 概述
 
-MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版与多种外置登录共存， 用来连接两个或多个外置验证服务器下的玩家，让他们能在一起玩。
+MultiLogin 是一款服务端插件，旨在实现对正版与多种外置登录共存的支持，用于连接两个或多个外置验证服务器下的玩家，使他们能够在同一个服务器上一起游戏。
 
 ## 特性
 
@@ -28,7 +28,7 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 
 ~~把大象装进冰箱需要几步？~~
 
-1. [下载](https://github.com/CaaMoe/MultiLogin/releases)插件
+1. [下载](https://github.com/CaaMoe/MultiLogin/releases) 插件
 2. 丢进 plugins
 3. 启动服务器
 
@@ -39,19 +39,19 @@ MultiLogin 是一款服务端插件， 功能是让您的服务器支持正版�
 ## 构建
 
 1. 克隆这个项目
-2. 参照说明补全 velocity 的依赖
-3. 执行 `gradle shadowJar`
+2. 参照 [说明](https://github.com/CaaMoe/MultiLogin/blob/v6/velocity/libraries/README.md) 补全 velocity 的依赖
+3. 执行 `./gradlew shadowJar` / `gradlew shadowJar`
 4. 在 `*/build/libs` 下寻找你需要的
 
 或者你也可以
 
-1. Fork 此项目
-2. 开启 action
+1. [Fork](https://github.com/CaaMoe/MultiLogin/fork) 此项目
+2. 开启 Actions
 3. 随便提交一个文件
 
 ## BUG 汇报
 
-[832210691](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 点击此处，来加入 [QQ](https://im.qq.com/) 交流群
+[832210691](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 点击此处，来加入QQ交流群
 
 [new issue](https://github.com/CaaMoe/MultiLogin/issues/new) 点击此处，提交你的问题
 
