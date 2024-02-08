@@ -1,49 +1,20 @@
-name: Java CI
+name: Weekly updates
 
 on:
-  push:
-  pull_request:
+  schedule:
+    - cron: "15 4 * * 6"
   workflow_dispatch:
-    inputs:
-      force-update:
-        description: 'Force Flush Velocity Library Cache'
-        required: false
-        type: boolean
 
 jobs:
   velocity-lib:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Velocity Library Cache
-        if: ${{ ! inputs.force-update }}
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
-
-      - name: Check library cache validity period
-        if: ${{ ! inputs.force-update }}
-        id: check-cache
-        run: |
-          if [ ! -e velocity/libraries/velocity-api-*.jar ]; then
-            echo "cache-hit=false" >> $GITHUB_ENV
-          else
-            last_modified=$(stat -c %Y velocity/libraries/velocity-api-*.jar)
-            current_time=$(date +%s)
-            elapsed_time=$((current_time - last_modified))
-            if ((elapsed_time > 30 * 24 * 60 * 60)); then
-              echo "cache-hit=false" >> $GITHUB_ENV
-            fi
-          fi
-
       - name: Get Velocity
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/checkout@v3
         with:
           repository: 'PaperMC/Velocity'
 
       - name: Setup JDK 17
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
@@ -51,21 +22,18 @@ jobs:
           cache: 'gradle'
 
       - name: Build Velocity
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
           arguments: build
 
       - name: Collection Library
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         run: |
           mkdir -p velocity/libraries
           cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
           cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
 
       - name: Cache Velocity Library
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
         uses: actions/cache@v3
         with:
           path: velocity/libraries
@@ -106,21 +74,19 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
 
-      - name: Rename Release
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      - name: Rename Weekly
         run: |
           mkdir release
-          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/MultiLogin-Bukkit-${{ github.ref_name }}.jar
-          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/MultiLogin-Bungee-${{ github.ref_name }}.jar
-          mv velocity/build/libs/MultiLogin-Velocity-Build_*.jar release/MultiLogin-Velocity-${{ github.ref_name }}.jar
+          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/
+          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/
+          mv velocity/build/libs/MultiLogin-Velocity-Build_*.jar release/
 
-      - name: Publish Release
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+      - name: Publish Weekly
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{  github.ref_name  }}"
+          automatic_release_tag: "weekly"
           draft: false
-          prerelease: false
-          title: "MultiLogin ${{  github.ref_name  }}"
+          prerelease: true
+          title: "MultiLogin Weekly updates"
           files: release/*.jar
