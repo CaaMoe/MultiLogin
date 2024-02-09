@@ -95,11 +95,19 @@ jobs:
         run:
           sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
 
-      - name: Build
+      - name: Build Dev
+        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
           arguments: ShadowJar
+
+      - name: Build Release
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: current
+          arguments: ShadowJar -Denv=final
 
       - name: Cleanup Gradle Cache
         run: |
