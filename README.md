@@ -12,7 +12,7 @@ _✨ 正版与多种外置登录共存 ✨_
 
 ## 概述
 
-MultiLogin 是一款Minecraft反代端插件（可能支持Bukkit），旨在实现对正版与多种外置登录共存的支持，用于连接两个或多个外置验证服务器下的玩家，使他们能够在同一个服务器上一起游戏。
+MultiLogin 是一款主要为 Minecraft 代理端设计的插件，旨在实现对正版与多种外置登录共存的支持，用于连接两个或多个外置验证服务器下的玩家，使他们能够在同一个服务器上一起游戏。
 
 ## 特性
 
@@ -28,7 +28,7 @@ MultiLogin 是一款Minecraft反代端插件（可能支持Bukkit），旨在实
 
 ~~把大象装进冰箱需要几步？~~
 
-1. [下载](https://github.com/CaaMoe/MultiLogin/releases) 插件
+1. [下载](https://github.com/CaaMoe/MultiLogin/releases/latest) 插件
 2. 丢进 plugins
 3. 启动服务器
 
@@ -50,6 +50,8 @@ MultiLogin 是一款Minecraft反代端插件（可能支持Bukkit），旨在实
 3. 随便提交一个文件
 
 ## BUG 汇报
+
+[Weekly Ver](https://github.com/CaaMoe/MultiLogin/releases/tag/weekly) 点击此处，也许你遇到的问题已修复
 
 [832210691](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 点击此处，来加入QQ交流群
 
