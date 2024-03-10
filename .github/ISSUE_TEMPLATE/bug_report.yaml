@@ -7,7 +7,8 @@ body:
     attributes:
       value: |
         首先，非常感谢您抽出时间来填写此份错误报告
-        请注意，任何遗漏了重要内容的bug报告我们将会不予理会
+        ! 请注意，任何遗漏了**重要内容**的bug报告我们将会不予理会 !
+        ! 请注意，任何修改了**样式模板**的bug报告我们将会不予理会 !
   - type: textarea
     id: bug-description
     attributes:
