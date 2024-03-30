@@ -85,7 +85,7 @@ public class PluginLoader {
     private final AtomicBoolean loaded = new AtomicBoolean(false);
     @Getter
     private IExtURLClassLoader pluginClassLoader = new PriorAllURLClassLoader(new URL[0], PluginLoader.class.getClassLoader(),
-            Stream.of("moe.caa.multilogin.", "java.", "net.minecraft.", "com.mojang.").collect(Collectors.toSet()));
+            Stream.of("moe.caa.multilogin.", "java.", "net.minecraft.", "com.mojang.", "org.bukkit.").collect(Collectors.toSet()));
     @Getter
     private MultiCoreAPI coreObject;
 
