@@ -1,4 +1,4 @@
-package `fun`.ksnb.multilogin.velocity.main
+package `fun`.iiii.multilogin.velocity.main
 
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
@@ -6,7 +6,7 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.PluginContainer
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
-import `fun`.ksnb.multilogin.velocity.command.MultiLoginVelocityCommandHandler
+import `fun`.iiii.multilogin.velocity.command.MultiLoginVelocityCommandHandler
 import moe.caa.multilogin.api.logger.Level
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.error
@@ -22,9 +22,8 @@ class MultiLoginVelocity @Inject constructor(
 ) : IPlugin {
     lateinit var pluginContainer: PluginContainer
     override val dataFolder: File = dataDirectory.toFile()
-
-    private val multiLoginVelocityCommandHandler = MultiLoginVelocityCommandHandler(this)
-    val multiCore = MultiCore(this)
+    lateinit var multiLoginVelocityCommandHandler: MultiLoginVelocityCommandHandler
+    lateinit var multiCore: MultiCore
 
     companion object {
         private const val PLUGIN_ID = "multilogin"
@@ -37,7 +36,9 @@ class MultiLoginVelocity @Inject constructor(
     @Subscribe
     fun onInitialize(event: ProxyInitializeEvent?) {
         try {
+            this.multiCore = MultiCore(this)
             this.pluginContainer = server.pluginManager.getPlugin(PLUGIN_ID).orElseThrow()
+            this.multiLoginVelocityCommandHandler = MultiLoginVelocityCommandHandler(this)
 
             this.multiCore.enable()
             this.multiLoginVelocityCommandHandler.init()

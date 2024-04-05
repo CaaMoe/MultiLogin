@@ -1,7 +1,9 @@
 package moe.caa.multilogin.core.main
 
+import moe.caa.multilogin.api.logger.warn
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.command.CommandHandler
+import moe.caa.multilogin.core.resource.builddata.buildData
 import moe.caa.multilogin.core.resource.configuration.ConfigurationHandler
 import moe.caa.multilogin.core.util.FormattedThreadFactory
 import java.util.concurrent.ExecutorService
@@ -16,10 +18,28 @@ class MultiCore(val plugin: IPlugin) {
     val configurationHandler = ConfigurationHandler(this)
 
     fun enable() {
+        checkEnvironment()
+
         configurationHandler.init()
     }
 
     fun disable() {
 
+    }
+
+    private fun checkEnvironment() {
+        if (!buildData.buildType.equals("final", true)) {
+            warn("######################################################");
+            warn("#   Warning, you are not using a stable version");
+            warn("# and may have some very fatal errors!");
+            warn("#");
+            warn("#   Please download the latest stable version");
+            warn("# from https://github.com/CaaMoe/MultiLogin/releases");
+            warn("#");
+            warn("#     Build By   : " + buildData.buildBy);
+            warn("#     Build Time : " + buildData.buildTimestamp);
+            warn("#     Version    : " + buildData.version);
+            warn("######################################################");
+        }
     }
 }

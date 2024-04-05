@@ -1,8 +1,8 @@
 {
   "id": "multilogin",
   "name": "MultiLogin",
-  "version": "${version}",
-  "author": "",
+  "version": "@version@",
+  "authors": @contributors_json@,
   "dependencies": [
     {
       "id": "floodgate",
@@ -13,5 +13,5 @@
       "optional": true
     }
   ],
-  "main": "fun.ksnb.multilogin.velocity.main.MultiLoginVelocity"
+  "main": "fun.iiii.multilogin.velocity.main.MultiLoginVelocity"
 }

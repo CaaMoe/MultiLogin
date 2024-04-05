@@ -2,14 +2,11 @@ import moe.caa.multilogin.gradle.librarycollector.Versions
 import moe.caa.multilogin.gradle.librarycollector.cloud
 import moe.caa.multilogin.gradle.librarycollector.exposed
 import moe.caa.multilogin.gradle.librarycollector.serialization
-import net.kyori.blossom.TemplateSet
-
-plugins {
-    alias(libs.plugins.blossom)
-}
 
 dependencies {
     compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
+
+    implementation(serialization("json"))
 
     implementation(project(":api"))
     implementation(cloud("core"))
@@ -31,23 +28,4 @@ dependencies {
     implementation(exposed("json"))
     implementation(exposed("money"))
     implementation(exposed("spring-boot-starter"))
-}
-val outPutVer: String by rootProject.extra
-
-sourceSets {
-    main {
-        blossom {
-            kotlinSources { replace(this) }
-        }
-    }
-}
-
-fun replace(it: TemplateSet) {
-    val buildType = System.getProperty("build_type", "auto").lowercase()
-    val version = outPutVer
-
-    it.property("version", version)
-    it.property("build_type", buildType)
-    it.property("build_revision", indraGit.commit()?.name ?: "unknown")
-    it.property("build_timestamp", System.currentTimeMillis().toString())
 }
