@@ -1,3 +1,4 @@
+[English](https://github.com/CaaMoe/MultiLogin/README.en.md)
 <div align="center">
 
 # MultiLogin
@@ -7,6 +8,7 @@ _✨ 正版与多种外置登录共存 ✨_
 [![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+[![Join our Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&label=)](https://discord.gg/HJXHCZRS)
 
 </div>
 
@@ -57,6 +59,7 @@ MultiLogin 是一款主要为 Minecraft 代理端设计的插件，旨在实现�
 
 [new issue](https://github.com/CaaMoe/MultiLogin/issues/new) 点击此处，提交你的问题
 
+[Discord](https://discord.gg/HJXHCZRS) 进来聊聊你的问题
 ## 贡献者
 
 <a href="https://github.com/CaaMoe/MultiLogin/graphs/contributors">
