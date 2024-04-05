@@ -1,9 +1,12 @@
 plugins {
     kotlin("jvm") version libs.versions.kotlinVer
     kotlin("plugin.serialization") version libs.versions.kotlinVer
+    alias(libs.plugins.git)
 }
 
 allprojects {
+    apply(plugin = "net.kyori.indra.git")
+
     group = "moe.caa"
     version = "0.8.0"
 

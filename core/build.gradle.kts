@@ -2,6 +2,11 @@ import moe.caa.multilogin.gradle.librarycollector.Versions
 import moe.caa.multilogin.gradle.librarycollector.cloud
 import moe.caa.multilogin.gradle.librarycollector.exposed
 import moe.caa.multilogin.gradle.librarycollector.serialization
+import net.kyori.blossom.TemplateSet
+
+plugins {
+    alias(libs.plugins.blossom)
+}
 
 dependencies {
     compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
@@ -26,4 +31,35 @@ dependencies {
     implementation(exposed("json"))
     implementation(exposed("money"))
     implementation(exposed("spring-boot-starter"))
+}
+
+
+sourceSets {
+    main {
+        blossom {
+            kotlinSources { replace(this) }
+        }
+    }
+}
+
+fun replace(it: TemplateSet) {
+    val buildType = System.getProperty("build_type", "auto").lowercase()
+    val version = getOutputVersion()
+
+    it.property("version", version)
+    it.property("build_type", buildType)
+    it.property("build_revision", indraGit.commit()?.name ?: "unknown")
+    it.property("build_timestamp", System.currentTimeMillis().toString())
+}
+
+fun getOutputVersion(): String {
+    if (System.getProperty("build_type", "auto").equals("final", true)) {
+        return version.toString()
+    }
+    val commitName = indraGit.commit()?.name()
+
+    if (commitName != null) {
+        return "Build_${commitName.substring(0, 6)}"
+    }
+    return "Build_unknown"
 }

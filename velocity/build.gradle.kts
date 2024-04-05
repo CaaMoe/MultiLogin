@@ -21,7 +21,28 @@ dependencies {
 }
 
 tasks.shadowJar {
-    archiveBaseName = "MultiLogin-Velocity"
+    archiveFileName.set("MultiLogin-Velocity-${getOutputVersion()}.jar")
+
+    doLast {
+        project.rootProject.file("output").mkdirs()
+        run {
+            File(project.rootProject.file("output"), archiveFileName.get()).outputStream().use { output ->
+                archiveFile.get().asFile.inputStream().use { input -> input.transferTo(output) }
+            }
+        }
+    }
+}
+
+fun getOutputVersion(): String {
+    if (System.getProperty("build_type", "auto").equals("final", true)) {
+        return version.toString()
+    }
+    val commitName = indraGit.commit()?.name()
+
+    if (commitName != null) {
+        return "Build_${commitName.substring(0, 6)}"
+    }
+    return "Build_unknown"
 }
 
 
