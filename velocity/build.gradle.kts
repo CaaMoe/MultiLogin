@@ -19,9 +19,10 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
     annotationProcessor("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
 }
+val outPutVer: String by rootProject.extra
 
 tasks.shadowJar {
-    archiveFileName.set("MultiLogin-Velocity-${getOutputVersion()}.jar")
+    archiveFileName.set("MultiLogin-Velocity-${outPutVer}.jar")
 
     doLast {
         project.rootProject.file("output").mkdirs()
@@ -32,19 +33,6 @@ tasks.shadowJar {
         }
     }
 }
-
-fun getOutputVersion(): String {
-    if (System.getProperty("build_type", "auto").equals("final", true)) {
-        return version.toString()
-    }
-    val commitName = indraGit.commit()?.name()
-
-    if (commitName != null) {
-        return "Build_${commitName.substring(0, 6)}"
-    }
-    return "Build_unknown"
-}
-
 
 fun doRelocate(shadowJar: ShadowJar, pattern: String) {
     shadowJar.relocate(pattern, "moe.caa.multilogin.libraries.$pattern")

@@ -21,4 +21,22 @@ subprojects {
 
     java.sourceCompatibility = JavaVersion.VERSION_17
     java.targetCompatibility = JavaVersion.VERSION_17
+
+
 }
+
+
+val outPutVer by extra(
+    fun(): String {
+        if (System.getProperty("build_type", "auto").equals("final", true)) {
+            return version.toString()
+        }
+        val commitName = indraGit.commit()?.name()
+
+        if (commitName != null) {
+            return "Build_${commitName.substring(0, 6)}"
+        }
+        return "Build_unknown"
+    }
+)
+

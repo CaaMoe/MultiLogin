@@ -32,7 +32,7 @@ dependencies {
     implementation(exposed("money"))
     implementation(exposed("spring-boot-starter"))
 }
-
+val outPutVer: String by rootProject.extra
 
 sourceSets {
     main {
@@ -44,22 +44,10 @@ sourceSets {
 
 fun replace(it: TemplateSet) {
     val buildType = System.getProperty("build_type", "auto").lowercase()
-    val version = getOutputVersion()
+    val version = outPutVer
 
     it.property("version", version)
     it.property("build_type", buildType)
     it.property("build_revision", indraGit.commit()?.name ?: "unknown")
     it.property("build_timestamp", System.currentTimeMillis().toString())
-}
-
-fun getOutputVersion(): String {
-    if (System.getProperty("build_type", "auto").equals("final", true)) {
-        return version.toString()
-    }
-    val commitName = indraGit.commit()?.name()
-
-    if (commitName != null) {
-        return "Build_${commitName.substring(0, 6)}"
-    }
-    return "Build_unknown"
 }
