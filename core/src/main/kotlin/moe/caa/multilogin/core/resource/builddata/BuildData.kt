@@ -16,7 +16,9 @@ data class BuildData(
 )
 
 val buildData: BuildData = Json.decodeFromString(
-    BuildData::class.java.getResourceAsStream("/builddata.json").use { it ->
-        InputStreamReader(it!!, Charsets.UTF_8).use { it.readText() }
+    BuildData::class.java.getResourceAsStream("/builddata.json").use { input ->
+        InputStreamReader(input!!, Charsets.UTF_8).use { reader ->
+            reader.readText()
+        }
     }
 )
