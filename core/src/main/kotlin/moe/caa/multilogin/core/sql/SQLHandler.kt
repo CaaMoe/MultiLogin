@@ -7,17 +7,16 @@ import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 
-
 class SQLHandler {
-    private lateinit var database: Database;
-    private lateinit var dataSource: HikariDataSource;
-    private lateinit var inGameProfileV3Table: InGameProfileV3Table;
-    private lateinit var userDataV3Table: UserDataV3Table;
+    private lateinit var database: Database
+    private lateinit var dataSource: HikariDataSource
+    private lateinit var inGameProfileV3Table: InGameProfileV3Table
+    private lateinit var userDataV3Table: UserDataV3Table
 
     fun init() {
         // todo data source
-        inGameProfileV3Table = InGameProfileV3Table("multilogin_in_game_profile_v3")
-        userDataV3Table = UserDataV3Table("multilogin_user_data_v3")
+        inGameProfileV3Table = InGameProfileV3Table
+        userDataV3Table = UserDataV3Table
 
         database = Database.connect(dataSource)
 
