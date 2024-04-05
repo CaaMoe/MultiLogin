@@ -9,7 +9,7 @@ plugins {
     alias(libs.plugins.git)
 }
 
-dependencies{
+dependencies {
     compileOnly(project(":api"))
 
     // todo test
@@ -19,7 +19,7 @@ dependencies{
 tasks.processResources {
     dependsOn("summaryCalculate")
 
-    from(layout.buildDirectory){
+    from(layout.buildDirectory) {
         include(".digested")
     }
 }
@@ -33,9 +33,13 @@ sourceSets {
     }
 }
 
-fun replace(it: TemplateSet){
+fun replace(it: TemplateSet) {
     val buildType = System.getProperty("build_type", "auto").lowercase()
-    val version = if (buildType == "final") { project.version.toString()} else {"Build_" + (indraGit.commit()?.name ?: "unknown") }
+    val version = if (buildType == "final") {
+        project.version.toString()
+    } else {
+        "Build_" + (indraGit.commit()?.name ?: "unknown")
+    }
 
     it.property("version", version)
     it.property("build_type", buildType)

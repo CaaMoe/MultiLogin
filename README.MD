@@ -18,7 +18,8 @@ v8 项目还在开发中, 你不应该现在去使用它. 请继续使用 v6 版
 
 ## 简介
 
-这里是 MultiLogin v8 源码仓库, MultiLogin 是一款主要为 Minecraft 反代端设计的插件, 旨在安全的实现对正版与多种外置登录共存的支持, 用于连接两个或多个外置验证服务器下的玩家, 使他们能够在同一个服务器上一起游戏.
+这里是 MultiLogin v8 源码仓库, MultiLogin 是一款主要为 Minecraft 反代端设计的插件, 旨在安全的实现对正版与多种外置登录共存的支持,
+用于连接两个或多个外置验证服务器下的玩家, 使他们能够在同一个服务器上一起游戏.
 
 ## 特性
 
@@ -54,14 +55,15 @@ v8 项目还在开发中, 你不应该现在去使用它. 请继续使用 v6 版
 2. 开启 Actions
 3. 随便提交一个文件
 
-
 ## BUG 汇报
 
 [Weekly Version](https://github.com/CaaMoe/MultiLogin/releases/tag/weekly) 点击此处，也许你遇到的问题已修复
 
-[![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 点击此处，来加入QQ交流群
+[![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
+点击此处，来加入QQ交流群
 
-[![Join our Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&label=)](https://discord.gg/HJXHCZRS) 点击此处，来加入Discord
+[![Join our Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&label=)](https://discord.gg/HJXHCZRS)
+点击此处，来加入Discord
 
 [new issue](https://github.com/CaaMoe/MultiLogin/issues/new) 点击此处，提交你的问题
 

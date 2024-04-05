@@ -7,9 +7,9 @@ abstract class BaseService(
     val serviceName: String,
     val uuidGenerate: UUIDGenerateType,
     val whitelist: Boolean
-){
+) {
     init {
-        if(serviceId > 127 || serviceId < 0) throw ReadConfigurationException("Service id $serviceId is out of bounds, The value can only be between 0 and 127.")
+        if (serviceId > 127 || serviceId < 0) throw ReadConfigurationException("Service id $serviceId is out of bounds, The value can only be between 0 and 127.")
     }
 
     override fun equals(other: Any?): Boolean {

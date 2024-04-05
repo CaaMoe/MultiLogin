@@ -25,6 +25,6 @@ tasks.shadowJar {
 }
 
 
-fun doRelocate(shadowJar: ShadowJar, pattern: String){
+fun doRelocate(shadowJar: ShadowJar, pattern: String) {
     shadowJar.relocate(pattern, "moe.caa.multilogin.libraries.$pattern")
 }

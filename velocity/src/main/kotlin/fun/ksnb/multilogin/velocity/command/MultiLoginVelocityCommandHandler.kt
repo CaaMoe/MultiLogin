@@ -8,14 +8,14 @@ import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.velocity.VelocityCommandManager
 
 class MultiLoginVelocityCommandHandler(private val plugin: MultiLoginVelocity) {
-    private val commandManager =  VelocityCommandManager<Audience>(
+    private val commandManager = VelocityCommandManager<Audience>(
         plugin.pluginContainer,
         plugin.server,
         ExecutionCoordinator.coordinatorFor(plugin.multiCore.asyncExecute),
-        SenderMapper.create({it}){it as CommandSource}
+        SenderMapper.create({ it }) { it as CommandSource }
     )
 
-    fun init(){
+    fun init() {
         plugin.multiCore.commandHandler.registerCommands(commandManager)
     }
 }

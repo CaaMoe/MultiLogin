@@ -5,7 +5,7 @@ import moe.caa.multilogin.api.logger.Logger
 import org.jetbrains.annotations.ApiStatus
 
 @ApiStatus.Internal
-class DebugLogger(val originLogger: Logger): Logger {
+class DebugLogger(val originLogger: Logger) : Logger {
     override fun log(level: Level, message: String?, throwable: Throwable?) {
         if (level == Level.DEBUG) {
             originLogger.log(Level.INFO, message, throwable)

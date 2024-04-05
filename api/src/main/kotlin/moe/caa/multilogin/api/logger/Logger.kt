@@ -6,17 +6,17 @@ import org.jetbrains.annotations.ApiStatus.Internal
 
 @Internal
 interface Logger {
-    companion object{
+    companion object {
         var logger: Logger = ConsoleLogger
 
-        fun debug(debug: Boolean){
-            if(debug){
-                if(logger !is DebugLogger) {
+        fun debug(debug: Boolean) {
+            if (debug) {
+                if (logger !is DebugLogger) {
                     logger = DebugLogger(logger)
                     logger.warn("Debug mode on.")
                 }
             } else {
-                if(logger is DebugLogger){
+                if (logger is DebugLogger) {
                     logger = (logger as DebugLogger).originLogger
                     logger.warn("Debug mode off.")
                     debug(false)
@@ -33,7 +33,9 @@ interface Logger {
     fun error(message: String? = null, throwable: Throwable? = null) = log(Level.ERROR, message, throwable)
 }
 
-fun Any.log(level: Level, message: String? = null, throwable: Throwable? = null) = Logger.logger.log(level, message, throwable)
+fun Any.log(level: Level, message: String? = null, throwable: Throwable? = null) =
+    Logger.logger.log(level, message, throwable)
+
 fun Any.info(message: String? = null, throwable: Throwable? = null) = Logger.logger.info(message, throwable)
 fun Any.debug(message: String? = null, throwable: Throwable? = null) = Logger.logger.debug(message, throwable)
 fun Any.warn(message: String? = null, throwable: Throwable? = null) = Logger.logger.warn(message, throwable)

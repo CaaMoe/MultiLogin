@@ -4,7 +4,7 @@ import moe.caa.multilogin.gradle.librarycollector.exposed
 import moe.caa.multilogin.gradle.librarycollector.serialization
 
 dependencies {
-    compileOnly ("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
+    compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
 
     implementation(project(":api"))
     implementation(cloud("core"))

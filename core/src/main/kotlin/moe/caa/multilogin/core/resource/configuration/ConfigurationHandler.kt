@@ -8,14 +8,14 @@ import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
 import java.io.IOException
 
-class ConfigurationHandler(private val multiCore: MultiCore){
+class ConfigurationHandler(private val multiCore: MultiCore) {
     var checkUpdate = false
 
     fun init() {
         reload()
     }
 
-    fun reload(){
+    fun reload() {
         getResource(EXAMPLES_LITTLE_SKIN, true)
         getResource(EXAMPLES_OFFICIAL, true)
         getResource(EXAMPLES_TEMPLATE_CN_FULL, true)
@@ -42,9 +42,9 @@ class ConfigurationHandler(private val multiCore: MultiCore){
             file.parentFile?.mkdirs()
             javaClass.getResourceAsStream("/$resource")?.use { input ->
                 file.outputStream().use { output -> input.transferTo(output) }
-            }?: throw IOException("Failed processing resource ${resource}.")
+            } ?: throw IOException("Failed processing resource ${resource}.")
 
-            if(exist){
+            if (exist) {
                 info("Cover: $resource")
             } else {
                 info("Extract: $resource")

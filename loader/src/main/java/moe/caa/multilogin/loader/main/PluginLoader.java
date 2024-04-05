@@ -13,9 +13,6 @@ import java.util.*;
 
 public class PluginLoader {
     public static final Map<Library, String> DIGESTED_MAP;
-    public final IPlugin plugin;
-    private MultiCore multiCore;
-
 
     static {
         try (InputStream resourceAsStream = PluginLoader.class.getClassLoader().getResourceAsStream(".digested");
@@ -27,21 +24,24 @@ public class PluginLoader {
                     .forEach(ss -> tMap.put(Library.of(ss[0], ":"), ss[1]));
 
             DIGESTED_MAP = Collections.unmodifiableMap(tMap);
-        } catch (Throwable throwable){
+        } catch (Throwable throwable) {
             throw new RuntimeException("Failed to initialize internal data.");
         }
     }
+
+    public final IPlugin plugin;
+    private MultiCore multiCore;
 
     public PluginLoader(IPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void enable(){
+    public void enable() {
         multiCore = new MultiCore(plugin);
         multiCore.enable();
     }
 
-    public void disable(){
+    public void disable() {
         Optional.ofNullable(multiCore).ifPresent(e -> e.disable());
     }
 

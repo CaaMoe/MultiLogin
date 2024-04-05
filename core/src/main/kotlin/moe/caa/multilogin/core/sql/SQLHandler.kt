@@ -14,7 +14,7 @@ class SQLHandler {
     private lateinit var inGameProfileV3Table: InGameProfileV3Table;
     private lateinit var userDataV3Table: UserDataV3Table;
 
-    fun init(){
+    fun init() {
         // todo data source
         inGameProfileV3Table = InGameProfileV3Table("multilogin_in_game_profile_v3")
         userDataV3Table = UserDataV3Table("multilogin_user_data_v3")
@@ -27,8 +27,8 @@ class SQLHandler {
         }
     }
 
-    fun close(){
-        if(::dataSource.isInitialized){
+    fun close() {
+        if (::dataSource.isInitialized) {
             dataSource.close()
         }
     }

@@ -9,15 +9,17 @@ import java.util.concurrent.Executors
 
 
 class MultiCore(val plugin: IPlugin) {
-    val asyncExecute: ExecutorService = Executors.newFixedThreadPool(16, FormattedThreadFactory("MultiLogin Async #d") { Thread(it).apply { isDaemon = true } })
+    val asyncExecute: ExecutorService = Executors.newFixedThreadPool(
+        16,
+        FormattedThreadFactory("MultiLogin Async #d") { Thread(it).apply { isDaemon = true } })
     val commandHandler = CommandHandler(this)
     val configurationHandler = ConfigurationHandler(this)
 
-    fun enable(){
+    fun enable() {
         configurationHandler.init()
     }
 
-    fun disable(){
+    fun disable() {
 
     }
 }

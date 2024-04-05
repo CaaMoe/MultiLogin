@@ -26,7 +26,7 @@ class MultiLoginVelocity @Inject constructor(
     private val multiLoginVelocityCommandHandler = MultiLoginVelocityCommandHandler(this)
     val multiCore = MultiCore(this)
 
-    companion object{
+    companion object {
         private const val PLUGIN_ID = "multilogin"
     }
 
@@ -47,7 +47,6 @@ class MultiLoginVelocity @Inject constructor(
             server.shutdown()
         }
     }
-
 
 
     private fun initLogger(logger: org.slf4j.Logger) {

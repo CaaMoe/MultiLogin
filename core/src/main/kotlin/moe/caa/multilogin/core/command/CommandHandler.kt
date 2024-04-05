@@ -6,7 +6,7 @@ import org.incendo.cloud.CommandManager
 
 
 class CommandHandler(val multiCore: MultiCore) {
-    companion object{
+    companion object {
         const val COMMAND_HEADER = "multilogin"
     }
 

@@ -1,12 +1,5 @@
 package moe.caa.multilogin.gradle.librarycollector
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.get
-import java.io.File
-import java.security.MessageDigest
-
 
 //class LibraryCollector: Plugin<Project> {
 //    override fun apply(target: Project) {

@@ -12,16 +12,18 @@ import org.incendo.cloud.parser.ArgumentParser
 import org.incendo.cloud.suggestion.BlockingSuggestionProvider
 
 class ServiceIdArgumentParser<C> : ArgumentParser<C, BaseService>, BlockingSuggestionProvider.Strings<C> {
-    override fun parse(commandContext: CommandContext<C & Any>,
-                       commandInput: CommandInput): ArgumentParseResult<BaseService> {
+    override fun parse(
+        commandContext: CommandContext<C & Any>,
+        commandInput: CommandInput
+    ): ArgumentParseResult<BaseService> {
         val serviceId = commandInput.readInteger()
 
         val service = GeneralConfiguration.services[serviceId]
-        if(service != null) return ArgumentParseResult.success(service)
+        if (service != null) return ArgumentParseResult.success(service)
         return ArgumentParseResult.failure(ServiceIdParseException(serviceId, commandContext))
     }
 
-    class ServiceIdParseException(private val serviceId: Int, context: CommandContext<*>): ParserException(
+    class ServiceIdParseException(private val serviceId: Int, context: CommandContext<*>) : ParserException(
         ServiceIdArgumentParser::class.java, context,
         StandardCaptionKeys.EXCEPTION_UNEXPECTED,
         CaptionVariable.of("input", serviceId.toString())

@@ -9,5 +9,5 @@ import org.jetbrains.annotations.ApiStatus
  */
 @ApiStatus.Internal
 object NullLogger : Logger {
-    override fun log(level: Level, message: String?, throwable: Throwable?){}
+    override fun log(level: Level, message: String?, throwable: Throwable?) {}
 }

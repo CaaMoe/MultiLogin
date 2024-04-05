@@ -19,6 +19,23 @@ public class LibraryDownloadingTask {
         this.libraryFolder = libraryFolder;
     }
 
+    private static byte[] getBytes(URL url) throws IOException {
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        httpURLConnection.setDoInput(true);
+        httpURLConnection.setDoOutput(false);
+        httpURLConnection.setConnectTimeout(10000);
+        httpURLConnection.connect();
+        httpURLConnection.disconnect();
+
+        if (httpURLConnection.getResponseCode() == 200) {
+            try (InputStream input = httpURLConnection.getInputStream()) {
+                return input.readAllBytes();
+            } finally {
+                httpURLConnection.disconnect();
+            }
+        }
+        throw new IOException(httpURLConnection.getResponseCode() + "");
+    }
 
     public void download(List<String> repositories) throws IOException {
         File output = library.getFile(libraryFolder);
@@ -36,7 +53,7 @@ public class LibraryDownloadingTask {
             }
         }
 
-        if(bytes == null){
+        if (bytes == null) {
             throw exception;
         }
 
@@ -46,23 +63,5 @@ public class LibraryDownloadingTask {
 
         LoggerProvider.logger.info("Downloaded " + output.getName());
         Files.write(output.toPath(), bytes);
-    }
-
-    private static byte[] getBytes(URL url) throws IOException {
-        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-        httpURLConnection.setDoInput(true);
-        httpURLConnection.setDoOutput(false);
-        httpURLConnection.setConnectTimeout(10000);
-        httpURLConnection.connect();
-        httpURLConnection.disconnect();
-
-        if (httpURLConnection.getResponseCode() == 200) {
-            try (InputStream input = httpURLConnection.getInputStream()) {
-                return input.readAllBytes();
-            } finally {
-                httpURLConnection.disconnect();
-            }
-        }
-        throw new IOException(httpURLConnection.getResponseCode() + "");
     }
 }

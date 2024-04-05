@@ -7,6 +7,6 @@ kotlinVer = "1.9.22"
 
 [plugins]
 
-shadow = {id = "com.github.johnrengelman.shadow", version.ref = "shadowVer"}
-blossom = {id = "net.kyori.blossom", version.ref = "blossomVer"}
-git = {id = "net.kyori.indra.git", version.ref = "gitVer"}
+shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadowVer" }
+blossom = { id = "net.kyori.blossom", version.ref = "blossomVer" }
+git = { id = "net.kyori.indra.git", version.ref = "gitVer" }
