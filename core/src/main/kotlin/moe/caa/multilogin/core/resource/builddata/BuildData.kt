@@ -13,7 +13,10 @@ data class BuildData(
     @SerialName("build_type") val buildType: String,
     @SerialName("build_revision") val buildRevision: String,
     @SerialName("build_timestamp") val buildTimestamp: String,
-)
+) {
+    fun forceDebugMode() = buildType.equals("final", true).not()
+
+}
 
 val buildData: BuildData = Json.decodeFromString(
     BuildData::class.java.getResourceAsStream("/builddata.json").use { input ->

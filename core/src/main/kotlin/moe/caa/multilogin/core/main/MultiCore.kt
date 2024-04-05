@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.main
 
+import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.warn
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.command.CommandHandler
@@ -40,6 +41,7 @@ class MultiCore(val plugin: IPlugin) {
             warn("#     Build Time : " + buildData.buildTimestamp);
             warn("#     Version    : " + buildData.version);
             warn("######################################################");
+            Logger.debug(true)
         }
     }
 }

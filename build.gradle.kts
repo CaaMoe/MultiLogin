@@ -92,6 +92,6 @@ val outputArchiveVersion: String = System.getProperty("build_type", "auto")
     .equals("final", true).ifTrue {
         version.toString()
     } ?: indraGit.commit()?.name().let {
-    "Build_${it?.substring(0, 6) ?: "unknown"}"
+    "Build_${it?.substring(0, 8) ?: "unknown"}"
     }
 
