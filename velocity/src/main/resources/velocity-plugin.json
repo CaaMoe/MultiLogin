@@ -1,0 +1,17 @@
+{
+  "id": "multilogin",
+  "name": "MultiLogin",
+  "version": "${version}",
+  "author": "",
+  "dependencies": [
+    {
+      "id": "floodgate",
+      "optional": true
+    },
+    {
+      "id": "skinsrestorer",
+      "optional": true
+    }
+  ],
+  "main": "fun.ksnb.multilogin.velocity.main.MultiLoginVelocity"
+}
