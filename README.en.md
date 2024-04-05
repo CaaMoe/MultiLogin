@@ -1,4 +1,4 @@
-[中文](https://github.com/CaaMoe/MultiLogin/README.md)
+[中文](https://github.com/CaaMoe/MultiLogin/blob/v6/README.md)
 <div align="center">
 # MultiLogin
 
