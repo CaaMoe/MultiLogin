@@ -11,18 +11,16 @@ class SQLHandler {
     private lateinit var database: Database
     private lateinit var dataSource: HikariDataSource
     private lateinit var inGameProfileV3Table: InGameProfileV3Table
-    private lateinit var userDataV3Table: UserDataV3Table
 
     fun init() {
         // todo data source
         inGameProfileV3Table = InGameProfileV3Table
-        userDataV3Table = UserDataV3Table
 
         database = Database.connect(dataSource)
 
         transaction(database) {
             addLogger(SQLLogger)
-            SchemaUtils.create(userDataV3Table, inGameProfileV3Table)
+            SchemaUtils.create(inGameProfileV3Table)
         }
     }
 
