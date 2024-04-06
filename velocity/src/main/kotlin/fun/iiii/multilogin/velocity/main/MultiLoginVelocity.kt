@@ -86,15 +86,10 @@ class MultiLoginVelocity @Inject constructor(
             SenderMapper.create({ it }, { it as CommandSource })
         )
 
-    override fun checkEnvironment(): EnvironmentalCheckResult {
-        if (!server.configuration.isOnlineMode) {
-            return EnvironmentalCheckResult.OFFLINE_MODE
-        }
-        if ((server.configuration as VelocityConfiguration).playerInfoForwardingMode == PlayerInfoForwarding.NONE) {
-            return EnvironmentalCheckResult.NO_FORWARD
-        }
-        return EnvironmentalCheckResult.PASS
-    }
-
     override val dataFolder: File = dataDirectory.toFile()
+
+    override fun isOnlineMode() = server.configuration.isOnlineMode
+
+    override fun isProfileForwarding() = (server.configuration as VelocityConfiguration).playerInfoForwardingMode != PlayerInfoForwarding.NONE
+
 }

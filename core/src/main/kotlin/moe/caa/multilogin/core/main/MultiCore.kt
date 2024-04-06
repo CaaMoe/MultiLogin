@@ -41,20 +41,15 @@ class MultiCore(val plugin: IPlugin) {
     }
 
     private fun checkEnvironment() {
-        when (plugin.checkEnvironment()) {
-            EnvironmentalCheckResult.OFFLINE_MODE -> {
-                moe.caa.multilogin.api.logger.error("Please enable online mode, otherwise the plugin will not work!!!")
-                moe.caa.multilogin.api.logger.error("Server is closing!!!")
-                throw EnvironmentException("offline mode.")
-            }
-
-            EnvironmentalCheckResult.NO_FORWARD -> {
-                moe.caa.multilogin.api.logger.error("Please enable forwarding, otherwise the plugin will not work!!!");
-                moe.caa.multilogin.api.logger.error("Server is closing!!!")
-                throw EnvironmentException("not forward.")
-            }
-
-            EnvironmentalCheckResult.PASS -> {}
+        if (!plugin.isOnlineMode()) {
+            moe.caa.multilogin.api.logger.error("Please enable online mode, otherwise the plugin will not work!!!")
+            moe.caa.multilogin.api.logger.error("Server is closing!!!")
+            throw EnvironmentException("offline mode.")
+        }
+        if(!plugin.isProfileForwarding()){
+            moe.caa.multilogin.api.logger.error("Please enable profile forwarding, otherwise the plugin will not work!!!");
+            moe.caa.multilogin.api.logger.error("Server is closing!!!")
+            throw EnvironmentException("not forward.")
         }
 
         if (showWarning) {

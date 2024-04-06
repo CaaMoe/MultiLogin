@@ -21,5 +21,6 @@ interface IPlugin {
         executionCoordinator: ExecutionCoordinator<Audience>
     ): CommandManager<Audience>
 
-    fun checkEnvironment(): EnvironmentalCheckResult
+    fun isOnlineMode(): Boolean
+    fun isProfileForwarding(): Boolean
 }
