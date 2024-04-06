@@ -33,10 +33,10 @@ interface Logger {
     fun error(message: String? = null, throwable: Throwable? = null) = log(Level.ERROR, message, throwable)
 }
 
-fun Any.log(level: Level, message: String? = null, throwable: Throwable? = null) =
+fun log(level: Level, message: String? = null, throwable: Throwable? = null) =
     Logger.logger.log(level, message, throwable)
 
-fun Any.info(message: String? = null, throwable: Throwable? = null) = Logger.logger.info(message, throwable)
-fun Any.debug(message: String? = null, throwable: Throwable? = null) = Logger.logger.debug(message, throwable)
-fun Any.warn(message: String? = null, throwable: Throwable? = null) = Logger.logger.warn(message, throwable)
-fun Any.error(message: String? = null, throwable: Throwable? = null) = Logger.logger.error(message, throwable)
+fun info(message: String? = null, throwable: Throwable? = null) = Logger.logger.info(message, throwable)
+fun debug(message: String? = null, throwable: Throwable? = null) = Logger.logger.debug(message, throwable)
+fun warn(message: String? = null, throwable: Throwable? = null) = Logger.logger.warn(message, throwable)
+fun error(message: String? = null, throwable: Throwable? = null) = Logger.logger.error(message, throwable)
