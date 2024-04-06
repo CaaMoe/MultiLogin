@@ -13,6 +13,7 @@ class MultiLoginChannelInitializer(
 ) : ChannelInitializer<Channel>() {
 
     companion object {
+        const val MULTI_LOGIN_HANDLE_NAME = "multilogin-handler"
         private val INIT_CHANNEL_METHOD_HANDLER: MethodHandle;
 
         init {
@@ -44,7 +45,7 @@ class MultiLoginChannelInitializer(
         INIT_CHANNEL_METHOD_HANDLER.invoke(originChannel, channel)
 
         channel.pipeline().addBefore(
-            "handler", "multilogin-handler", LoginPacketHandler(
+            "handler", MULTI_LOGIN_HANDLE_NAME, MultiLoginChannelHandler(
                 channel.pipeline().get("handler") as MinecraftConnection
             )
         )
