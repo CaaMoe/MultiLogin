@@ -45,8 +45,6 @@ subprojects {
             "build_timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
         )
 
-        println(contributors.joinToString())
-
         filter(
             ReplaceTokens::class, mapOf(
                 "tokens" to tokens,

@@ -7,9 +7,14 @@ import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
+import com.velocitypowered.proxy.config.PlayerInfoForwarding
+import com.velocitypowered.proxy.config.VelocityConfiguration
+import `fun`.iiii.multilogin.velocity.inject.VelocityInjector
 import moe.caa.multilogin.api.logger.Level
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.error
+import moe.caa.multilogin.api.plugin.EnvironmentException
+import moe.caa.multilogin.api.plugin.EnvironmentalCheckResult
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
@@ -19,6 +24,7 @@ import org.incendo.cloud.execution.ExecutionCoordinator
 import org.incendo.cloud.velocity.VelocityCommandManager
 import java.io.File
 import java.nio.file.Path
+
 
 class MultiLoginVelocity @Inject constructor(
     val server: ProxyServer,
@@ -36,6 +42,10 @@ class MultiLoginVelocity @Inject constructor(
         try {
             this.multiCore = MultiCore(this)
             this.multiCore.enable()
+
+            VelocityInjector(this).inject()
+        } catch (exception: EnvironmentException) {
+            server.shutdown()
         } catch (throwable: Throwable) {
             error("Failed to initializing the plugin.", throwable)
             server.shutdown()
@@ -75,6 +85,16 @@ class MultiLoginVelocity @Inject constructor(
             executionCoordinator,
             SenderMapper.create({ it }, { it as CommandSource })
         )
+
+    override fun checkEnvironment(): EnvironmentalCheckResult {
+        if (!server.configuration.isOnlineMode) {
+            return EnvironmentalCheckResult.OFFLINE_MODE
+        }
+        if ((server.configuration as VelocityConfiguration).playerInfoForwardingMode == PlayerInfoForwarding.NONE) {
+            return EnvironmentalCheckResult.NO_FORWARD
+        }
+        return EnvironmentalCheckResult.PASS
+    }
 
     override val dataFolder: File = dataDirectory.toFile()
 }

@@ -2,6 +2,8 @@ package moe.caa.multilogin.core.main
 
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.warn
+import moe.caa.multilogin.api.plugin.EnvironmentException
+import moe.caa.multilogin.api.plugin.EnvironmentalCheckResult
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.command.CommandHandler
 import moe.caa.multilogin.core.resource.builddata.getBuildData
@@ -39,6 +41,22 @@ class MultiCore(val plugin: IPlugin) {
     }
 
     private fun checkEnvironment() {
+        when (plugin.checkEnvironment()) {
+            EnvironmentalCheckResult.OFFLINE_MODE -> {
+                moe.caa.multilogin.api.logger.error("Please enable online mode, otherwise the plugin will not work!!!")
+                moe.caa.multilogin.api.logger.error("Server is closing!!!")
+                throw EnvironmentException("offline mode.")
+            }
+
+            EnvironmentalCheckResult.NO_FORWARD -> {
+                moe.caa.multilogin.api.logger.error("Please enable forwarding, otherwise the plugin will not work!!!");
+                moe.caa.multilogin.api.logger.error("Server is closing!!!")
+                throw EnvironmentException("not forward.")
+            }
+
+            EnvironmentalCheckResult.PASS -> {}
+        }
+
         if (showWarning) {
             warn("######################################################");
             warn("#   Warning, you are not using a stable version");

@@ -20,4 +20,6 @@ interface IPlugin {
     fun generateCommandManager(
         executionCoordinator: ExecutionCoordinator<Audience>
     ): CommandManager<Audience>
+
+    fun checkEnvironment(): EnvironmentalCheckResult
 }

@@ -7,10 +7,16 @@ repositories {
 }
 
 dependencies {
+    compileOnly(fileTree(File("libraries")))
+
     implementation(project(":api"))
     implementation(project(":core"))
 
     implementation(cloud("velocity"))
+
+    implementation(kotlin("reflect"))
+
+    implementation("io.netty:netty-all:${Versions.NETTY}")
 
     compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
     annotationProcessor("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
