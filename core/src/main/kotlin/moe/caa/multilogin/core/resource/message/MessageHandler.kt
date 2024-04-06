@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.resource.message
 
-import moe.caa.multilogin.api.logger.info
-import moe.caa.multilogin.api.logger.warn
+import moe.caa.multilogin.api.logger.logInfo
+import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.MESSAGE_CONFIGURATION
 import moe.caa.multilogin.core.resource.getResource
@@ -32,7 +32,7 @@ class MessageHandler {
             defaultMessageConfigurations.childrenMap().entries.forEach {
                 if (hasChild(it.key).not()) {
                     node(it.key).set(it.value)
-                    warn("Missing message node: ${it.key}")
+                    logWarn("Missing message node: ${it.key}")
                     messing = true
                 }
             }
@@ -44,7 +44,7 @@ class MessageHandler {
                     .build()
                     .save(this)
 
-                info("All missing message nodes have been completed.")
+                logInfo("All missing message nodes have been completed.")
             }
         }
     }

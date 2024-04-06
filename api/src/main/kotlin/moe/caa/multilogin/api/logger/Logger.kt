@@ -36,7 +36,7 @@ interface Logger {
 fun log(level: Level, message: String? = null, throwable: Throwable? = null) =
     Logger.logger.log(level, message, throwable)
 
-fun info(message: String? = null, throwable: Throwable? = null) = Logger.logger.info(message, throwable)
-fun debug(message: String? = null, throwable: Throwable? = null) = Logger.logger.debug(message, throwable)
-fun warn(message: String? = null, throwable: Throwable? = null) = Logger.logger.warn(message, throwable)
-fun error(message: String? = null, throwable: Throwable? = null) = Logger.logger.error(message, throwable)
+fun logInfo(message: String? = null, throwable: Throwable? = null) = Logger.logger.info(message, throwable)
+fun logDebug(message: String? = null, throwable: Throwable? = null) = Logger.logger.debug(message, throwable)
+fun logWarn(message: String? = null, throwable: Throwable? = null) = Logger.logger.warn(message, throwable)
+fun logError(message: String? = null, throwable: Throwable? = null) = Logger.logger.error(message, throwable)

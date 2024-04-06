@@ -10,11 +10,10 @@ import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.proxy.config.PlayerInfoForwarding
 import com.velocitypowered.proxy.config.VelocityConfiguration
 import `fun`.iiii.multilogin.velocity.inject.VelocityInjector
-import moe.caa.multilogin.api.logger.Level
+import `fun`.iiii.multilogin.velocity.logger.Slf4jLogger
 import moe.caa.multilogin.api.logger.Logger
-import moe.caa.multilogin.api.logger.error
+import moe.caa.multilogin.api.logger.logError
 import moe.caa.multilogin.api.plugin.EnvironmentException
-import moe.caa.multilogin.api.plugin.EnvironmentalCheckResult
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
@@ -34,7 +33,7 @@ class MultiLoginVelocity @Inject constructor(
     lateinit var multiCore: MultiCore
 
     init {
-        initLogger(logger)
+        Logger.logger = Slf4jLogger(logger)
     }
 
     @Subscribe
@@ -47,7 +46,7 @@ class MultiLoginVelocity @Inject constructor(
         } catch (exception: EnvironmentException) {
             server.shutdown()
         } catch (throwable: Throwable) {
-            error("Failed to initializing the plugin.", throwable)
+            logError("Failed to initializing the plugin.", throwable)
             server.shutdown()
         }
     }
@@ -59,22 +58,9 @@ class MultiLoginVelocity @Inject constructor(
                 multiCore.disable()
             }
         } catch (throwable: Throwable) {
-            error("Failed to initializing the plugin.", throwable)
+            logError("Failed to initializing the plugin.", throwable)
         } finally {
             server.shutdown()
-        }
-    }
-
-    private fun initLogger(logger: org.slf4j.Logger) {
-        Logger.logger = object : Logger {
-            override fun log(level: Level, message: String?, throwable: Throwable?) {
-                when (level) {
-                    Level.DEBUG -> logger.debug(message, throwable)
-                    Level.INFO -> logger.info(message, throwable)
-                    Level.WARN -> logger.warn(message, throwable)
-                    Level.ERROR -> logger.error(message, throwable)
-                }
-            }
         }
     }
 
