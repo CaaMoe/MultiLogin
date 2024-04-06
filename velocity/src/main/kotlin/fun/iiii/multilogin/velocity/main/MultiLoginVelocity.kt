@@ -1,17 +1,22 @@
 package `fun`.iiii.multilogin.velocity.main
 
 import com.google.inject.Inject
+import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
-import com.velocitypowered.api.plugin.PluginContainer
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
-import `fun`.iiii.multilogin.velocity.command.MultiLoginVelocityCommandHandler
 import moe.caa.multilogin.api.logger.Level
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.error
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.main.MultiCore
+import net.kyori.adventure.audience.Audience
+import org.incendo.cloud.CommandManager
+import org.incendo.cloud.SenderMapper
+import org.incendo.cloud.execution.ExecutionCoordinator
+import org.incendo.cloud.velocity.VelocityCommandManager
 import java.io.File
 import java.nio.file.Path
 
@@ -20,35 +25,35 @@ class MultiLoginVelocity @Inject constructor(
     logger: org.slf4j.Logger,
     @DataDirectory dataDirectory: Path
 ) : IPlugin {
-    lateinit var pluginContainer: PluginContainer
-    override val dataFolder: File = dataDirectory.toFile()
-    lateinit var multiLoginVelocityCommandHandler: MultiLoginVelocityCommandHandler
     lateinit var multiCore: MultiCore
-
-    companion object {
-        private const val PLUGIN_ID = "multilogin"
-    }
 
     init {
         initLogger(logger)
     }
 
     @Subscribe
-    fun onInitialize(event: ProxyInitializeEvent?) {
+    fun onInitialize(event: ProxyInitializeEvent) {
         try {
             this.multiCore = MultiCore(this)
-            this.pluginContainer = server.pluginManager.getPlugin(PLUGIN_ID).orElseThrow()
-            this.multiLoginVelocityCommandHandler = MultiLoginVelocityCommandHandler(this)
-
             this.multiCore.enable()
-            this.multiLoginVelocityCommandHandler.init()
-
         } catch (throwable: Throwable) {
             error("Failed to initializing the plugin.", throwable)
             server.shutdown()
         }
     }
 
+    @Subscribe
+    fun onShutdown(event: ProxyShutdownEvent) {
+        try {
+            if (::multiCore.isInitialized) {
+                multiCore.disable()
+            }
+        } catch (throwable: Throwable) {
+            error("Failed to initializing the plugin.", throwable)
+        } finally {
+            server.shutdown()
+        }
+    }
 
     private fun initLogger(logger: org.slf4j.Logger) {
         Logger.logger = object : Logger {
@@ -62,4 +67,14 @@ class MultiLoginVelocity @Inject constructor(
             }
         }
     }
+
+    override fun generateCommandManager(executionCoordinator: ExecutionCoordinator<Audience>): CommandManager<Audience> =
+        VelocityCommandManager(
+            server.pluginManager.getPlugin("multilogin").orElseThrow(),
+            server,
+            executionCoordinator,
+            SenderMapper.create({ it }, { it as CommandSource })
+        )
+
+    override val dataFolder: File = dataDirectory.toFile()
 }
