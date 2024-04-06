@@ -1,8 +1,0 @@
-{
-  "version": "@version@",
-  "build_by": "@build_by@",
-  "contributors": "@contributors@",
-  "build_type": "@build_type@",
-  "build_revision": "@build_revision@",
-  "build_timestamp": "@build_timestamp@"
-}

@@ -54,6 +54,13 @@ subprojects {
                 "endToken" to "@"
             )
         )
+
+        layout.buildDirectory.file("builddata").get().asFile.writeText(
+            JsonOutput.toJson(tokens)
+        )
+        from(layout.buildDirectory) {
+            include("builddata")
+        }
     }
 
     tasks.shadowJar {
