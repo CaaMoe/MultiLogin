@@ -6,18 +6,23 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 object InGameProfileV4 : IntIdTable(name = "${MultiloginConfig.getInstance().tablePrefix}_in_game_profile_v4") {
 
     /**
-     * null for any service. (for caching whitelist).
+     * Null for any service. (for caching whitelist).
      */
     val serviceId = integer("service_id").nullable()
 
     /**
-     * if user is in caching whitelist, generate a random uuid first.
+     * If user is in caching whitelist, generate a random uuid first.
      */
-    val userUuid = uuid("user_uuid").nullable()
+    val loginUuid = uuid("login_uuid").nullable()
 
-    val profileUuid = uuid("profile_uuid").uniqueIndex()
-    val currentUsernameLowerCase = varchar("current_username_lower_case", 64).uniqueIndex()
-    val currentUsernameOriginal = varchar("current_username_original", 64).uniqueIndex()
+    /**
+     * The uuid actually used in game.
+     * Same as login uuid in most case.
+     * But different when login uuid is already exists in game.
+     */
+    val profileUuid = uuid("profile_uuid").uniqueIndex().nullable()
+    val username = varchar("username", 64).uniqueIndex()
+    val usernameLowerCase = varchar("username_lower_case", 64).uniqueIndex()
 
     /**
      * 0: No whitelist
@@ -29,6 +34,6 @@ object InGameProfileV4 : IntIdTable(name = "${MultiloginConfig.getInstance().tab
     val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable()
 
     init {
-        uniqueIndex(serviceId, userUuid)
+        uniqueIndex(serviceId, loginUuid)
     }
 }
