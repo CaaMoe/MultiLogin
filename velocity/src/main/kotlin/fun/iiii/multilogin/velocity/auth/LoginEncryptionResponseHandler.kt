@@ -1,12 +1,16 @@
 package `fun`.iiii.multilogin.velocity.auth
 
 import com.google.common.primitives.Longs
+import com.velocitypowered.api.util.GameProfile
+import com.velocitypowered.proxy.VelocityServer
+import com.velocitypowered.proxy.connection.client.AuthSessionHandler
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection
 import com.velocitypowered.proxy.crypto.EncryptionUtils
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
 import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelHandler
+import `fun`.iiii.multilogin.velocity.util.*
 import moe.caa.multilogin.api.logger.logDebug
 import moe.caa.multilogin.api.logger.logError
 import java.lang.invoke.MethodHandle
@@ -29,69 +33,50 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
         private val VERIFY_GETTER: MethodHandle
         private val LOGIN_IN_BOUND_CONNECTION_GETTER: MethodHandle
 
+        private val AUTH_SESSION_HANDLER_CONSTRUCTOR: MethodHandle
+
         init {
             val loginStateClass =
-                Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler\$LoginState")
-            val loginStateEnumValues = loginStateClass.enumConstants
+                Class.forName("com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler\$LoginState") as Class<Enum<*>>
 
-            LOGIN_STATE_LOGIN_PACKET_EXPECTED = (loginStateEnumValues.find {
-                return@find (it as Enum<*>).name == "LOGIN_PACKET_EXPECTED"
-            } as Enum<*>)
-
-            LOGIN_STATE_LOGIN_PACKET_RECEIVED = (loginStateEnumValues.find {
-                return@find (it as Enum<*>).name == "LOGIN_PACKET_RECEIVED"
-            } as Enum<*>)
-
-            LOGIN_STATE_ENCRYPTION_REQUEST_SENT = (loginStateEnumValues.find {
-                return@find (it as Enum<*>).name == "ENCRYPTION_REQUEST_SENT"
-            } as Enum<*>)
-
-            LOGIN_STATE_ENCRYPTION_RESPONSE_RECEIVED = (loginStateEnumValues.find {
-                return@find (it as Enum<*>).name == "ENCRYPTION_RESPONSE_RECEIVED"
-            } as Enum<*>)
+            LOGIN_STATE_LOGIN_PACKET_EXPECTED = loginStateClass.getEnumConstant("LOGIN_PACKET_EXPECTED")!!
+            LOGIN_STATE_LOGIN_PACKET_RECEIVED = loginStateClass.getEnumConstant("LOGIN_PACKET_RECEIVED")!!
+            LOGIN_STATE_ENCRYPTION_REQUEST_SENT = loginStateClass.getEnumConstant("ENCRYPTION_REQUEST_SENT")!!
+            LOGIN_STATE_ENCRYPTION_RESPONSE_RECEIVED = loginStateClass.getEnumConstant("ENCRYPTION_RESPONSE_RECEIVED")!!
 
             val lookup = MethodHandles.lookup()
-            ASSERT_STATE_METHOD = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflect(
-                    it.getDeclaredMethod("assertState", loginStateClass).apply {
-                        isAccessible = true
-                    })
-            }
+            lookup.unreflectMethodAccess(
+                InitialLoginSessionHandler::class.java.getDeclaredMethod(
+                    "assertState",
+                    loginStateClass
+                )
+            )
 
-            CURRENT_STATE_GETTER = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflectGetter(
-                    it.getDeclaredField("currentState").apply {
-                        isAccessible = true
-                    })
-            }
+            ASSERT_STATE_METHOD = lookup.unreflectMethodAccess(
+                InitialLoginSessionHandler::class.java.getDeclaredMethod(
+                    "assertState",
+                    loginStateClass
+                )
+            )
+            CURRENT_STATE_GETTER =
+                lookup.unreflectFieldGetterAccess(InitialLoginSessionHandler::class.java.getDeclaredField("currentState"))
+            CURRENT_STATE_SETTER =
+                lookup.unreflectFieldSetterAccess(InitialLoginSessionHandler::class.java.getDeclaredField("currentState"))
+            SERVER_LOGIN_PACKET_GETTER =
+                lookup.unreflectFieldGetterAccess(InitialLoginSessionHandler::class.java.getDeclaredField("login"))
+            VERIFY_GETTER =
+                lookup.unreflectFieldGetterAccess(InitialLoginSessionHandler::class.java.getDeclaredField("verify"))
+            LOGIN_IN_BOUND_CONNECTION_GETTER =
+                lookup.unreflectFieldGetterAccess(InitialLoginSessionHandler::class.java.getDeclaredField("inbound"))
 
-            CURRENT_STATE_SETTER = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflectSetter(
-                    it.getDeclaredField("currentState").apply {
-                        isAccessible = true
-                    })
-            }
-
-            SERVER_LOGIN_PACKET_GETTER = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflectGetter(
-                    it.getDeclaredField("login").apply {
-                        isAccessible = true
-                    })
-            }
-
-            VERIFY_GETTER = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflectGetter(
-                    it.getDeclaredField("verify").apply {
-                        isAccessible = true
-                    })
-            }
-
-            LOGIN_IN_BOUND_CONNECTION_GETTER = InitialLoginSessionHandler::class.java.let {
-                lookup.unreflectGetter(
-                    it.getDeclaredField("inbound").apply {
-                        isAccessible = true
-                    })
-            }
+            AUTH_SESSION_HANDLER_CONSTRUCTOR = lookup.unreflectConstructorAccess(
+                AuthSessionHandler::class.java.getDeclaredConstructor(
+                    VelocityServer::class.java,
+                    LoginInboundConnection::class.java,
+                    GameProfile::class.java,
+                    Boolean::class.java
+                )
+            )
         }
     }
 
@@ -109,7 +94,7 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
             throw java.lang.IllegalStateException("No EncryptionRequest packet sent yet.")
         }
 
-        kotlin.runCatching {
+        try {
             val serverKeyPair = channelHandler.connection.server.serverKeyPair
             var decryptedSharedSecret: ByteArray
             val bound = LOGIN_IN_BOUND_CONNECTION_GETTER.invoke(initialLoginSessionHandler) as LoginInboundConnection
@@ -135,11 +120,20 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
 
             logDebug("username = $username, serverId = $serverId, playerIp = $playerIp")
 
-        }.onFailure {
-            if (it is GeneralSecurityException) {
-                logError("Unable to enable encryption", it)
-                channelHandler.connection.close(true)
+            if (channelHandler.connection.isClosed) return
+
+            try {
+                channelHandler.connection.enableEncryption(decryptedSharedSecret)
+            } catch (gse: GeneralSecurityException) {
+                logError("Unable to enable encryption for connection.", gse)
+                this.channelHandler.connection.close(true)
+                return
             }
+
+//            channelHandler.connection.setActiveSessionHandler(StateRegistry.LOGIN, AuthSessionHandler)
+        } catch (gse: GeneralSecurityException) {
+            logError("Unable to enable encryption", gse)
+            channelHandler.connection.close(true)
         }
     }
 }
