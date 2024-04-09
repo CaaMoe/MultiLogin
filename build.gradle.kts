@@ -53,7 +53,9 @@ subprojects {
             )
         )
 
-        layout.buildDirectory.file("builddata").get().asFile.writeText(
+        layout.buildDirectory.file("builddata").get().asFile.apply {
+            parentFile?.mkdirs()
+        }.writeText(
             JsonOutput.toJson(tokens)
         )
         from(layout.buildDirectory) {
