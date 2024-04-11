@@ -12,6 +12,8 @@ abstract class BaseService(
         if (serviceId > 127 || serviceId < 0) throw ReadConfigurationException("Service id $serviceId is out of bounds, The value can only be between 0 and 127.")
     }
 
+    abstract val serviceType: ServiceType;
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

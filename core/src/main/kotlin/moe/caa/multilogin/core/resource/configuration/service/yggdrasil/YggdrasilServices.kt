@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.resource.configuration.service.yggdrasil
 
 import moe.caa.multilogin.core.resource.configuration.service.BaseService
 import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType
+import moe.caa.multilogin.core.resource.configuration.service.ServiceType
 import moe.caa.multilogin.core.resource.configuration.service.UUIDGenerateType
 import java.net.URLEncoder
 
@@ -14,12 +15,11 @@ abstract class YggdrasilService(
     val timeout: Int,
     val retry: Int,
     val delayRetry: Int,
-
-    val httpMethodType: HttpMethodType,
 ) : BaseService(
     serviceId, serviceName, uuidGenerateType, whitelist
 ) {
 
+    abstract val httpMethodType: HttpMethodType;
     abstract fun generateAuthUrl(username: String, serverId: String, ip: String?): String
     abstract fun generatePostContent(username: String, serverId: String, ip: String?): String
 
@@ -39,7 +39,7 @@ class YggdrasilCustomService(
     timeout: Int,
     retry: Int,
     delayRetry: Int,
-    httpMethodType: HttpMethodType,
+    override val httpMethodType: HttpMethodType,
     private val authUrl: String,
     private val ipContent: String,
     private val postContent: String
@@ -51,9 +51,10 @@ class YggdrasilCustomService(
     trackIp,
     timeout,
     retry,
-    delayRetry,
-    httpMethodType
+    delayRetry
 ) {
+    override val serviceType = ServiceType.CUSTOM_YGGDRASIL
+
     override fun generateAuthUrl(username: String, serverId: String, ip: String?): String {
         val encodedUsername = URLEncoder.encode(username, Charsets.UTF_8)
         val encodedServerId = URLEncoder.encode(username, Charsets.UTF_8)
@@ -103,12 +104,84 @@ class YggdrasilBlessingSkinService(
     trackIp,
     timeout,
     retry,
-    delayRetry,
-    HttpMethodType.GET
+    delayRetry
 ) {
+    override val httpMethodType = HttpMethodType.GET
+    override val serviceType = ServiceType.BLESSING_SKIN
     companion object {
-        private val APPEND_YGGDRASIL_URL_BYTES: ByteArray =
-            TODO("sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2} to bytes")
+        // sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}
+        private val APPEND_YGGDRASIL_URL_BYTES: ByteArray = byteArrayOf(
+            115,
+            101,
+            115,
+            115,
+            105,
+            111,
+            110,
+            115,
+            101,
+            114,
+            118,
+            101,
+            114,
+            47,
+            115,
+            101,
+            115,
+            115,
+            105,
+            111,
+            110,
+            47,
+            109,
+            105,
+            110,
+            101,
+            99,
+            114,
+            97,
+            102,
+            116,
+            47,
+            104,
+            97,
+            115,
+            74,
+            111,
+            105,
+            110,
+            101,
+            100,
+            63,
+            117,
+            115,
+            101,
+            114,
+            110,
+            97,
+            109,
+            101,
+            61,
+            123,
+            48,
+            125,
+            38,
+            115,
+            101,
+            114,
+            118,
+            101,
+            114,
+            73,
+            100,
+            61,
+            123,
+            49,
+            125,
+            123,
+            50,
+            125
+        )
         private val BLESSING_SKIN_YGGDRASIL_URL_IP_CONTENT_BYTES: ByteArray =
             YggdrasilOfficialService.VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES
     }
@@ -150,10 +223,12 @@ class YggdrasilOfficialService(
     trackIp,
     timeout,
     retry,
-    delayRetry,
-    HttpMethodType.GET
+    delayRetry
 ) {
+    override val httpMethodType = HttpMethodType.GET
+    override val serviceType = ServiceType.OFFICIAL
     companion object {
+        // https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}
         private val VANILLA_YGGDRASIL_URL_BYTES: ByteArray = byteArrayOf(
             104,
             116,
@@ -245,6 +320,8 @@ class YggdrasilOfficialService(
             50,
             125
         )
+
+        // &ip={0}
         val VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES: ByteArray = byteArrayOf(38, 105, 112, 61, 123, 48, 125)
     }
 

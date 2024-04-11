@@ -1,11 +1,13 @@
 package moe.caa.multilogin.core.resource.configuration
 
-import moe.caa.multilogin.core.resource.configuration.service.BaseService
-import moe.caa.multilogin.core.resource.configuration.service.ServiceType
-import moe.caa.multilogin.core.resource.configuration.service.UUIDGenerateType
+import moe.caa.multilogin.core.resource.configuration.service.*
+import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
+import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
+import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilOfficialService
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
+import java.util.*
 
 sealed interface IConfig {
     fun read(node: ConfigurationNode)
@@ -30,29 +32,76 @@ data object GeneralConfiguration : IConfig {
     fun readServices(serviceFolder: File) {
         val services: MutableMap<Int, BaseService> = HashMap()
 
+
         serviceFolder.mkdirs()
         serviceFolder.listFiles()?.filter {
             it.name.endsWith(".conf", true)
         }?.forEach {
+
             val configurationNode = HoconConfigurationLoader.builder().file(it).build().load()
-            if (configurationNode.node("service_id").isNull) throw ReadConfigurationException("service_id is null.")
+            if (configurationNode.node("service_id").isNull) throw ReadConfigurationException("service_id in file ${it.absolutePath} is null.")
             val serviceId = configurationNode.node("service_id").int
 
             val serviceName = configurationNode.node("service_name").getString("Unnamed")
-            val serviceType = configurationNode.node("service_type").get(ServiceType::class.java)
+            val serviceType =
+                configurationNode.node("service_type").get(ServiceType::class.java)
+                    ?: throw ReadConfigurationException(
+                        "service_type in file ${it.absolutePath} is null."
+                    )
             val uuidGenerateType =
                 configurationNode.node("uuid_generate_type").get(UUIDGenerateType::class.java, UUIDGenerateType.ONLINE)
             val whitelist = configurationNode.node("whitelist").getBoolean(true)
 
             val baseService: BaseService = when (serviceType) {
-                ServiceType.OFFICIAL -> TODO()
-                ServiceType.BLESSING_SKIN -> TODO()
-                ServiceType.CUSTOM_YGGDRASIL -> TODO()
-                ServiceType.FLOODGATE -> TODO()
-                null -> throw ReadConfigurationException("service_type is null.")
+                ServiceType.OFFICIAL -> YggdrasilOfficialService(
+                    serviceId, serviceName, uuidGenerateType, whitelist,
+                    configurationNode.node("yggdrasil_settings", "track_ip").getBoolean(true),
+                    configurationNode.node("yggdrasil_settings", "timeout").getInt(10000),
+                    configurationNode.node("yggdrasil_settings", "retry").getInt(0),
+                    configurationNode.node("yggdrasil_settings", "delay_retry").getInt(0),
+                )
+
+                ServiceType.BLESSING_SKIN -> YggdrasilBlessingSkinService(
+                    serviceId, serviceName, uuidGenerateType, whitelist,
+                    configurationNode.node("yggdrasil_settings", "track_ip").getBoolean(true),
+                    configurationNode.node("yggdrasil_settings", "timeout").getInt(10000),
+                    configurationNode.node("yggdrasil_settings", "retry").getInt(0),
+                    configurationNode.node("yggdrasil_settings", "delay_retry").getInt(0),
+                    configurationNode.node("yggdrasil_settings", "blessing_skin", "yggdrasil_api_root").string
+                        ?: throw ReadConfigurationException("yggdrasil_api_root in file ${it.absolutePath} is null"),
+                )
+
+                ServiceType.CUSTOM_YGGDRASIL -> YggdrasilCustomService(
+                    serviceId, serviceName, uuidGenerateType, whitelist,
+                    configurationNode.node("yggdrasil_settings", "track_ip").getBoolean(true),
+                    configurationNode.node("yggdrasil_settings", "timeout").getInt(10000),
+                    configurationNode.node("yggdrasil_settings", "retry").getInt(0),
+                    configurationNode.node("yggdrasil_settings", "delay_retry").getInt(0),
+                    configurationNode.node("yggdrasil_settings", "custom", "http_method_type")
+                        .get(HttpMethodType::class.java)
+                        ?: throw ReadConfigurationException("http_method_type in file ${it.absolutePath} is null."),
+                    configurationNode.node("yggdrasil_settings", "custom", "has_joined_url").string
+                        ?: throw ReadConfigurationException("has_joined_url in file ${it.absolutePath} is null."),
+                    configurationNode.node("yggdrasil_settings", "custom", "track_ip_content").string
+                        ?: throw ReadConfigurationException("track_ip_content in file ${it.absolutePath} is null."),
+                    configurationNode.node("yggdrasil_settings", "custom", "post_content").string
+                        ?: throw ReadConfigurationException("post_content in file ${it.absolutePath} is null."),
+
+                    )
+
+                ServiceType.FLOODGATE -> FloodgateService(serviceId, serviceName, uuidGenerateType, whitelist)
             }
+
+            if (!baseService.serviceType.allowedDuplicate()) {
+                if (services.values.map { e -> e.serviceType }.any { e -> e == baseService.serviceType }) {
+                    throw ReadConfigurationException("There can be only one service_type whose type is ${baseService.serviceType.name}.")
+                }
+            }
+
             if (services.containsKey(serviceId)) throw ReadConfigurationException("The same service id value $serviceId exists.")
+            services[serviceId] = baseService;
         }
+        this.services = Collections.unmodifiableMap(services)
     }
 }
 
@@ -86,6 +135,6 @@ data object Support : IConfig {
 
 data object Database : IConfig {
     override fun read(node: ConfigurationNode) {
-        TODO("Not yet implemented")
+        // todo
     }
 }
