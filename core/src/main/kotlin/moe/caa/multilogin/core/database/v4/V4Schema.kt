@@ -11,7 +11,7 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
 
     /**
      * The uuid in client hello packet.
-     * If user is in caching whitelist, generate a random uuid first.
+     * If user is in caching whitelist and not provided, generate a random uuid first.
      */
     val loginUuid = uuid("login_uuid")
 
@@ -20,7 +20,7 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      * Same as login uuid in most case.
      * But different when login uuid is already exists in game.
      */
-    val profileUuid = uuid("profile_uuid").uniqueIndex().nullable()
+    val profileUuid = uuid("profile_uuid").nullable()
 
     /**
      * The username in client hello packet.
@@ -31,8 +31,8 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      * The username actually used in game.
      * MultiLogin will rename when username was conflict.
      */
-    val username = varchar("username", 255).uniqueIndex()
-    val usernameLowerCase = varchar("username_lower_case", 255).uniqueIndex()
+    val username = varchar("username", 255).nullable()
+    val usernameLowerCase = varchar("username_lower_case", 255).nullable()
 
     /**
      * 0: No whitelist
