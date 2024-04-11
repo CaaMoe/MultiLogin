@@ -9,7 +9,8 @@ import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 
 class MultiLoginChannelInitializer(
-    val originChannel: ChannelInitializer<Channel>
+    private val plugin: MultiLoginVelocity,
+    private val originChannel: ChannelInitializer<Channel>
 ) : ChannelInitializer<Channel>() {
 
     companion object {
@@ -35,7 +36,7 @@ class MultiLoginChannelInitializer(
 
             val serverChannelInitializerHolder = connectionManager.getServerChannelInitializer()
             serverChannelInitializerHolder.set(
-                MultiLoginChannelInitializer(serverChannelInitializerHolder.get())
+                MultiLoginChannelInitializer(plugin, serverChannelInitializerHolder.get())
             )
         }
     }
@@ -46,6 +47,7 @@ class MultiLoginChannelInitializer(
 
         channel.pipeline().addBefore(
             "handler", MULTI_LOGIN_HANDLE_NAME, MultiLoginChannelHandler(
+                plugin,
                 channel.pipeline().get("handler") as MinecraftConnection
             )
         )

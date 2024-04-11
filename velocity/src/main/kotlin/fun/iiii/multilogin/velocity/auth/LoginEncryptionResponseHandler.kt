@@ -11,7 +11,6 @@ import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
 import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelHandler
 import `fun`.iiii.multilogin.velocity.util.*
-import moe.caa.multilogin.api.logger.logDebug
 import moe.caa.multilogin.api.logger.logError
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -114,23 +113,27 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
 
             decryptedSharedSecret = EncryptionUtils.decryptRsa(serverKeyPair, packet.sharedSecret)
 
-            val username = login.username
-            val serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.public)
-            val playerIp = (channelHandler.connection.remoteAddress as InetSocketAddress).hostString
+            channelHandler.plugin.multiCore.asyncExecute.submit {
+                val username = login.username
+                val serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.public)
+                val playerIp = (channelHandler.connection.remoteAddress as InetSocketAddress).hostString
 
-            logDebug("username = $username, serverId = $serverId, playerIp = $playerIp")
 
-            if (channelHandler.connection.isClosed) return
 
-            try {
-                channelHandler.connection.enableEncryption(decryptedSharedSecret)
-            } catch (gse: GeneralSecurityException) {
-                logError("Unable to enable encryption for connection.", gse)
-                this.channelHandler.connection.close(true)
-                return
-            }
+                if (channelHandler.connection.isClosed) return@submit
+
+                try {
+                    channelHandler.connection.enableEncryption(decryptedSharedSecret)
+                } catch (gse: GeneralSecurityException) {
+                    logError("Unable to enable encryption for connection.", gse)
+                    this.channelHandler.connection.close(true)
+                    return@submit
+                }
 
 //            channelHandler.connection.setActiveSessionHandler(StateRegistry.LOGIN, AuthSessionHandler)
+            }
+
+
         } catch (gse: GeneralSecurityException) {
             logError("Unable to enable encryption", gse)
             channelHandler.connection.close(true)
