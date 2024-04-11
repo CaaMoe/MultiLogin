@@ -1,9 +1,8 @@
 package moe.caa.multilogin.core.database.v4
 
-import moe.caa.multilogin.core.config.MultiloginConfig
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object InGameProfileV4 : IntIdTable(name = "${MultiloginConfig.getInstance().tablePrefix}_in_game_profile_v4") {
+object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
 
     /**
      * Null for any service. (for caching whitelist).
