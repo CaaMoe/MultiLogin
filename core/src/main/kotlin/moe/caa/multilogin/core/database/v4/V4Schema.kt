@@ -10,9 +10,10 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
     val serviceId = integer("service_id").nullable()
 
     /**
+     * The uuid in client hello packet.
      * If user is in caching whitelist, generate a random uuid first.
      */
-    val loginUuid = uuid("login_uuid").nullable()
+    val loginUuid = uuid("login_uuid")
 
     /**
      * The uuid actually used in game.
@@ -20,8 +21,18 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      * But different when login uuid is already exists in game.
      */
     val profileUuid = uuid("profile_uuid").uniqueIndex().nullable()
-    val username = varchar("username", 64).uniqueIndex()
-    val usernameLowerCase = varchar("username_lower_case", 64).uniqueIndex()
+
+    /**
+     * The username in client hello packet.
+     */
+    val loginUsername = varchar("login_username", 255)  // Use 255 instead 64, 万一有愚蠢的 yggdrasil 实现呢（（（
+
+    /**
+     * The username actually used in game.
+     * MultiLogin will rename when username was conflict.
+     */
+    val username = varchar("username", 255).uniqueIndex()
+    val usernameLowerCase = varchar("username_lower_case", 255).uniqueIndex()
 
     /**
      * 0: No whitelist
@@ -30,9 +41,10 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      */
     val whitelist = integer("whitelist").check("check_whitelist_range") { it.between(0, 2) }
 
-    val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable()
+    val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable().default(null)
 
     init {
         uniqueIndex(serviceId, loginUuid)
+        uniqueIndex(serviceId, loginUsername)
     }
 }
