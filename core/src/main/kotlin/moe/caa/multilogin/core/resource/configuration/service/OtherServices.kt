@@ -10,4 +10,6 @@ class FloodgateService(
     serviceName,
     uuidGenerate,
     whitelist
-)
+) {
+    override val serviceType = ServiceType.FLOODGATE
+}
