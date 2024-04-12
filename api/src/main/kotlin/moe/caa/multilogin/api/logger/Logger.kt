@@ -7,7 +7,7 @@ import org.jetbrains.annotations.ApiStatus.Internal
 @Internal
 interface Logger {
     companion object {
-        var logger: Logger = ConsoleLogger
+        var logger: Logger = ConsoleLogger()
 
         fun debug(debug: Boolean) {
             if (debug) {
@@ -26,7 +26,6 @@ interface Logger {
     }
 
     fun log(level: Level, message: String? = null, throwable: Throwable? = null)
-
     fun debug(message: String? = null, throwable: Throwable? = null) = log(Level.DEBUG, message, throwable)
     fun info(message: String? = null, throwable: Throwable? = null) = log(Level.INFO, message, throwable)
     fun warn(message: String? = null, throwable: Throwable? = null) = log(Level.WARN, message, throwable)

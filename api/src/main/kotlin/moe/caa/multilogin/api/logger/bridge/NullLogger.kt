@@ -8,6 +8,6 @@ import org.jetbrains.annotations.ApiStatus
  * 空日志
  */
 @ApiStatus.Internal
-object NullLogger : Logger {
+class NullLogger : Logger {
     override fun log(level: Level, message: String?, throwable: Throwable?) {}
 }

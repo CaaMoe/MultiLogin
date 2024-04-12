@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.resource
 
-import moe.caa.multilogin.api.logger.bridge.ConsoleLogger.info
+import moe.caa.multilogin.api.logger.logInfo
 import moe.caa.multilogin.core.main.MultiCore
 import java.io.File
 import java.io.IOException
@@ -24,9 +24,9 @@ fun saveDefaultResource(resource: String, cover: Boolean = false): File {
 
         getResource(resource).use { input -> file.outputStream().use { output -> input.transferTo(output) } }
         if (exist) {
-            info("Cover: $resource")
+            logInfo("Cover: $resource")
         } else {
-            info("Extract: $resource")
+            logInfo("Extract: $resource")
         }
     }
 

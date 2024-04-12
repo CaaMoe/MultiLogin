@@ -9,7 +9,7 @@ import org.jetbrains.annotations.ApiStatus.Internal
  * 控制台日志
  */
 @Internal
-object ConsoleLogger : Logger {
+class ConsoleLogger : Logger {
     override fun log(level: Level, message: String?, throwable: Throwable?) {
         when (level) {
             Level.DEBUG -> {
