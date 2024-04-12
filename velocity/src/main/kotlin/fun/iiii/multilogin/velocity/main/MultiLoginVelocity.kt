@@ -13,7 +13,7 @@ import `fun`.iiii.multilogin.velocity.inject.VelocityInjector
 import `fun`.iiii.multilogin.velocity.logger.Slf4jLogger
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.logError
-import moe.caa.multilogin.api.plugin.EnvironmentException
+import moe.caa.multilogin.api.plugin.BreakSignalException
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
@@ -43,7 +43,7 @@ class MultiLoginVelocity @Inject constructor(
             this.multiCore.enable()
 
             VelocityInjector(this).inject()
-        } catch (exception: EnvironmentException) {
+        } catch (exception: BreakSignalException) {
             server.shutdown()
         } catch (throwable: Throwable) {
             logError("Failed to initializing the plugin.", throwable)

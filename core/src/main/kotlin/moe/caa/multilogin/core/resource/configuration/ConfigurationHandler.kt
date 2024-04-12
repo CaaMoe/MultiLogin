@@ -1,6 +1,8 @@
 package moe.caa.multilogin.core.resource.configuration
 
 import moe.caa.multilogin.api.logger.Logger
+import moe.caa.multilogin.api.logger.logError
+import moe.caa.multilogin.api.plugin.BreakSignalException
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.*
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
@@ -10,7 +12,12 @@ class ConfigurationHandler(private val multiCore: MultiCore) {
     var checkUpdate = false
 
     fun init() {
-        reload()
+        try {
+            reload()
+        } catch (rce: ReadConfigurationException) {
+            logError(rce.message)
+            throw BreakSignalException()
+        }
     }
 
     fun reload() {

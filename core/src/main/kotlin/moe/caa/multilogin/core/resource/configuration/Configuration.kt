@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.resource.configuration
 
+import moe.caa.multilogin.api.logger.logInfo
+import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.core.resource.configuration.service.*
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
@@ -40,14 +42,14 @@ data object GeneralConfiguration : IConfig {
 
             val configurationNode = HoconConfigurationLoader.builder().file(it).build().load()
             if (configurationNode.node("service_id").isNull) throw ReadConfigurationException("service_id in file ${it.absolutePath} is null.")
-            val serviceId = configurationNode.node("service_id").int
+            val serviceId = configurationNode.node("service_id").int.apply {
+                if (this > 127 || this < 0) throw ReadConfigurationException("service_id in file ${it.absolutePath} is out of bounds, The value can only be between 0 and 127.")
+            }
 
             val serviceName = configurationNode.node("service_name").getString("Unnamed")
             val serviceType =
                 configurationNode.node("service_type").get(ServiceType::class.java)
-                    ?: throw ReadConfigurationException(
-                        "service_type in file ${it.absolutePath} is null."
-                    )
+                    ?: throw ReadConfigurationException("service_type in file ${it.absolutePath} is null.")
             val uuidGenerateType =
                 configurationNode.node("uuid_generate_type").get(UUIDGenerateType::class.java, UUIDGenerateType.ONLINE)
             val whitelist = configurationNode.node("whitelist").getBoolean(true)
@@ -86,7 +88,6 @@ data object GeneralConfiguration : IConfig {
                         ?: throw ReadConfigurationException("track_ip_content in file ${it.absolutePath} is null."),
                     configurationNode.node("yggdrasil_settings", "custom", "post_content").string
                         ?: throw ReadConfigurationException("post_content in file ${it.absolutePath} is null."),
-
                     )
 
                 ServiceType.FLOODGATE -> FloodgateService(serviceId, serviceName, uuidGenerateType, whitelist)
@@ -102,6 +103,16 @@ data object GeneralConfiguration : IConfig {
             services[serviceId] = baseService;
         }
         this.services = Collections.unmodifiableMap(services)
+
+        services.forEach { (k, v) ->
+            logInfo("Add a service whose id $k, type ${v.serviceType}, and name ${v.serviceName}.")
+        }
+
+        if (services.isEmpty()) {
+            logWarn("The server does not have any services added, this will prevent all players from logging into the server.")
+        } else {
+            logInfo("${services.size} service${if (services.size == 1) "" else "s"} have been added.")
+        }
     }
 }
 

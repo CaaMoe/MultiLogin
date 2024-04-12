@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.main
 
-import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.api.plugin.EnvironmentException
 import moe.caa.multilogin.api.plugin.IPlugin
@@ -43,12 +42,12 @@ class MultiCore(val plugin: IPlugin) {
         if (!plugin.isOnlineMode()) {
             moe.caa.multilogin.api.logger.logError("Please enable online mode, otherwise the plugin will not work!!!")
             moe.caa.multilogin.api.logger.logError("Server is closing!!!")
-            throw EnvironmentException("offline mode.")
+            throw EnvironmentException()
         }
         if(!plugin.isProfileForwarding()){
             moe.caa.multilogin.api.logger.logError("Please enable profile forwarding, otherwise the plugin will not work!!!");
             moe.caa.multilogin.api.logger.logError("Server is closing!!!")
-            throw EnvironmentException("not forward.")
+            throw EnvironmentException()
         }
 
         if (showWarning) {
