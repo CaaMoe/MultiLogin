@@ -30,7 +30,7 @@ class MultiCore(val plugin: IPlugin) {
         instance = this
         checkEnvironment()
 
-//        configurationHandler.init()
+        configurationHandler.init()
         commandHandler.init()
         messageHandler.init()
     }
@@ -63,7 +63,6 @@ class MultiCore(val plugin: IPlugin) {
             logWarn("#     Build Time : ${getBuildData("build_timestamp")}")
             logWarn("#     Version    : ${getBuildData("version")}")
             logWarn("######################################################");
-            Logger.debug(true)
         }
     }
 }

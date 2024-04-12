@@ -3,7 +3,6 @@ package moe.caa.multilogin.core.resource.configuration
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.*
-import moe.caa.multilogin.core.resource.builddata.showWarning
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
 
@@ -30,10 +29,10 @@ class ConfigurationHandler(private val multiCore: MultiCore) {
 
         GeneralConfiguration.readServices(File(multiCore.plugin.dataFolder, "service"))
 
-        if (showWarning || GeneralConfiguration.debug) {
-            Logger.debug(GeneralConfiguration.debug)
-        } else {
-            Logger.debug(false)
-        }
+        applyConfiguration()
+    }
+
+    private fun applyConfiguration(){
+        Logger.debug(GeneralConfiguration.debug)
     }
 }

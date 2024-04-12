@@ -1,6 +1,5 @@
 package moe.caa.multilogin.core.resource.builddata
 
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -15,5 +14,4 @@ private val buildDataElementObject = Json.parseToJsonElement(
     }).jsonObject
 
 fun getBuildData(key: String) = buildDataElementObject[key]?.jsonPrimitive?.content ?: "Unknown"
-fun getBuildDataStr() = Json.encodeToString(buildDataElementObject)
 val showWarning = buildDataElementObject["build_type"]?.jsonPrimitive?.content?.equals("final", true) != true
