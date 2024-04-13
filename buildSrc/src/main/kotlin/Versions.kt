@@ -7,7 +7,7 @@ object Versions {
     const val KOTLINX_SERIALIZATION = "1.6.3"
     const val SPONGE_CONFIGURATION = "4.1.2"
 
-    const val ADVENTURE_API = "4.16.0"
+    const val ADVENTURE = "4.16.0"
     const val ANNOTATIONS = "24.1.0"
     const val VELOCITY_API = "3.3.0-SNAPSHOT"
     const val NETTY = "4.1.108.Final"

@@ -1,3 +1,3 @@
-package moe.caa.multilogin.api.plugin
+package moe.caa.multilogin.api.exception
 
 open class BreakSignalException : RuntimeException()

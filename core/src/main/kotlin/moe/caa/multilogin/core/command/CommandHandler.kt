@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.command
 
-import moe.caa.multilogin.core.command.handles.versionHandle
+import moe.caa.multilogin.core.command.handles.RELOAD_HANDLER
+import moe.caa.multilogin.core.command.handles.VERSION_HANDLER
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.Command.Builder
@@ -18,10 +19,17 @@ class CommandHandler(multiCore: MultiCore) {
 
     private fun registerRootCommands() {
         // /multiligin version
-        register { builder ->
-            builder.literal("version")
+        register {
+            it.literal("version")
                 .permission(PERMISSIONS_COMMAND_VERSION)
-                .handler(versionHandle)
+                .handler(VERSION_HANDLER)
+        }
+
+        // /multilogin reload
+        register {
+            it.literal("reload")
+                .permission(PERMISSIONS_COMMAND_RELOAD)
+                .handler(RELOAD_HANDLER)
         }
     }
 

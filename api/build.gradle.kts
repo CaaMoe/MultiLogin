@@ -6,5 +6,5 @@ dependencies {
     implementation("org.jetbrains:annotations:${Versions.ANNOTATIONS}")
     implementation(cloud("core"))
 
-    compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE_API}")
+    compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE}")
 }

@@ -6,6 +6,8 @@ import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.MESSAGE_CONFIGURATION
 import moe.caa.multilogin.core.resource.getResource
 import moe.caa.multilogin.core.resource.saveDefaultResource
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import org.spongepowered.configurate.loader.HeaderMode
@@ -50,11 +52,15 @@ class MessageHandler {
     }
 }
 
-fun language(node: String): String {
+fun language(node: String): Component {
     val configurationNode = MultiCore.instance.messageHandler.messageConfigurationNode
         .node(node.split("."))
-    if (configurationNode.isList) {
-        return configurationNode.getList(String::class.java)?.joinToString { "\n" } ?: ""
-    }
-    return configurationNode.getString("")
+
+    return MiniMessage.miniMessage().deserialize(
+        if (configurationNode.isList) {
+            configurationNode.getList(String::class.java)?.joinToString { "\n" } ?: ""
+        } else {
+            configurationNode.getString("")
+        }
+    )
 }

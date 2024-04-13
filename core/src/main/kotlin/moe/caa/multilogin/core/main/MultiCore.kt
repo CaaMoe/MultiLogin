@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.main
 
+import moe.caa.multilogin.api.exception.BreakSignalException
 import moe.caa.multilogin.api.logger.logWarn
-import moe.caa.multilogin.api.plugin.EnvironmentException
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.command.CommandHandler
 import moe.caa.multilogin.core.resource.builddata.getBuildData
@@ -42,12 +42,12 @@ class MultiCore(val plugin: IPlugin) {
         if (!plugin.isOnlineMode()) {
             moe.caa.multilogin.api.logger.logError("Please enable online mode, otherwise the plugin will not work!!!")
             moe.caa.multilogin.api.logger.logError("Server is closing!!!")
-            throw EnvironmentException()
+            throw BreakSignalException()
         }
         if(!plugin.isProfileForwarding()){
             moe.caa.multilogin.api.logger.logError("Please enable profile forwarding, otherwise the plugin will not work!!!");
             moe.caa.multilogin.api.logger.logError("Server is closing!!!")
-            throw EnvironmentException()
+            throw BreakSignalException()
         }
 
         if (showWarning) {
@@ -63,5 +63,10 @@ class MultiCore(val plugin: IPlugin) {
             logWarn("#     Version    : ${getBuildData("version")}")
             logWarn("######################################################");
         }
+    }
+
+    fun reload() {
+        configurationHandler.reload()
+        messageHandler.reload()
     }
 }

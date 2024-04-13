@@ -11,9 +11,9 @@ import com.velocitypowered.proxy.config.PlayerInfoForwarding
 import com.velocitypowered.proxy.config.VelocityConfiguration
 import `fun`.iiii.multilogin.velocity.inject.VelocityInjector
 import `fun`.iiii.multilogin.velocity.logger.Slf4jLogger
+import moe.caa.multilogin.api.exception.BreakSignalException
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.logError
-import moe.caa.multilogin.api.plugin.BreakSignalException
 import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
