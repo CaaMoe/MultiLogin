@@ -1,23 +1,13 @@
-import moe.caa.multilogin.gradle.librarycollector.Versions
-import moe.caa.multilogin.gradle.librarycollector.cloud
-import moe.caa.multilogin.gradle.librarycollector.exposed
-import moe.caa.multilogin.gradle.librarycollector.serialization
+import moe.caa.multilogin.gradle.librarycollector.*
 
 dependencies {
-    compileOnly("net.kyori:adventure-api:${Versions.ADVENTURE}")
-    implementation("net.kyori:adventure-text-minimessage:${Versions.ADVENTURE}")
-
-    implementation(serialization("json"))
+    // implementation("mysql:mysql-connector-java:${Versions.MYSQL_CONNECTOR}")
 
     implementation(project(":api"))
+    implementation(adventure("text-minimessage"))
     implementation(cloud("core"))
-
-    implementation("mysql:mysql-connector-java:${Versions.MYSQL_CONNECTOR}")
-
-
-    implementation("org.spongepowered:configurate-hocon:${Versions.SPONGE_CONFIGURATION}")
-    implementation("org.spongepowered:configurate-core:${Versions.SPONGE_CONFIGURATION}")
-
+    implementation(spongeConfiguration("hocon"))
+    implementation(spongeConfiguration("core"))
     implementation(serialization("json"))
     implementation(exposed("core"))
     implementation(exposed("crypt"))

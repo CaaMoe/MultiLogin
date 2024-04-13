@@ -9,7 +9,7 @@ object Versions {
 
     const val ADVENTURE = "4.16.0"
     const val ANNOTATIONS = "24.1.0"
-    const val VELOCITY_API = "3.3.0-SNAPSHOT"
+    const val VELOCITY = "3.3.0-SNAPSHOT"
     const val NETTY = "4.1.108.Final"
 
 }

@@ -44,6 +44,7 @@ class MultiLoginVelocity @Inject constructor(
 
             VelocityInjector(this).inject()
         } catch (exception: BreakSignalException) {
+            exception.message?.let { logError(it) }
             server.shutdown()
         } catch (throwable: Throwable) {
             logError("Failed to initializing the plugin.", throwable)

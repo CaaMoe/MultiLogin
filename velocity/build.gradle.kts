@@ -1,29 +1,27 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import moe.caa.multilogin.gradle.librarycollector.Versions
 import moe.caa.multilogin.gradle.librarycollector.cloud
+import moe.caa.multilogin.gradle.librarycollector.netty
+import moe.caa.multilogin.gradle.librarycollector.velocity
 
 repositories {
     maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-    compileOnly(fileTree(File("libraries")))
-
     implementation(project(":api"))
     implementation(project(":core"))
-
     implementation(cloud("velocity"))
 
-    implementation(kotlin("reflect"))
-
-    implementation("io.netty:netty-all:${Versions.NETTY}")
-
-    compileOnly("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
-    annotationProcessor("com.velocitypowered:velocity-api:${Versions.VELOCITY_API}")
+    compileOnly(fileTree(File("libraries")))
+    compileOnly(netty("all"))
+    compileOnly(velocity("api"))
+    annotationProcessor(velocity("api"))
 }
 
 tasks.shadowJar {
     archiveAppendix = "MultiLogin-Velocity"
+
+
 }
 
 fun doRelocate(shadowJar: ShadowJar, pattern: String) {
