@@ -14,9 +14,13 @@ plugins {
 }
 
 allprojects {
-
     group = "moe.caa"
     version = "0.8.0"
+
+    repositories {
+        mavenCentral()
+        google()
+    }
 }
 
 subprojects {
@@ -27,12 +31,6 @@ subprojects {
 
     java.sourceCompatibility = JavaVersion.VERSION_17
     java.targetCompatibility = JavaVersion.VERSION_17
-
-
-    repositories {
-        mavenCentral()
-        google()
-    }
 
     dependencies {
         compileOnly(adventure("api"))
