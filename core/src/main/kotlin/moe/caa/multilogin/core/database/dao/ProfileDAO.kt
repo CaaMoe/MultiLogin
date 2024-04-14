@@ -1,5 +1,5 @@
 package moe.caa.multilogin.core.database.dao
 
 interface ProfileDAO {
-    // Todo
+    fun findYggdrasilAuthServices(loginName: String): Set<Int>
 }

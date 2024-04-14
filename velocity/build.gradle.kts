@@ -20,8 +20,6 @@ dependencies {
 
 tasks.shadowJar {
     archiveAppendix = "MultiLogin-Velocity"
-
-
 }
 
 fun doRelocate(shadowJar: ShadowJar, pattern: String) {

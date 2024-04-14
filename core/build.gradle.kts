@@ -1,7 +1,15 @@
 import moe.caa.multilogin.gradle.librarycollector.*
 
+plugins {
+    id("library-collector")
+}
+
 dependencies {
-    // implementation("mysql:mysql-connector-java:${Versions.MYSQL_CONNECTOR}")
+    databaseDrivers().forEach {
+        summaryCalculate(it)
+        implementation(it) // test
+    }
+
     implementation(okhttp3())
     implementation(project(":api"))
     implementation(adventure("text-minimessage"))
@@ -19,4 +27,12 @@ dependencies {
     implementation(exposed("json"))
     implementation(exposed("money"))
     implementation(exposed("spring-boot-starter"))
+}
+
+tasks.processResources {
+    dependsOn(tasks["summaryCalculate"])
+
+    from(layout.buildDirectory) {
+        include(".digested")
+    }
 }

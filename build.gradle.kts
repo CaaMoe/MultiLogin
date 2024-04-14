@@ -13,6 +13,9 @@ plugins {
     alias(libs.plugins.shadow)
 }
 
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
+
 allprojects {
     group = "moe.caa"
     version = "0.8.0"
