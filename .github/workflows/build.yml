@@ -77,6 +77,8 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
       - name: Setup JDK 17
         uses: actions/setup-java@v3
@@ -95,15 +97,26 @@ jobs:
         run:
           sed -ni '/https:\/\/maven.aliyun.com\/repository\/public/{h;n;/https:\/\/repo1.maven.org\/maven2/!{:a;N;/https:\/\/maven.aliyun.com\/repository\/public/!ba;x;H;n};x;H;x};p' repositories
 
+      - name: Preprocessing Check
+        id: check
+        run: |
+          if [[ `git diff --name-only HEAD^ HEAD latest` ]]; then
+            sed -i "s/plugin_version=[0-9.]*$/plugin_version=`cat latest`/g" gradle.properties
+            echo "release=true" >> $GITHUB_ENV;
+            echo "version=`cat latest`" >> $GITHUB_ENV;
+          else
+            echo "release=false" >> $GITHUB_ENV;
+          fi
+
       - name: Build Dev
-        if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+        if: env.release == 'false'
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
           arguments: ShadowJar
 
       - name: Build Release
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        if: env.release == 'true'
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: current
@@ -114,21 +127,16 @@ jobs:
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
           rm -f ~/.gradle/caches/modules-2/gc.properties
 
-      - name: Rename Release
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: |
-          mkdir release
-          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/MultiLogin-Bukkit-${{ github.ref_name }}.jar
-          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/MultiLogin-Bungee-${{ github.ref_name }}.jar
-          mv velocity/build/libs/MultiLogin-Velocity-Build_*.jar release/MultiLogin-Velocity-${{ github.ref_name }}.jar
-
       - name: Publish Release
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        if: env.release == 'true'
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "${{  github.ref_name  }}"
+          automatic_release_tag: "${{ env.version }}"
           draft: false
           prerelease: false
-          title: "MultiLogin ${{  github.ref_name  }}"
-          files: release/*.jar
+          title: "MultiLogin v${{ env.version }}"
+          files: |
+            bukkit/build/libs/MultiLogin-Bukkit-${{ env.version }}.jar
+            bungee/build/libs/MultiLogin-Bungee-${{ env.version }}.jar
+            velocity/build/libs/MultiLogin-Velocity-${{ env.version }}.jar
