@@ -2,7 +2,7 @@ import moe.caa.multilogin.gradle.librarycollector.*
 
 dependencies {
     // implementation("mysql:mysql-connector-java:${Versions.MYSQL_CONNECTOR}")
-
+    implementation(okhttp3())
     implementation(project(":api"))
     implementation(adventure("text-minimessage"))
     implementation(cloud("core"))

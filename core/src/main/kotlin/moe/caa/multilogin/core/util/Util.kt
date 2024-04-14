@@ -28,3 +28,12 @@ fun ByteArray.toUUID(): UUID {
 
 fun String.toUUID() =
     UUID.fromString(replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(), "$1-$2-$3-$4-$5"))
+
+fun String.toUUIDOrNull(): UUID? {
+    return try {
+        this.toUUID()
+    } catch (ignored: Throwable) {
+        null
+    }
+}
+

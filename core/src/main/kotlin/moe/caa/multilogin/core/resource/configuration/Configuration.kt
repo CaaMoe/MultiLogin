@@ -69,8 +69,10 @@ data object GeneralConfiguration : IConfig {
                     configurationNode.node("yggdrasil_settings", "timeout").getInt(10000),
                     configurationNode.node("yggdrasil_settings", "retry").getInt(0),
                     configurationNode.node("yggdrasil_settings", "delay_retry").getInt(0),
-                    configurationNode.node("yggdrasil_settings", "blessing_skin", "yggdrasil_api_root").string
-                        ?: throw ReadConfigurationException("yggdrasil_api_root in file ${it.absolutePath} is null"),
+                    (configurationNode.node("yggdrasil_settings", "blessing_skin", "yggdrasil_api_root").string
+                        ?: throw ReadConfigurationException("yggdrasil_api_root in file ${it.absolutePath} is null")).let { url ->
+                        if (url.endsWith("/")) url.substring(0, url.length - 1) else url
+                    }
                 )
 
                 ServiceType.CUSTOM_YGGDRASIL -> YggdrasilCustomService(

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.ApiStatus
 class DebugLogger(val originLogger: Logger) : Logger {
     override fun log(level: Level, message: String?, throwable: Throwable?) {
         if (level == Level.DEBUG) {
-            originLogger.log(Level.INFO, message, throwable)
+            originLogger.log(Level.INFO, "[DEBUG] $message", throwable)
         } else {
             originLogger.log(level, message, throwable)
         }

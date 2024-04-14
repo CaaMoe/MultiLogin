@@ -7,6 +7,7 @@ fun serialization(module: String) =
     "org.jetbrains.kotlinx:kotlinx-serialization-$module:${Versions.KOTLINX_SERIALIZATION}"
 fun spongeConfiguration(module: String) = "org.spongepowered:configurate-$module:${Versions.SPONGE_CONFIGURATION}"
 fun adventure(module: String) = "net.kyori:adventure-$module:${Versions.ADVENTURE}"
+fun okhttp3() = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP3}"
 
 
 fun velocity(module: String) = "com.velocitypowered:velocity-$module:${Versions.VELOCITY}"

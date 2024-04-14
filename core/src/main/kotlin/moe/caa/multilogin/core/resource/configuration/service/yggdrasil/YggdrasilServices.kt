@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.resource.configuration.service.yggdrasil
 
+import moe.caa.multilogin.api.auth.LoginProfile
 import moe.caa.multilogin.core.resource.configuration.service.BaseService
 import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType
 import moe.caa.multilogin.core.resource.configuration.service.ServiceType
@@ -20,8 +21,8 @@ abstract class YggdrasilService(
 ) {
 
     abstract val httpMethodType: HttpMethodType;
-    abstract fun generateAuthUrl(username: String, serverId: String, ip: String?): String
-    abstract fun generatePostContent(username: String, serverId: String, ip: String?): String
+    abstract fun generateAuthUrl(loginProfile: LoginProfile): String
+    abstract fun generatePostContent(loginProfile: LoginProfile): String
 
     fun generateIpContent(byteArray: ByteArray, ip: String?) = generateIpContent(String(byteArray), ip)
 
@@ -55,29 +56,29 @@ class YggdrasilCustomService(
 ) {
     override val serviceType = ServiceType.CUSTOM_YGGDRASIL
 
-    override fun generateAuthUrl(username: String, serverId: String, ip: String?): String {
-        val encodedUsername = URLEncoder.encode(username, Charsets.UTF_8)
-        val encodedServerId = URLEncoder.encode(username, Charsets.UTF_8)
-        val ipContent = generateIpContent(ipContent, ip)
+    override fun generateAuthUrl(loginProfile: LoginProfile): String {
+        val encodedUsername = URLEncoder.encode(loginProfile.username, Charsets.UTF_8)
+        val encodedServerId = URLEncoder.encode(loginProfile.serverId, Charsets.UTF_8)
+        val ipContent = generateIpContent(ipContent, loginProfile.playerIp)
 
         return authUrl
             .replace("{0}", encodedUsername)
-            .replace("{1)", encodedServerId)
+            .replace("{1}", encodedServerId)
             .replace("{2}", ipContent)
             .replace("{username}", encodedUsername)
             .replace("{server_id)", encodedServerId)
             .replace("{ip_content}", ipContent)
     }
 
-    override fun generatePostContent(username: String, serverId: String, ip: String?): String {
+    override fun generatePostContent(loginProfile: LoginProfile): String {
         if (httpMethodType == HttpMethodType.GET) throw UnsupportedOperationException("http get")
-        val encodedUsername = URLEncoder.encode(username, Charsets.UTF_8)
-        val encodedServerId = URLEncoder.encode(username, Charsets.UTF_8)
-        val ipContent = generateIpContent(ipContent, ip)
+        val encodedUsername = URLEncoder.encode(loginProfile.username, Charsets.UTF_8)
+        val encodedServerId = URLEncoder.encode(loginProfile.serverId, Charsets.UTF_8)
+        val ipContent = generateIpContent(ipContent, loginProfile.playerIp)
 
         return postContent
             .replace("{0}", encodedUsername)
-            .replace("{1)", encodedServerId)
+            .replace("{1}", encodedServerId)
             .replace("{2}", ipContent)
             .replace("{username}", encodedUsername)
             .replace("{server_id)", encodedServerId)
@@ -186,21 +187,21 @@ class YggdrasilBlessingSkinService(
             YggdrasilOfficialService.VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES
     }
 
-    override fun generateAuthUrl(username: String, serverId: String, ip: String?): String {
-        val encodedUsername = URLEncoder.encode(username, Charsets.UTF_8)
-        val encodedServerId = URLEncoder.encode(username, Charsets.UTF_8)
-        val ipContent = generateIpContent(BLESSING_SKIN_YGGDRASIL_URL_IP_CONTENT_BYTES, ip)
+    override fun generateAuthUrl(loginProfile: LoginProfile): String {
+        val encodedUsername = URLEncoder.encode(loginProfile.username, Charsets.UTF_8)
+        val encodedServerId = URLEncoder.encode(loginProfile.serverId, Charsets.UTF_8)
+        val ipContent = generateIpContent(BLESSING_SKIN_YGGDRASIL_URL_IP_CONTENT_BYTES, loginProfile.playerIp)
 
-        return apiRoot + String(APPEND_YGGDRASIL_URL_BYTES)
+        return "$apiRoot/" + String(APPEND_YGGDRASIL_URL_BYTES)
             .replace("{0}", encodedUsername)
-            .replace("{1)", encodedServerId)
+            .replace("{1}", encodedServerId)
             .replace("{2}", ipContent)
             .replace("{username}", encodedUsername)
             .replace("{server_id)", encodedServerId)
             .replace("{ip_content}", ipContent)
     }
 
-    override fun generatePostContent(username: String, serverId: String, ip: String?): String {
+    override fun generatePostContent(loginProfile: LoginProfile): String {
         throw UnsupportedOperationException("http get")
     }
 
@@ -325,20 +326,20 @@ class YggdrasilOfficialService(
         val VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES: ByteArray = byteArrayOf(38, 105, 112, 61, 123, 48, 125)
     }
 
-    override fun generateAuthUrl(username: String, serverId: String, ip: String?): String {
-        val encodedUsername = URLEncoder.encode(username, Charsets.UTF_8)
-        val encodedServerId = URLEncoder.encode(username, Charsets.UTF_8)
-        val ipContent = generateIpContent(VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES, ip)
+    override fun generateAuthUrl(loginProfile: LoginProfile): String {
+        val encodedUsername = URLEncoder.encode(loginProfile.username, Charsets.UTF_8)
+        val encodedServerId = URLEncoder.encode(loginProfile.serverId, Charsets.UTF_8)
+        val ipContent = generateIpContent(VANILLA_YGGDRASIL_URL_IP_CONTENT_BYTES, loginProfile.playerIp)
 
         return String(VANILLA_YGGDRASIL_URL_BYTES)
             .replace("{0}", encodedUsername)
-            .replace("{1)", encodedServerId)
+            .replace("{1}", encodedServerId)
             .replace("{2}", ipContent)
             .replace("{username}", encodedUsername)
             .replace("{server_id)", encodedServerId)
             .replace("{ip_content}", ipContent)
     }
 
-    override fun generatePostContent(username: String, serverId: String, ip: String?) =
+    override fun generatePostContent(loginProfile: LoginProfile) =
         throw UnsupportedOperationException("http post")
 }

@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.main
 import moe.caa.multilogin.api.exception.BreakSignalException
 import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.api.plugin.IPlugin
+import moe.caa.multilogin.core.auth.AuthenticationHandler
 import moe.caa.multilogin.core.command.CommandHandler
 import moe.caa.multilogin.core.resource.builddata.getBuildData
 import moe.caa.multilogin.core.resource.builddata.showWarning
@@ -20,6 +21,7 @@ class MultiCore(val plugin: IPlugin) {
     val commandHandler = CommandHandler(this)
     val configurationHandler = ConfigurationHandler(this)
     val messageHandler = MessageHandler()
+    val authenticationHandler = AuthenticationHandler(this)
 
     companion object {
         lateinit var instance: MultiCore

@@ -6,6 +6,7 @@ object Versions {
     const val EXPOSED = "0.49.0"
     const val KOTLINX_SERIALIZATION = "1.6.3"
     const val SPONGE_CONFIGURATION = "4.1.2"
+    const val OKHTTP3 = "4.12.0"
 
     const val ADVENTURE = "4.16.0"
     const val ANNOTATIONS = "24.1.0"
