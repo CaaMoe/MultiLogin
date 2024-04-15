@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     implementation(project(":api"))
-    implementation(project(":core"))
+    implementation(project(":loader"))
     implementation(cloud("velocity"))
 
     compileOnly(fileTree(File("libraries")))
@@ -20,6 +20,10 @@ dependencies {
 
 tasks.shadowJar {
     archiveAppendix = "MultiLogin-Velocity"
+
+    from (layout.buildDirectory){
+        project(":core").tasks.shadowJar.get().archiveFile
+    }
 }
 
 fun doRelocate(shadowJar: ShadowJar, pattern: String) {

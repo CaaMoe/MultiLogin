@@ -1,38 +1,36 @@
 import moe.caa.multilogin.gradle.librarycollector.*
 
-plugins {
-    id("library-collector")
-}
-
 dependencies {
-    databaseDrivers().forEach {
-        summaryCalculate(it)
-        implementation(it) // test
-    }
+    compileOnly(project(":api"))
 
-    implementation(okhttp3())
-    implementation(project(":api"))
-    implementation(adventure("text-minimessage"))
-    implementation(cloud("core"))
-    implementation(spongeConfiguration("hocon"))
-    implementation(spongeConfiguration("core"))
-    implementation(serialization("json"))
-    implementation(exposed("core"))
-    implementation(exposed("crypt"))
-    implementation(exposed("dao"))
-    implementation(exposed("jdbc"))
-    implementation(exposed("jodatime"))
-    implementation(exposed("java-time"))
-    implementation(exposed("kotlin-datetime"))
-    implementation(exposed("json"))
-    implementation(exposed("money"))
-    implementation(exposed("spring-boot-starter"))
+
+    compileOnly(okhttp3())
+    compileOnly(adventure("text-minimessage"))
+    compileOnly(cloud("core"))
+    compileOnly(spongeConfiguration("hocon"))
+    compileOnly(spongeConfiguration("core"))
+    compileOnly(serialization("json"))
+    compileOnly(exposed("core"))
+    compileOnly(exposed("crypt"))
+    compileOnly(exposed("dao"))
+    compileOnly(exposed("jdbc"))
+    compileOnly(exposed("jodatime"))
+    compileOnly(exposed("java-time"))
+    compileOnly(exposed("kotlin-datetime"))
+    compileOnly(exposed("json"))
+    compileOnly(exposed("money"))
+    compileOnly(exposed("spring-boot-starter"))
 }
 
-tasks.processResources {
-    dependsOn(tasks["summaryCalculate"])
+tasks.shadowJar {
+    exclude("**/kotlin/**")
+    exclude("**/kotlinx/**")
 
-    from(layout.buildDirectory) {
-        include(".digested")
-    }
+    minimize()
+    archiveFileName = "MultiLogin-Core"
+
+}
+
+artifacts {
+    archives(tasks.shadowJar)
 }

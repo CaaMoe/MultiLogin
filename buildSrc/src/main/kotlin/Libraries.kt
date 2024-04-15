@@ -13,7 +13,7 @@ fun okhttp3() = "com.squareup.okhttp3:okhttp:${Versions.OKHTTP3}"
 fun velocity(module: String) = "com.velocitypowered:velocity-$module:${Versions.VELOCITY}"
 fun netty(module: String) = "io.netty:netty-$module:${Versions.NETTY}"
 
-fun databaseDrivers() = listOf(
+fun runtimeDependency() = listOf(
     "com.impossibl.pgjdbc-ng:pgjdbc-ng:0.8.9",
     "org.postgresql:postgresql:42.7.3",
 

@@ -15,7 +15,6 @@ import moe.caa.multilogin.api.exception.BreakSignalException
 import moe.caa.multilogin.api.logger.Logger
 import moe.caa.multilogin.api.logger.logError
 import moe.caa.multilogin.api.plugin.IPlugin
-import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.SenderMapper
@@ -30,7 +29,7 @@ class MultiLoginVelocity @Inject constructor(
     logger: org.slf4j.Logger,
     @DataDirectory dataDirectory: Path
 ) : IPlugin {
-    lateinit var multiCore: MultiCore
+//    lateinit var multiCore: MultiCore
 
     init {
         Logger.logger = Slf4jLogger(logger)
@@ -39,8 +38,8 @@ class MultiLoginVelocity @Inject constructor(
     @Subscribe
     fun onInitialize(event: ProxyInitializeEvent) {
         try {
-            this.multiCore = MultiCore(this)
-            this.multiCore.enable()
+//            this.multiCore = MultiCore(this)
+//            this.multiCore.enable()
 
             VelocityInjector(this).inject()
         } catch (exception: BreakSignalException) {
@@ -55,9 +54,9 @@ class MultiLoginVelocity @Inject constructor(
     @Subscribe
     fun onShutdown(event: ProxyShutdownEvent) {
         try {
-            if (::multiCore.isInitialized) {
-                multiCore.disable()
-            }
+//            if (::multiCore.isInitialized) {
+//                multiCore.disable()
+//            }
         } catch (throwable: Throwable) {
             logError("Failed to initializing the plugin.", throwable)
         } finally {
