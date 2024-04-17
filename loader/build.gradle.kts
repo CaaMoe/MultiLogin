@@ -11,7 +11,7 @@ plugins {
 
 dependencies {
     runtimeDependency().forEach {
-        implementation(it) // test
+//        implementation(it) // test
     }
 }
 

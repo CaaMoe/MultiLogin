@@ -1,8 +1,11 @@
+import moe.caa.multilogin.gradle.librarycollector.adventure
 import moe.caa.multilogin.gradle.librarycollector.annotations
 import moe.caa.multilogin.gradle.librarycollector.cloud
 
 
 dependencies {
-    implementation(cloud("core"))
-    implementation(annotations())
+    compileOnly(cloud("core"))
+    compileOnly(adventure("api"))
+    compileOnly(annotations())
+
 }

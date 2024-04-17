@@ -1,8 +1,8 @@
 import moe.caa.multilogin.gradle.librarycollector.*
 
+
 dependencies {
     compileOnly(project(":api"))
-
 
     compileOnly(okhttp3())
     compileOnly(adventure("text-minimessage"))
@@ -23,14 +23,7 @@ dependencies {
 }
 
 tasks.shadowJar {
-    exclude("**/kotlin/**")
-    exclude("**/kotlinx/**")
-
-    minimize()
     archiveFileName = "MultiLogin-Core"
 
-}
-
-artifacts {
-    archives(tasks.shadowJar)
+    configurations = listOf()
 }

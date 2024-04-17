@@ -1,6 +1,3 @@
-import groovy.json.JsonOutput
-import moe.caa.multilogin.gradle.librarycollector.adventure
-import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,10 +31,6 @@ subprojects {
 
     java.sourceCompatibility = JavaVersion.VERSION_17
     java.targetCompatibility = JavaVersion.VERSION_17
-
-    dependencies {
-        compileOnly(adventure("api"))
-    }
 
     tasks.processResources {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

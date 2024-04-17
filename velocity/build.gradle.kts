@@ -19,10 +19,11 @@ dependencies {
 }
 
 tasks.shadowJar {
+    dependsOn(project(":core").tasks.shadowJar.get())
     archiveAppendix = "MultiLogin-Velocity"
 
-    from (layout.buildDirectory){
-        project(":core").tasks.shadowJar.get().archiveFile
+    from(project(":core").tasks.shadowJar.get().archiveFile) {
+        include(project(":core").tasks.shadowJar.get().archiveFileName.get())
     }
 }
 
