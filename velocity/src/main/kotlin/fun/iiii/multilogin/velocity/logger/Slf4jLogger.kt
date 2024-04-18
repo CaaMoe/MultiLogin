@@ -4,7 +4,7 @@ import moe.caa.multilogin.api.logger.Level
 import moe.caa.multilogin.api.logger.Logger
 
 class Slf4jLogger(private val logger: org.slf4j.Logger) : Logger {
-    override fun log(level: Level, message: String?, throwable: Throwable?) {
+    override fun handleLog(level: Level, message: String?, throwable: Throwable?) {
         when (level) {
             Level.DEBUG -> logger.debug(message, throwable)
             Level.INFO -> logger.info(message, throwable)

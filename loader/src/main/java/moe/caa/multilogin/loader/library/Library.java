@@ -2,9 +2,11 @@ package moe.caa.multilogin.loader.library;
 
 import java.io.File;
 
-public record Library(String group, String name, String version) {
-    public static Library of(String str, String split) {
-        String[] strings = str.split(split);
+public record Library(
+        String group, String name, String version
+) {
+    public static Library of(String str) {
+        String[] strings = str.split(":");
         return new Library(strings[0], strings[1], strings[2]);
     }
 
