@@ -7,9 +7,9 @@ repositories {
 
 dependencies {
     compileOnly(project(":multilogin-api"))
-    compileOnly(project(":loader"))
-    compileOnly(project(":core"))
-    compileOnly(project(":velocity"))
+    compileOnly(project(":multilogin-loader"))
+    compileOnly(project(":multilogin-core"))
+    compileOnly(project(":multilogin-velocity"))
 
     compileOnly(fileTree(File("libraries")))
     compileOnly(cloud("velocity"))

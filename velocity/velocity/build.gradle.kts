@@ -6,23 +6,23 @@ repositories {
 
 dependencies {
     implementation(project(":multilogin-api"))
-    implementation(project(":loader"))
+    implementation(project(":multilogin-loader"))
 
     compileOnly(velocity("api"))
     annotationProcessor(velocity("api"))
 }
 
 tasks.shadowJar {
-    dependsOn(project(":core").tasks.shadowJar.get())
-    dependsOn(project(":velocity-core").tasks.shadowJar.get())
+    dependsOn(project(":multilogin-core").tasks.shadowJar.get())
+    dependsOn(project(":multilogin-velocity-core").tasks.shadowJar.get())
 
     archiveAppendix = "MultiLogin-Velocity"
 
-    from(project(":core").tasks.shadowJar.get().archiveFile) {
-        include(project(":core").tasks.shadowJar.get().archiveFileName.get())
+    from(project(":multilogin-core").tasks.shadowJar.get().archiveFile) {
+        include(project(":multilogin-core").tasks.shadowJar.get().archiveFileName.get())
     }
 
-    from(project(":velocity-core").tasks.shadowJar.get().archiveFile) {
-        include(project(":velocity-core").tasks.shadowJar.get().archiveFileName.get())
+    from(project(":multilogin-velocity-core").tasks.shadowJar.get().archiveFile) {
+        include(project(":multilogin-velocity-core").tasks.shadowJar.get().archiveFileName.get())
     }
 }
