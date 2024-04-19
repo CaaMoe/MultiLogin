@@ -7,22 +7,14 @@ import com.velocitypowered.proxy.connection.client.AuthSessionHandler
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection
 import com.velocitypowered.proxy.crypto.EncryptionUtils
-import com.velocitypowered.proxy.protocol.StateRegistry
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
 import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelHandler
 import `fun`.iiii.multilogin.velocity.util.*
-import moe.caa.multilogin.api.auth.LoginProfile
-import moe.caa.multilogin.api.logger.logError
-//import moe.caa.multilogin.core.auth.AuthenticationFailureResult
-//import moe.caa.multilogin.core.auth.AuthenticationSuccessResult
-//import moe.caa.multilogin.core.resource.message.language
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
-import java.net.InetSocketAddress
 import java.security.GeneralSecurityException
 import java.security.MessageDigest
-import java.util.concurrent.CompletableFuture
 
 class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChannelHandler) {
     companion object {
@@ -96,7 +88,7 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
 
         val verify = VERIFY_GETTER.invoke(initialLoginSessionHandler) as ByteArray
         if (verify.isEmpty()) {
-            throw java.lang.IllegalStateException("No EncryptionRequest packet sent yet.")
+            throw IllegalStateException("No EncryptionRequest packet sent yet.")
         }
 
         try {

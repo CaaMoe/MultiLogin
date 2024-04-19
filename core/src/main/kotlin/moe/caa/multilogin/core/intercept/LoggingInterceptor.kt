@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.intercept
 
-import moe.caa.multilogin.api.logger.logDebug
+import moe.caa.multilogin.core.util.logDebug
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.RequestBody

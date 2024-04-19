@@ -1,23 +1,18 @@
 package moe.caa.multilogin.core.main
 
 import moe.caa.multilogin.api.exception.BreakSignalException
-import moe.caa.multilogin.api.logger.logWarn
-import moe.caa.multilogin.api.plugin.IPlugin
 import moe.caa.multilogin.core.auth.AuthenticationHandler
 import moe.caa.multilogin.core.command.CommandHandler
 import moe.caa.multilogin.core.database.SQLHandler
+import moe.caa.multilogin.core.plugin.ExtendedPlatform
 import moe.caa.multilogin.core.resource.builddata.getBuildData
 import moe.caa.multilogin.core.resource.builddata.showWarning
 import moe.caa.multilogin.core.resource.configuration.ConfigurationHandler
 import moe.caa.multilogin.core.resource.message.MessageHandler
-import moe.caa.multilogin.core.util.FormattedThreadFactory
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import moe.caa.multilogin.core.util.logError
+import moe.caa.multilogin.core.util.logWarn
 
-class MultiCore(val plugin: IPlugin) {
-    val asyncExecute: ExecutorService = Executors.newFixedThreadPool(
-        16,
-        FormattedThreadFactory("MultiLogin Async #d") { Thread(it).apply { isDaemon = true } })
+class MultiCore(val plugin: ExtendedPlatform) {
     val commandHandler = CommandHandler(this)
     val configurationHandler = ConfigurationHandler(this)
     val messageHandler = MessageHandler()
@@ -43,12 +38,12 @@ class MultiCore(val plugin: IPlugin) {
     }
 
     private fun checkEnvironment() {
-        if (!plugin.isOnlineMode()) {
-            moe.caa.multilogin.api.logger.logError("Please enable online mode, otherwise the plugin will not work!!!")
+        if (!plugin.onlineMode) {
+            logError("Please enable online mode, otherwise the plugin will not work!!!")
             throw BreakSignalException("The server will be forced to shut down!!!")
         }
-        if(!plugin.isProfileForwarding()){
-            moe.caa.multilogin.api.logger.logError("Please enable profile forwarding, otherwise the plugin will not work!!!")
+        if (!plugin.profileForwarding) {
+            logError("Please enable profile forwarding, otherwise the plugin will not work!!!")
             throw BreakSignalException("The server will be forced to shut down!!!")
         }
 

@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.database
 
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.api.logger.logDebug
-import moe.caa.multilogin.api.logger.logInfo
 import moe.caa.multilogin.core.database.v4.InGameProfileV4
+import moe.caa.multilogin.core.util.logDebug
+import moe.caa.multilogin.core.util.logInfo
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.StatementContext
 import org.jetbrains.exposed.sql.statements.expandArgs

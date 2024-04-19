@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil
 
 import kotlinx.serialization.json.*
-import moe.caa.multilogin.api.auth.LoginProfile
 import moe.caa.multilogin.api.profile.GameProfile
+import moe.caa.multilogin.core.auth.LoginProfile
 import moe.caa.multilogin.core.util.toUUIDOrNull
 
 object GameProfileDeserializer {
@@ -13,8 +13,8 @@ object GameProfileDeserializer {
         val name = element["name"]?.jsonPrimitive?.content ?: loginProfile.username
 
         val properties = when (val propertiesElement = element["properties"]) {
-            is JsonArray -> propertiesElement.map { PropertyDeserializer.deserialize(it) }.map { Pair(it.name, it) }
-            is JsonObject -> propertiesElement.map { Pair(it.key, PropertyDeserializer.deserialize(it.value)) }
+            is JsonArray -> propertiesElement.map { PropertyDeserializer.deserialize(it) }
+            is JsonObject -> propertiesElement.map { PropertyDeserializer.deserialize(it.value) }
             is JsonNull, null -> listOf()
             else -> throw ParseException("Unknown properties type: ${propertiesElement.javaClass.name}")
         }

@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.resource
 
-import moe.caa.multilogin.api.logger.logInfo
 import moe.caa.multilogin.core.main.MultiCore
+import moe.caa.multilogin.core.util.logInfo
 import java.io.File
 import java.io.IOException
 import java.io.InputStream

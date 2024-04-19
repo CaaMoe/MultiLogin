@@ -6,6 +6,11 @@ import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
 public final class SysOutLogger extends Logger {
+    public static final SysOutLogger INSTANCE = new SysOutLogger();
+
+    private SysOutLogger() {
+    }
+
     @Override
     public void handleLog(Level level, String message, Throwable throwable) {
         if(throwable != null){

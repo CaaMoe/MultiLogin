@@ -1,16 +1,16 @@
 package moe.caa.multilogin.core.command.handles
 
 import moe.caa.multilogin.api.exception.BreakSignalException
-import moe.caa.multilogin.api.logger.logError
 import moe.caa.multilogin.core.main.MultiCore
+import moe.caa.multilogin.core.plugin.ICommandSender
 import moe.caa.multilogin.core.resource.builddata.getBuildData
 import moe.caa.multilogin.core.resource.message.language
-import net.kyori.adventure.audience.Audience
+import moe.caa.multilogin.core.util.logError
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import org.incendo.cloud.execution.CommandExecutionHandler
 
-val VERSION_HANDLER = CommandExecutionHandler<Audience> {
+val VERSION_HANDLER = CommandExecutionHandler<ICommandSender> {
     it.sender().sendMessage(Component.text("Build Version: ${getBuildData("version")}"))
     it.sender().sendMessage(Component.text("Build Type: ${getBuildData("build_type")}"))
     it.sender().sendMessage(Component.text("Build By: ${getBuildData("build_by")}"))
@@ -24,7 +24,7 @@ val VERSION_HANDLER = CommandExecutionHandler<Audience> {
     }
 }
 
-val RELOAD_HANDLER = CommandExecutionHandler<Audience> { context ->
+val RELOAD_HANDLER = CommandExecutionHandler<ICommandSender> { context ->
     runCatching {
         MultiCore.instance.reload()
     }.onFailure { throwable ->

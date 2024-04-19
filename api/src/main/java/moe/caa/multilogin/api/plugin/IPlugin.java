@@ -4,10 +4,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.concurrent.ScheduledExecutorService;
 
 @ApiStatus.Internal
-public interface IPlugin {
+public interface IPlugin extends ExtendedService {
     @NotNull
     File getDataFolder();
 
@@ -15,5 +14,5 @@ public interface IPlugin {
     File getTempFolder();
 
     @NotNull
-    ScheduledExecutorService getAsyncExecutor();
+    IScheduler getScheduler();
 }

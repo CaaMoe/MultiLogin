@@ -1,10 +1,9 @@
 package moe.caa.multilogin.core.resource.configuration
 
-import moe.caa.multilogin.api.exception.BreakSignalException
-import moe.caa.multilogin.api.logger.Logger
-import moe.caa.multilogin.api.logger.logError
+import moe.caa.multilogin.api.logger.LoggerProvider
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.*
+import moe.caa.multilogin.core.util.logError
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
 
@@ -16,7 +15,7 @@ class ConfigurationHandler(private val multiCore: MultiCore) {
             reload()
         } catch (rce: ReadConfigurationException) {
             logError(rce.message)
-            throw BreakSignalException()
+            throw RuntimeException() // todo break
         }
     }
 
@@ -40,6 +39,6 @@ class ConfigurationHandler(private val multiCore: MultiCore) {
     }
 
     private fun applyConfiguration(){
-        Logger.debug(GeneralConfiguration.debug)
+        LoggerProvider.debugMode = GeneralConfiguration.debug
     }
 }

@@ -1,5 +1,4 @@
 import groovy.json.JsonOutput
-import moe.caa.multilogin.gradle.librarycollector.runtimeDependency
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.text.SimpleDateFormat
@@ -10,9 +9,7 @@ plugins {
 }
 
 dependencies {
-    runtimeDependency().forEach {
-//        implementation(it) // test
-    }
+    compileOnly(project(":api"))
 }
 
 tasks.processResources {

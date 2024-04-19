@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 public final class LoggerProvider {
     @NotNull
-    public static Logger logger = new SysOutLogger();
+    public static Logger logger = SysOutLogger.INSTANCE;
     public static boolean debugMode = false;
 }

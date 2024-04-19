@@ -1,11 +1,11 @@
 package moe.caa.multilogin.core.resource.message
 
-import moe.caa.multilogin.api.logger.logInfo
-import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.MESSAGE_CONFIGURATION
 import moe.caa.multilogin.core.resource.getResource
 import moe.caa.multilogin.core.resource.saveDefaultResource
+import moe.caa.multilogin.core.util.logInfo
+import moe.caa.multilogin.core.util.logWarn
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.spongepowered.configurate.ConfigurationNode

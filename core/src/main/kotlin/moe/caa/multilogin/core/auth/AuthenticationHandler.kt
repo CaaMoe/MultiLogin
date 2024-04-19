@@ -1,12 +1,11 @@
 package moe.caa.multilogin.core.auth
 
-import moe.caa.multilogin.api.auth.LoginProfile
-import moe.caa.multilogin.api.logger.logDebug
-import moe.caa.multilogin.api.logger.logInfo
 import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticationSuccessResult
 import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticator
 import moe.caa.multilogin.core.auth.validate.LoginValidator
 import moe.caa.multilogin.core.main.MultiCore
+import moe.caa.multilogin.core.util.logDebug
+import moe.caa.multilogin.core.util.logInfo
 
 class AuthenticationHandler(
     val multiCore: MultiCore
@@ -24,7 +23,7 @@ class AuthenticationHandler(
             loginValidator.auth(yggdrasilAuthResult.service, yggdrasilAuthResult.gameProfile)
 
         if (finalResult is AuthenticationSuccessResult) {
-            logInfo("${yggdrasilAuthResult.gameProfile.name}(uuid: ${yggdrasilAuthResult.gameProfile.uuid}) from authentication service ${yggdrasilAuthResult.service.serviceName}(sid: ${yggdrasilAuthResult.service.serviceId}) has been authenticated, profile redirected to ${finalResult.gameProfile.name}(uuid: ${finalResult.gameProfile.uuid}).")
+            logInfo("${yggdrasilAuthResult.gameProfile.username}(uuid: ${yggdrasilAuthResult.gameProfile.uuid}) from authentication service ${yggdrasilAuthResult.service.serviceName}(sid: ${yggdrasilAuthResult.service.serviceId}) has been authenticated, profile redirected to ${finalResult.gameProfile.username}(uuid: ${finalResult.gameProfile.uuid}).")
         }
         return finalResult
     }

@@ -1,13 +1,13 @@
 package moe.caa.multilogin.core.resource.configuration
 
 import com.zaxxer.hikari.HikariConfig
-import moe.caa.multilogin.api.logger.logInfo
-import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.core.resource.configuration.service.*
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilOfficialService
 import moe.caa.multilogin.core.util.camelCaseToUnderscore
+import moe.caa.multilogin.core.util.logInfo
+import moe.caa.multilogin.core.util.logWarn
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File

@@ -1,11 +1,11 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil
 
-import moe.caa.multilogin.api.auth.LoginProfile
-import moe.caa.multilogin.api.logger.logDebug
-import moe.caa.multilogin.api.logger.logWarn
 import moe.caa.multilogin.core.auth.AuthenticationHandler
+import moe.caa.multilogin.core.auth.LoginProfile
 import moe.caa.multilogin.core.resource.configuration.GeneralConfiguration
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilService
+import moe.caa.multilogin.core.util.logDebug
+import moe.caa.multilogin.core.util.logWarn
 import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
@@ -64,7 +64,7 @@ class YggdrasilAuthenticator(
             Collections.synchronizedList(ArrayList<YggdrasilAuthenticationFailureResult>())
 
         authList.forEach { service ->
-            authenticationHandler.multiCore.asyncExecute.submit {
+            authenticationHandler.multiCore.plugin.scheduler.runTaskAsync {
                 try {
                     when (val authenticationResult = YggdrasilAuthenticationTask(service, loginProfile).hasJoined()) {
                         is YggdrasilAuthenticationSuccessResult -> {
