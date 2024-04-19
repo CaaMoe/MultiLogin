@@ -6,7 +6,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":api"))
+    compileOnly(project(":multilogin-api"))
     compileOnly(project(":loader"))
     compileOnly(project(":core"))
     compileOnly(project(":velocity"))

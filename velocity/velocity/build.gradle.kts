@@ -5,7 +5,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":api"))
+    implementation(project(":multilogin-api"))
     implementation(project(":loader"))
 
     compileOnly(velocity("api"))

@@ -10,3 +10,7 @@ include("velocity-core")
 
 project(":velocity").projectDir = file("velocity/velocity")
 project(":velocity-core").projectDir = file("velocity/velocity-core")
+
+project(":api").apply {
+    name = "multilogin-api"
+}
