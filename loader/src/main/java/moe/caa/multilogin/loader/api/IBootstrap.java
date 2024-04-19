@@ -6,8 +6,8 @@ import java.io.File;
 
 public interface IBootstrap {
     File getDataFolder();
-
     File getTempFolder();
-
     IScheduler getScheduler();
+
+    String getBootstrapModule();
 }

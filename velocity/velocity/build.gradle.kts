@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import moe.caa.multilogin.gradle.librarycollector.velocity
 
 repositories {
@@ -15,25 +16,23 @@ dependencies {
 tasks.shadowJar {
     archiveAppendix = "MultiLogin-Velocity"
 
-    dependsOn(project(":multilogin-core").tasks.shadowJar.get())
-    dependsOn(project(":multilogin-velocity-core").tasks.shadowJar.get())
-
-    from(project(":multilogin-core").tasks.shadowJar.get().archiveFile) {
-        include(project(":multilogin-core").tasks.shadowJar.get().archiveFileName.get())
-    }
-
-    from(project(":multilogin-velocity-core").tasks.shadowJar.get().archiveFile) {
-        include(project(":multilogin-velocity-core").tasks.shadowJar.get().archiveFileName.get())
-    }
-
-    dependencies {
-        project(":multilogin-loader")
-    }
+    copyShadowJar(this, project(":multilogin-core"))
+    copyShadowJar(this, project(":multilogin-velocity-core"))
+    copyShadowJar(this, project(":multilogin-loader"))
+    copyShadowJar(this, project(":multilogin-api"))
 
     doLast {
         val jarDirectory = rootProject.file("jar")
         jarDirectory.mkdirs()
 
         archiveFile.get().asFile.copyTo(File(jarDirectory, archiveFile.get().asFile.name), overwrite = true)
+    }
+}
+
+fun copyShadowJar(task: ShadowJar, project: Project) {
+    task.dependsOn(project.tasks.shadowJar)
+    val shadowJar = project.tasks.shadowJar.get()
+    task.from(shadowJar.archiveFile) {
+        include(shadowJar.archiveFileName.get())
     }
 }

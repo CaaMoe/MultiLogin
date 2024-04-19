@@ -32,13 +32,12 @@ public class PluginLoader {
 
             DIGESTED_MAP = Collections.unmodifiableMap(tMap);
         } catch (Throwable throwable) {
-            throw new RuntimeException("Failed to initialize internal data.");
+            throw new RuntimeException("Failed to initialize internal data.", throwable);
         }
     }
 
     public PluginLoader(IBootstrap bootstrap) {
         this.bootstrap = bootstrap;
-
         this.librariesFolder = new File(bootstrap.getDataFolder(), "libraries");
         this.temporaryRelocatedLibrariesFolder = new File(bootstrap.getTempFolder(), "relocatedLibraries");
     }
@@ -55,7 +54,14 @@ public class PluginLoader {
                 librariesFolder,
                 temporaryRelocatedLibrariesFolder
         );
+
+        initLibraries();
     }
+
+    private void initLibraries() {
+
+    }
+
 
     private void createDirectories(File... files) throws IOException {
         for (File file : files) {

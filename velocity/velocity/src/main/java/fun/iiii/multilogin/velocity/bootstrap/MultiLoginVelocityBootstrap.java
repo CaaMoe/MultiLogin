@@ -97,4 +97,9 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     public IScheduler getScheduler() {
         return scheduler;
     }
+
+    @Override
+    public String getBootstrapModule() {
+        return "MultiLogin-Velocity-Core";
+    }
 }

@@ -1,5 +1,6 @@
 package moe.caa.multilogin.loader.library;
 
+import moe.caa.multilogin.api.logger.LoggerProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class LibraryDownloadingTask {
         IOException exception = new IOException("Unable to download file " + output.getName() + ".");
         for (String repository : repositories) {
             String downloadUrl = repository + library.getUrl();
-//            LoggerProvider.logger.debug("Downloading from " + downloadUrl);
+            LoggerProvider.logger.debug("Downloading from " + downloadUrl);
             try {
                 bytes = getBytes(new URL(downloadUrl));
                 break;
@@ -60,7 +61,7 @@ public class LibraryDownloadingTask {
             Files.createDirectories(output.getParentFile().toPath());
         }
 
-//        LoggerProvider.logger.info("Downloaded " + output.getName());
+        LoggerProvider.logger.info("Downloaded " + library.getUrl());
         Files.write(output.toPath(), bytes);
     }
 }
