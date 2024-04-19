@@ -13,5 +13,5 @@
       "optional": true
     }
   ],
-  "main": "fun.iiii.multilogin.velocity.main.MultiLoginVelocity"
+  "main": "fun.iiii.multilogin.velocity.bootstrap.MultiLoginVelocityBootstrap"
 }

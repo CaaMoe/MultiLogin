@@ -1,9 +1,9 @@
 package `fun`.iiii.multilogin.velocity.inject
 
 import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelInitializer
-import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocity
+import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocityCore
 
-class VelocityInjector(val plugin: MultiLoginVelocity) {
+class VelocityInjector(val plugin: MultiLoginVelocityCore) {
     fun inject() {
         MultiLoginChannelInitializer.init(plugin)
     }

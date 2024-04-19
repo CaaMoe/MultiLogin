@@ -1,15 +1,14 @@
 package `fun`.iiii.multilogin.velocity.inject.netty
 
 import com.velocitypowered.proxy.connection.MinecraftConnection
-import com.velocitypowered.proxy.network.ConnectionManager
-import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocity
+import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocityCore
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 
 class MultiLoginChannelInitializer(
-    private val plugin: MultiLoginVelocity,
+    private val plugin: MultiLoginVelocityCore,
     private val originChannel: ChannelInitializer<Channel>
 ) : ChannelInitializer<Channel>() {
 
@@ -26,18 +25,18 @@ class MultiLoginChannelInitializer(
             )
         }
 
-        fun init(plugin: MultiLoginVelocity) {
-            val connectionManager: ConnectionManager = Class.forName("com.velocitypowered.proxy.VelocityServer")
-                .getDeclaredField("cm").apply {
-                    isAccessible = true
-                }.let {
-                    it.get(plugin.server) as ConnectionManager
-                }
-
-            val serverChannelInitializerHolder = connectionManager.getServerChannelInitializer()
-            serverChannelInitializerHolder.set(
-                MultiLoginChannelInitializer(plugin, serverChannelInitializerHolder.get())
-            )
+        fun init(plugin: MultiLoginVelocityCore) {
+//            val connectionManager: ConnectionManager = Class.forName("com.velocitypowered.proxy.VelocityServer")
+//                .getDeclaredField("cm").apply {
+//                    isAccessible = true
+//                }.let {
+//                    it.get(plugin.server) as ConnectionManager
+//                }
+//
+//            val serverChannelInitializerHolder = connectionManager.getServerChannelInitializer()
+//            serverChannelInitializerHolder.set(
+//                MultiLoginChannelInitializer(plugin, serverChannelInitializerHolder.get())
+//            )
         }
     }
 

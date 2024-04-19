@@ -160,7 +160,7 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
 //                }
 //            }, channelHandler.connection.eventLoop())
         } catch (gse: GeneralSecurityException) {
-            logError("Unable to enable encryption", gse)
+            moe.caa.multilogin.core.util.logError("Unable to enable encryption", gse)
             channelHandler.connection.close(true)
         }
     }

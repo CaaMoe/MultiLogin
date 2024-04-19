@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,9 +36,18 @@ subprojects {
 
     tasks.processResources {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        filter(
+            ReplaceTokens::class, mapOf(
+                "tokens" to buildData,
+                "beginToken" to "@",
+                "endToken" to "@"
+            )
+        )
     }
 
     tasks.shadowJar {
+        configurations = listOf()
         archiveBaseName = ""
         archiveVersion = outputArchiveVersion
         archiveClassifier = ""
@@ -64,6 +75,9 @@ subprojects {
     }
 }
 
+
+val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSet()
+val contributorsJson: String = JsonOutput.toJson(contributors)
 val outputArchiveVersion: String = System.getProperty("build_type", "auto")
     .equals("final", true).ifTrue {
         version.toString()
@@ -71,3 +85,14 @@ val outputArchiveVersion: String = System.getProperty("build_type", "auto")
     "Build_${it?.substring(0, 8) ?: "unknown"}"
 }
 
+val buildData by extra(
+    fun(): Map<String, String> = mapOf(
+        "version" to outputArchiveVersion,
+        "build_by" to System.getProperty("user.name"),
+        "contributors_json" to contributorsJson,
+        "contributors" to contributors.joinToString(),
+        "build_type" to System.getProperty("build_type", "auto"),
+        "build_revision" to (indraGit.commit()?.name ?: "unknown"),
+        "build_timestamp" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
+    )
+)

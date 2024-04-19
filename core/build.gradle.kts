@@ -24,6 +24,4 @@ dependencies {
 
 tasks.shadowJar {
     archiveFileName = "MultiLogin-Core"
-
-    configurations = listOf()
 }

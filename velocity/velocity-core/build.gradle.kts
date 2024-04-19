@@ -18,6 +18,4 @@ dependencies {
 
 tasks.shadowJar {
     archiveFileName = "MultiLogin-Velocity-Core"
-
-    configurations = listOf()
 }

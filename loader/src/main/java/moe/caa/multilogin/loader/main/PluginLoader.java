@@ -1,7 +1,7 @@
 package moe.caa.multilogin.loader.main;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.loader.api.IBootstrap;
 import moe.caa.multilogin.loader.library.Library;
 
 import java.io.*;
@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class PluginLoader {
     public static final Map<Library, String> DIGESTED_MAP;
-    public final IPlugin plugin;
+    public final IBootstrap bootstrap;
     public final File librariesFolder;
     private final File temporaryRelocatedLibrariesFolder;
 
@@ -36,11 +36,11 @@ public class PluginLoader {
         }
     }
 
-    public PluginLoader(IPlugin plugin) {
-        this.plugin = plugin;
+    public PluginLoader(IBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
 
-        this.librariesFolder = new File(plugin.getDataFolder(), "libraries");
-        this.temporaryRelocatedLibrariesFolder = new File(plugin.getTempFolder(), "relocatedLibraries");
+        this.librariesFolder = new File(bootstrap.getDataFolder(), "libraries");
+        this.temporaryRelocatedLibrariesFolder = new File(bootstrap.getTempFolder(), "relocatedLibraries");
     }
 
     public void init() throws IOException {
@@ -49,8 +49,8 @@ public class PluginLoader {
         deleteTemporaryFiles();
 
         createDirectories(
-                plugin.getDataFolder(),
-                plugin.getTempFolder(),
+                bootstrap.getDataFolder(),
+                bootstrap.getTempFolder(),
 
                 librariesFolder,
                 temporaryRelocatedLibrariesFolder
@@ -66,9 +66,9 @@ public class PluginLoader {
     }
 
     private void deleteTemporaryFiles() {
-        if (plugin.getTempFolder().exists()) {
+        if (bootstrap.getTempFolder().exists()) {
             try {
-                Files.walkFileTree(plugin.getTempFolder().toPath(), new SimpleFileVisitor<>() {
+                Files.walkFileTree(bootstrap.getTempFolder().toPath(), new SimpleFileVisitor<>() {
                     @Override
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                         Files.delete(file);
@@ -85,5 +85,9 @@ public class PluginLoader {
                 LoggerProvider.logger.error("An exception occurred while deleting the temporary directory.", e);
             }
         }
+    }
+
+    public void close() {
+
     }
 }
