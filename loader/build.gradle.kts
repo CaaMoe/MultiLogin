@@ -3,8 +3,15 @@ import java.security.MessageDigest
 
 val buildData: Map<String, String> by rootProject.extra
 
+val digestConfiguration = configurations.register("digest")
+
+fun DependencyHandler.digest(dependencyNotation: Any): Dependency? =
+    add(digestConfiguration.name, dependencyNotation)
+
 dependencies {
     compileOnly(project(":multilogin-api"))
+
+    digest("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
 }
 
 tasks.processResources {
@@ -21,9 +28,16 @@ tasks.processResources {
 }
 
 fun extraLibrariesSummary(task: ProcessResources) {
+    task.dependsOn(digestConfiguration)
     val digestedMap: MutableMap<String, String> = HashMap()
 
-    // todo collect libraries
+    digestConfiguration.get().resolvedConfiguration.resolvedArtifacts.forEach { artifact ->
+        run {
+            val dependency = artifact.moduleVersion.id
+            val key = "${dependency.group}:${dependency.name}:${dependency.version}"
+            digestedMap[key] = calculateDigest(artifact.file)
+        }
+    }
 
     val file = layout.buildDirectory.file(".digested").get().asFile
     file.parentFile?.mkdirs()

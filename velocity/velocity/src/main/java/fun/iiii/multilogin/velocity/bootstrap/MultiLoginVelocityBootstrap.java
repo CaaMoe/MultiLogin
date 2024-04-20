@@ -9,7 +9,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import moe.caa.multilogin.api.exception.BreakSignalException;
 import moe.caa.multilogin.api.logger.Level;
 import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IScheduler;
+import moe.caa.multilogin.api.schedule.IScheduler;
 import moe.caa.multilogin.loader.api.IBootstrap;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
@@ -21,8 +21,8 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     public final ProxyServer proxyServer;
     public final File dataFolder;
     public final File tempFolder;
-    public final IScheduler scheduler = IScheduler.buildSimple();
-    public final PluginLoader pluginLoader = new PluginLoader(this);
+    public final IScheduler scheduler;
+    public final PluginLoader pluginLoader;
 
     @Inject
     public MultiLoginVelocityBootstrap(
@@ -32,13 +32,16 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
         this.dataFolder = dataDirectory.toFile();
         this.tempFolder = new File(dataFolder, "tmp");
 
+        this.scheduler = IScheduler.buildSimple();
+        this.pluginLoader = new PluginLoader(this);
+
         setupLogger(logger);
     }
 
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
         try {
-            pluginLoader.init();
+            pluginLoader.enable();
         } catch (Throwable e) {
             if (e instanceof BreakSignalException) {
                 if (e.getMessage() != null) {
@@ -54,7 +57,7 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     @Subscribe
     public void onDisable(ProxyShutdownEvent event) {
         try {
-            pluginLoader.close();
+            pluginLoader.disable();
         } catch (Throwable e) {
             if (e instanceof BreakSignalException) {
                 if (e.getMessage() != null) {
@@ -99,7 +102,12 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     }
 
     @Override
-    public String getBootstrapModule() {
+    public String getPlatformCoreModuleName() {
         return "MultiLogin-Velocity-Core";
+    }
+
+    @Override
+    public String getPlatformCoreClassName() {
+        return "fun.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore";
     }
 }

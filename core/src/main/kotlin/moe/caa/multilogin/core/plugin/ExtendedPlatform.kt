@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.plugin
 
-import moe.caa.multilogin.api.plugin.IScheduler
+import moe.caa.multilogin.api.schedule.IScheduler
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.execution.ExecutionCoordinator
 import java.io.File

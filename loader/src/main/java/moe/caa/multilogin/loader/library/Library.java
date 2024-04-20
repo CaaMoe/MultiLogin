@@ -1,9 +1,12 @@
 package moe.caa.multilogin.loader.library;
 
 import java.io.File;
+import java.util.List;
 
 public record Library(
-        String group, String name, String version
+        String group,
+        String name,
+        String version
 ) {
     public static Library of(String str) {
         String[] strings = str.split(":");
@@ -14,10 +17,22 @@ public record Library(
         return new File(folder, getUrl());
     }
 
+    public static final List<Library> NECESSARY_LIBRARIES = List.of(
+            new Library("org.jetbrains.kotlin", "kotlin-stdlib", "1.9.23")
+    );
+
     public String getUrl() {
         return group.replace(".", "/")
                 + "/" + name + "/" + version + "/"
-                + name + "-" + version + ".jar";
+                + getFileName();
+    }
+
+    public String getFileName() {
+        return name + "-" + version + ".jar";
+    }
+
+    public String getDisplayName() {
+        return group + ":" + name + ":" + version;
     }
 }
 

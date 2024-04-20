@@ -1,4 +1,4 @@
-package moe.caa.multilogin.api.plugin;
+package moe.caa.multilogin.api.schedule;
 
 import org.jetbrains.annotations.ApiStatus;
 

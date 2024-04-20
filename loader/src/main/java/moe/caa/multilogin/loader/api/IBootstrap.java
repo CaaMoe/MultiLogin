@@ -1,13 +1,18 @@
 package moe.caa.multilogin.loader.api;
 
-import moe.caa.multilogin.api.plugin.IScheduler;
+import moe.caa.multilogin.api.schedule.IScheduler;
 
 import java.io.File;
 
 public interface IBootstrap {
+
     File getDataFolder();
+
     File getTempFolder();
+
     IScheduler getScheduler();
 
-    String getBootstrapModule();
+    String getPlatformCoreModuleName();
+
+    String getPlatformCoreClassName();
 }

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.loader.library;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.loader.main.PluginLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,15 +9,12 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.List;
 
 public class LibraryDownloadingTask {
     private final Library library;
-    private final File libraryFolder;
 
-    public LibraryDownloadingTask(Library library, File libraryFolder) {
+    public LibraryDownloadingTask(Library library) {
         this.library = library;
-        this.libraryFolder = libraryFolder;
     }
 
     private static byte[] getBytes(URL url) throws IOException {
@@ -37,31 +35,33 @@ public class LibraryDownloadingTask {
         throw new IOException(httpURLConnection.getResponseCode() + "");
     }
 
-    public void download(List<String> repositories) throws IOException {
-        File output = library.getFile(libraryFolder);
+    public void download(File output) throws IOException {
         byte[] bytes = null;
 
         IOException exception = new IOException("Unable to download file " + output.getName() + ".");
-        for (String repository : repositories) {
+        for (String repository : PluginLoader.REPOSITORIES) {
             String downloadUrl = repository + library.getUrl();
             LoggerProvider.logger.debug("Downloading from " + downloadUrl);
             try {
                 bytes = getBytes(new URL(downloadUrl));
+                LoggerProvider.logger.info("Downloaded " + downloadUrl);
                 break;
-            } catch (Exception t) {
+            } catch (IOException t) {
                 exception.addSuppressed(t);
             }
         }
 
-        if (bytes == null) {
-            throw exception;
+        if (bytes != null) {
+            try {
+                if (!output.getParentFile().exists()) {
+                    Files.createDirectories(output.getParentFile().toPath());
+                }
+                Files.write(output.toPath(), bytes);
+                return;
+            } catch (IOException e) {
+                exception.addSuppressed(e);
+            }
         }
-
-        if (!output.getParentFile().exists()) {
-            Files.createDirectories(output.getParentFile().toPath());
-        }
-
-        LoggerProvider.logger.info("Downloaded " + library.getUrl());
-        Files.write(output.toPath(), bytes);
+        throw exception;
     }
 }
