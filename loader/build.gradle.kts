@@ -11,9 +11,9 @@ fun DependencyHandler.digest(dependencyNotation: Any): Dependency? =
 dependencies {
     compileOnly(project(":multilogin-api"))
 
-    rootProject.file("digest_list").readLines()
-        .filter { it.trim().isNotEmpty() }
-        .filter { !it.startsWith("#") }
+    rootProject.file("library_list").readLines()
+        .filter { it.startsWith("[library] ") }
+        .map { it.substring("[library] ".length) }
         .forEach { digest(it) }
 }
 
@@ -48,6 +48,10 @@ fun extraLibrariesSummary(task: ProcessResources) {
 
     task.from(layout.buildDirectory) {
         include(".digested")
+    }
+
+    task.from(rootProject.file("library_list")) {
+        include("library_list")
     }
 }
 

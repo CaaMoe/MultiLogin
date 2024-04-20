@@ -1,0 +1,25 @@
+# libraries group file
+
+[group] relocate
+[library] me.lucko:jar-relocator:1.7
+[library] org.ow2.asm:asm:9.2
+[library] org.ow2.asm:asm-commons:9.2
+
+[group] core
+[library] org.jetbrains.kotlin:kotlin-stdlib:1.9.23
+[library] org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3
+[library] org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3
+
+[library] org.incendo:cloud-core:2.0.0-beta.4
+[library] org.incendo:cloud-services:2.0.0-beta.4
+
+[library] com.zaxxer:HikariCP:5.1.0
+
+[group] velocity
+[library] org.incendo:cloud-velocity:2.0.0-beta.4
+[library] org.incendo:cloud-brigadier:2.0.0-beta.4
+
+
+[relocate] kotlin
+[relocate] org.incendo.cloud
+[relocate] com.zaxxer.hikari

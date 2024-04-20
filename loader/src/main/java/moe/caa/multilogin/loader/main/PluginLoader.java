@@ -10,6 +10,7 @@ import moe.caa.multilogin.loader.handler.LibraryDigestHandler;
 import moe.caa.multilogin.loader.handler.LibraryDownloadHandler;
 import moe.caa.multilogin.loader.handler.LibraryRelocateHandler;
 import moe.caa.multilogin.loader.library.Library;
+import moe.caa.multilogin.loader.library.LibraryList;
 import moe.caa.multilogin.loader.util.IOUtil;
 
 import java.io.File;
@@ -27,7 +28,7 @@ public class PluginLoader implements ExtendedService {
     private final File temporaryRelocatedLibrariesFolder;
     private final MultiCoreClassLoader coreClassLoader;
     private final LibraryDigestHandler libraryDigestHandler;
-    private final List<Library> platformLibraries = new ArrayList<>();
+    private final List<String> loadBeforeGroups = new ArrayList<>();
     private IPlatformCore<?> platformCore;
 
     public PluginLoader(IBootstrap bootstrap) {
@@ -36,10 +37,12 @@ public class PluginLoader implements ExtendedService {
         this.temporaryRelocatedLibrariesFolder = new File(bootstrap.getTempFolder(), "relocatedLibraries");
         this.coreClassLoader = new MultiCoreClassLoader(PluginLoader.class.getClassLoader());
         this.libraryDigestHandler = new LibraryDigestHandler();
+
+        addLoadLibraryGroup("core");
     }
 
-    public void addPlatformLibrary(Library library) {
-        platformLibraries.add(library);
+    public void addLoadLibraryGroup(String group) {
+        loadBeforeGroups.add(group);
     }
 
     @Override
@@ -98,9 +101,7 @@ public class PluginLoader implements ExtendedService {
     private void initLibraries() throws Exception {
         LoggerProvider.logger.info("Initializing libraries...");
 
-        for (Library library : Library.RELOCATE_TOOL_LIBRARIES) {
-            loadLibrary(library, false);
-        }
+        loadLibraries("relocate", false);
 
         try {
             LibraryRelocateHandler.init(coreClassLoader);
@@ -108,12 +109,16 @@ public class PluginLoader implements ExtendedService {
             throw new LibraryLoadFailedException("Failed to load relocate tools.", e);
         }
 
-        for (Library library : Library.NECESSARY_LIBRARIES) {
-            loadLibrary(library, true);
+        for (String group : loadBeforeGroups) {
+            loadLibraries(group, true);
         }
+    }
 
-        for (Library library : platformLibraries) {
-            loadLibrary(library, true);
+    private void loadLibraries(String group, boolean relocate) throws LibraryLoadFailedException {
+        List<Library> list = LibraryList.LIBRARY_GROUP.get(group);
+        if (list == null) throw new LibraryLoadFailedException("Invalid library group " + group);
+        for (Library library : list) {
+            loadLibrary(library, relocate);
         }
     }
 

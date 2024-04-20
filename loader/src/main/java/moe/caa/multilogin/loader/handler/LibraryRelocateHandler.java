@@ -1,6 +1,7 @@
 package moe.caa.multilogin.loader.handler;
 
 import moe.caa.multilogin.loader.classloader.MultiCoreClassLoader;
+import moe.caa.multilogin.loader.library.LibraryList;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -9,12 +10,6 @@ import java.nio.file.Files;
 import java.util.Map;
 
 public class LibraryRelocateHandler {
-    private static final String RELOCATED_PREFIX = "moe.caa.multilogin.libraries";
-    private static final Map<String, String> SHOULD_RELOCATIONS = Map.ofEntries(
-            generateRelocation("kotlin"),
-            generateRelocation("org.incendo.cloud"),
-            generateRelocation("com.zaxxer.hikari")
-    );
     private static Class<?> jarRelocatorClass;
     private static Constructor<?> jarRelocatorConstructor;
     private static Method jarRelocatorRunMethod;
@@ -24,10 +19,6 @@ public class LibraryRelocateHandler {
     public LibraryRelocateHandler(File input, File output) {
         this.input = input;
         this.output = output;
-    }
-
-    private static Map.Entry<String, String> generateRelocation(String s) {
-        return Map.entry(s, RELOCATED_PREFIX + "." + s);
     }
 
     public static void init(MultiCoreClassLoader loader) throws ClassNotFoundException, NoSuchMethodException {
@@ -41,7 +32,8 @@ public class LibraryRelocateHandler {
             Files.createDirectories(output.getParentFile().toPath());
         }
 
-        Object instance = jarRelocatorConstructor.newInstance(input, output, SHOULD_RELOCATIONS);
+
+        Object instance = jarRelocatorConstructor.newInstance(input, output, LibraryList.RELOCATIONS);
         jarRelocatorRunMethod.invoke(instance);
     }
 }
