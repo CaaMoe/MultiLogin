@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.database
 
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.core.database.v4.InGameProfileV4
+import moe.caa.multilogin.core.database.v4.Profiles
 import moe.caa.multilogin.core.util.logDebug
 import moe.caa.multilogin.core.util.logInfo
 import org.jetbrains.exposed.sql.*
@@ -21,7 +21,7 @@ class SQLHandler {
 
         transaction(database) {
             addLogger(SQLLogger)
-            SchemaUtils.create(InGameProfileV4)
+            SchemaUtils.create(Profiles)
         }
     }
 

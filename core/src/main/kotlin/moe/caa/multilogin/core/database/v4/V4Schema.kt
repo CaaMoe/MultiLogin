@@ -1,8 +1,12 @@
 package moe.caa.multilogin.core.database.v4
 
+import org.jetbrains.exposed.dao.IntEntity
+import org.jetbrains.exposed.dao.IntEntityClass
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.ReferenceOption
 
-object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
+object Profiles : IntIdTable(name = "multilogin_in_game_profile_v4") {
 
     /**
      * Null for any service. (for caching whitelist).
@@ -41,10 +45,19 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      */
     val whitelist = integer("whitelist").check("check_whitelist_range") { it.between(0, 2) }
 
-    //val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable().default(null)
+    val redirectTo = integer("redirect_to_profile_id")
+        .references(Profiles.id, onDelete = ReferenceOption.CASCADE, onUpdate = ReferenceOption.RESTRICT)
+        .nullable()
+        .default(null)
 
     init {
         uniqueIndex(serviceId, loginUuid)
         uniqueIndex(serviceId, loginUsername)
     }
+}
+
+class Profile(id: EntityID<Int>) : IntEntity(id) {
+    companion object : IntEntityClass<Profile>(Profiles)
+
+    var redirectTo by Profile referencedOn Profiles.id
 }
