@@ -18,7 +18,14 @@ public record Library(
     }
 
     public static final List<Library> NECESSARY_LIBRARIES = List.of(
-            new Library("org.jetbrains.kotlin", "kotlin-stdlib", "1.9.23")
+            Library.of("org.jetbrains.kotlin:kotlin-stdlib:1.9.23"),
+            Library.of("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3"),
+            Library.of("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3"),
+
+            Library.of("org.incendo:cloud-core:2.0.0-beta.4"),
+            Library.of("org.incendo:cloud-services:2.0.0-beta.4"),
+
+            Library.of("com.zaxxer:HikariCP:5.1.0")
     );
 
     public String getUrl() {

@@ -11,7 +11,9 @@ import java.util.Map;
 public class LibraryRelocateHandler {
     private static final String RELOCATED_PREFIX = "moe.caa.multilogin.libraries";
     private static final Map<String, String> SHOULD_RELOCATIONS = Map.ofEntries(
-            generateRelocation("kotlin")
+            generateRelocation("kotlin"),
+            generateRelocation("org.incendo.cloud"),
+            generateRelocation("com.zaxxer.hikari")
     );
     private static Class<?> jarRelocatorClass;
     private static Constructor<?> jarRelocatorConstructor;

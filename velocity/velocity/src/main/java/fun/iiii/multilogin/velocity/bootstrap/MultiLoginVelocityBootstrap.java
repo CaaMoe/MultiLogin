@@ -12,6 +12,7 @@ import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.schedule.IScheduler;
 import moe.caa.multilogin.loader.api.IBootstrap;
 import moe.caa.multilogin.loader.api.IPlatformCore;
+import moe.caa.multilogin.loader.library.Library;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
 
@@ -44,8 +45,8 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
         try {
-            // todo
-//            pluginLoader.addPlatformLibrary();
+            pluginLoader.addPlatformLibrary(Library.of("org.incendo:cloud-velocity:2.0.0-beta.4"));
+            pluginLoader.addPlatformLibrary(Library.of("org.incendo:cloud-brigadier:2.0.0-beta.4"));
             pluginLoader.enable();
         } catch (Throwable e) {
             if (e instanceof BreakSignalException) {

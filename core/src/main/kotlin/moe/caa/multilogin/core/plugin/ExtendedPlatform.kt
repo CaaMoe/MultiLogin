@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.plugin
 
 import moe.caa.multilogin.api.schedule.IScheduler
+import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.execution.ExecutionCoordinator
 import java.io.File
@@ -12,7 +13,7 @@ interface ExtendedPlatform {
 
     val onlineMode: Boolean
     val profileForwarding: Boolean
-    val consoleCommandSender: ICommandSender
+    val consoleCommandSender: Audience
 
-    fun generateCommandManager(executionCoordinator: ExecutionCoordinator<ICommandSender>): CommandManager<ICommandSender>
+    fun generateCommandManager(executionCoordinator: ExecutionCoordinator<Audience>): CommandManager<Audience>
 }

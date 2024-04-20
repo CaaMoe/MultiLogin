@@ -67,6 +67,7 @@ public class PluginLoader implements ExtendedService {
         initPlatformAndCore();
 
         platformCore = bootstrap.generatePlatformCore(coreClassLoader);
+        platformCore.enable();
     }
 
     private void initPlatformAndCore() throws LibraryLoadFailedException {
