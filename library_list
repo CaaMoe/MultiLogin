@@ -1,10 +1,17 @@
-# libraries group file
+# 依赖组文件
+# '[group]' 标记只对 '[library]' 有效, 生效范围为下一行开始到下一个 '[group]' 标记结束, 用来标记库组
+# '[library]' 标记标识一个依赖, 只有这上面的依赖编译时才会收集文件摘要
+# '[relocate]' 标记记录运行时需要动态重定向的库包名字, 它可以出现在一下任何行
+# loader 中使用 loadLibraries 函数来动态加载一组库
 
+# 重定向包名工具包
+# 没有升级这个工具的需求尽量不要动它
 [group] relocate
 [library] me.lucko:jar-relocator:1.7
 [library] org.ow2.asm:asm:9.2
 [library] org.ow2.asm:asm-commons:9.2
 
+# 核心需要加载的库
 [group] core
 [library] org.jetbrains.kotlin:kotlin-stdlib:1.9.23
 [library] org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3
@@ -15,10 +22,12 @@
 
 [library] com.zaxxer:HikariCP:5.1.0
 
+# velocity额外需要加载的库
 [group] velocity
 [library] org.incendo:cloud-velocity:2.0.0-beta.4
 [library] org.incendo:cloud-brigadier:2.0.0-beta.4
 
+# 各种数据库库文件需要的库
 [group] sql_driver_postgres
 [library] org.postgresql:postgresql:42.7.1
 
@@ -43,6 +52,7 @@
 [group] sql_driver_sqlserver
 [library] com.microsoft.sqlserver:mssql-jdbc:9.4.1.jre8
 
+# 运行时包名重定向工具
 [relocate] kotlin
 [relocate] org.incendo.cloud
 [relocate] com.zaxxer.hikari
