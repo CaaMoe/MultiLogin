@@ -41,7 +41,7 @@ object InGameProfileV4 : IntIdTable(name = "multilogin_in_game_profile_v4") {
      */
     val whitelist = integer("whitelist").check("check_whitelist_range") { it.between(0, 2) }
 
-    val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable().default(null)
+    //val redirectTo = reference("redirect_to_profile_id", InGameProfileV4).nullable().default(null)
 
     init {
         uniqueIndex(serviceId, loginUuid)

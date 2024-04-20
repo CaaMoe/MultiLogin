@@ -14,6 +14,8 @@
 # 核心需要加载的库
 [group] core
 [library] org.jetbrains.kotlin:kotlin-stdlib:1.9.23
+[library] org.jetbrains.kotlin:kotlin-reflect:1.9.23
+
 [library] org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3
 [library] org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3
 
@@ -21,6 +23,10 @@
 [library] org.incendo:cloud-services:2.0.0-beta.4
 
 [library] com.zaxxer:HikariCP:5.1.0
+[library] org.jetbrains.exposed:exposed-core:0.49.0
+[library] org.jetbrains.exposed:exposed-dao:0.49.0
+[library] org.jetbrains.exposed:exposed-jdbc:0.49.0
+
 
 # velocity额外需要加载的库
 [group] velocity
@@ -56,3 +62,4 @@
 [relocate] kotlin
 [relocate] org.incendo.cloud
 [relocate] com.zaxxer.hikari
+[relocate] org.jetbrains.exposed

@@ -17,7 +17,7 @@ java.targetCompatibility = JavaVersion.VERSION_17
 
 allprojects {
     group = "moe.caa"
-    version = "0.8.0"
+    version = project.properties["plugin_version"] as String
 
     repositories {
         mavenCentral()
