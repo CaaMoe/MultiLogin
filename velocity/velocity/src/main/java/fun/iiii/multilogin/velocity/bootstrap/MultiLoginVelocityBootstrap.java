@@ -11,6 +11,7 @@ import moe.caa.multilogin.api.logger.Level;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.schedule.IScheduler;
 import moe.caa.multilogin.loader.api.IBootstrap;
+import moe.caa.multilogin.loader.api.IPlatformCore;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
 
@@ -23,6 +24,8 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     public final File tempFolder;
     public final IScheduler scheduler;
     public final PluginLoader pluginLoader;
+
+    public IPlatformCore<MultiLoginVelocityBootstrap> platformCore;
 
     @Inject
     public MultiLoginVelocityBootstrap(
@@ -41,6 +44,8 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     @Subscribe
     public void onInitialize(ProxyInitializeEvent event) {
         try {
+            // todo
+//            pluginLoader.addPlatformLibrary();
             pluginLoader.enable();
         } catch (Throwable e) {
             if (e instanceof BreakSignalException) {
@@ -57,6 +62,9 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     @Subscribe
     public void onDisable(ProxyShutdownEvent event) {
         try {
+            if (platformCore != null) {
+                platformCore.disable();
+            }
             pluginLoader.disable();
         } catch (Throwable e) {
             if (e instanceof BreakSignalException) {
@@ -102,12 +110,13 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     }
 
     @Override
-    public String getPlatformCoreModuleName() {
+    public String getPlatformCoreModuleFileName() {
         return "MultiLogin-Velocity-Core";
     }
 
     @Override
-    public String getPlatformCoreClassName() {
-        return "fun.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore";
+    public IPlatformCore<?> generatePlatformCore(ClassLoader loader) throws Exception {
+        Class<?> loaded = loader.loadClass("fun.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore");
+        return (IPlatformCore<?>) loaded.getConstructor(MultiLoginVelocityBootstrap.class).newInstance(this);
     }
 }

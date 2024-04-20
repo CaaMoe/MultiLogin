@@ -1,8 +1,8 @@
-package `fun`.iiii.multilogin.velocity.util
+package `fun`.iiii.multilogin.velocity.core.util
 
 import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.proxy.connection.client.ConnectedPlayer
-import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelInitializer
+import `fun`.iiii.multilogin.velocity.core.inject.netty.MultiLoginChannelInitializer
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Constructor

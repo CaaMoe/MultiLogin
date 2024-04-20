@@ -1,6 +1,7 @@
-package moe.caa.multilogin.loader.library;
+package moe.caa.multilogin.loader.handler;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.loader.library.Library;
 import moe.caa.multilogin.loader.main.PluginLoader;
 
 import java.io.File;
@@ -10,10 +11,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 
-public class LibraryDownloadingTask {
+public class LibraryDownloadHandler {
     private final Library library;
 
-    public LibraryDownloadingTask(Library library) {
+    public LibraryDownloadHandler(Library library) {
         this.library = library;
     }
 

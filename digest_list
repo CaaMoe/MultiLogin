@@ -1,0 +1,7 @@
+# relocate tool
+me.lucko:jar-relocator:1.7
+org.ow2.asm:asm:9.2
+org.ow2.asm:asm-commons:9.2
+
+# core libraries
+org.jetbrains.kotlin:kotlin-stdlib:1.9.23

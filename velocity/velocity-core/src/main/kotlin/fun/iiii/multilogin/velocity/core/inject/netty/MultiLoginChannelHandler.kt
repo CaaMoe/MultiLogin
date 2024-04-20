@@ -1,10 +1,10 @@
-package `fun`.iiii.multilogin.velocity.inject.netty
+package `fun`.iiii.multilogin.velocity.core.inject.netty
 
 import com.velocitypowered.proxy.connection.MinecraftConnection
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
-import `fun`.iiii.multilogin.velocity.auth.LoginEncryptionResponseHandler
-import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocityCore
+import `fun`.iiii.multilogin.velocity.core.auth.LoginEncryptionResponseHandler
+import `fun`.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInboundHandlerAdapter
 

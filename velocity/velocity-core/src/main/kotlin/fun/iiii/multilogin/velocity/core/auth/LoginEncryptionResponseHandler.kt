@@ -1,4 +1,4 @@
-package `fun`.iiii.multilogin.velocity.auth
+package `fun`.iiii.multilogin.velocity.core.auth
 
 import com.google.common.primitives.Longs
 import com.velocitypowered.api.util.GameProfile
@@ -9,8 +9,8 @@ import com.velocitypowered.proxy.connection.client.LoginInboundConnection
 import com.velocitypowered.proxy.crypto.EncryptionUtils
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
-import `fun`.iiii.multilogin.velocity.inject.netty.MultiLoginChannelHandler
-import `fun`.iiii.multilogin.velocity.util.*
+import `fun`.iiii.multilogin.velocity.core.inject.netty.MultiLoginChannelHandler
+import `fun`.iiii.multilogin.velocity.core.util.*
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.security.GeneralSecurityException

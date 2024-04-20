@@ -27,12 +27,25 @@ public record Library(
                 + getFileName();
     }
 
+
     public String getFileName() {
         return name + "-" + version + ".jar";
     }
 
     public String getDisplayName() {
         return group + ":" + name + ":" + version;
+    }
+
+    public static final List<Library> RELOCATE_TOOL_LIBRARIES = List.of(
+            Library.of("org.ow2.asm:asm:9.2"),
+            Library.of("org.ow2.asm:asm-commons:9.2"),
+            Library.of("me.lucko:jar-relocator:1.7")
+    );
+
+    public File getFileRelocated(File folder) {
+        String url = getUrl();
+        url = url.substring(0, url.length() - 4) + "-relocated.jar";
+        return new File(folder, url);
     }
 }
 

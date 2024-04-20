@@ -12,7 +12,8 @@ public interface IBootstrap {
 
     IScheduler getScheduler();
 
-    String getPlatformCoreModuleName();
+    String getPlatformCoreModuleFileName();
 
-    String getPlatformCoreClassName();
+    IPlatformCore<?> generatePlatformCore(ClassLoader loader) throws Exception;
+
 }

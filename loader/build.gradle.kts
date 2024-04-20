@@ -11,7 +11,10 @@ fun DependencyHandler.digest(dependencyNotation: Any): Dependency? =
 dependencies {
     compileOnly(project(":multilogin-api"))
 
-    digest("org.jetbrains.kotlin:kotlin-stdlib:1.9.23")
+    rootProject.file("digest_list").readLines()
+        .filter { it.trim().isNotEmpty() }
+        .filter { !it.startsWith("#") }
+        .forEach { digest(it) }
 }
 
 tasks.processResources {

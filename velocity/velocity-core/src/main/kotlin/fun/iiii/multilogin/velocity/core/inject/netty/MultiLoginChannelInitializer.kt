@@ -1,7 +1,7 @@
-package `fun`.iiii.multilogin.velocity.inject.netty
+package `fun`.iiii.multilogin.velocity.core.inject.netty
 
 import com.velocitypowered.proxy.connection.MinecraftConnection
-import `fun`.iiii.multilogin.velocity.main.MultiLoginVelocityCore
+import `fun`.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import java.lang.invoke.MethodHandle

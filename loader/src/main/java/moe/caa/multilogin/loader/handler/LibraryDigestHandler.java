@@ -1,4 +1,4 @@
-package moe.caa.multilogin.loader.manager;
+package moe.caa.multilogin.loader.handler;
 
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.loader.library.Library;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class LibraryDigestManager {
+public class LibraryDigestHandler {
     public static Map<Library, String> DIGESTED_MAP = Collections.emptyMap();
 
     static {
