@@ -26,7 +26,7 @@ public class PluginLoader implements ExtendedService {
     private final IBootstrap bootstrap;
     private final File librariesFolder;
     private final File temporaryRelocatedLibrariesFolder;
-    private final MultiCoreClassLoader coreClassLoader;
+    public final MultiCoreClassLoader coreClassLoader;
     private final LibraryDigestHandler libraryDigestHandler;
     private final List<String> loadBeforeGroups = new ArrayList<>();
     private IPlatformCore<?> platformCore;
@@ -101,9 +101,9 @@ public class PluginLoader implements ExtendedService {
     private void initLibraries() throws Exception {
         LoggerProvider.logger.info("Initializing libraries...");
 
-        loadLibraries("relocate", false);
 
         try {
+            loadLibraries("relocate", false);
             LibraryRelocateHandler.init(coreClassLoader);
         } catch (Exception e) {
             throw new LibraryLoadFailedException("Failed to load relocate tools.", e);
@@ -112,6 +112,10 @@ public class PluginLoader implements ExtendedService {
         for (String group : loadBeforeGroups) {
             loadLibraries(group, true);
         }
+    }
+
+    public void loadLibraries(String group) throws LibraryLoadFailedException {
+        loadLibraries(group, true);
     }
 
     private void loadLibraries(String group, boolean relocate) throws LibraryLoadFailedException {

@@ -14,7 +14,7 @@ class SQLHandler {
     private lateinit var dataSource: HikariDataSource
 
     fun init() {
-        logInfo("Database Type: ${moe.caa.multilogin.core.resource.configuration.Database.sqlBackend}")
+        logInfo("Database Type: ${moe.caa.multilogin.core.resource.configuration.Database.sqlDriverType}")
 
         dataSource = HikariDataSource(moe.caa.multilogin.core.resource.configuration.Database.hikariConfig)
         database = Database.connect(dataSource)

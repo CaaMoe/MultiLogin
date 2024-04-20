@@ -118,4 +118,9 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
         Class<?> loaded = loader.loadClass("fun.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore");
         return (IPlatformCore<?>) loaded.getConstructor(MultiLoginVelocityBootstrap.class).newInstance(this);
     }
+
+    @Override
+    public PluginLoader getPluginLoader() {
+        return pluginLoader;
+    }
 }

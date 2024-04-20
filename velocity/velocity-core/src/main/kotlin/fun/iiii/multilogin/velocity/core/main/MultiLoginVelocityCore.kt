@@ -36,6 +36,7 @@ class MultiLoginVelocityCore(
     }
 
     override fun getBootstrap() = bootstrap
+
     override fun generateCommandManager(executionCoordinator: ExecutionCoordinator<Audience>) =
         VelocityCommandManager(
             bootstrap.proxyServer.pluginManager.ensurePluginContainer(bootstrap),

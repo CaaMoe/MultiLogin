@@ -7,6 +7,7 @@ public abstract class Logger {
     private void handleLog0(Level level, String message, Throwable throwable){
         if (level == Level.DEBUG && LoggerProvider.debugMode) {
             level = Level.INFO;
+            message = "[DEBUG] " + message;
         }
         handleLog(level, message, throwable);
     }

@@ -1,6 +1,7 @@
 package moe.caa.multilogin.loader.api;
 
 import moe.caa.multilogin.api.schedule.IScheduler;
+import moe.caa.multilogin.loader.main.PluginLoader;
 
 import java.io.File;
 
@@ -16,4 +17,5 @@ public interface IBootstrap {
 
     IPlatformCore<?> generatePlatformCore(ClassLoader loader) throws Exception;
 
+    PluginLoader getPluginLoader();
 }

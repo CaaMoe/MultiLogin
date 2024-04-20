@@ -1,6 +1,7 @@
 package moe.caa.multilogin.core.resource.configuration
 
 import com.zaxxer.hikari.HikariConfig
+import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.service.*
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
@@ -150,16 +151,18 @@ data object Support : IConfig {
 }
 
 data object Database : IConfig {
-    lateinit var sqlBackend: SQLBackend
+    lateinit var sqlDriverType: SQLDriverType
     lateinit var hikariConfig: HikariConfig
 
     override fun read(node: ConfigurationNode) {
         synchronized(this) {
-            if (!::sqlBackend.isInitialized) {
-                this.sqlBackend = node.node("sql_backend").get(SQLBackend::class.java, SQLBackend.MYSQL)
+            if (!::sqlDriverType.isInitialized) {
+                this.sqlDriverType = node.node("sql_driver_type").get(SQLDriverType::class.java, SQLDriverType.MYSQL)
+                MultiCore.instance.plugin.getBootstrap().pluginLoader.loadLibraries("sql_driver_${this.sqlDriverType.name.lowercase()}")
             }
             if (!::hikariConfig.isInitialized) {
                 this.hikariConfig = HikariConfig()
+
 
                 hikariConfig.javaClass.methods
                     .filter { !Modifier.isStatic(it.modifiers) }
@@ -195,12 +198,13 @@ data object Database : IConfig {
     }
 }
 
-enum class SQLBackend {
-    H2,
-    MARIADB,
-    MYSQL,
-    ORACLE,
-    POSTGRES,
-    SQLSERVER,
-    SQLITE,
+enum class SQLDriverType(val driverClassName: String) {
+    POSTGRES("org.postgresql.Driver"),
+    POSTGRES_NG("com.impossibl.postgres.jdbc.PGDriver"),
+    MYSQL("com.mysql.cj.jdbc.Driver"),
+    MARIADB("org.mariadb.jdbc.Driver"),
+    ORACLE("oracle.jdbc.OracleDriver"),
+    SQLITE("org.sqlite.JDBC"),
+    H2("org.h2.Driver"),
+    SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
 }

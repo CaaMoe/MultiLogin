@@ -3,6 +3,7 @@ import moe.caa.multilogin.gradle.librarycollector.*
 
 dependencies {
     compileOnly(project(":multilogin-api"))
+    compileOnly(project(":multilogin-loader"))
 
     compileOnly(okhttp3())
     compileOnly(adventure("text-minimessage"))
