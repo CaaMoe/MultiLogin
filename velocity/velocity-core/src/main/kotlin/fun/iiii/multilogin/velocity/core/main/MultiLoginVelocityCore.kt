@@ -7,7 +7,6 @@ import `fun`.iiii.multilogin.velocity.bootstrap.MultiLoginVelocityBootstrap
 import moe.caa.multilogin.api.schedule.IScheduler
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.plugin.ExtendedPlatform
-import moe.caa.multilogin.loader.api.IPlatformCore
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.execution.ExecutionCoordinator
@@ -15,8 +14,8 @@ import org.incendo.cloud.velocity.VelocityCommandManager
 import java.io.File
 
 class MultiLoginVelocityCore(
-    private val bootstrap: MultiLoginVelocityBootstrap,
-) : IPlatformCore<MultiLoginVelocityBootstrap>, ExtendedPlatform {
+    override val bootstrap: MultiLoginVelocityBootstrap,
+) : ExtendedPlatform {
     override val dataFolder: File = bootstrap.dataFolder
     override val tempFolder: File = bootstrap.tempFolder
     override val scheduler: IScheduler = bootstrap.scheduler
@@ -34,8 +33,6 @@ class MultiLoginVelocityCore(
     override fun disable() {
         multiCore.disable()
     }
-
-    override fun getBootstrap() = bootstrap
 
     override fun generateCommandManager(executionCoordinator: ExecutionCoordinator<Audience>) =
         VelocityCommandManager(

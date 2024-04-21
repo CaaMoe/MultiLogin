@@ -3,7 +3,6 @@ package moe.caa.multilogin.loader.main;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.loader.api.ExtendedService;
 import moe.caa.multilogin.loader.api.IBootstrap;
-import moe.caa.multilogin.loader.api.IPlatformCore;
 import moe.caa.multilogin.loader.classloader.MultiCoreClassLoader;
 import moe.caa.multilogin.loader.exception.LibraryLoadFailedException;
 import moe.caa.multilogin.loader.handler.LibraryDigestHandler;
@@ -29,7 +28,7 @@ public class PluginLoader implements ExtendedService {
     public final MultiCoreClassLoader coreClassLoader;
     private final LibraryDigestHandler libraryDigestHandler;
     private final List<String> loadBeforeGroups = new ArrayList<>();
-    private IPlatformCore<?> platformCore;
+    private ExtendedService platformCore;
 
     public PluginLoader(IBootstrap bootstrap) {
         this.bootstrap = bootstrap;

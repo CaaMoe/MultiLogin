@@ -10,8 +10,8 @@ import moe.caa.multilogin.api.exception.BreakSignalException;
 import moe.caa.multilogin.api.logger.Level;
 import moe.caa.multilogin.api.logger.LoggerProvider;
 import moe.caa.multilogin.api.schedule.IScheduler;
+import moe.caa.multilogin.loader.api.ExtendedService;
 import moe.caa.multilogin.loader.api.IBootstrap;
-import moe.caa.multilogin.loader.api.IPlatformCore;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.slf4j.Logger;
 
@@ -25,7 +25,7 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     public final IScheduler scheduler;
     public final PluginLoader pluginLoader;
 
-    public IPlatformCore<MultiLoginVelocityBootstrap> platformCore;
+    public ExtendedService platformCore;
 
     @Inject
     public MultiLoginVelocityBootstrap(
@@ -114,9 +114,9 @@ public class MultiLoginVelocityBootstrap implements IBootstrap {
     }
 
     @Override
-    public IPlatformCore<?> generatePlatformCore(ClassLoader loader) throws Exception {
+    public ExtendedService generatePlatformCore(ClassLoader loader) throws Exception {
         Class<?> loaded = loader.loadClass("fun.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore");
-        return (IPlatformCore<?>) loaded.getConstructor(MultiLoginVelocityBootstrap.class).newInstance(this);
+        return (ExtendedService) loaded.getConstructor(MultiLoginVelocityBootstrap.class).newInstance(this);
     }
 
     @Override

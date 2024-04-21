@@ -1,18 +1,14 @@
 package moe.caa.multilogin.core.resource.configuration
 
-import com.zaxxer.hikari.HikariConfig
-import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.service.*
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilOfficialService
-import moe.caa.multilogin.core.util.camelCaseToUnderscore
 import moe.caa.multilogin.core.util.logInfo
 import moe.caa.multilogin.core.util.logWarn
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
 import java.io.File
-import java.lang.reflect.Modifier
 import java.util.*
 
 sealed interface IConfig {
@@ -148,63 +144,4 @@ data object Support : IConfig {
         floodgate = node.node("floodgate").getBoolean(true)
         skinsRestorer = node.node("skinsrestorer").getBoolean(true)
     }
-}
-
-data object Database : IConfig {
-    lateinit var sqlDriverType: SQLDriverType
-    lateinit var hikariConfig: HikariConfig
-
-    override fun read(node: ConfigurationNode) {
-        synchronized(this) {
-            if (!::sqlDriverType.isInitialized) {
-                this.sqlDriverType = node.node("sql_driver_type").get(SQLDriverType::class.java, SQLDriverType.MYSQL)
-                MultiCore.instance.plugin.getBootstrap().pluginLoader.loadLibraries("sql_driver_${this.sqlDriverType.name.lowercase()}")
-            }
-            if (!::hikariConfig.isInitialized) {
-                this.hikariConfig = HikariConfig()
-
-
-                hikariConfig.javaClass.methods
-                    .filter { !Modifier.isStatic(it.modifiers) }
-                    .filter { it.name.startsWith("set") }
-                    .filter { it.parameters.size == 1 }
-                    .forEach {
-                        it.isAccessible = true
-                        val key = it.name.substring(3).camelCaseToUnderscore()
-
-                        if (node.hasChild(key)) {
-                            val configurationNode = node.node(key)
-                            when (it.parameters[0].type) {
-                                Boolean::class.java -> {
-                                    it.invoke(hikariConfig, configurationNode.boolean)
-                                }
-
-                                String::class.java -> {
-                                    it.invoke(hikariConfig, configurationNode.string)
-                                }
-
-                                Long::class.java -> {
-                                    it.invoke(hikariConfig, configurationNode.long)
-                                }
-
-                                Int::class.java -> {
-                                    it.invoke(hikariConfig, configurationNode.int)
-                                }
-                            }
-                        }
-                    }
-            }
-        }
-    }
-}
-
-enum class SQLDriverType(val driverClassName: String) {
-    POSTGRES("org.postgresql.Driver"),
-    POSTGRES_NG("com.impossibl.postgres.jdbc.PGDriver"),
-    MYSQL("com.mysql.cj.jdbc.Driver"),
-    MARIADB("org.mariadb.jdbc.Driver"),
-    ORACLE("oracle.jdbc.OracleDriver"),
-    SQLITE("org.sqlite.JDBC"),
-    H2("org.h2.Driver"),
-    SQLSERVER("com.microsoft.sqlserver.jdbc.SQLServerDriver"),
 }

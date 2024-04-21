@@ -1,31 +1,34 @@
 package moe.caa.multilogin.core.database
 
+import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.core.database.v4.CacheWhitelistDataTable
-import moe.caa.multilogin.core.database.v4.ProfileDataTable
-import moe.caa.multilogin.core.database.v4.UserDataTable
-import moe.caa.multilogin.core.util.logDebug
+import moe.caa.multilogin.core.database.v4.TableHandler
+import moe.caa.multilogin.core.main.MultiCore
+import moe.caa.multilogin.core.util.camelCaseToUnderscore
 import moe.caa.multilogin.core.util.logInfo
-import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.StatementContext
-import org.jetbrains.exposed.sql.statements.expandArgs
-import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.Database
+import org.spongepowered.configurate.ConfigurationNode
+import java.lang.reflect.Modifier
 
 class SQLHandler {
     private lateinit var database: Database
     private lateinit var dataSource: HikariDataSource
+    lateinit var tableHandler: TableHandler
 
     fun init() {
-        logInfo("Database Type: ${moe.caa.multilogin.core.resource.configuration.Database.sqlDriverType}")
+        val configurationNode = MultiCore.instance.configurationHandler.configurationNode!!.node("database")
+        val sqlDriverType = configurationNode.node("sql_driver_type")
+            .get(SQLDriverType::class.java, SQLDriverType.MYSQL)
+        val shouldLoading = sqlDriverType.name.lowercase()
 
-        dataSource = HikariDataSource(moe.caa.multilogin.core.resource.configuration.Database.hikariConfig)
+        logInfo("Loading the jdbc driver of ${shouldLoading}...")
+        MultiCore.instance.plugin.bootstrap.pluginLoader.loadLibraries("sql_driver_$shouldLoading")
+
+        dataSource = HikariDataSource(readHikariConfig(configurationNode))
         database = Database.connect(dataSource)
+        tableHandler = TableHandler(database)
 
-        transaction(database) {
-            addLogger(SQLLogger)
-
-            SchemaUtils.create(ProfileDataTable, UserDataTable, CacheWhitelistDataTable)
-        }
+        tableHandler.init()
     }
 
     fun close() {
@@ -34,9 +37,47 @@ class SQLHandler {
         }
     }
 
-    object SQLLogger : SqlLogger {
-        override fun log(context: StatementContext, transaction: Transaction) {
-            logDebug("SQL Executing: ${context.expandArgs(transaction)}")
-        }
+    private fun readHikariConfig(configurationNode: ConfigurationNode) = HikariConfig().apply {
+        javaClass.methods
+            .filter { !Modifier.isStatic(it.modifiers) }
+            .filter { it.name.startsWith("set") }
+            .filter { it.parameters.size == 1 }
+            .forEach {
+                it.isAccessible = true
+                val key = it.name.substring(3).camelCaseToUnderscore()
+
+                if (configurationNode.hasChild(key)) {
+                    val subNode = configurationNode.node(key)
+                    when (it.parameters[0].type) {
+                        Boolean::class.java -> {
+                            it.invoke(this, subNode.boolean)
+                        }
+
+                        String::class.java -> {
+                            it.invoke(this, subNode.string)
+                        }
+
+                        Long::class.java -> {
+                            it.invoke(this, subNode.long)
+                        }
+
+                        Int::class.java -> {
+                            it.invoke(this, subNode.int)
+                        }
+                    }
+                }
+            }
+    }
+
+    enum class SQLDriverType {
+        POSTGRES,
+        POSTGRES_NG,
+        MYSQL,
+        MARIADB,
+        ORACLE,
+        SQLITE,
+        H2,
+        SQLSERVER,
     }
 }
+

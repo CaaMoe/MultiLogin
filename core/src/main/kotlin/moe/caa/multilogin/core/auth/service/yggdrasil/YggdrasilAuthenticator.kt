@@ -2,6 +2,7 @@ package moe.caa.multilogin.core.auth.service.yggdrasil
 
 import moe.caa.multilogin.core.auth.AuthenticationHandler
 import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.GeneralConfiguration
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilService
 import moe.caa.multilogin.core.util.logDebug
@@ -24,7 +25,10 @@ class YggdrasilAuthenticator(
         if (services.size == 1) {
             primariesAuth.add(services[0])
         } else {
-            // todo 这里通过 username 从数据库中拿 service ids
+            MultiCore.instance.sqlHandler.tableHandler.findExpectYggdrasilAuthLoginServices(loginProfile.username)
+                .mapNotNull { expectId -> services.firstOrNull { expectId == it.serviceId } }
+                .forEach { primariesAuth.add(it) }
+
         }
 
         val secondariesAuth = services.filter { !primariesAuth.contains(it) }
@@ -54,7 +58,6 @@ class YggdrasilAuthenticator(
                 authList.map { it.serviceId }.joinToString()
             }]"
         )
-
 
         val countDownLatch = CountDownLatch(1)
         val tasks = Collections.synchronizedList(ArrayList(authList))

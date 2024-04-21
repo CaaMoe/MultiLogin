@@ -15,7 +15,7 @@ public interface IBootstrap {
 
     String getPlatformCoreModuleFileName();
 
-    IPlatformCore<?> generatePlatformCore(ClassLoader loader) throws Exception;
+    ExtendedService generatePlatformCore(ClassLoader loader) throws Exception;
 
     PluginLoader getPluginLoader();
 }
