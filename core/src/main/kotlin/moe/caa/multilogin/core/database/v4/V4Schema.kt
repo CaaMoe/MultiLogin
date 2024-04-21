@@ -2,7 +2,7 @@ package moe.caa.multilogin.core.database.v4
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 
-object CacheWhitelistData : IntIdTable(name = "multilogin_cache_whitelist_v4") {
+object CacheWhitelistDataTable : IntIdTable(name = "multilogin_cache_whitelist_v4") {
     // 指定 Service (可空)
     val serviceId = integer("service_id").nullable()
 
@@ -14,7 +14,7 @@ object CacheWhitelistData : IntIdTable(name = "multilogin_cache_whitelist_v4") {
     }
 }
 
-object ProfileData : IntIdTable(name = "multilogin_in_game_profile_v4") {
+object ProfileDataTable : IntIdTable(name = "multilogin_in_game_profile_v4") {
     // 游戏内档案 uuid (不可变不为空)
     val profileId = uuid("profile_uuid")
 
@@ -29,7 +29,7 @@ object ProfileData : IntIdTable(name = "multilogin_in_game_profile_v4") {
     }
 }
 
-object UserData : IntIdTable(name = "multilogin_user_data_v4") {
+object UserDataTable : IntIdTable(name = "multilogin_user_data_v4") {
     // 用户来源的 Service 的 id (不可变不为空)
     val serviceId = integer("service_id").check("service_id_range") { it.between(0, 127) }
 
@@ -44,12 +44,12 @@ object UserData : IntIdTable(name = "multilogin_user_data_v4") {
 
     // 用户第一次登录时分配给它的终身档案 (不可变不为空, 用于绑定用户档案)
     // ReadOnly
-    val initialProfileData = integer("initial_profile_id").references(ProfileData.id)
+    val initialProfileId = integer("initial_profile_id").references(ProfileDataTable.id)
 
     // 用户正在使用的档案 (可更新不为空, 初始生成时值和 initial_profile 一致)
-    val profileLinkTo = integer("link_to_profile_id").references(ProfileData.id)
+    val linkToProfileId = integer("link_to_profile_id").references(ProfileDataTable.id)
     init {
         uniqueIndex(serviceId, loginUuid)
-        uniqueIndex(initialProfileData)
+        uniqueIndex(initialProfileId)
     }
 }

@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.database
 
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.core.database.v4.CacheWhitelistData
-import moe.caa.multilogin.core.database.v4.ProfileData
-import moe.caa.multilogin.core.database.v4.UserData
+import moe.caa.multilogin.core.database.v4.CacheWhitelistDataTable
+import moe.caa.multilogin.core.database.v4.ProfileDataTable
+import moe.caa.multilogin.core.database.v4.UserDataTable
 import moe.caa.multilogin.core.util.logDebug
 import moe.caa.multilogin.core.util.logInfo
 import org.jetbrains.exposed.sql.*
@@ -24,9 +24,7 @@ class SQLHandler {
         transaction(database) {
             addLogger(SQLLogger)
 
-            SchemaUtils.create(UserData)
-            SchemaUtils.create(ProfileData)
-            SchemaUtils.create(CacheWhitelistData)
+            SchemaUtils.create(ProfileDataTable, UserDataTable, CacheWhitelistDataTable)
         }
     }
 
