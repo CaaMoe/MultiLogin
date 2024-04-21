@@ -1,6 +1,7 @@
 package `fun`.iiii.multilogin.velocity.core.inject.netty
 
 import com.velocitypowered.proxy.connection.MinecraftConnection
+import com.velocitypowered.proxy.network.ConnectionManager
 import `fun`.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
@@ -26,17 +27,17 @@ class MultiLoginChannelInitializer(
         }
 
         fun init(plugin: MultiLoginVelocityCore) {
-//            val connectionManager: ConnectionManager = Class.forName("com.velocitypowered.proxy.VelocityServer")
-//                .getDeclaredField("cm").apply {
-//                    isAccessible = true
-//                }.let {
-//                    it.get(plugin.server) as ConnectionManager
-//                }
-//
-//            val serverChannelInitializerHolder = connectionManager.getServerChannelInitializer()
-//            serverChannelInitializerHolder.set(
-//                MultiLoginChannelInitializer(plugin, serverChannelInitializerHolder.get())
-//            )
+            val connectionManager: ConnectionManager = Class.forName("com.velocitypowered.proxy.VelocityServer")
+                .getDeclaredField("cm").apply {
+                    isAccessible = true
+                }.let {
+                    it.get(plugin.bootstrap.proxyServer) as ConnectionManager
+                }
+
+            val serverChannelInitializerHolder = connectionManager.getServerChannelInitializer()
+            serverChannelInitializerHolder.set(
+                MultiLoginChannelInitializer(plugin, serverChannelInitializerHolder.get())
+            )
         }
     }
 

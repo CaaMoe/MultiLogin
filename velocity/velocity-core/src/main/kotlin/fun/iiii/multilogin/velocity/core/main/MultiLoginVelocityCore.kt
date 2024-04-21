@@ -4,6 +4,7 @@ import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.proxy.config.PlayerInfoForwarding
 import com.velocitypowered.proxy.config.VelocityConfiguration
 import `fun`.iiii.multilogin.velocity.bootstrap.MultiLoginVelocityBootstrap
+import `fun`.iiii.multilogin.velocity.core.inject.VelocityInjector
 import moe.caa.multilogin.api.schedule.IScheduler
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.plugin.ExtendedPlatform
@@ -28,6 +29,7 @@ class MultiLoginVelocityCore(
 
     override fun enable() {
         multiCore.enable()
+        VelocityInjector(this).inject()
     }
 
     override fun disable() {

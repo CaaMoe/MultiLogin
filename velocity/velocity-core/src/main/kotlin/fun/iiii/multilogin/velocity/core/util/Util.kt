@@ -1,18 +1,10 @@
 package `fun`.iiii.multilogin.velocity.core.util
 
-import com.velocitypowered.api.proxy.Player
-import com.velocitypowered.proxy.connection.client.ConnectedPlayer
-import `fun`.iiii.multilogin.velocity.core.inject.netty.MultiLoginChannelInitializer
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 import java.lang.reflect.Constructor
 import java.lang.reflect.Field
 import java.lang.reflect.Method
-
-fun Player.getMultiLoginData() {
-    this as ConnectedPlayer
-    connection.channel.pipeline()[MultiLoginChannelInitializer.MULTI_LOGIN_HANDLE_NAME]
-}
 
 fun Class<*>.getEnumConstant(name: String): Enum<*>? {
     return this.enumConstants.find {

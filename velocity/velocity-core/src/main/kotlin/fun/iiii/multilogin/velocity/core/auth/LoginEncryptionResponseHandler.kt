@@ -7,14 +7,22 @@ import com.velocitypowered.proxy.connection.client.AuthSessionHandler
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler
 import com.velocitypowered.proxy.connection.client.LoginInboundConnection
 import com.velocitypowered.proxy.crypto.EncryptionUtils
+import com.velocitypowered.proxy.protocol.StateRegistry
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
 import `fun`.iiii.multilogin.velocity.core.inject.netty.MultiLoginChannelHandler
 import `fun`.iiii.multilogin.velocity.core.util.*
+import moe.caa.multilogin.core.auth.AuthenticationFailureResult
+import moe.caa.multilogin.core.auth.AuthenticationSuccessResult
+import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.resource.message.language
+import moe.caa.multilogin.core.util.logError
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
+import java.net.InetSocketAddress
 import java.security.GeneralSecurityException
 import java.security.MessageDigest
+import java.util.concurrent.CompletableFuture
 
 class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChannelHandler) {
     companion object {
@@ -111,56 +119,55 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
 
             decryptedSharedSecret = EncryptionUtils.decryptRsa(serverKeyPair, packet.sharedSecret)
 
-//            CompletableFuture.supplyAsync({
-//                channelHandler.plugin.multiCore.authenticationHandler.auth(
-//                    LoginProfile(
-//                        login.username,
-//                        EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.public),
-//                        (channelHandler.connection.remoteAddress as InetSocketAddress).hostString
-//                    )
-//                )
-//            }, channelHandler.plugin.multiCore.asyncExecute).whenCompleteAsync({ authenticationResult, throwable ->
-//                if (channelHandler.connection.isClosed) return@whenCompleteAsync
-//
-//                try {
-//                    channelHandler.connection.enableEncryption(decryptedSharedSecret)
-//                } catch (gse: GeneralSecurityException) {
-//                    logError("Unable to enable encryption for connection.", gse)
-//                    this.channelHandler.connection.close(true)
-//                    return@whenCompleteAsync
-//                }
-//
-//                if (throwable != null) {
-//                    logError("An exception was encountered while processing login profile authentication.", throwable)
-//
-//                    bound.disconnect(language("auth_failed_unknown"))
-//                }
-//
-//                when (authenticationResult) {
-//                    is AuthenticationFailureResult -> bound.disconnect(authenticationResult.failureReason)
-//                    is AuthenticationSuccessResult -> channelHandler.connection.setActiveSessionHandler(
-//                        StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
-//                            channelHandler.connection.server,
-//                            bound,
-//                            GameProfile(
-//                                authenticationResult.gameProfile.uuid,
-//                                authenticationResult.gameProfile.name,
-//                                authenticationResult.gameProfile.properties
-//                                    .map { it.second }
-//                                    .map {
-//                                        GameProfile.Property(
-//                                            it.name,
-//                                            it.value,
-//                                            it.signature
-//                                        )
-//                                    }
-//                            ), true
-//                        ) as AuthSessionHandler
-//                    )
-//                }
-//            }, channelHandler.connection.eventLoop())
+            CompletableFuture.supplyAsync({
+                channelHandler.plugin.multiCore.authenticationHandler.auth(
+                    LoginProfile(
+                        login.username,
+                        EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.public),
+                        (channelHandler.connection.remoteAddress as InetSocketAddress).hostString
+                    )
+                )
+            }, channelHandler.plugin.bootstrap.scheduler.executor).whenCompleteAsync({ authenticationResult, throwable ->
+                if (channelHandler.connection.isClosed) return@whenCompleteAsync
+
+                try {
+                    channelHandler.connection.enableEncryption(decryptedSharedSecret)
+                } catch (gse: GeneralSecurityException) {
+                    logError("Unable to enable encryption for connection.", gse)
+                    this.channelHandler.connection.close(true)
+                    return@whenCompleteAsync
+                }
+
+                if (throwable != null) {
+                    logError("An exception was encountered while processing login profile authentication.", throwable)
+
+                    bound.disconnect(language("auth_failed_unknown"))
+                }
+
+                when (authenticationResult) {
+                    is AuthenticationFailureResult -> bound.disconnect(authenticationResult.failureReason)
+                    is AuthenticationSuccessResult -> channelHandler.connection.setActiveSessionHandler(
+                        StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
+                            channelHandler.connection.server,
+                            bound,
+                            GameProfile(
+                                authenticationResult.gameProfile.uuid,
+                                authenticationResult.gameProfile.username,
+                                authenticationResult.gameProfile.properties
+                                    .map {
+                                        GameProfile.Property(
+                                            it.name,
+                                            it.value,
+                                            it.signature
+                                        )
+                                    }
+                            ), true
+                        ) as AuthSessionHandler
+                    )
+                }
+            }, channelHandler.connection.eventLoop())
         } catch (gse: GeneralSecurityException) {
-            moe.caa.multilogin.core.util.logError("Unable to enable encryption", gse)
+            logError("Unable to enable encryption", gse)
             channelHandler.connection.close(true)
         }
     }
