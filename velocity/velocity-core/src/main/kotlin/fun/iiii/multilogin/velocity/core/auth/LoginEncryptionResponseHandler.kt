@@ -148,20 +148,8 @@ class LoginEncryptionResponseHandler(private val channelHandler: MultiLoginChann
                     is AuthenticationFailureResult -> bound.disconnect(authenticationResult.failureReason)
                     is AuthenticationSuccessResult -> channelHandler.connection.setActiveSessionHandler(
                         StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
-                            channelHandler.connection.server,
-                            bound,
-                            GameProfile(
-                                authenticationResult.gameProfile.uuid,
-                                authenticationResult.gameProfile.username,
-                                authenticationResult.gameProfile.properties
-                                    .map {
-                                        GameProfile.Property(
-                                            it.name,
-                                            it.value,
-                                            it.signature
-                                        )
-                                    }
-                            ), true
+                            channelHandler.connection.server, bound,
+                            authenticationResult.gameProfile.toVelocityGameProfile(), true
                         ) as AuthSessionHandler
                     )
                 }

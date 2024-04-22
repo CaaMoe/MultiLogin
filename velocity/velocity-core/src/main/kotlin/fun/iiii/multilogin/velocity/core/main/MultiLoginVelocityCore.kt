@@ -5,9 +5,12 @@ import com.velocitypowered.proxy.config.PlayerInfoForwarding
 import com.velocitypowered.proxy.config.VelocityConfiguration
 import `fun`.iiii.multilogin.velocity.bootstrap.MultiLoginVelocityBootstrap
 import `fun`.iiii.multilogin.velocity.core.inject.VelocityInjector
+import `fun`.iiii.multilogin.velocity.core.listener.Listener
+import `fun`.iiii.multilogin.velocity.core.manager.VelocityPlayerManager
 import moe.caa.multilogin.api.schedule.IScheduler
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.plugin.ExtendedPlatform
+import moe.caa.multilogin.core.plugin.IPlayerManager
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.SenderMapper
 import org.incendo.cloud.execution.ExecutionCoordinator
@@ -24,11 +27,15 @@ class MultiLoginVelocityCore(
     override val profileForwarding: Boolean =
         (bootstrap.proxyServer.configuration as VelocityConfiguration).playerInfoForwardingMode != PlayerInfoForwarding.NONE
     override val consoleCommandSender: Audience = bootstrap.proxyServer.consoleCommandSource
+    override val playerManager: IPlayerManager = VelocityPlayerManager(this)
+
+    private val listener = Listener(this)
 
     val multiCore = MultiCore(this)
 
     override fun enable() {
         multiCore.enable()
+        bootstrap.proxyServer.eventManager.register(bootstrap, listener)
         VelocityInjector(this).inject()
     }
 
