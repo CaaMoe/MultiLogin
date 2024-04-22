@@ -14,7 +14,7 @@ import `fun`.iiii.multilogin.velocity.core.inject.netty.MultiLoginChannelHandler
 import `fun`.iiii.multilogin.velocity.core.util.*
 import moe.caa.multilogin.core.auth.AuthenticationFailureResult
 import moe.caa.multilogin.core.auth.AuthenticationSuccessResult
-import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.auth.service.yggdrasil.LoginProfile
 import moe.caa.multilogin.core.resource.message.language
 import moe.caa.multilogin.core.util.logError
 import java.lang.invoke.MethodHandle

@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil
 
 import kotlinx.serialization.json.Json
-import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.GameProfileDeserializer
 import moe.caa.multilogin.core.intercept.LoggingInterceptor
 import moe.caa.multilogin.core.intercept.RetryInterceptor
 import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType

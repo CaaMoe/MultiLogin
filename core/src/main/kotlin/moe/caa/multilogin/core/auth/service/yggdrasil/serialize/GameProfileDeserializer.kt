@@ -1,8 +1,8 @@
-package moe.caa.multilogin.core.auth.service.yggdrasil
+package moe.caa.multilogin.core.auth.service.yggdrasil.serialize
 
 import kotlinx.serialization.json.*
 import moe.caa.multilogin.api.profile.GameProfile
-import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.auth.service.yggdrasil.LoginProfile
 import moe.caa.multilogin.core.util.toUUIDOrNull
 
 object GameProfileDeserializer {

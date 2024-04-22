@@ -1,7 +1,6 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil
 
 import moe.caa.multilogin.core.auth.AuthenticationHandler
-import moe.caa.multilogin.core.auth.LoginProfile
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.GeneralConfiguration
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilService

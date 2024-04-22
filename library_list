@@ -27,6 +27,9 @@
 [library] org.jetbrains.exposed:exposed-dao:0.49.0
 [library] org.jetbrains.exposed:exposed-jdbc:0.49.0
 
+[library] com.squareup.okhttp3:okhttp:4.12.0
+[library] com.squareup.okio:okio-jvm:3.6.0
+
 
 # velocity额外需要加载的库
 [group] velocity

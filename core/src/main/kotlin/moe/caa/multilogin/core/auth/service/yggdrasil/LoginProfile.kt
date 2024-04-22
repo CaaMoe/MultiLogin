@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.auth
+package moe.caa.multilogin.core.auth.service.yggdrasil
 
 data class LoginProfile(
     val username: String,

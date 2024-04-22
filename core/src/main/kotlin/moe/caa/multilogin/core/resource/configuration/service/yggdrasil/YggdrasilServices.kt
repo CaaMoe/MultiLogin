@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.resource.configuration.service.yggdrasil
 
-import moe.caa.multilogin.core.auth.LoginProfile
+import moe.caa.multilogin.core.auth.service.yggdrasil.LoginProfile
 import moe.caa.multilogin.core.resource.configuration.service.BaseService
 import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType
 import moe.caa.multilogin.core.resource.configuration.service.ServiceType
