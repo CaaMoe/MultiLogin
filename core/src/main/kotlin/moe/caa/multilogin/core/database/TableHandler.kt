@@ -39,18 +39,17 @@ class TableHandler(
             .map { it[UserDataTable.serviceId] }
     }
 
-    fun findProfile(serviceId: Int, loginUuid: UUID): ProfileData? {
+    fun findProfile(serviceId: Int, loginUuid: UUID): ProfileData? = handle {
         val profileId = UserDataTable.select(UserDataTable.linkToProfileId)
             .where {
                 UserDataTable.serviceId eq serviceId
                 UserDataTable.loginUuid eq loginUuid
             }.limit(1)
             .map { it[UserDataTable.linkToProfileId] }
-            .getOrNull(0) ?: return null
+            .getOrNull(0) ?: return@handle null
 
 
-
-        return ProfileData.find { ProfileDataTable.id eq profileId }.limit(1)
+        return@handle ProfileData.find { ProfileDataTable.id eq profileId }.limit(1)
             .firstOrNull()
     }
 }
