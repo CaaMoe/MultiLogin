@@ -2,7 +2,6 @@ package moe.caa.multilogin.core.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.core.database.v4.TableHandler
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.util.camelCaseToUnderscore
 import moe.caa.multilogin.core.util.logInfo
