@@ -31,16 +31,16 @@ public class BungeeInjector implements Injector {
         redirectIn(login, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
         redirectIn(login, LoginRequest.class, () -> new MultiLoginRequest(api));
 
-        {
-            Protocol play = Protocol.GAME;
-            Object toServerDirectionData = getToServerDirectionData(play);
+      //  {
+        //    Protocol play = Protocol.GAME;
+          //  Object toServerDirectionData = getToServerDirectionData(play);
 
-            Object[] objects = (Object[]) Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 2);
-            objects[0] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20);
-            objects[1] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06);
+          //  Object[] objects = (Object[]) Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 2);
+         //   objects[0] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20);
+         //   objects[1] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06);
 
-            registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, objects);
-        }
+           // registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, objects);
+        //}
     }
 
 

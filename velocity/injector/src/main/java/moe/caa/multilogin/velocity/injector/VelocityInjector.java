@@ -39,14 +39,14 @@ public class VelocityInjector implements Injector {
         }
 
         // chat
-        {
-            StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
-            StateRegistry.PacketMapping[] playerSessionPacketMapping = {
-                    createPacketMapping(0x20, ProtocolVersion.MINECRAFT_1_19_3, false),
-                    createPacketMapping(0x06, ProtocolVersion.MINECRAFT_1_19_4, false)
-            };
-            registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, playerSessionPacketMapping);
-        }
+        //{
+        //    StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
+         //   StateRegistry.PacketMapping[] playerSessionPacketMapping = {
+         //           createPacketMapping(0x20, ProtocolVersion.MINECRAFT_1_19_3, false),
+         //           createPacketMapping(0x06, ProtocolVersion.MINECRAFT_1_19_4, false)
+          //  };
+        //    registerPacket(serverbound, MultiPlayerSession.class, MultiPlayerSession::new, playerSessionPacketMapping);
+       // }
     }
 
     private StateRegistry.PacketRegistry getServerboundPacketRegistry(StateRegistry stateRegistry) throws NoSuchFieldException, IllegalAccessException {
