@@ -1,5 +1,9 @@
 package moe.caa.multilogin.core.resource.configuration.service
 
+import moe.caa.multilogin.api.profile.GameProfile
+import java.util.*
+import kotlin.math.log
+
 abstract class BaseService(
     val serviceId: Int,
     val serviceName: String,

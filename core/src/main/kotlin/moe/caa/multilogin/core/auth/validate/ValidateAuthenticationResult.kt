@@ -11,7 +11,6 @@ sealed interface ValidateAuthenticationResult : AuthenticationResult
 class ValidateAuthenticationFailureResult(failedReason: Component): AuthenticationFailureResult(failedReason), ValidateAuthenticationResult
 
 class ValidateAuthenticationSuccessResult(
-    val loginGameProfile: GameProfile,
-    val inGameProfile: GameProfile
+    inGameProfile: GameProfile
 ): AuthenticationSuccessResult(inGameProfile), ValidateAuthenticationResult
 
