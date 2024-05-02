@@ -1,5 +1,7 @@
 package moe.caa.multilogin.api;
 
+import moe.caa.multilogin.api.data.IProfileData;
+import moe.caa.multilogin.api.data.IUserData;
 import moe.caa.multilogin.api.player.MultiLoginPlayerData;
 import moe.caa.multilogin.api.service.IService;
 import org.jetbrains.annotations.ApiStatus;
@@ -32,5 +34,39 @@ public interface MultiLoginAPI {
     @Nullable
     MultiLoginPlayerData getPlayerData(UUID profileUuid);
 
+    @Nullable
+    IService getService(int serviceId);
 
+    // 擦车白名单相关
+    boolean addCacheWhitelist(@NotNull String loginUsername);
+    boolean addCacheWhitelist(@NotNull String loginUsername, @NotNull IService service);
+    boolean hasCacheWhitelist(@NotNull String loginUsername);
+    boolean hasCacheWhitelist(@NotNull String loginUsername, @NotNull IService service);
+    boolean removeCacheWhitelist(@NotNull String loginUsername);
+    boolean removeCacheWhitelist(@NotNull String loginUsername, @NotNull IService service);
+
+    // 玩家数据相关(仅查询)
+    @NotNull List<IUserData> findAllUserData();
+    @NotNull List<IUserData> findAllUserData(@NotNull IService service);
+    @Nullable IUserData findUserData(int userId);
+    @Nullable IUserData findUserData(@NotNull UUID loginUUID, @NotNull IService service);
+
+    // 档案数据相关(仅查询)
+    @NotNull List<IProfileData> findAllProfileData();
+    @Nullable IProfileData findProfileData(int profileId);
+    @Nullable IProfileData findProfileData(@NotNull UUID profileUuid);
+    @Nullable IProfileData findProfileData(@NotNull String profileUsername);
+
+    // 混合查询相关(仅查询)
+    @Nullable IUserData findWhoInitializedIt(@NotNull IProfileData profileData);
+    @Nullable List<IUserData> findLinker(@NotNull IProfileData profileData);
+
+    // 档案操作相关
+    @NotNull IProfileData createProfile(@NotNull UUID profileUUID, @NotNull String profileName);
+    @NotNull IProfileData renameProfile(@NotNull IProfileData handle, @NotNull String newProfileName);
+
+    // 玩家数据操作相关
+    @NotNull IUserData setLinkToProfile(@NotNull IUserData userData, @NotNull IProfileData profileData);
+    @NotNull IUserData setLinkToInitialProfile(@NotNull IUserData userData);
+    @NotNull IUserData setWhitelist(@NotNull IUserData handle, boolean whitelist);
 }

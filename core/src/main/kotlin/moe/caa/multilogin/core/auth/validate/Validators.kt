@@ -164,7 +164,7 @@ data object FinalValidator: Validator {
     ): ValidateAuthenticationResult {
         // todo 少了个异地登录检查，以后再加~
         val gameProfile = GameProfile(
-            validateData.profileData.profileId,
+            validateData.profileData.profileUuid,
             validateData.profileData.profileName,
             validateData.loginProfile.properties
         )

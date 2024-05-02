@@ -6,7 +6,7 @@ import kotlin.properties.Delegates
 // 这里不用刀是为了能更好的随时new和操作数据吧...
 
 data class ProfileData(
-    val profileId: UUID,
+    val profileUuid: UUID,
     var profileName: String, // 这里包含 profileName 和 lowercaseProfileName, 读只读 profileName, lowercaseProfileName 只作为忽略大小写的唯一约束
 ){
     // 如果不是数据库读出来的话, 可以不写这个值
