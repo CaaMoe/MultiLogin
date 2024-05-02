@@ -42,17 +42,17 @@ class TableHandler(
     fun findUserData(dataIndex: Int): UserData? = TODO()
     fun findProfile(dataIndex: Int): ProfileData? = TODO()
     fun findProfile(profileId: UUID): ProfileData? = TODO()
-    fun findProfileIgnoreCase(username: String): List<ProfileData> = TODO()
-
+    fun findProfileIgnoreCase(username: String): ProfileData? = TODO()
     fun checkInGameNameAvailable(username: String): Boolean = TODO()
     fun checkInGameUuidAvailable(uuid: UUID): Boolean = TODO()
-    // 校验擦车白名单
+    // 校验临时白名单
     fun checkCacheWhitelist(serviceId: Int, loginProfile: GameProfile): Boolean = TODO()
-    // 删除和校验擦车白名单
+    // 删除和临时擦车白名单
     fun checkAndRemoveCacheWhitelist(serviceId: Int, loginProfile: GameProfile): Boolean = TODO()
-
     // 创建一个新的档案
     fun createNewProfile(profileData: ProfileData): ProfileData = TODO()
     // 创建一个新数据
     fun createNewUserData(userData: UserData): UserData = TODO()
+
+    fun setWhitelist(dataIndex: Int, whitelist: Boolean): Unit = TODO()
 }

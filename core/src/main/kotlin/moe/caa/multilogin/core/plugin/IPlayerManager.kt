@@ -9,13 +9,14 @@ interface IPlayerManager {
     fun getOnlinePlayers(): List<IPlayerInfo>
     fun getOnlinePlayer(uuid: UUID): IPlayerInfo?
     fun getOnlinePlayer(string: String): IPlayerInfo?
+    fun broadcastMessage(component: Component)
 
 
     interface IPlayerInfo {
         val audience: Audience
-        val gameProfile: GameProfile
+        val inGameProfile: GameProfile
 
-        fun kick(component: Component)
+        fun disconnect(component: Component)
 
         override fun equals(other: Any?): Boolean
         override fun hashCode(): Int

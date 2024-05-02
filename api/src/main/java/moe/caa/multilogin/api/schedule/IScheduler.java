@@ -23,6 +23,8 @@ public sealed interface IScheduler {
 
     void shutdown();
 
+    void runTaskLaterAsync(Runnable run, long delay);
+
     final class SimpleScheduler implements IScheduler {
         private final AtomicInteger asyncThreadId = new AtomicInteger(0);
         private final ScheduledExecutorService asyncExecutor = Executors.newScheduledThreadPool(16, r -> {
@@ -45,6 +47,11 @@ public sealed interface IScheduler {
         @Override
         public void runTaskAsyncTimer(Runnable run, long delay, long period) {
             asyncExecutor.scheduleAtFixedRate(run, delay, period, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void runTaskLaterAsync(Runnable run, long delay) {
+            asyncExecutor.schedule(run, delay, TimeUnit.MILLISECONDS);
         }
 
         @Override

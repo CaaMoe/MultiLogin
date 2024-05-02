@@ -7,6 +7,7 @@ import moe.caa.multilogin.core.resource.saveDefaultResource
 import moe.caa.multilogin.core.util.logInfo
 import moe.caa.multilogin.core.util.logWarn
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
@@ -64,3 +65,15 @@ fun language(node: String): Component {
         }
     )
 }
+
+fun Component.replace(literal: String, replacement: String) =
+    replaceText(TextReplacementConfig.builder()
+        .matchLiteral(literal)
+        .replacement(replacement)
+        .build())
+
+fun Component.replace(literal: String, replacement: Component) =
+    replaceText(TextReplacementConfig.builder()
+        .matchLiteral(literal)
+        .replacement(replacement)
+        .build())

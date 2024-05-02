@@ -15,11 +15,15 @@ class VelocityPlayerManager(private val core: MultiLoginVelocityCore) : IPlayerM
     override fun getOnlinePlayer(string: String): IPlayerManager.IPlayerInfo? =
         core.bootstrap.proxyServer.getPlayer(string).map { VelocityPlayerInfo(it) }.orElse(null)
 
+    override fun broadcastMessage(component: Component) =
+        core.bootstrap.proxyServer.allPlayers.forEach { it.sendMessage(component) }
+
+
     class VelocityPlayerInfo(private val player: Player) : IPlayerManager.IPlayerInfo {
         override val audience = player
-        override val gameProfile = player.gameProfile.toMultiLoginGameProfile()
+        override val inGameProfile = player.gameProfile.toMultiLoginGameProfile()
 
-        override fun kick(component: Component) {
+        override fun disconnect(component: Component) {
             player.disconnect(component)
         }
 

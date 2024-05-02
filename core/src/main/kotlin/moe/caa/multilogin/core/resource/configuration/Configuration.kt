@@ -134,6 +134,15 @@ data object NameSetting : IConfig {
     }
 }
 
+data object MessagePrompt : IConfig{
+    var showWelcomeMessage = true
+
+    override fun read(node: ConfigurationNode) {
+        showWelcomeMessage = node.node("show_welcome_message").getBoolean(true)
+    }
+
+}
+
 data object Support : IConfig {
     var floodgate = true
         private set

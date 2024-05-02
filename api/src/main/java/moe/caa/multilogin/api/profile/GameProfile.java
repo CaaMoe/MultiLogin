@@ -15,6 +15,5 @@ public record GameProfile(
             @NotNull String name,
             @NotNull String value,
             @Nullable String signature
-    ) {
-    }
+    ) { }
 }

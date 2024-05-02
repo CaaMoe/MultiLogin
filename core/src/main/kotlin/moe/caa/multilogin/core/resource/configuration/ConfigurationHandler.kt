@@ -33,6 +33,7 @@ class ConfigurationHandler(private val multiCore: MultiCore) {
             GeneralConfiguration.read(this)
             NameSetting.read(this.node("name_setting"))
             Support.read(this.node("support"))
+            MessagePrompt.read(this.node("message_prompt"))
         }
 
         GeneralConfiguration.readServices(File(multiCore.plugin.dataFolder, "service"))
