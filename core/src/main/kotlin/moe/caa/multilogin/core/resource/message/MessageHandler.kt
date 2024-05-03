@@ -72,6 +72,14 @@ fun Component.replace(literal: String, replacement: String) =
         .replacement(replacement)
         .build())
 
+fun Component.replace(literal: String, replacement: Any) =
+    replaceText(
+        TextReplacementConfig.builder()
+            .matchLiteral(literal)
+            .replacement(replacement.toString())
+            .build()
+    )
+
 fun Component.replace(literal: String, replacement: Component) =
     replaceText(TextReplacementConfig.builder()
         .matchLiteral(literal)

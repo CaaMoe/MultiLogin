@@ -1,13 +1,12 @@
 package moe.caa.multilogin.core.auth.validate
 
 import moe.caa.multilogin.api.profile.GameProfile
-import moe.caa.multilogin.core.database.v4.ProfileData
-import moe.caa.multilogin.core.database.v4.UserData
+import moe.caa.multilogin.core.database.v4.UnmodifiedProfileData
+import moe.caa.multilogin.core.database.v4.UnmodifiedUserData
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.NameSetting
 import moe.caa.multilogin.core.resource.message.language
 import moe.caa.multilogin.core.util.incrementString
-import moe.caa.multilogin.core.util.logError
 import moe.caa.multilogin.core.util.logInfo
 import moe.caa.multilogin.core.util.logWarn
 import net.kyori.adventure.text.TextReplacementConfig
@@ -97,33 +96,30 @@ data object InitialDataValidator : Validator {
                 }
 
                 // 先创建 profile
-                val initialProfile = tableHandler.createNewProfile(ProfileData(changedProfileUuid, changedProfileUsername))
+                val initialProfile =
+                    tableHandler.createNewProfile(UnmodifiedProfileData(changedProfileUuid, changedProfileUsername))
                 logInfo("A new profile is created with the id is ${initialProfile.dataIndex} and profile uuid is $changedProfileUuid and profile name is $changedProfileUsername")
 
                 // 然后创建 userdata, 记录 initial profile 为 link to profile
-                userData = tableHandler.createNewUserData(UserData(
-                    validateData.service.serviceId,
+                userData = tableHandler.createNewUserData(
+                    UnmodifiedUserData(
+                        validateData.service,
                     validateData.loginProfile.uuid,
                     validateData.loginProfile.username,
                     false,
-                    initialProfile.dataIndex,
-                    initialProfile.dataIndex,
+                        initialProfile,
+                        initialProfile,
                 ))
                 logInfo("A new user data is created with the id is ${userData!!.dataIndex} and login service is ${validateData
                     .service.serviceId}(${validateData.service.serviceName}) and login name is ${validateData
                         .loginProfile.username} and login uuid is ${validateData.loginProfile.uuid} and initial profile id is ${initialProfile.dataIndex}")
 
-                validateData.profileData = initialProfile
+                validateData.unmodifiedProfileData = initialProfile
             }
         }
-        val profileData = tableHandler.findProfile(userData!!.linkToProfileId)
-        if(profileData == null){
-            logError("The profile whose id is ${userData!!.linkToProfileId} cannot be found, and data is suspected to be lost.(Trigger: $userData)")
-            return ValidateAuthenticationFailureResult(language("auth_validate_failed_unknown_profile_index_id"))
-        }
 
-        validateData.userData = userData!!
-        validateData.profileData = profileData
+        validateData.unmodifiedUserData = userData!!
+        validateData.unmodifiedProfileData = userData!!.linkToProfileData
         return validateAuthenticationSuccessResult
     }
 }
@@ -140,16 +136,19 @@ data object WhitelistValidator: Validator {
         val tableHandler = MultiCore.instance.sqlHandler.tableHandler
         // 检查和删掉临时白名单
         if (tableHandler.checkAndRemoveCacheWhitelist(validateData.service.serviceId, validateData.loginProfile)) {
-            if (!validateData.userData.whitelist) {
+            if (!validateData.unmodifiedUserData!!.hasWhitelist()) {
                 // 记录白名单
-                tableHandler.setWhitelist(validateData.userData.dataIndex, true)
-                validateData.userData.whitelist = true
+                validateData.unmodifiedUserData =
+                    tableHandler.setWhitelist(validateData.unmodifiedUserData!!.dataIndex, true)
             }
         }
-        // 检查白名单
-        if(!validateData.userData.whitelist){
-            return ValidateAuthenticationFailureResult(language("auth_validate_failed_no_whitelist"))
+        if (validateData.service.whitelist) {
+            // 检查白名单
+            if (!validateData.unmodifiedUserData!!.hasWhitelist()) {
+                return ValidateAuthenticationFailureResult(language("auth_validate_failed_no_whitelist"))
+            }
         }
+
         return validateAuthenticationSuccessResult
     }
 }
@@ -164,8 +163,8 @@ data object FinalValidator: Validator {
     ): ValidateAuthenticationResult {
         // todo 少了个异地登录检查，以后再加~
         val gameProfile = GameProfile(
-            validateData.profileData.profileUuid,
-            validateData.profileData.profileName,
+            validateData.unmodifiedProfileData!!.profileUUID,
+            validateData.unmodifiedProfileData!!.profileUsername,
             validateData.loginProfile.properties
         )
         return ValidateAuthenticationSuccessResult(gameProfile)

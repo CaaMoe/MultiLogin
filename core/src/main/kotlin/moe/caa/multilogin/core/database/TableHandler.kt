@@ -38,11 +38,11 @@ class TableHandler(
             .map { it[UserDataTable.serviceId] }
     }
 
-    fun findUserDate(serviceId: Int, loginUUID: UUID): UserData? = TODO()
-    fun findUserData(dataIndex: Int): UserData? = TODO()
-    fun findProfile(dataIndex: Int): ProfileData? = TODO()
-    fun findProfile(profileId: UUID): ProfileData? = TODO()
-    fun findProfileIgnoreCase(username: String): ProfileData? = TODO()
+    fun findUserDate(serviceId: Int, loginUUID: UUID): UnmodifiedUserData? = TODO()
+    fun findUserData(dataIndex: Int): UnmodifiedUserData? = TODO()
+    fun findProfile(dataIndex: Int): UnmodifiedProfileData? = TODO()
+    fun findProfile(profileId: UUID): UnmodifiedProfileData? = TODO()
+    fun findProfileIgnoreCase(username: String): UnmodifiedProfileData? = TODO()
     fun checkInGameNameAvailable(username: String): Boolean = TODO()
     fun checkInGameUuidAvailable(uuid: UUID): Boolean = TODO()
     // 校验临时白名单
@@ -50,9 +50,9 @@ class TableHandler(
     // 删除和临时擦车白名单
     fun checkAndRemoveCacheWhitelist(serviceId: Int, loginProfile: GameProfile): Boolean = TODO()
     // 创建一个新的档案
-    fun createNewProfile(profileData: ProfileData): ProfileData = TODO()
+    fun createNewProfile(unmodifiedProfileData: UnmodifiedProfileData): UnmodifiedProfileData = TODO()
     // 创建一个新数据
-    fun createNewUserData(userData: UserData): UserData = TODO()
+    fun createNewUserData(unmodifiedUserData: UnmodifiedUserData): UnmodifiedUserData = TODO()
 
-    fun setWhitelist(dataIndex: Int, whitelist: Boolean): Unit = TODO()
+    fun setWhitelist(dataIndex: Int, whitelist: Boolean): UnmodifiedUserData = TODO()
 }

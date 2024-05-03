@@ -1,13 +1,12 @@
 package moe.caa.multilogin.core.command
 
+import moe.caa.multilogin.core.command.handles.LIST_HANDLER
 import moe.caa.multilogin.core.command.handles.RELOAD_HANDLER
-import moe.caa.multilogin.core.command.parser.ServiceIdArgumentParser
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.Command.Builder
 import org.incendo.cloud.CommandManager
 import org.incendo.cloud.execution.ExecutionCoordinator
-import org.incendo.cloud.parser.standard.IntegerParser
 
 class CommandHandler(multiCore: MultiCore) {
     private val manager: CommandManager<Audience> = multiCore.plugin
@@ -26,15 +25,9 @@ class CommandHandler(multiCore: MultiCore) {
         }
 
         register {
-            literal("test")
-                .required("grdsfrgsd", ServiceIdArgumentParser.serviceIdParser())
-                .required("asdasdasd", IntegerParser.integerParser())
-                .required("dsgdrhfthdf", IntegerParser.integerParser())
-                .required("yujyhtdgrsfdd", IntegerParser.integerParser())
-                .required("iumgfgdgvdgfn", IntegerParser.integerParser())
-                .handler {
-
-                }
+            literal("list")
+                .permission(PERMISSIONS_COMMAND_LIST)
+                .handler(LIST_HANDLER)
         }
     }
 

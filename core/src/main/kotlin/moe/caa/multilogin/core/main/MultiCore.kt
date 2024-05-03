@@ -20,6 +20,7 @@ class MultiCore(val plugin: ExtendedPlatform) {
     val sqlHandler = SQLHandler()
     val authenticationHandler = AuthenticationHandler(this)
     val dataManager = DataManager()
+    val api = MultiLoginAPIImpl(this)
 
     companion object {
         lateinit var instance: MultiCore
@@ -33,6 +34,7 @@ class MultiCore(val plugin: ExtendedPlatform) {
         commandHandler.init()
         messageHandler.init()
         sqlHandler.init()
+        dataManager.init()
     }
 
     fun disable() {

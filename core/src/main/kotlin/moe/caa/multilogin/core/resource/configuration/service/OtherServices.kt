@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.resource.configuration.service
 
+import moe.caa.multilogin.api.service.ServiceType
+
 class FloodgateService(
     serviceId: Int,
     serviceName: String,
@@ -11,5 +13,5 @@ class FloodgateService(
     uuidGenerate,
     whitelist
 ) {
-    override val serviceType = ServiceType.FLOODGATE
+    override fun getServiceType() = ServiceType.FLOODGATE
 }

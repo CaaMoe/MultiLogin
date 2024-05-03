@@ -6,6 +6,7 @@ import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticator
 import moe.caa.multilogin.core.auth.validate.LoginValidator
 import moe.caa.multilogin.core.auth.validate.ValidateData
 import moe.caa.multilogin.core.main.MultiCore
+import moe.caa.multilogin.core.manager.DataManager
 import moe.caa.multilogin.core.util.logDebug
 import moe.caa.multilogin.core.util.logInfo
 
@@ -26,6 +27,13 @@ class AuthenticationHandler(
 
         if (finalResult is AuthenticationSuccessResult) {
             logInfo("${yggdrasilAuthResult.gameProfile.username}(uuid: ${yggdrasilAuthResult.gameProfile.uuid}) from authentication service ${yggdrasilAuthResult.service.serviceName}(sid: ${yggdrasilAuthResult.service.serviceId}) has been authenticated, profile redirected to ${finalResult.gameProfile.username}(uuid: ${finalResult.gameProfile.uuid}).")
+
+            multiCore.dataManager.preLoginData[finalResult.gameProfile.uuid] = DataManager.VerifiedData(
+                yggdrasilAuthResult.gameProfile,
+                yggdrasilAuthResult.service,
+                finalResult.gameProfile,
+                System.currentTimeMillis()
+            )
         }
         return finalResult
     }

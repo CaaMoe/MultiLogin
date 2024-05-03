@@ -9,7 +9,7 @@ public enum ServiceType {
     public boolean allowedDuplicate(){
         return switch (this){
             case OFFICIAL, FLOODGATE -> false;
-            case BLESSING_SKIN, CUSTOM_YGGDRASIL -> true;
+            default -> true;
         };
     }
 }

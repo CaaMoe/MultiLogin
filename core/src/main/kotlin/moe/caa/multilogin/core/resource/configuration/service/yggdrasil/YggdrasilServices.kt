@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.resource.configuration.service.yggdrasil
 
+import moe.caa.multilogin.api.service.ServiceType
 import moe.caa.multilogin.core.auth.service.yggdrasil.LoginProfile
 import moe.caa.multilogin.core.resource.configuration.service.BaseService
 import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType
-import moe.caa.multilogin.api.service.ServiceType
 import moe.caa.multilogin.core.resource.configuration.service.UUIDGenerateType
 import java.net.URLEncoder
 
@@ -54,7 +54,7 @@ class YggdrasilCustomService(
     retry,
     delayRetry
 ) {
-    override val serviceType = ServiceType.CUSTOM_YGGDRASIL
+    override fun getServiceType() = ServiceType.CUSTOM_YGGDRASIL
 
     override fun generateAuthUrl(loginProfile: LoginProfile): String {
         val encodedUsername = URLEncoder.encode(loginProfile.username, Charsets.UTF_8)
@@ -108,7 +108,7 @@ class YggdrasilBlessingSkinService(
     delayRetry
 ) {
     override val httpMethodType = HttpMethodType.GET
-    override val serviceType = ServiceType.BLESSING_SKIN
+    override fun getServiceType() = ServiceType.BLESSING_SKIN
     companion object {
         // sessionserver/session/minecraft/hasJoined?username={0}&serverId={1}{2}
         private val APPEND_YGGDRASIL_URL_BYTES: ByteArray = byteArrayOf(
@@ -227,7 +227,7 @@ class YggdrasilOfficialService(
     delayRetry
 ) {
     override val httpMethodType = HttpMethodType.GET
-    override val serviceType = ServiceType.OFFICIAL
+    override fun getServiceType() = ServiceType.OFFICIAL
     companion object {
         // https://sessionserver.mojang.com/session/minecraft/hasJoined?username={0}&serverId={1}{2}
         private val VANILLA_YGGDRASIL_URL_BYTES: ByteArray = byteArrayOf(

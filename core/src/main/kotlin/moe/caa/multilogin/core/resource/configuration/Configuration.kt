@@ -1,6 +1,10 @@
 package moe.caa.multilogin.core.resource.configuration
 
-import moe.caa.multilogin.core.resource.configuration.service.*
+import moe.caa.multilogin.api.service.ServiceType
+import moe.caa.multilogin.core.resource.configuration.service.BaseService
+import moe.caa.multilogin.core.resource.configuration.service.FloodgateService
+import moe.caa.multilogin.core.resource.configuration.service.HttpMethodType
+import moe.caa.multilogin.core.resource.configuration.service.UUIDGenerateType
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilBlessingSkinService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilCustomService
 import moe.caa.multilogin.core.resource.configuration.service.yggdrasil.YggdrasilOfficialService
@@ -107,13 +111,16 @@ data object GeneralConfiguration : IConfig {
         this.services = Collections.unmodifiableMap(services)
 
         services.forEach { (k, v) ->
-            logInfo("Add a service whose id $k, type ${v.serviceType}, and name ${v.serviceName}.")
+            logInfo("Add an authentication service whose id $k, type ${v.serviceType}, and name ${v.serviceName}.")
         }
 
         if (services.isEmpty()) {
-            logWarn("The server does not have any services added, this will prevent all players from logging into the server.")
+            logWarn("=========================================================================")
+            logWarn("#    The server does not have any authentication services added, ")
+            logWarn("#  which will prevent all players from logging on to the server!!!")
+            logWarn("=========================================================================")
         } else {
-            logInfo("${services.size} service${if (services.size == 1) "" else "s"} have been added.")
+            logInfo("${services.size} authentication service${if (services.size == 1) "" else "s"} have been added.")
         }
     }
 }
