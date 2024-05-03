@@ -1,5 +1,7 @@
 package moe.caa.multilogin.core.util
 
+import moe.caa.multilogin.core.main.MultiCore
+import net.kyori.adventure.audience.Audience
 import java.util.*
 import kotlin.math.pow
 

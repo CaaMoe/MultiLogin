@@ -27,7 +27,7 @@ class MultiLoginVelocityCore(
     override val profileForwarding: Boolean =
         (bootstrap.proxyServer.configuration as VelocityConfiguration).playerInfoForwardingMode != PlayerInfoForwarding.NONE
     override val consoleCommandSender: Audience = bootstrap.proxyServer.consoleCommandSource
-    override val playerManager: IPlayerManager = VelocityPlayerManager(this)
+    override val playerManager: IPlayerManager<*> = VelocityPlayerManager(this)
 
     private val listener = Listener(this)
 

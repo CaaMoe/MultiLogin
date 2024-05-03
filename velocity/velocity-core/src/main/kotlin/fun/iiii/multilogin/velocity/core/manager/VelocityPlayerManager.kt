@@ -4,10 +4,13 @@ import com.velocitypowered.api.proxy.Player
 import `fun`.iiii.multilogin.velocity.core.main.MultiLoginVelocityCore
 import `fun`.iiii.multilogin.velocity.core.util.toMultiLoginGameProfile
 import moe.caa.multilogin.core.plugin.IPlayerManager
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import java.util.*
 
-class VelocityPlayerManager(private val core: MultiLoginVelocityCore) : IPlayerManager {
+class VelocityPlayerManager(private val core: MultiLoginVelocityCore) : IPlayerManager<Player> {
+    override fun getPlayerType() = Player::class.java
+    override fun getPlayer(audience: Audience) = VelocityPlayerInfo(audience as Player)
     override fun getOnlinePlayers() = core.bootstrap.proxyServer.allPlayers.map { VelocityPlayerInfo(it) }
     override fun getOnlinePlayer(uuid: UUID): VelocityPlayerInfo? =
         core.bootstrap.proxyServer.getPlayer(uuid).map { VelocityPlayerInfo(it) }.orElse(null)

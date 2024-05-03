@@ -1,7 +1,10 @@
 package moe.caa.multilogin.core.command
 
+import moe.caa.multilogin.core.command.handles.INFO_OTHER_HANDLER
+import moe.caa.multilogin.core.command.handles.INFO_SELF_HANDLER
 import moe.caa.multilogin.core.command.handles.LIST_HANDLER
 import moe.caa.multilogin.core.command.handles.RELOAD_HANDLER
+import moe.caa.multilogin.core.command.parser.OnlinePlayerArgumentParser
 import moe.caa.multilogin.core.main.MultiCore
 import net.kyori.adventure.audience.Audience
 import org.incendo.cloud.Command.Builder
@@ -28,6 +31,20 @@ class CommandHandler(multiCore: MultiCore) {
             literal("list")
                 .permission(PERMISSIONS_COMMAND_LIST)
                 .handler(LIST_HANDLER)
+        }
+
+        register {
+            literal("info")
+                .permission(PERMISSIONS_COMMAND_INFO)
+                .senderType(MultiCore.instance.plugin.playerManager.getPlayerType())
+                .handler(INFO_SELF_HANDLER)
+        }
+
+        register {
+            literal("info")
+                .permission(PERMISSIONS_COMMAND_INFO_OTHER)
+                .required("player", OnlinePlayerArgumentParser.playerParser())
+                .handler(INFO_OTHER_HANDLER)
         }
     }
 

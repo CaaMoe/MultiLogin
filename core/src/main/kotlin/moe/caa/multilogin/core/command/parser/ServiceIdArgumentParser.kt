@@ -17,9 +17,6 @@ class ServiceIdArgumentParser<C> : ArgumentParser<C, BaseService>, BlockingSugge
     companion object {
         fun <C> serviceIdParser(): ParserDescriptor<C, BaseService> =
             ParserDescriptor.of(ServiceIdArgumentParser(), BaseService::class.java)
-
-        fun <C> serviceIdComponent(): CommandComponent.Builder<C, BaseService> =
-            CommandComponent.builder<C, BaseService>().parser(serviceIdParser())
     }
 
     override fun parse(

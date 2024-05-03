@@ -17,7 +17,7 @@ interface ExtendedPlatform : ExtendedService {
     val onlineMode: Boolean
     val profileForwarding: Boolean
     val consoleCommandSender: Audience
-    val playerManager: IPlayerManager
+    val playerManager: IPlayerManager<*>
 
     fun generateCommandManager(executionCoordinator: ExecutionCoordinator<Audience>): CommandManager<Audience>
 }
