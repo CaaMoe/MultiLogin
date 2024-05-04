@@ -7,6 +7,7 @@ import moe.caa.multilogin.core.resource.saveDefaultResource
 import moe.caa.multilogin.core.util.logInfo
 import moe.caa.multilogin.core.util.logWarn
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.spongepowered.configurate.ConfigurationNode
@@ -57,6 +58,7 @@ fun language(node: String): Component {
     val configurationNode = MultiCore.instance.messageHandler.messageConfigurationNode
         .node(node.split("."))
 
+
     return MiniMessage.miniMessage().deserialize(
         if (configurationNode.isList) {
             configurationNode.getList(String::class.java)?.joinToString { "\n" } ?: ""
@@ -72,13 +74,8 @@ fun Component.replace(literal: String, replacement: String) =
         .replacement(replacement)
         .build())
 
-fun Component.replace(literal: String, replacement: Any) =
-    replaceText(
-        TextReplacementConfig.builder()
-            .matchLiteral(literal)
-            .replacement(replacement.toString())
-            .build()
-    )
+fun Component.replace(literal: String, replacement: Any) = this.replace(literal, replacement.toString())
+
 
 fun Component.replace(literal: String, replacement: Component) =
     replaceText(TextReplacementConfig.builder()

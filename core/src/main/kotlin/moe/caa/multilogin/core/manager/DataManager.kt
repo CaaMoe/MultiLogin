@@ -65,8 +65,8 @@ class DataManager {
             val verifiedData = verifiedProfileData[playerInfo.inGameProfile.uuid]
             val component = if(verifiedData == null){
                 language("welcome_message_unidentified")
-                    .replace("%profile_username%", playerInfo.inGameProfile.username)
-                    .replace("%profile_uuid%", playerInfo.inGameProfile.uuid.toString())
+                    .replace("%username%", playerInfo.inGameProfile.username)
+                    .replace("%uuid%", playerInfo.inGameProfile.uuid.toString())
             } else {
                 language("welcome_message")
                     .replace("%login_username%", verifiedData.loginProfile.username)

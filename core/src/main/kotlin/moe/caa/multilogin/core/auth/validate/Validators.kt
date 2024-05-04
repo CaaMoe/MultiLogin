@@ -6,6 +6,7 @@ import moe.caa.multilogin.core.database.v4.UnmodifiedUserData
 import moe.caa.multilogin.core.main.MultiCore
 import moe.caa.multilogin.core.resource.configuration.NameSetting
 import moe.caa.multilogin.core.resource.message.language
+import moe.caa.multilogin.core.resource.message.replace
 import moe.caa.multilogin.core.util.incrementString
 import moe.caa.multilogin.core.util.logInfo
 import moe.caa.multilogin.core.util.logWarn
@@ -68,7 +69,7 @@ data object InitialDataValidator : Validator {
                     } else {
                         // 不接受直接拒绝登录, 数据什么都不会保存
                         return ValidateAuthenticationFailureResult(language("auth_validate_failed_name_repeat")
-                                .replaceText(TextReplacementConfig.builder().matchLiteral("%current_username%").replacement(expectProfileUsername).build())
+                                .replace("%current_username%", expectProfileUsername)
                         )
                     }
                 }
@@ -82,8 +83,8 @@ data object InitialDataValidator : Validator {
                 if (NameSetting.allowRegular.isNotEmpty()) {
                     if (!Pattern.matches(NameSetting.allowRegular, changedProfileUsername)) {
                         return ValidateAuthenticationFailureResult(language("auth_validate_failed_name_mismatch_regular")
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%current_username%").replacement(expectProfileUsername).build())
-                            .replaceText(TextReplacementConfig.builder().matchLiteral("%name_regular%").replacement(NameSetting.allowRegular).build())
+                            .replace("%current_username%", expectProfileUsername)
+                            .replace("%name_regular%", NameSetting.allowRegular)
                         )
                     }
                 }

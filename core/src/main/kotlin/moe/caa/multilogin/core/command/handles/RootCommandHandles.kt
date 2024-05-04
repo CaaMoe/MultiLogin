@@ -10,7 +10,9 @@ import moe.caa.multilogin.core.resource.message.replace
 import moe.caa.multilogin.core.util.logError
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.incendo.cloud.execution.CommandExecutionHandler
+import java.util.*
 
 
 val INFO_SELF_HANDLER = CommandExecutionHandler<Audience> { context ->
@@ -62,6 +64,18 @@ val INFO_OTHER_HANDLER = CommandExecutionHandler<Audience> { context ->
 
 
 val LIST_HANDLER = CommandExecutionHandler<Audience> { context ->
+    val onlinePlayers = MultiCore.instance.plugin.playerManager.getOnlinePlayers()
+    if(onlinePlayers.isEmpty()){
+        context.sender().sendMessage {
+            language("command_list_all_nobody")
+        }
+    } else {
+        context.sender().sendMessage {
+            language("command_list_all")
+                .replace("%online_count%", onlinePlayers.size)
+        }
+    }
+
     val collect: MutableMap<BaseService, MutableList<DataManager.VerifiedData>> = HashMap()
     val unidentified: MutableList<IPlayerManager.IPlayerInfo> = ArrayList()
 
@@ -75,80 +89,63 @@ val LIST_HANDLER = CommandExecutionHandler<Audience> { context ->
         }
     }
 
-    var allList = Component.empty()
-    var firstElementService = true
-
-    collect.forEach { it ->
-        var currentList = Component.empty()
-        var firstElementPlayer = true
-        it.value.forEach {
-            if (firstElementPlayer) {
-                firstElementPlayer = false
-            } else {
-                currentList = currentList.append {
-                    language("command_list_player_entry_delimiter")
-                }
-            }
-            currentList = currentList.append {
-                language("command_list_player_entry")
-                    .replace("%profile_username%", it.inGameProfile.username)
-                    .replace("%login_username%", it.loginProfile.username)
-            }
-        }
-
-        if (firstElementService) {
-            firstElementService = false
-        } else {
-            allList = allList.append {
-                language("command_list_service_entry_delimiter")
-            }
-        }
-        allList = allList.append {
-            language("command_list_service_entry")
-                .replace("%service_name%", it.key.serviceName)
-                .replace("%service_id%", it.key.serviceId)
-                .replace("%current_count%", it.value.size)
-                .replace("%current_list%", currentList)
-        }
-    }
-
-    if (unidentified.isNotEmpty()) {
-        var currentList = Component.empty()
-        var firstElementPlayer = true
+    val showQueue = PriorityQueue<Pair<Int, Component>> { o1, o2 -> o2.first.compareTo(o1.first) }
+    if(unidentified.isNotEmpty()){
+        var list = Component.empty()
+        var firstElement = true
         unidentified.forEach {
-            if (firstElementPlayer) {
-                firstElementPlayer = false
+            if(firstElement){
+                firstElement = false
             } else {
-                currentList = currentList.append {
-                    language("command_list_player_entry_delimiter")
-                }
+                list = list.append(Component.text(", ").color(TextColor.color(255, 255, 255)))
             }
-            currentList = currentList.append {
+
+            list = list.append {
                 language("command_list_player_entry_unidentified")
                     .replace("%username%", it.inGameProfile.username)
+                    .replace("%uuid%", it.inGameProfile.uuid)
             }
         }
 
-        if (firstElementService) {
-            firstElementService = false
-        } else {
-            allList = allList.append {
-                language("command_list_service_entry_delimiter")
-            }
-        }
-        allList = allList.append {
-            language("command_list_service_entry")
-                .replace("%service_name%", language("command_list_service_entry_unidentified"))
-                .replace("%service_id%", -1)
+        showQueue.offer(Pair(unidentified.size,
+            language("command_list_service_entry_unidentified")
                 .replace("%current_count%", unidentified.size)
-                .replace("%current_list%", currentList)
-        }
+                .replace("%current_list%", list)
+        ))
     }
 
-    context.sender().sendMessage {
-        language("command_list_all")
-            .replace("%online_count%", MultiCore.instance.plugin.playerManager.getOnlinePlayers().size)
-            .replace("%all_list%", allList)
+    collect.forEach{
+        var list = Component.empty()
+        var firstElement = true
+        it.value.forEach {
+            if(firstElement){
+                firstElement = false
+            } else {
+                list = list.append(Component.text(", ").color(TextColor.color(255, 255, 255)))
+            }
+
+            list = list.append {
+                language("command_list_player_entry")
+                    .replace("%profile_username%", it.inGameProfile.username)
+                    .replace("%profile_uuid%", it.inGameProfile.uuid)
+            }
+        }
+
+        showQueue.offer(Pair(it.value.size,
+            language("command_list_service_entry")
+                .replace("%current_count%", it.value.size)
+                .replace("%service_id%", it.key.serviceId)
+                .replace("%service_name%", it.key.serviceName)
+                .replace("%current_list%", list)
+        ))
+    }
+
+
+    var poll: Component?;
+    while(true){
+        poll = showQueue.poll()?.second
+        if(poll == null) break
+        context.sender().sendMessage(poll)
     }
 }
 
