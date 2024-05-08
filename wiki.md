@@ -140,9 +140,7 @@
 
 ### 白名单指令
 
-* `/multilogin whitelist addcache <login_name|login_uuid>`
-* `/multilogin whitelist addcache <login_name|login_uuid> <service_id>`
-* `/multilogin whitelist removecache <login_name|login_uuid>`
-* `/multilogin whitelist removecache <login_name|login_uuid> <service_id>`
-* `/multilogin whitelist add <在线信息>`
-* `/multilogin whitelist remove <在线信息>`
+* `/multilogin whitelist add <login_name|login_uuid>`
+* `/multilogin whitelist add <login_name|login_uuid> <service_id>`
+* `/multilogin whitelist addspecific <在线信息>`
+* `/multilogin whitelist remove <name>`
