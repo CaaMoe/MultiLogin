@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 public class BlessingSkinYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
     private final String apiRoot;
 
-    public BlessingSkinYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String apiRoot) throws ConfException {
-        super(id, name, initUUID, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+    public BlessingSkinYggdrasilServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String apiRoot) throws ConfException {
+        super(id, name, initUUID,initNameFormat, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
         if (!apiRoot.endsWith("/")) {
             apiRoot = apiRoot.concat("/");
         }

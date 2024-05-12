@@ -202,13 +202,13 @@ public class PluginConfig {
 
             if (serviceType == ServiceType.OFFICIAL) {
                 return new OfficialYggdrasilServiceConfig(id, name,
-                        initUUID, whitelist,
+                        initUUID,initNameFormat, whitelist,
                         skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
             }
 
             if (serviceType == ServiceType.BLESSING_SKIN) {
                 return new BlessingSkinYggdrasilServiceConfig(id, name,
-                        initUUID, whitelist,
+                        initUUID,initNameFormat, whitelist,
                         skinRestorer, trackIp, timeout, retry, retryDelay, authProxy,
                         yggdrasilAuthNode.node("blessingSkin").node("apiRoot").getString());
             }

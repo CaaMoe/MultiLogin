@@ -200,7 +200,8 @@ initUUID: 'DEFAULT'
 #   "BE_{name}", 当玩家 Steve445 第一次通过此 service 进来时，系统将分配 “BE_Steve445” 用户名给他。
 #
 # 搭配 nameCorrect 使用可以做到以下效果:
-#   如果 initNameFormat 值为 abc10001, 则分配到的用户名将会从abc10001递增到abc99999, 比如(abc10001, abc10002, abc10003)
+#   如果 initNameFormat 值为 xxx10001, 则分配到的用户名将会从xxx10001递增到xxx99999, 比如(xxx10001, xxx10002, xxx10003), 但是溢出的话就会变成xxx100000
+#   如果 initNameFormat 值为 空, 则分配到的用户名全是数字id, 用户名从 1 开始
 #
 # 默认值 ’{name}‘
 initNameFormat: '{name}'

@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
  * 正版官方 Yggdrasil
  */
 public class OfficialYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
-    public OfficialYggdrasilServiceConfig(int id, String name, InitUUID initUUID, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy) throws ConfException {
-        super(id, name, initUUID, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+    public OfficialYggdrasilServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy) throws ConfException {
+        super(id, name, initUUID, initNameFormat, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
     }
 
     @Override
