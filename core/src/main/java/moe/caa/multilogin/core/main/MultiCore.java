@@ -128,6 +128,12 @@ public class MultiCore implements MultiCoreAPI {
                 )
         );
         checkEnvironment();
+
+        try {
+            new MetricsLite(this);
+        } catch (Throwable throwable){
+            LoggerProvider.getLogger().error(throwable);
+        }
     }
 
     private void checkEnvironment() {
