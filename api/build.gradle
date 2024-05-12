@@ -1,12 +1,13 @@
 plugins {
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
-
+    implementation("org.jetbrains:annotations:24.1.0")
 }
 
 javadoc{
@@ -15,10 +16,13 @@ javadoc{
     }
 }
 
+shadowJar{
+    minimize()
+}
+
 java {
     withSourcesJar()
 }
-
 
 publishing {
     publications.withType(MavenPublication.class).configureEach {
