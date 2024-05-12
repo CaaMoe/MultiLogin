@@ -3,6 +3,9 @@ package moe.caa.multilogin.api;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 
+/**
+ * 提供API的地方.................................................
+ */
 @ApiStatus.NonExtendable
 public class MultiLoginAPIProvider {
     @Getter

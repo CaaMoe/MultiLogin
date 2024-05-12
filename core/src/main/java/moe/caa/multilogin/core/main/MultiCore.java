@@ -27,6 +27,7 @@ import moe.caa.multilogin.core.semver.CheckUpdater;
 import moe.caa.multilogin.core.semver.SemVersion;
 import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -180,7 +181,7 @@ public class MultiCore implements MultiCoreAPI, MultiLoginAPI {
         return Collections.unmodifiableCollection(pluginConfig.getServiceIdMap().values());
     }
 
-    @NotNull
+    @Nullable
     @Override
     public MultiLoginPlayerData getPlayerData(@NotNull UUID inGameUUID) {
         return playerHandler.getPlayerData(inGameUUID);

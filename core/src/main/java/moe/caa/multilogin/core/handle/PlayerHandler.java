@@ -12,6 +12,7 @@ import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.api.service.IService;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
@@ -170,11 +171,13 @@ public class PlayerHandler implements HandlerAPI {
         private final BaseServiceConfig serviceConfig;
         private final long signTimeMillis;
 
+        @NotNull
         @Override
         public GameProfile getOnlineProfile() {
             return onlineProfile;
         }
 
+        @NotNull
         @Override
         public IService getLoginService() {
             return serviceConfig;
