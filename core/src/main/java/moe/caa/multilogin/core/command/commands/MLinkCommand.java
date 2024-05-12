@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import lombok.SneakyThrows;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.plugin.IPlayer;
 import moe.caa.multilogin.api.internal.plugin.ISender;
 import moe.caa.multilogin.api.internal.util.Pair;

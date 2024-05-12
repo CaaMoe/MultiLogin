@@ -1,6 +1,6 @@
 package moe.caa.multilogin.api.internal.handle;
 
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.plugin.IPlayer;
 import moe.caa.multilogin.api.internal.util.Pair;
 

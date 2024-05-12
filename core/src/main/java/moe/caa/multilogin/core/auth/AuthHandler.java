@@ -2,7 +2,7 @@ package moe.caa.multilogin.core.auth;
 
 import lombok.Getter;
 import moe.caa.multilogin.api.internal.auth.AuthAPI;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
 import moe.caa.multilogin.core.auth.service.yggdrasil.YggdrasilAuthenticationResult;

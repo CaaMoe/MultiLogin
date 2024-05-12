@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.command.CommandAPI;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.plugin.IPlayer;

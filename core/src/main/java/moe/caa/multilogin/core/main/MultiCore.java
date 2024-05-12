@@ -3,17 +3,22 @@ package moe.caa.multilogin.core.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
-import moe.caa.multilogin.api.internal.auth.Property;
+import moe.caa.multilogin.api.MultiLoginAPI;
+import moe.caa.multilogin.api.MultiLoginAPIProvider;
+import moe.caa.multilogin.api.data.MultiLoginPlayerData;
+import moe.caa.multilogin.api.profile.GameProfile;
+import moe.caa.multilogin.api.profile.Property;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.api.internal.plugin.IPlugin;
+import moe.caa.multilogin.api.service.IService;
 import moe.caa.multilogin.core.auth.AuthHandler;
 import moe.caa.multilogin.core.auth.service.floodgate.FloodgateAuthenticationService;
 import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.GameProfileSerializer;
 import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.configuration.PluginConfig;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.database.SQLManager;
 import moe.caa.multilogin.core.handle.CacheWhitelistHandler;
 import moe.caa.multilogin.core.handle.PlayerHandler;
@@ -25,11 +30,15 @@ import moe.caa.multilogin.core.skinrestorer.SkinRestorerCore;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * 猫踢核心
  */
-public class MultiCore implements MultiCoreAPI {
+public class MultiCore implements MultiCoreAPI, MultiLoginAPI {
     @Getter
     private final IPlugin plugin;
     @Getter
@@ -108,6 +117,8 @@ public class MultiCore implements MultiCoreAPI {
      */
     @Override
     public void load() throws IOException, SQLException, ClassNotFoundException, URISyntaxException {
+        MultiLoginAPIProvider.setApi(this);
+
         showBanner();
         buildManifest.read();
         buildManifest.checkStable();
@@ -160,5 +171,15 @@ public class MultiCore implements MultiCoreAPI {
     @Override
     public void close() {
         sqlManager.close();
+    }
+
+    @Override
+    public Collection<BaseServiceConfig> getServices() {
+        return Collections.unmodifiableCollection(pluginConfig.getServiceIdMap().values());
+    }
+
+    @Override
+    public MultiLoginPlayerData getPlayerData(UUID inGameUUID) {
+        return playerHandler.getPlayerData(inGameUUID);
     }
 }

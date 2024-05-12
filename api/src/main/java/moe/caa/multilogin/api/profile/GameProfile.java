@@ -1,4 +1,4 @@
-package moe.caa.multilogin.api.internal.auth;
+package moe.caa.multilogin.api.profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -3,7 +3,7 @@ package moe.caa.multilogin.core.handle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import moe.caa.multilogin.api.data.MultiLoginPlayerData;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.handle.HandleResult;
 import moe.caa.multilogin.api.internal.handle.HandlerAPI;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
@@ -96,6 +96,10 @@ public class PlayerHandler implements HandlerAPI {
             }
             player.sendMessagePL(msg);
         }, 3000);
+    }
+
+    public MultiLoginPlayerData getPlayerData(UUID inGameUUID){
+        return cache.get(inGameUUID);
     }
 
     @Override

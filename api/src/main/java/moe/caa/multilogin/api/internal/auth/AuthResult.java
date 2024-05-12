@@ -1,5 +1,7 @@
 package moe.caa.multilogin.api.internal.auth;
 
+import moe.caa.multilogin.api.profile.GameProfile;
+
 /**
  * 验证结果
  */

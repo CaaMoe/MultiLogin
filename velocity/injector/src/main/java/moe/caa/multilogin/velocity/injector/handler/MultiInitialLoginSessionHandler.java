@@ -13,7 +13,7 @@ import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import lombok.Getter;
 import moe.caa.multilogin.api.internal.auth.AuthResult;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.api.internal.skinrestorer.SkinRestorerResult;

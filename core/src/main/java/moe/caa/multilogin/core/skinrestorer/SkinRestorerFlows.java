@@ -2,8 +2,8 @@ package moe.caa.multilogin.core.skinrestorer;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import moe.caa.multilogin.api.internal.auth.GameProfile;
-import moe.caa.multilogin.api.internal.auth.Property;
+import moe.caa.multilogin.api.profile.GameProfile;
+import moe.caa.multilogin.api.profile.Property;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;

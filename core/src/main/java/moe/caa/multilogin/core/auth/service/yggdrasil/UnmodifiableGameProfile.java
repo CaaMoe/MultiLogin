@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil;
 
-import moe.caa.multilogin.api.internal.auth.GameProfile;
-import moe.caa.multilogin.api.internal.auth.Property;
+import moe.caa.multilogin.api.profile.GameProfile;
+import moe.caa.multilogin.api.profile.Property;
 
 import java.util.Collections;
 import java.util.HashMap;

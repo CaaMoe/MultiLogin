@@ -1,6 +1,6 @@
 package moe.caa.multilogin.api.internal.skinrestorer;
 
-import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.profile.GameProfile;
 
 public interface SkinRestorerResult {
 

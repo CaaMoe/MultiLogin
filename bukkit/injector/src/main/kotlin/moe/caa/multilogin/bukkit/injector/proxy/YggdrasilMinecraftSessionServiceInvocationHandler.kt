@@ -37,7 +37,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         try {
             val result = multiCoreAPI.authHandler.auth(profileName, serverId, ip) as LoginAuthResult
             if (result.result == AuthResult.Result.ALLOW) {
-                var gameProfile: moe.caa.multilogin.api.internal.auth.GameProfile = result.response
+                var gameProfile: moe.caa.multilogin.api.profile.GameProfile = result.response
                 try {
                     val restorerResult: SkinRestorerResult = multiCoreAPI.skinRestorerHandler.doRestorer(result)
                     if (restorerResult.throwable != null) {
@@ -79,7 +79,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         return null
     }
 
-    private fun generateResponse(returnType: Type, response: moe.caa.multilogin.api.internal.auth.GameProfile): Any {
+    private fun generateResponse(returnType: Type, response: moe.caa.multilogin.api.profile.GameProfile): Any {
         val result = GameProfile(response.id, response.name)
         response.propertyMap.forEach { (k, u) ->
             result.properties.put(k, Property(u.name, u.value, u.signature))
