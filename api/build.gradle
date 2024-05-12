@@ -1,3 +1,6 @@
+plugins {
+    id 'maven-publish'
+}
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -5,3 +8,30 @@ targetCompatibility = JavaVersion.VERSION_17
 dependencies {
 
 }
+
+javadoc{
+    options {
+        encoding "UTF-8"
+    }
+}
+
+java {
+    withSourcesJar()
+}
+
+
+publishing {
+    publications.withType(MavenPublication.class).configureEach {
+        groupId = "moe.caa"
+        artifactId = "multilogin-api"
+
+        from components.java
+    }
+}
+//publishing {
+//    publications {
+//        nexus(MavenPublication) {
+//
+//        }
+//    }
+//}
