@@ -1,5 +1,7 @@
 package moe.caa.multilogin.api.internal.plugin;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 公共服务器线程调度器对象
  */
+@ApiStatus.Internal
 public abstract class BaseScheduler {
     private final AtomicInteger asyncThreadId = new AtomicInteger(0);
     private final ScheduledExecutorService asyncExecutor = Executors.newScheduledThreadPool(5,

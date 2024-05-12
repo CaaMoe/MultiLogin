@@ -1,5 +1,7 @@
 package moe.caa.multilogin.api.internal.util.reflect;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -8,6 +10,7 @@ import java.util.function.Function;
 /**
  * 反射工具库
  */
+@ApiStatus.Internal
 public class ReflectUtil {
 
     /**

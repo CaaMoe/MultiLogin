@@ -2,10 +2,12 @@ package moe.caa.multilogin.api.internal.util.reflect;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 美剧变量访问
  */
+@ApiStatus.Internal
 @AllArgsConstructor
 public class EnumAccessor {
     @Getter

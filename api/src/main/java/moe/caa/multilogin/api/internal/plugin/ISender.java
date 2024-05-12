@@ -1,8 +1,11 @@
 package moe.caa.multilogin.api.internal.plugin;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * 公共命令执行者对象
  */
+@ApiStatus.Internal
 public interface ISender {
 
     /**

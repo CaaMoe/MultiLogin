@@ -1,5 +1,7 @@
 package moe.caa.multilogin.api.internal.util;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -13,6 +15,7 @@ import java.util.UUID;
 /**
  * 值操作工具
  */
+@ApiStatus.Internal
 public class ValueUtil {
     /**
      * UUID 转 bytes

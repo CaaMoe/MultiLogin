@@ -1,7 +1,9 @@
 package moe.caa.multilogin.api.internal.language;
 
 import moe.caa.multilogin.api.internal.util.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public interface LanguageAPI {
 
     /**

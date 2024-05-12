@@ -1,12 +1,14 @@
 package moe.caa.multilogin.api.internal.command;
 
 import moe.caa.multilogin.api.internal.plugin.ISender;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.List;
 
 /**
  * 命令处理程序
  */
+@ApiStatus.Internal
 public interface CommandAPI {
 
     /**

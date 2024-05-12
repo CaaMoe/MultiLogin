@@ -1,7 +1,10 @@
 package moe.caa.multilogin.api.internal.plugin;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.io.File;
 
+@ApiStatus.Internal
 public interface IPlugin {
 
     /**

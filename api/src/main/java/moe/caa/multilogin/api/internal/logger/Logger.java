@@ -1,8 +1,11 @@
 package moe.caa.multilogin.api.internal.logger;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * 一个日志记录程序
  */
+@ApiStatus.Internal
 public interface Logger {
 
     /**

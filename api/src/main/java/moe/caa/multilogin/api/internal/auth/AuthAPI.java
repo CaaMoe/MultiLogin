@@ -1,8 +1,11 @@
 package moe.caa.multilogin.api.internal.auth;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * 验证 API
  */
+@ApiStatus.Internal
 public interface AuthAPI {
 
     /**

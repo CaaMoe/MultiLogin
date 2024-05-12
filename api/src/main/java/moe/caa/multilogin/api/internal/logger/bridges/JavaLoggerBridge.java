@@ -2,12 +2,14 @@ package moe.caa.multilogin.api.internal.logger.bridges;
 
 import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.internal.logger.Level;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.logging.Logger;
 
 /**
  * java.util.logging.Logger 日志程序桥接
  */
+@ApiStatus.Internal
 @AllArgsConstructor
 public class JavaLoggerBridge extends BaseLoggerBridge {
     private final Logger HANDLER;

@@ -1,10 +1,12 @@
 package moe.caa.multilogin.api.internal.injector;
 
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 子模块注入接口
  */
+@ApiStatus.Internal
 public interface Injector {
 
     /**

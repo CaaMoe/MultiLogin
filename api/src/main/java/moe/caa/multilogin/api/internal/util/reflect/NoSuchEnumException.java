@@ -1,8 +1,11 @@
 package moe.caa.multilogin.api.internal.util.reflect;
 
+import org.jetbrains.annotations.ApiStatus;
+
 /**
  * Signals that the enum class doesn't have an enum of a specified name.
  */
+@ApiStatus.Internal
 public class NoSuchEnumException extends ReflectiveOperationException {
 
     /**

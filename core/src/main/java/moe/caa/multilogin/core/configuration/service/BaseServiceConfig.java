@@ -5,6 +5,7 @@ import moe.caa.multilogin.api.service.IService;
 import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -42,11 +43,13 @@ public abstract class BaseServiceConfig implements IService {
         return id;
     }
 
+    @NotNull
     @Override
     public String getServiceName() {
         return name;
     }
 
+    @NotNull
     public abstract ServiceType getServiceType();
 
     /**

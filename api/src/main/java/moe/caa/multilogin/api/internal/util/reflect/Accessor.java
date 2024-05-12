@@ -2,6 +2,7 @@ package moe.caa.multilogin.api.internal.util.reflect;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 /**
  * 对象访问者
  */
+@ApiStatus.Internal
 @AllArgsConstructor
 public class Accessor {
     @Getter

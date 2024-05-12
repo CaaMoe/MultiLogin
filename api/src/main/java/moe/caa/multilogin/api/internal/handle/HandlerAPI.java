@@ -3,12 +3,14 @@ package moe.caa.multilogin.api.internal.handle;
 import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.plugin.IPlayer;
 import moe.caa.multilogin.api.internal.util.Pair;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.UUID;
 
 /**
  * 简单通讯 API，所操作玩家需要在线。
  */
+@ApiStatus.Internal
 public interface HandlerAPI {
 
     /**

@@ -4,6 +4,7 @@ import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 正版官方 Yggdrasil
@@ -40,6 +41,7 @@ public class OfficialYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
         return HttpRequestMethod.GET;
     }
 
+    @NotNull
     @Override
     public ServiceType getServiceType() {
         return ServiceType.OFFICIAL;

@@ -1,8 +1,11 @@
 package moe.caa.multilogin.api.internal.plugin;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.net.SocketAddress;
 import java.util.UUID;
 
+@ApiStatus.Internal
 public interface IPlayer extends ISender {
     /**
      * 以给定的理由踢出这名玩家

@@ -1,5 +1,8 @@
 package moe.caa.multilogin.api.internal.util.reflect;
 
+import org.jetbrains.annotations.ApiStatus;
+
+@ApiStatus.Internal
 public class NoSuchConstructorException extends ReflectiveOperationException {
 
     /**

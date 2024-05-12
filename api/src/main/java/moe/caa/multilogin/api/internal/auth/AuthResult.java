@@ -1,10 +1,12 @@
 package moe.caa.multilogin.api.internal.auth;
 
 import moe.caa.multilogin.api.profile.GameProfile;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 验证结果
  */
+@ApiStatus.Internal
 public interface AuthResult {
 
     /**

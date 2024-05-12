@@ -6,7 +6,9 @@ import moe.caa.multilogin.api.internal.handle.HandlerAPI;
 import moe.caa.multilogin.api.internal.language.LanguageAPI;
 import moe.caa.multilogin.api.internal.plugin.IPlugin;
 import moe.caa.multilogin.api.internal.skinrestorer.SkinRestorerAPI;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public interface MultiCoreAPI {
 
     /**

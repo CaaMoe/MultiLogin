@@ -4,6 +4,7 @@ import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Blessing Skin 皮肤站 Yggdrasil
@@ -45,6 +46,7 @@ public class BlessingSkinYggdrasilServiceConfig extends BaseYggdrasilServiceConf
         return HttpRequestMethod.GET;
     }
 
+    @NotNull
     @Override
     public ServiceType getServiceType() {
         return ServiceType.BLESSING_SKIN;

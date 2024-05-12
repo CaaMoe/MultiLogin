@@ -3,10 +3,12 @@ package moe.caa.multilogin.api.internal.logger.bridges;
 import moe.caa.multilogin.api.internal.logger.Level;
 import moe.caa.multilogin.api.internal.logger.Logger;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 调试日志处理
  */
+@ApiStatus.Internal
 public class DebugLoggerBridge implements Logger {
     private final Logger logger;
 

@@ -2,6 +2,7 @@ package moe.caa.multilogin.api.internal.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.nio.file.Files;
 /**
  * 流工具
  */
+@ApiStatus.Internal
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IOUtil {
 

@@ -1,11 +1,14 @@
 package moe.caa.multilogin.api.internal.plugin;
 
+import org.jetbrains.annotations.ApiStatus;
+
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * 公共玩家管理器对象
  */
+@ApiStatus.Internal
 public interface IPlayerManager {
 
     /**
