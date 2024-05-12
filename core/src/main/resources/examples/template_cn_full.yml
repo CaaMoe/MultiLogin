@@ -194,6 +194,17 @@ yggdrasilAuth:
 # 默认值 ‘DEFAULT’
 initUUID: 'DEFAULT'
 
+# 设置玩家第一次登录到这个服务器时，系统所分配给玩家的 Name 生成模板。
+#
+# 例子:
+#   "BE_{name}", 当玩家 Steve445 第一次通过此 service 进来时，系统将分配 “BE_Steve445” 用户名给他。
+#
+# 搭配 nameCorrect 使用可以做到以下效果:
+#   如果 initNameFormat 值为 abc10001, 则分配到的用户名将会从abc10001递增到abc99999, 比如(abc10001, abc10002, abc10003)
+#
+# 默认值 ’{name}‘
+initNameFormat: '{name}'
+
 # 是否为当前验证服务的玩家单独开启白名单功能。
 #
 # 默认值 ‘false’

@@ -73,16 +73,19 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
             }
         }
 
-        String fixName = loginName;
+        String sourceName = loginName;
+
+        String fixName = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().generateName(sourceName);
         if (core.getPluginConfig().isNameCorrect()) {
-            int i = 0;
             boolean modified = false;
             UUID ownerUUID;
             while ((ownerUUID = core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName)) != null) {
                 if(ownerUUID.equals(inGameUUID)) break;
-                fixName = loginName + ++i;
+                sourceName = incrementString(sourceName);
+                fixName = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().generateName(sourceName);
                 modified = true;
             }
+
             if(modified){
                 UUID finalInGameUUID = inGameUUID;
                 String finalFixName = fixName;
@@ -125,5 +128,21 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
                 return Signal.TERMINATED;
             }
         }
+    }
+
+    private String incrementString(String source){
+        if (source.isEmpty()) return "1";
+
+        char c = source.charAt(source.length() - 1);
+        if (Character.isDigit(c)) {
+            int i = Character.getNumericValue(c);
+            if(i == 9){
+                return incrementString(source.substring(0, source.length() - 1)) + "0";
+            } else {
+                return source.substring(0, source.length() - 1) + (i + 1);
+            }
+        }
+
+        return source + "1";
     }
 }

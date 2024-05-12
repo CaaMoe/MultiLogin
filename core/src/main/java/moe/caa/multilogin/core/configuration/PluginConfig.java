@@ -190,6 +190,8 @@ public class PluginConfig {
         boolean whitelist = load.node("whitelist").getBoolean(false);
         SkinRestorerConfig skinRestorer = SkinRestorerConfig.read(load.node("skinRestorer"));
 
+        String initNameFormat = load.node("initNameFormat").getString("{name}");
+
         if (serviceType.isYggdrasilService()) {
             CommentedConfigurationNode yggdrasilAuthNode = load.node("yggdrasilAuth");
             boolean trackIp = yggdrasilAuthNode.node("trackIp").getBoolean(false);
@@ -218,14 +220,14 @@ public class PluginConfig {
                 String trackIpContent = customNode.node("trackIpContent").getString();
                 String postContent = customNode.node("postContent").getString();
 
-                return new CustomYggdrasilServiceConfig(id, name, initUUID, whitelist,
+                return new CustomYggdrasilServiceConfig(id, name, initUUID, initNameFormat, whitelist,
                         skinRestorer, trackIp, timeout, retry, retryDelay,
                         authProxy, url, postContent, trackIpContent, method);
             }
         }
 
         if (serviceType == ServiceType.FLOODGATE) {
-            return new FloodgateServiceConfig(id, name, initUUID, whitelist, skinRestorer);
+            return new FloodgateServiceConfig(id, name, initUUID, initNameFormat, whitelist, skinRestorer);
         }
 
         throw new ConfException("Unknown service type " + serviceType.name());

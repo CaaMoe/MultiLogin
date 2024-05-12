@@ -6,9 +6,9 @@ import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class FloodgateServiceConfig extends BaseServiceConfig {
-    public FloodgateServiceConfig(int id, String name, InitUUID initUUID,
+    public FloodgateServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat,
                                   boolean whitelist, SkinRestorerConfig skinRestorer) throws ConfException {
-        super(id, name, initUUID, whitelist, skinRestorer);
+        super(id, name, initUUID, initNameFormat, whitelist, skinRestorer);
     }
 
     @NotNull

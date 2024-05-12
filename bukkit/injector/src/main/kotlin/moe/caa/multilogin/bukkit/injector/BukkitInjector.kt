@@ -2,9 +2,7 @@ package moe.caa.multilogin.bukkit.injector
 
 import com.mojang.authlib.minecraft.MinecraftSessionService
 import moe.caa.multilogin.api.internal.injector.Injector
-import moe.caa.multilogin.api.internal.logger.LoggerProvider
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI
-import moe.caa.multilogin.bukkit.injector.protocol.PacketHandler
 import moe.caa.multilogin.bukkit.injector.proxy.SignatureValidatorInvocationHandler
 import moe.caa.multilogin.bukkit.injector.proxy.YggdrasilMinecraftSessionServiceInvocationHandler
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit

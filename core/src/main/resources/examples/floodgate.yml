@@ -1,4 +1,3 @@
-# Below, only the most basic configuration is provided.
 # You can refer to the template file to complete all configurations.
 
 # Before enabling the service, you need to set floodgateSupport to true in config.yml, otherwise it cannot be used.
@@ -9,3 +8,6 @@ id: -1
 name: 'Bedrock'
 # Don't change it unless you really want to.
 serviceType: FLOODGATE
+
+# Please edit before use.
+initNameFormat: 'BE_{name}'

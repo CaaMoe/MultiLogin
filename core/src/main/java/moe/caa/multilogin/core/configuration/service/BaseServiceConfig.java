@@ -16,14 +16,16 @@ public abstract class BaseServiceConfig implements IService {
     private final int id;
     private final String name;
     private final InitUUID initUUID;
+    private final String initNameFormat;
     private final boolean whitelist;
     private final SkinRestorerConfig skinRestorer;
 
-    protected BaseServiceConfig(int id, String name, InitUUID initUUID,
+    protected BaseServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat,
                                 boolean whitelist, SkinRestorerConfig skinRestorer) throws ConfException {
         this.id = id;
         this.name = name;
         this.initUUID = initUUID;
+        this.initNameFormat = initNameFormat;
         this.whitelist = whitelist;
         this.skinRestorer = skinRestorer;
 
@@ -36,6 +38,10 @@ public abstract class BaseServiceConfig implements IService {
                     "Yggdrasil id %d is out of bounds, The value can only be between 0 and 127."
                     , this.id
             ));
+    }
+
+    public String generateName(String loginName){
+        return initNameFormat.replace("{name}", loginName);
     }
 
     @Override
