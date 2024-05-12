@@ -3,9 +3,9 @@ package moe.caa.multilogin.bukkit.injector.proxy
 import com.mojang.authlib.GameProfile
 import com.mojang.authlib.minecraft.MinecraftSessionService
 import com.mojang.authlib.properties.Property
-import moe.caa.multilogin.api.auth.AuthResult
-import moe.caa.multilogin.api.logger.LoggerProvider
-import moe.caa.multilogin.api.skinrestorer.SkinRestorerResult
+import moe.caa.multilogin.api.internal.auth.AuthResult
+import moe.caa.multilogin.api.internal.logger.LoggerProvider
+import moe.caa.multilogin.api.internal.skinrestorer.SkinRestorerResult
 import moe.caa.multilogin.bukkit.injector.BukkitInjector
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit
 import moe.caa.multilogin.core.auth.LoginAuthResult
@@ -37,7 +37,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         try {
             val result = multiCoreAPI.authHandler.auth(profileName, serverId, ip) as LoginAuthResult
             if (result.result == AuthResult.Result.ALLOW) {
-                var gameProfile: moe.caa.multilogin.api.auth.GameProfile = result.response
+                var gameProfile: moe.caa.multilogin.api.internal.auth.GameProfile = result.response
                 try {
                     val restorerResult: SkinRestorerResult = multiCoreAPI.skinRestorerHandler.doRestorer(result)
                     if (restorerResult.throwable != null) {
@@ -79,7 +79,7 @@ class YggdrasilMinecraftSessionServiceInvocationHandler(
         return null
     }
 
-    private fun generateResponse(returnType: Type, response: moe.caa.multilogin.api.auth.GameProfile): Any {
+    private fun generateResponse(returnType: Type, response: moe.caa.multilogin.api.internal.auth.GameProfile): Any {
         val result = GameProfile(response.id, response.name)
         response.propertyMap.forEach { (k, u) ->
             result.properties.put(k, Property(u.name, u.value, u.signature))

@@ -1,7 +1,7 @@
 package fun.ksnb.multilogin.velocity.logger;
 
-import moe.caa.multilogin.api.logger.Level;
-import moe.caa.multilogin.api.logger.bridges.BaseLoggerBridge;
+import moe.caa.multilogin.api.internal.logger.Level;
+import moe.caa.multilogin.api.internal.logger.bridges.BaseLoggerBridge;
 import org.slf4j.Logger;
 
 /**

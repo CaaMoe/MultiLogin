@@ -2,8 +2,8 @@ package fun.ksnb.multilogin.velocity.impl;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.IPlayerManager;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.IPlayerManager;
 
 import java.util.Optional;
 import java.util.Set;

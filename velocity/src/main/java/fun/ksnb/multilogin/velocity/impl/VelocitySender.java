@@ -3,8 +3,8 @@ package fun.ksnb.multilogin.velocity.impl;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.proxy.console.VelocityConsole;
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.ISender;
 import net.kyori.adventure.text.Component;
 
 /**

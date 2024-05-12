@@ -4,8 +4,8 @@ import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.connection.client.InitialLoginSessionHandler;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
 import lombok.AllArgsConstructor;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import net.kyori.adventure.text.Component;
 

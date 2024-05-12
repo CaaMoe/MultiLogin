@@ -1,6 +1,8 @@
 package moe.caa.multilogin.core.configuration.service;
 
 import lombok.Getter;
+import moe.caa.multilogin.api.service.IService;
+import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 
@@ -9,7 +11,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 @Getter
-public abstract class BaseServiceConfig {
+public abstract class BaseServiceConfig implements IService {
     private final int id;
     private final String name;
     private final InitUUID initUUID;
@@ -35,6 +37,15 @@ public abstract class BaseServiceConfig {
             ));
     }
 
+    @Override
+    public int getServiceId() {
+        return id;
+    }
+
+    @Override
+    public String getServiceName() {
+        return name;
+    }
 
     public abstract ServiceType getServiceType();
 

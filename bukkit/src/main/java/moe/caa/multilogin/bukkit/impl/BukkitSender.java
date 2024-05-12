@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.ISender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;

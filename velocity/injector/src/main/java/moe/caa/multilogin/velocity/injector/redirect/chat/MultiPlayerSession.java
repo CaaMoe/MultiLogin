@@ -6,7 +6,7 @@ import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import io.netty.buffer.ByteBuf;
-import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 
 import java.util.UUID;
 

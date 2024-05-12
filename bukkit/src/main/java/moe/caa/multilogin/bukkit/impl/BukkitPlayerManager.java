@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.IPlayerManager;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.IPlayerManager;
 import org.bukkit.Server;
 
 import java.util.Optional;

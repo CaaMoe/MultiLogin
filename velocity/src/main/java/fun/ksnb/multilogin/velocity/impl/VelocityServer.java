@@ -4,10 +4,10 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.proxy.config.PlayerInfoForwarding;
 import com.velocitypowered.proxy.config.VelocityConfiguration;
-import moe.caa.multilogin.api.plugin.BaseScheduler;
-import moe.caa.multilogin.api.plugin.IPlayerManager;
-import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.internal.plugin.BaseScheduler;
+import moe.caa.multilogin.api.internal.plugin.IPlayerManager;
+import moe.caa.multilogin.api.internal.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.IServer;
 
 /**
  * Velocity 服务器对象

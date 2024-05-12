@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.configuration.service.yggdrasil;
 
+import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
-import moe.caa.multilogin.core.configuration.service.ServiceType;
 
 /**
  * Blessing Skin 皮肤站 Yggdrasil

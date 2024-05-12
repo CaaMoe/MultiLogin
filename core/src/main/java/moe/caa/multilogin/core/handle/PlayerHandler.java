@@ -2,12 +2,14 @@ package moe.caa.multilogin.core.handle;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import moe.caa.multilogin.api.data.MultiLoginPlayerData;
 import moe.caa.multilogin.api.internal.auth.GameProfile;
 import moe.caa.multilogin.api.internal.handle.HandleResult;
 import moe.caa.multilogin.api.internal.handle.HandlerAPI;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.plugin.IPlayer;
 import moe.caa.multilogin.api.internal.util.Pair;
+import moe.caa.multilogin.api.service.IService;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 
@@ -159,10 +161,20 @@ public class PlayerHandler implements HandlerAPI {
     }
 
     @AllArgsConstructor
-    public static class Entry {
+    public static class Entry implements MultiLoginPlayerData {
         private final GameProfile onlineProfile;
         private final BaseServiceConfig serviceConfig;
         private final long signTimeMillis;
+
+        @Override
+        public GameProfile getOnlineProfile() {
+            return onlineProfile;
+        }
+
+        @Override
+        public IService getLoginService() {
+            return serviceConfig;
+        }
 
         @Override
         public boolean equals(Object o) {

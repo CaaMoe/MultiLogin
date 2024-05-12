@@ -1,6 +1,6 @@
 package fun.ksnb.multilogin.velocity.impl;
 
-import moe.caa.multilogin.api.plugin.BaseScheduler;
+import moe.caa.multilogin.api.internal.plugin.BaseScheduler;
 
 /**
  * Velocity 调度器对象

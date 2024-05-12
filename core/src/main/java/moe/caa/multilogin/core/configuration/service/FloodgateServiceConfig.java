@@ -1,5 +1,6 @@
 package moe.caa.multilogin.core.configuration.service;
 
+import moe.caa.multilogin.api.service.ServiceType;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;
 

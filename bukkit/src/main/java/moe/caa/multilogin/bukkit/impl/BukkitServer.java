@@ -1,9 +1,9 @@
 package moe.caa.multilogin.bukkit.impl;
 
-import moe.caa.multilogin.api.plugin.BaseScheduler;
-import moe.caa.multilogin.api.plugin.IPlayerManager;
-import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.internal.plugin.BaseScheduler;
+import moe.caa.multilogin.api.internal.plugin.IPlayerManager;
+import moe.caa.multilogin.api.internal.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.IServer;
 import moe.caa.multilogin.bukkit.main.MultiLoginBukkit;
 
 public class BukkitServer implements IServer {

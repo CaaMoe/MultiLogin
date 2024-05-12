@@ -1,11 +1,11 @@
 package moe.caa.multilogin.bukkit.main;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.injector.Injector;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.logger.bridges.JavaLoggerBridge;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.api.internal.injector.Injector;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.bridges.JavaLoggerBridge;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.plugin.IPlugin;
 import moe.caa.multilogin.bukkit.impl.BukkitServer;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;

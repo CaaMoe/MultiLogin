@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bukkit.main;
 
 
-import moe.caa.multilogin.api.handle.HandleResult;
+import moe.caa.multilogin.api.internal.handle.HandleResult;
 import moe.caa.multilogin.bukkit.impl.BukkitPlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,7 +24,7 @@ public class GlobalListener implements Listener {
     public void onJoin(PlayerLoginEvent event) {
         HandleResult result = multiLoginBukkit.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         if (result.getType() == HandleResult.Type.KICK) {
-            if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
+            if (result.getKickMessage() == null || result.getKickMessage().trim().isEmpty()) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "");
             } else {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, result.getKickMessage());

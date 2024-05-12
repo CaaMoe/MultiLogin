@@ -5,7 +5,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.LoginEvent;
 import fun.ksnb.multilogin.velocity.impl.VelocityPlayer;
-import moe.caa.multilogin.api.handle.HandleResult;
+import moe.caa.multilogin.api.internal.handle.HandleResult;
 import net.kyori.adventure.text.Component;
 
 /**

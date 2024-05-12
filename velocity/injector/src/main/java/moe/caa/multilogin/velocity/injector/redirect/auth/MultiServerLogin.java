@@ -4,7 +4,7 @@ import com.velocitypowered.api.proxy.crypto.IdentifiedKey;
 import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import lombok.AllArgsConstructor;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.velocity.injector.proxy.IdentifiedKeyInvocationHandler;
 
 import java.lang.reflect.Proxy;

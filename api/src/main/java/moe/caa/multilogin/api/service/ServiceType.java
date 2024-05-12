@@ -1,4 +1,4 @@
-package moe.caa.multilogin.core.configuration.service;
+package moe.caa.multilogin.api.service;
 
 /**
  * 验证服务类型
