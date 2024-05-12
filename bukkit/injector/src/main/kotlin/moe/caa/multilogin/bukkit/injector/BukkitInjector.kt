@@ -18,26 +18,26 @@ class BukkitInjector : Injector {
     }
 
     override fun inject(api: MultiCoreAPI) {
-        var protocolHook = false
-        if (api.plugin.runServer.pluginHasEnabled("ProtocolLib")) {
-            try {
-                PacketHandler().init()
-                protocolHook = true
-            } catch (e: Throwable) {
-                LoggerProvider.getLogger().error("Unable to load ProtocolLib handler, is it up to date?", e)
-            }
-        }
-        if (!protocolHook) {
-            LoggerProvider.getLogger().warn(
-                "It is strongly recommended that you install ProtocolLib," +
-                        " otherwise the client will always prompt 'invalid session' when kicked out by MultiLogin during the login phase."
-            )
-
-            LoggerProvider.getLogger().warn(
-                "In 1.19.3+ version, MultiLogin will use it to ignore chat session, if this function is not enabled, " +
-                        "users who use non-Microsoft authentication will always be kicked out of the game because of 'Invalid signature for profile public key'"
-            )
-        }
+//        var protocolHook = false
+//        if (api.plugin.runServer.pluginHasEnabled("ProtocolLib")) {
+//            try {
+//                PacketHandler().init()
+//                protocolHook = true
+//            } catch (e: Throwable) {
+//                LoggerProvider.getLogger().error("Unable to load ProtocolLib handler, is it up to date?", e)
+//            }
+//        }
+//        if (!protocolHook) {
+//            LoggerProvider.getLogger().warn(
+//                "It is strongly recommended that you install ProtocolLib," +
+//                        " otherwise the client will always prompt 'invalid session' when kicked out by MultiLogin during the login phase."
+//            )
+//
+//            LoggerProvider.getLogger().warn(
+//                "In 1.19.3+ version, MultiLogin will use it to ignore chat session, if this function is not enabled, " +
+//                        "users who use non-Microsoft authentication will always be kicked out of the game because of 'Invalid signature for profile public key'"
+//            )
+//        }
         try {
             // Service 存在，是高版本的！
             val servicesRecordClass = Class.forName("net.minecraft.server.Services")
