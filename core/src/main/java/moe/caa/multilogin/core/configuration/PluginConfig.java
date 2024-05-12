@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.configuration;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.logger.bridges.DebugLoggerBridge;
-import moe.caa.multilogin.api.util.IOUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.bridges.DebugLoggerBridge;
+import moe.caa.multilogin.api.internal.util.IOUtil;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.configuration.service.FloodgateServiceConfig;
 import moe.caa.multilogin.core.configuration.service.ServiceType;

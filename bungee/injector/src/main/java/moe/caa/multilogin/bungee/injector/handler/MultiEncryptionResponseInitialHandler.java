@@ -1,11 +1,11 @@
 package moe.caa.multilogin.bungee.injector.handler;
 
 import com.google.common.base.Preconditions;
-import moe.caa.multilogin.api.auth.AuthResult;
-import moe.caa.multilogin.api.auth.GameProfile;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.skinrestorer.SkinRestorerResult;
+import moe.caa.multilogin.api.internal.auth.AuthResult;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.skinrestorer.SkinRestorerResult;
 import moe.caa.multilogin.core.auth.LoginAuthResult;
 import net.md_5.bungee.EncryptionUtil;
 import net.md_5.bungee.api.chat.TextComponent;

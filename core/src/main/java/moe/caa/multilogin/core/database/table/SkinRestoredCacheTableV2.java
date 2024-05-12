@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.database.table;
 
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.core.database.SQLManager;
 
 import java.sql.Connection;

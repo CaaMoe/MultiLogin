@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.command.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import moe.caa.multilogin.api.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.ISender;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.Permissions;
 

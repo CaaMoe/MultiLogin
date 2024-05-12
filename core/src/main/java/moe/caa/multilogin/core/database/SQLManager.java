@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.database;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.SqlConfig;
 import moe.caa.multilogin.core.database.pool.H2ConnectionPool;
 import moe.caa.multilogin.core.database.pool.ISQLConnectionPool;

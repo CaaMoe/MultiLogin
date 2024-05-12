@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.auth.validate;
 
-import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
 import moe.caa.multilogin.core.auth.validate.entry.AssignInGameFlows;
 import moe.caa.multilogin.core.auth.validate.entry.InitialLoginDataFlows;

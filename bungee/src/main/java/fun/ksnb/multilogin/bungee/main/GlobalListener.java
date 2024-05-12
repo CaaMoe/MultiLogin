@@ -1,7 +1,7 @@
 package fun.ksnb.multilogin.bungee.main;
 
 import fun.ksnb.multilogin.bungee.impl.BungeePlayer;
-import moe.caa.multilogin.api.handle.HandleResult;
+import moe.caa.multilogin.api.internal.handle.HandleResult;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;

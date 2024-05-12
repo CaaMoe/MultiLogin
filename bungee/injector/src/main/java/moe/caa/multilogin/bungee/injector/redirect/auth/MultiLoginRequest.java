@@ -1,7 +1,7 @@
 package moe.caa.multilogin.bungee.injector.redirect.auth;
 
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.bungee.injector.handler.MultiLoginRequestInitialHandler;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.connection.InitialHandler;

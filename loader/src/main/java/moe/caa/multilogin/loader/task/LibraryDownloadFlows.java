@@ -1,7 +1,7 @@
 package moe.caa.multilogin.loader.task;
 
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.util.IOUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.util.IOUtil;
 import moe.caa.multilogin.flows.workflows.BaseFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 import moe.caa.multilogin.loader.exception.InitialFailedException;

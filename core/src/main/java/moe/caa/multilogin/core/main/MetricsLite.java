@@ -2,8 +2,8 @@ package moe.caa.multilogin.core.main;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 

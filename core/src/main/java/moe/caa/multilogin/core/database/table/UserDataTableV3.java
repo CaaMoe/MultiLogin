@@ -1,9 +1,9 @@
 package moe.caa.multilogin.core.database.table;
 
 import lombok.AllArgsConstructor;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.util.There;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.util.There;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.database.SQLManager;
 
 import java.sql.*;

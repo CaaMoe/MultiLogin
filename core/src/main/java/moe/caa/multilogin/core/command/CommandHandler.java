@@ -9,12 +9,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import lombok.Getter;
-import moe.caa.multilogin.api.auth.GameProfile;
-import moe.caa.multilogin.api.command.CommandAPI;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.internal.command.CommandAPI;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.ISender;
+import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.core.command.commands.RootCommand;
 import moe.caa.multilogin.core.main.MultiCore;
 

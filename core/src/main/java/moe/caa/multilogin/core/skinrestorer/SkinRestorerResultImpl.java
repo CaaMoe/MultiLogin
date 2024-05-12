@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
-import moe.caa.multilogin.api.auth.GameProfile;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.skinrestorer.SkinRestorerResult;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.skinrestorer.SkinRestorerResult;
 
 /**
  * 皮肤修复结果

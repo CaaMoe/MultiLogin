@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.ohc;
 
-import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;

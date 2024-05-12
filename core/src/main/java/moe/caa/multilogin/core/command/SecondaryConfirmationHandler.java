@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.command;
 
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.ISender;
+import moe.caa.multilogin.api.internal.util.Pair;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.configuration.service.yggdrasil;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.util.Pair;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.util.Pair;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.ConfException;
 import moe.caa.multilogin.core.configuration.ProxyConfig;
 import moe.caa.multilogin.core.configuration.SkinRestorerConfig;

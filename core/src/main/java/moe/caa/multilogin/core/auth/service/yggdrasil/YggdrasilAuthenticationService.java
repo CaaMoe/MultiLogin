@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.auth.service.yggdrasil;
 
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.configuration.service.yggdrasil.BaseYggdrasilServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;

@@ -2,7 +2,7 @@ package moe.caa.multilogin.core.auth.service.yggdrasil.serialize;
 
 import com.google.gson.*;
 import lombok.NoArgsConstructor;
-import moe.caa.multilogin.api.auth.Property;
+import moe.caa.multilogin.api.internal.auth.Property;
 import moe.caa.multilogin.core.auth.service.yggdrasil.UnmodifiableGameProfile;
 
 import java.lang.reflect.Type;

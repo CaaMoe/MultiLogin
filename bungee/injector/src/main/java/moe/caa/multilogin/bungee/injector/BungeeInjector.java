@@ -2,21 +2,18 @@ package moe.caa.multilogin.bungee.injector;
 
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
-import moe.caa.multilogin.api.injector.Injector;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.util.reflect.ReflectUtil;
+import moe.caa.multilogin.api.internal.injector.Injector;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.auth.MultiEncryptionResponse;
 import moe.caa.multilogin.bungee.injector.redirect.auth.MultiLoginRequest;
-import moe.caa.multilogin.bungee.injector.redirect.chat.MultiPlayerSession;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
-import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.LoginRequest;
 
 import java.lang.reflect.*;
-import java.util.Arrays;
 import java.util.function.Supplier;
 
 /**

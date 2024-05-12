@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.BuiltInExceptionProvider;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.core.main.MultiCore;
 
 /**

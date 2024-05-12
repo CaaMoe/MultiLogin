@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.core.command.CommandHandler;
 import moe.caa.multilogin.core.command.UniversalCommandExceptionType;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;

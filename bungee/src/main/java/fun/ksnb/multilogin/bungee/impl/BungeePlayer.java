@@ -1,7 +1,7 @@
 package fun.ksnb.multilogin.bungee.impl;
 
 import fun.ksnb.multilogin.bungee.main.MultiLoginBungee;
-import moe.caa.multilogin.api.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

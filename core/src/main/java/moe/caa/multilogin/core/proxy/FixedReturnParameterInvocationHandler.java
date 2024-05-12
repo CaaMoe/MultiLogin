@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.proxy;
 
-import moe.caa.multilogin.api.function.BiConsumerFunction;
+import moe.caa.multilogin.api.internal.function.BiConsumerFunction;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

@@ -2,12 +2,12 @@ package moe.caa.multilogin.core.handle;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import moe.caa.multilogin.api.auth.GameProfile;
-import moe.caa.multilogin.api.handle.HandleResult;
-import moe.caa.multilogin.api.handle.HandlerAPI;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.plugin.IPlayer;
-import moe.caa.multilogin.api.util.Pair;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.internal.handle.HandleResult;
+import moe.caa.multilogin.api.internal.handle.HandlerAPI;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.plugin.IPlayer;
+import moe.caa.multilogin.api.internal.util.Pair;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.main.MultiCore;
 

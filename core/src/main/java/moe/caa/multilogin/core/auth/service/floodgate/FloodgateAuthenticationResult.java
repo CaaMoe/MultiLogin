@@ -1,6 +1,6 @@
 package moe.caa.multilogin.core.auth.service.floodgate;
 
-import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
 import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
 import moe.caa.multilogin.core.configuration.service.FloodgateServiceConfig;
 

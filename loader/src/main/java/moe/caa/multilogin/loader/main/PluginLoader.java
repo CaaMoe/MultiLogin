@@ -1,10 +1,10 @@
 package moe.caa.multilogin.loader.main;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.plugin.IPlugin;
-import moe.caa.multilogin.api.util.IOUtil;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.plugin.IPlugin;
+import moe.caa.multilogin.api.internal.util.IOUtil;
 import moe.caa.multilogin.flows.workflows.ParallelFlows;
 import moe.caa.multilogin.flows.workflows.Signal;
 import moe.caa.multilogin.loader.classloader.IExtURLClassLoader;

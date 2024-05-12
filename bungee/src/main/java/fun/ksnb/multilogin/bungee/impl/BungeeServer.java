@@ -1,9 +1,9 @@
 package fun.ksnb.multilogin.bungee.impl;
 
-import moe.caa.multilogin.api.plugin.BaseScheduler;
-import moe.caa.multilogin.api.plugin.IPlayerManager;
-import moe.caa.multilogin.api.plugin.ISender;
-import moe.caa.multilogin.api.plugin.IServer;
+import moe.caa.multilogin.api.internal.plugin.BaseScheduler;
+import moe.caa.multilogin.api.internal.plugin.IPlayerManager;
+import moe.caa.multilogin.api.internal.plugin.ISender;
+import moe.caa.multilogin.api.internal.plugin.IServer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.conf.Configuration;

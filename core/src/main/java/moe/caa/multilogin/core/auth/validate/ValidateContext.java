@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.auth.validate;
 
 import lombok.Data;
-import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
 import moe.caa.multilogin.core.auth.service.BaseServiceAuthenticationResult;
 
 /**

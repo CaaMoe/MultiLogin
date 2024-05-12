@@ -1,8 +1,8 @@
 package moe.caa.multilogin.core.auth.service.floodgate;
 
-import moe.caa.multilogin.api.auth.AuthResult;
-import moe.caa.multilogin.api.auth.GameProfile;
-import moe.caa.multilogin.api.util.ValueUtil;
+import moe.caa.multilogin.api.internal.auth.AuthResult;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
+import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.auth.LoginAuthResult;
 import moe.caa.multilogin.core.auth.service.yggdrasil.UnmodifiableGameProfile;
 import moe.caa.multilogin.core.configuration.service.FloodgateServiceConfig;

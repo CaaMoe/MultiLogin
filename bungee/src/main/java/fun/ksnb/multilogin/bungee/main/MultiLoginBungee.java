@@ -2,11 +2,11 @@ package fun.ksnb.multilogin.bungee.main;
 
 import fun.ksnb.multilogin.bungee.impl.BungeeServer;
 import lombok.Getter;
-import moe.caa.multilogin.api.injector.Injector;
-import moe.caa.multilogin.api.logger.LoggerProvider;
-import moe.caa.multilogin.api.logger.bridges.JavaLoggerBridge;
-import moe.caa.multilogin.api.main.MultiCoreAPI;
-import moe.caa.multilogin.api.plugin.IPlugin;
+import moe.caa.multilogin.api.internal.injector.Injector;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.bridges.JavaLoggerBridge;
+import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
+import moe.caa.multilogin.api.internal.plugin.IPlugin;
 import moe.caa.multilogin.loader.main.PluginLoader;
 import net.md_5.bungee.api.plugin.Plugin;
 

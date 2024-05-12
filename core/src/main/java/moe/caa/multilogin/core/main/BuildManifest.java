@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.main;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.logger.LoggerProvider;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 
 import java.io.IOException;
 import java.util.Date;

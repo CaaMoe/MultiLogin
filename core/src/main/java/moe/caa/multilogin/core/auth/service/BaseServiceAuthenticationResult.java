@@ -1,7 +1,7 @@
 package moe.caa.multilogin.core.auth.service;
 
 import lombok.Getter;
-import moe.caa.multilogin.api.auth.GameProfile;
+import moe.caa.multilogin.api.internal.auth.GameProfile;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 
 @Getter
