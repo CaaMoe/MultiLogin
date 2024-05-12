@@ -24,7 +24,7 @@ public class GlobalListener implements Listener {
         // TODO: 2023/3/12 PostLogin???
         HandleResult result = multiLoginBungee.getMultiCoreAPI().getPlayerHandler().pushPlayerJoinGame(event.getPlayer().getUniqueId(), event.getPlayer().getName());
         if (result.getType() == HandleResult.Type.KICK) {
-            if (result.getKickMessage() == null || result.getKickMessage().trim().length() == 0) {
+            if (result.getKickMessage() == null || result.getKickMessage().trim().isEmpty()) {
                 event.getPlayer().disconnect(new TextComponent(""));
             } else {
                 event.getPlayer().disconnect(new TextComponent(result.getKickMessage()));

@@ -3,5 +3,5 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:24.1.0")
+
 }

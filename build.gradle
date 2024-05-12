@@ -32,6 +32,9 @@ subprojects {
         compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 
+        compileOnly("org.jetbrains:annotations:24.1.0")
+        annotationProcessor("org.jetbrains:annotations:24.1.0")
+
         try (def scanner = new Scanner(file.libraries as File)) {
             while (scanner.hasNextLine()) {
                 def line = scanner.nextLine()
