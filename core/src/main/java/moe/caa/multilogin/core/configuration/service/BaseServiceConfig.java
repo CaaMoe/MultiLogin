@@ -41,7 +41,7 @@ public abstract class BaseServiceConfig implements IService {
     }
 
     public String generateName(String loginName){
-        return initNameFormat.replace("{name}", loginName);
+        return initNameFormat.replace("{name}", loginName).replace(" ", "_");
     }
 
     @Override

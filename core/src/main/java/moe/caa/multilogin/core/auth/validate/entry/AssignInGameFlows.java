@@ -73,27 +73,27 @@ public class AssignInGameFlows extends BaseFlows<ValidateContext> {
             }
         }
 
-        String sourceName = loginName;
+        String fixName = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().generateName(loginName);
+        if(fixName.isEmpty()) fixName = "1";
 
-        String fixName = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().generateName(sourceName);
+        String initFixName = fixName;
         if (core.getPluginConfig().isNameCorrect()) {
             boolean modified = false;
             UUID ownerUUID;
             while ((ownerUUID = core.getSqlManager().getInGameProfileTable().getInGameUUIDIgnoreCase(fixName)) != null) {
                 if(ownerUUID.equals(inGameUUID)) break;
-                sourceName = incrementString(sourceName);
-                fixName = validateContext.getBaseServiceAuthenticationResult().getServiceConfig().generateName(sourceName);
+                fixName = incrementString(fixName);
                 modified = true;
             }
 
             if(modified){
                 UUID finalInGameUUID = inGameUUID;
                 String finalFixName = fixName;
-                LoggerProvider.getLogger().warn(String.format("The name %s is occupied, change it to %s.", loginName, fixName));
+                LoggerProvider.getLogger().warn(String.format("The name %s is occupied, change it to %s.", initFixName, fixName));
                 core.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                     IPlayer player = core.getPlugin().getRunServer().getPlayerManager().getPlayer(finalInGameUUID);
                     player.sendMessagePL(core.getLanguageHandler().getMessage("name_correct_info",
-                            new Pair<>("old_name", loginName),
+                            new Pair<>("old_name", initFixName),
                             new Pair<>("new_name", finalFixName)
                     ));
                 }, 2000);
