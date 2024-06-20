@@ -18,11 +18,11 @@ public class MultiServerLogin extends ServerLoginPacket {
 
     @Override
     public boolean handle(MinecraftSessionHandler handler) {
-        if (getPlayerKey() != null) {
-            setPlayerKey((IdentifiedKey) Proxy.newProxyInstance(
-                    Thread.currentThread().getContextClassLoader(),
-                    new Class[]{IdentifiedKey.class}, new IdentifiedKeyInvocationHandler(getPlayerKey())));
-        }
+//        if (getPlayerKey() != null) {
+//            setPlayerKey((IdentifiedKey) Proxy.newProxyInstance(
+//                    Thread.currentThread().getContextClassLoader(),
+//                    new Class[]{IdentifiedKey.class}, new IdentifiedKeyInvocationHandler(getPlayerKey())));
+//        }
 
         return super.handle(handler);
     }
