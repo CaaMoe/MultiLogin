@@ -1,10 +1,6 @@
 package moe.caa.multilogin.core.auth.service.floodgate;
 
-import lombok.SneakyThrows;
 import moe.caa.multilogin.api.internal.auth.AuthResult;
-import moe.caa.multilogin.api.internal.logger.Logger;
-import moe.caa.multilogin.api.internal.logger.LoggerProvider;
-import moe.caa.multilogin.api.internal.util.reflect.ReflectUtil;
 import moe.caa.multilogin.api.profile.GameProfile;
 import moe.caa.multilogin.api.internal.util.ValueUtil;
 import moe.caa.multilogin.core.auth.LoginAuthResult;
@@ -16,8 +12,13 @@ import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.event.subscribe.Subscriber;
 import org.geysermc.event.subscribe.impl.SubscriberImpl;
 import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.event.PostOrder;
+import org.geysermc.event.subscribe.Subscriber;
+import org.geysermc.event.subscribe.impl.SubscriberImpl;
+import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.InstanceHolder;
 import org.geysermc.floodgate.api.event.FloodgateEventBus;
+import org.geysermc.floodgate.api.event.skin.SkinApplyEvent;
 import org.geysermc.floodgate.api.event.skin.SkinApplyEvent;
 import org.geysermc.floodgate.api.handshake.HandshakeData;
 import org.geysermc.floodgate.api.handshake.HandshakeHandler;
@@ -25,25 +26,37 @@ import org.geysermc.floodgate.util.BedrockData;
 import org.geysermc.floodgate.util.LinkedPlayer;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public class FloodgateAuthenticationService implements HandshakeHandler {
     private final MultiCore multiCore;
 
     public FloodgateAuthenticationService(MultiCore multiCore) {
         this.multiCore = multiCore;
+    }
 
-        FloodgateApi.getInstance().getEventBus().subscribe(SkinApplyEvent.class, event -> {
-            if(!multiCore.getPluginConfig().isFloodgateSupport()) return;
 
-            // always apply bedrock skin.
-            event.setCancelled(false);
-        }, PostOrder.FIRST);
+    @Subscribe(postOrder = PostOrder.FIRST)
+    public void onSkinApply(SkinApplyEvent event){
+        if(!multiCore.getPluginConfig().isFloodgateSupport()) return;
+
+        // always apply bedrock skin.
+        event.setCancelled(false);
+    }
+
+    @Subscribe(ignoreCancelled = true, postOrder = PostOrder.FIRST)
+    public void onSkinApplyIgnoreCancelled(SkinApplyEvent event){
+        onSkinApply(event);
     }
 
     public void register() {
         InstanceHolder.getHandshakeHandlers().addHandshakeHandler(this);
+        FloodgateApi.getInstance().getEventBus().register(this);
     }
 
     @Override
