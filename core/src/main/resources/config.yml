@@ -57,6 +57,11 @@ nameCorrect: true
 # 默认值 true
 autoNameChange: true
 
+# 风险指令二次确认过期时间设置
+#
+# 默认值 15000
+confirmCommandValidTimeMills: 15000
+
 # 插件数据设置
 sql:
 

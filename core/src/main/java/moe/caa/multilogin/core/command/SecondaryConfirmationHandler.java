@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * 二次确认快处工具
  */
 public class SecondaryConfirmationHandler {
-    private static final long confirmValidTimeMillis = 1000 * 15;
     private final Map<IPlayer, ConfirmEntry> concurrentHashMap = new ConcurrentHashMap<>();
     private final AtomicReference<ConfirmEntry> consoleConfirm = new AtomicReference<>();
 
@@ -83,7 +82,7 @@ public class SecondaryConfirmationHandler {
         }
 
         private boolean isInvalid() {
-            return subTime + confirmValidTimeMillis < System.currentTimeMillis();
+            return subTime + CommandHandler.getCore().getPluginConfig().getConfirmCommandValidTimeMills() < System.currentTimeMillis();
         }
 
         public void confirm() throws Exception {
