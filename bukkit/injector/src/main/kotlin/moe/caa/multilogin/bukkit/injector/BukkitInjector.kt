@@ -76,11 +76,11 @@ class BukkitInjector : Injector {
                     modified = true
                 } else if (signatureValidatorClass != null && anyPair.second.javaClass.name.contains("SignatureValidator")) {
                     // 替换SignatureValidator
-                    anyPair.second = Proxy.newProxyInstance(
-                        Thread.currentThread().contextClassLoader,
-                        arrayOf(signatureValidatorClass),
-                        SignatureValidatorInvocationHandler(anyPair.second)
-                    )
+//                    anyPair.second = Proxy.newProxyInstance(
+//                        Thread.currentThread().contextClassLoader,
+//                        arrayOf(signatureValidatorClass),
+//                        SignatureValidatorInvocationHandler(anyPair.second)
+//                    )
                 }
             }
 
