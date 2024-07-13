@@ -1,0 +1,15 @@
+# Below, only the most basic configuration is provided.
+# You can refer to the template file to complete all configurations.
+
+# Please edit before use.
+id: -1
+
+name: 'ely.by'
+
+# Don't change it unless you really want to.
+serviceType: CUSTOM_YGGDRASIL
+yggdrasilAuth:
+  custom:
+    method: 'GET'
+    url: 'https://authserver.ely.by/session/hasJoined?username={0}&serverId={1}{2}'
+    trackIpContent: '&ip={0}'
