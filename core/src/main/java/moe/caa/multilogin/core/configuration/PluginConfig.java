@@ -56,6 +56,8 @@ public class PluginConfig {
     private boolean welcomeMsg;
     @Getter
     private Map<Integer, BaseServiceConfig> serviceIdMap = new HashMap<>();
+    @Getter
+    private long confirmCommandValidTimeMills;
 
     public PluginConfig(File dataFolder, MultiCore core) {
         this.dataFolder = dataFolder;
@@ -101,6 +103,7 @@ public class PluginConfig {
         welcomeMsg = configConfigurationNode.node("welcomeMsg").getBoolean(true);
         nameCorrect = configConfigurationNode.node("nameCorrect").getBoolean(true);
         autoNameChange = configConfigurationNode.node("autoNameChange").getBoolean(true);
+        confirmCommandValidTimeMills = configConfigurationNode.node("confirmCommandValidTimeMills").getLong(15000);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
