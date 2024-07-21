@@ -3,13 +3,16 @@ package moe.caa.multilogin.bungee.injector;
 import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.TObjectIntMap;
 import moe.caa.multilogin.api.internal.injector.Injector;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.api.internal.util.reflect.ReflectUtil;
 import moe.caa.multilogin.bungee.injector.handler.AbstractMultiInitialHandler;
 import moe.caa.multilogin.bungee.injector.redirect.auth.MultiEncryptionResponse;
 import moe.caa.multilogin.bungee.injector.redirect.auth.MultiLoginRequest;
+import moe.caa.multilogin.bungee.injector.redirect.chat.PlayerSessionPacketBlocker;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.Protocol;
+import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.EncryptionResponse;
 import net.md_5.bungee.protocol.packet.LoginRequest;
 
@@ -28,16 +31,21 @@ public class BungeeInjector implements Injector {
         redirectIn(login, EncryptionResponse.class, () -> new MultiEncryptionResponse(api));
         redirectIn(login, LoginRequest.class, () -> new MultiLoginRequest(api));
 
-      //  {
-        //    Protocol play = Protocol.GAME;
-          //  Object toServerDirectionData = getToServerDirectionData(play);
+        try {
+            {
+                Protocol play = Protocol.GAME;
+                Object toServerDirectionData = getToServerDirectionData(play);
 
-          //  Object[] objects = (Object[]) Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 2);
-         //   objects[0] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20);
-         //   objects[1] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06);
+                Object[] objects = (Object[]) Array.newInstance(Class.forName("net.md_5.bungee.protocol.Protocol$ProtocolMapping"), 3);
+                objects[0] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_3, 0x20);
+                objects[1] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_19_4, 0x06);
+                objects[2] = createProtocolMapping(ProtocolConstants.MINECRAFT_1_20_5, 0x07);
 
-           // registerPacket(toServerDirectionData, MultiPlayerSession.class, MultiPlayerSession::new, objects);
-        //}
+                registerPacket(toServerDirectionData, PlayerSessionPacketBlocker.class, PlayerSessionPacketBlocker::new, objects);
+            }
+        } catch (Throwable throwable){
+            LoggerProvider.getLogger().error("Unable to register PlayerSessionPacketBlocker, chat session blocker does not work as expected.", throwable);
+        }
     }
 
 

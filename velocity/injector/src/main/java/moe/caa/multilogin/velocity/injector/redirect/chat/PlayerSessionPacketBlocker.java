@@ -6,15 +6,14 @@ import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import io.netty.buffer.ByteBuf;
-import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 
 import java.util.UUID;
 
-public class MultiPlayerSession implements MinecraftPacket {
+public class PlayerSessionPacketBlocker implements MinecraftPacket {
     private UUID sessionId;
     private IdentifiedKey identifiedKey;
 
-    public MultiPlayerSession(){
+    public PlayerSessionPacketBlocker(){
 
     }
 

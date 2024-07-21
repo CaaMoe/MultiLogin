@@ -17,7 +17,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MultiPlayerSession extends DefinedPacket {
+public class PlayerSessionPacketBlocker extends DefinedPacket {
     private UUID sessionId;
     private Instant expires;
     private byte[] publicKey;

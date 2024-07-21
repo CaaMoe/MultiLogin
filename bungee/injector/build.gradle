@@ -15,7 +15,7 @@ dependencies {
     compileOnly project(":core")
     compileOnly project(":bungee")
 
-    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.20-R0.1-SNAPSHOT'
+    compileOnly group: 'net.md-5', name: 'bungeecord-proxy', version: '1.21-R0.1-SNAPSHOT'
 }
 
 shadowJar {
