@@ -1,0 +1,17 @@
+{
+  "id": "multilogin",
+  "name": "MultiLogin",
+  "version": "@Plugin-Version@",
+  "authors": @Contributors-Json@,
+  "dependencies": [
+    {
+      "id": "floodgate",
+      "optional": true
+    },
+    {
+      "id": "skinsrestorer",
+      "optional": true
+    }
+  ],
+  "main": "moe.caa.multilogin.velocity.main.MultiLoginVelocity"
+}

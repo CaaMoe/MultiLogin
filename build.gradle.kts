@@ -2,7 +2,42 @@ import groovy.json.JsonOutput
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Optional
+
+val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSet()
+val contributorsJson: String = JsonOutput.toJson(contributors)
+
+val buildArchiveVersion: String = System.getProperty("build_type", "auto")
+    .equals("final", true).ifTrue {
+        project.properties["plugin_version"] as String
+    } ?: indraGit.commit()?.name().let {
+    "build_${it?.substring(0, 8) ?: "unknown"}"
+}
+
+val buildData by extra(
+    fun(): Map<String, String> = mapOf(
+        "Build-By" to System.getProperty("user.name"),
+        "Build-Timestamp" to System.currentTimeMillis().toString(),
+        "Build-Datetime" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
+        "Build-Revision" to (indraGit.commit()?.name ?: "unknown"),
+        "Created-By" to "Gradle ${gradle.gradleVersion}",
+        "Build-Jdk" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
+            System.getProperty(
+                "java.vm.version"
+            )
+        })",
+        "Build-OS" to "${System.getProperty("os.name")} ${System.getProperty("os.arch")} ${
+            System.getProperty(
+                "os.version"
+            )
+        }",
+
+        "Plugin-Version" to buildArchiveVersion,
+        "Contributors-Json" to contributorsJson,
+        "Contributors" to contributors.joinToString(),
+        "Build-Type" to System.getProperty("build_type", "auto"),
+        "Build-Revision" to (indraGit.commit()?.name ?: "unknown"),
+    )
+)
 
 plugins {
     alias(libs.plugins.kotlin)
@@ -10,25 +45,17 @@ plugins {
     alias(libs.plugins.git)
 }
 
-
 java.sourceCompatibility = JavaVersion.VERSION_17
 java.targetCompatibility = JavaVersion.VERSION_17
 
 allprojects {
     group = "moe.caa"
-    version = project.properties["plugin_version"] as String
 
     repositories {
         mavenCentral()
         google()
     }
 }
-
-
-kotlin {
-    jvmToolchain(21)
-}
-
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
@@ -39,48 +66,20 @@ subprojects {
     java.targetCompatibility = rootProject.java.targetCompatibility
 
     tasks.shadowJar {
-        configurations = listOf()
+//        configurations = listOf()
 
-        archiveAppendix = "${rootProject.name}-${project.name.substring(rootProject.name.length + 1).replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}"
+        archiveAppendix = "${rootProject.name}-${project.name.substring(rootProject.name.length + 1)}"
         archiveBaseName = ""
         archiveVersion = buildArchiveVersion
         archiveClassifier = ""
 
         manifest {
-            attributes(
-                mapOf(
-                    "Build-By" to System.getProperty("user.name"),
-                    "Build-Timestamp" to System.currentTimeMillis(),
-                    "Build-Datetime" to SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").format(Date()),
-                    "Build-Revision" to (indraGit.commit()?.name?: "unknown"),
-                    "Created-By" to "Gradle ${gradle.gradleVersion}",
-                    "Build-Jdk" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
-                        System.getProperty(
-                            "java.vm.version"
-                        )
-                    })",
-                    "Build-OS" to "${System.getProperty("os.name")} ${System.getProperty("os.arch")} ${
-                        System.getProperty(
-                            "os.version"
-                        )
-                    }"
-                )
-            )
+            attributes(buildData)
         }
     }
 
-    tasks.named("build"){
+    tasks.named("build") {
         finalizedBy(tasks.named("shadowJar"))
     }
 }
 
-
-val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSet()
-val contributorsJson: String = JsonOutput.toJson(contributors)
-
-val buildArchiveVersion: String = System.getProperty("build_type", "auto")
-    .equals("final", true).ifTrue {
-        version.toString()
-    } ?: indraGit.commit()?.name().let {
-    "Build_${it?.substring(0, 8) ?: "unknown"}"
-}

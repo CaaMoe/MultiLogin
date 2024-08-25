@@ -3,3 +3,4 @@
 /build/
 /**/build/
 /.kotlin/
+/velocity/libraries/*

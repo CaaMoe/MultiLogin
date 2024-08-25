@@ -2,15 +2,37 @@
 kotlin = "2.0.0"
 shadow = "8.1.1"
 git = "3.1.3"
-ideaext = "1.1.8"
-asm = "9.5"
+
+velocityapi = "3.3.0-SNAPSHOT"
+
+exposed = "0.53.0"
+hikaricp = "5.1.0"
+mysql = "9.0.0"
+
+ktor = "2.3.12"
+
+
+cloud = "2.0.0"
 
 [libraries]
-asm = {group = "org.ow2.asm", name = "asm", version.ref = "asm"}
+kotlincoroutinescore = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.9.0-RC.2" }
+
+velocityapi = { group = "com.velocitypowered", name = "velocity-api", version.ref = "velocityapi" }
+
+exposedcore = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
+exposeddao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.ref = "exposed" }
+exposedjdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
+exposedjavatime = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
+exposedkotlindatetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
+hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricp" }
+mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql"}
+ktorclientcore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"}
+ktorclientcio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor"}
+ktorclientlogging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor"}
+cloudcore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud"}
+cloudveloity = { group = "org.incendo", name = "cloud-velocity", version = "2.0.0-beta.9"}
 
 [plugins]
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 git = { id = "net.kyori.indra.git", version.ref = "git" }
-ideaext = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "ideaext" }
-eclipse = {id = "eclipse"}
