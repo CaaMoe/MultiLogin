@@ -44,7 +44,7 @@ body:
       label: |
         服务器核心
       description: |
-        请填写您所使用的是哪种服务器核心，例如`vanilla`, `spigot`
+        请填写您所使用的是哪种服务器核心，例如`vanilla/1.21`, `spigot/1..20.4`，如果能带上版本号+commit id就更好了
     validations:
       required: true
   - type: input
@@ -64,6 +64,9 @@ body:
       label: |
         日志
       description: |
+        ! 请务必**开启插件 DEBUG 日志** !
+        ! 请务必**删除其他与BUG无关的插件/Mod** !
+        ! 请务必**在对服务端做最小更改的情况下提交日志** !
         需要日志我们才能帮助您解决问题，请注意隐藏私密信息
         为避免影响体验，我们需要您提交到<pastebin.com>或者<pastebin.mozilla.org>以及类似的在线剪切板
         然后将生成的链接粘贴至此
