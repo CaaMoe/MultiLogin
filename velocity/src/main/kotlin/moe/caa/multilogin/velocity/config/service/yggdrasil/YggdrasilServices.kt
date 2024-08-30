@@ -12,11 +12,12 @@ class OfflineYggdrasilService (
     plugin, resourceFile, baseServiceSetting,
     yggdrasilServiceSetting, CustomYggdrasilServiceSetting(
         HasJoinedRequestMode.GET, OFFLINE_YGGDRASIL_HAS_JOINED_URL_BYTES,
-        mapOf(
+        linkedMapOf(
             "username" to "{username}",
             "serverId" to "{serverId}",
             "ip" to "{playerIp}",
-        ))
+        )
+    )
 ) {
     companion object {
         // https://sessionserver.mojang.com/session/minecraft/hasJoined
@@ -97,11 +98,12 @@ class BlessingSkinYggdrasilService (
         HasJoinedRequestMode.GET,
         blessingSkinYggdrasilServiceSetting.yggdrasilApiRoot.trim('/').toByteArray()
             .plus(SECTION_SESSION_SERVER_HAS_JOINED_PATH_BYTES),
-        mapOf(
+        linkedMapOf(
             "username" to "{username}",
             "serverId" to "{serverId}",
             "ip" to "{playerIp}",
-        ))
+        )
+    )
 ) {
     companion object {
         // /sessionserver/session/minecraft/hasJoined

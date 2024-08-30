@@ -5,9 +5,9 @@ import com.velocitypowered.proxy.network.ConnectionManager
 import com.velocitypowered.proxy.network.ServerChannelInitializerHolder
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
-import moe.caa.multilogin.velocity.util.access
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.netty.MultiLoginChannelHandler
+import moe.caa.multilogin.velocity.util.access
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
 

@@ -2,10 +2,11 @@ package moe.caa.multilogin.velocity.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import moe.caa.multilogin.velocity.util.camelCaseToUnderscore
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
+import moe.caa.multilogin.velocity.util.camelCaseToUnderscore
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.StatementContext
+import org.jetbrains.exposed.sql.statements.expandArgs
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.spongepowered.configurate.ConfigurationNode
 import java.lang.reflect.Method
@@ -24,13 +25,10 @@ class DatabaseHandler(
         useDatabase {
             addLogger(object : SqlLogger {
                 override fun log(context: StatementContext, transaction: Transaction) {
-                    plugin.logger.info("SQLExecute: ${context.sql(transaction)}")
+                    plugin.logDebug("SQLExecute: ${context.expandArgs(transaction)}")
                 }
             })
-        }
 
-
-        useDatabase {
             SchemaUtils.create(ProfileLoginLogTableV1)
             SchemaUtils.create(UserDataTableV3)
             SchemaUtils.create(ProfileTableV3)
@@ -38,7 +36,7 @@ class DatabaseHandler(
         }
     }
 
-    fun <T> useDatabase(statement: Transaction.() -> T): T = transaction(database) {
+    fun <T> useDatabase(database: Database = this.database, statement: Transaction.() -> T): T = transaction(database) {
         statement.invoke(this)
     }
 

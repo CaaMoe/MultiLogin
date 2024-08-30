@@ -1,14 +1,11 @@
 package moe.caa.multilogin.velocity.util
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import net.kyori.adventure.text.Component
-import org.jetbrains.exposed.sql.Random
 import java.io.File
 import java.lang.reflect.AccessibleObject
+import java.util.*
+
 
 /**
  * 给定路径获得 Jar 包内资源
@@ -54,3 +51,16 @@ fun String.camelCaseToUnderscore(): String {
 }
 
 fun String.componentText() = Component.text(this)
+
+fun String.toUUIDOrNull(): UUID? {
+    try {
+        return UUID.fromString(
+            this.replaceFirst(
+                "(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})".toRegex(),
+                "$1-$2-$3-$4-$5"
+            )
+        )
+    } catch (ignored: java.lang.Exception) {
+    }
+    return null
+}

@@ -5,11 +5,18 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.content.*
 import io.ktor.http.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import moe.caa.multilogin.velocity.auth.yggdrasil.IYggdrasilService
+import moe.caa.multilogin.velocity.auth.yggdrasil.LoginProfile
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult
 import moe.caa.multilogin.velocity.config.service.BaseService
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
+import moe.caa.multilogin.velocity.util.ser.YggdrasilHasJoinedResponseSerializer
 import java.io.File
 
 abstract class BaseYggdrasilService(
@@ -27,9 +34,9 @@ abstract class BaseYggdrasilService(
         }
 
         install(HttpRequestRetry) {
-            maxRetries = yggdrasilServiceSetting.retry
             delayMillis { yggdrasilServiceSetting.delayRetry.toLong() }
-            retryIf { _, response -> !response.status.isSuccess() }
+            retryIf(maxRetries = yggdrasilServiceSetting.retry) { _, response -> !response.status.isSuccess() }
+            retryOnException(maxRetries = yggdrasilServiceSetting.retry, retryOnTimeout = true)
         }
 
         install(HttpTimeout) {
@@ -37,6 +44,7 @@ abstract class BaseYggdrasilService(
         }
 
         install(Logging) {
+            level = LogLevel.INFO
             logger = object : Logger {
                 override fun log(message: String) {
                     plugin.logDebug(message)
@@ -46,32 +54,58 @@ abstract class BaseYggdrasilService(
     }
 
     override suspend fun authenticate(
-        username: String,
-        serverId: String,
-        playerIp: String
+        loginProfile: LoginProfile
     ): YggdrasilAuthenticationResult {
-        val requestParam = HashMap<String, String>()
-        customYggdrasilServiceSetting.requestParametersTemplate.forEach { (k, v) ->
-            requestParam[k] = v
-                .replace("{username}", username)
-                .replace("{serverId}", serverId)
-                .replace("{playerIp}", if (yggdrasilServiceSetting.preventProxy) playerIp else "")
-        }
-        requestParam.values.removeIf { it.isEmpty() }
-
-        val requestBuilder = HttpRequestBuilder().apply {
-            url(String(customYggdrasilServiceSetting.hasJoinedUrl))
-            retry {
-
+        try {
+            val requestParam = LinkedHashMap<String, String>()
+            customYggdrasilServiceSetting.requestParametersTemplate.forEach { (k, v) ->
+                requestParam[k] = v
+                    .replace("{username}", loginProfile.username)
+                    .replace("{serverId}", loginProfile.serverId)
+                    .replace("{playerIp}", if (yggdrasilServiceSetting.preventProxy) loginProfile.playerIp else "")
             }
-        }
+            requestParam.values.removeIf { it.isEmpty() }
 
-        val response = when (customYggdrasilServiceSetting.hasJoinedRequestMode) {
-            HasJoinedRequestMode.POST -> httpClient.post(requestBuilder)
-            HasJoinedRequestMode.GET -> httpClient.get(requestBuilder)
-        }
+            val requestBuilder = HttpRequestBuilder().apply {
+                url(String(customYggdrasilServiceSetting.hasJoinedUrl))
 
-        TODO()
+                when (customYggdrasilServiceSetting.hasJoinedRequestMode) {
+                    HasJoinedRequestMode.POST -> {
+                        method = HttpMethod.Post
+                        setBody(TextContent(Json.encodeToString(requestParam), ContentType.Application.Json))
+                    }
+
+                    HasJoinedRequestMode.GET -> {
+                        method = HttpMethod.Get
+                        requestParam.forEach { (k, v) ->
+                            parameter(k, v)
+                        }
+                    }
+                }
+            }
+
+            val response = httpClient.request(requestBuilder)
+            if (response.status == HttpStatusCode.NoContent) {
+                return YggdrasilAuthenticationResult.Failure(YggdrasilAuthenticationResult.Failure.Reason.INVALID_SESSION)
+            }
+
+            if (response.status != HttpStatusCode.OK) {
+                return YggdrasilAuthenticationResult.Failure(YggdrasilAuthenticationResult.Failure.Reason.SERVER_BREAK_DOWN)
+            }
+
+            val authenticationResult =
+                Json.decodeFromString(YggdrasilHasJoinedResponseSerializer, response.bodyAsText())
+            return YggdrasilAuthenticationResult.Success(this, authenticationResult.toGameProfile(loginProfile))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            plugin.logDebug(
+                "An exception occurred while validating the session, service: ${
+                    baseServiceSetting.serviceId
+                }, loginProfile: $loginProfile.", e
+            )
+            return YggdrasilAuthenticationResult.Failure(YggdrasilAuthenticationResult.Failure.Reason.SERVER_BREAK_DOWN)
+        }
     }
 
 
@@ -88,9 +122,8 @@ abstract class BaseYggdrasilService(
         // 重试
         val retry: Int,
         // 重试等待
-        val delayRetry: Int,
-
-        )
+        val delayRetry: Int
+    )
 
     data class CustomYggdrasilServiceSetting(
         // 请求方式

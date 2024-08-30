@@ -14,6 +14,7 @@ dependencies {
 
     implementation(project(":multilogin-api"))
     implementation(libs.kotlincoroutinescore)
+    implementation(libs.kotlinxserializationjson)
 
     implementation(libs.exposedcore)
     implementation(libs.exposeddao)

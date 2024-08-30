@@ -1,5 +1,7 @@
 import groovy.json.JsonOutput
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
+import java.io.OutputStreamWriter
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,6 +43,7 @@ val buildData by extra(
 
 plugins {
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlinserialization)
     alias(libs.plugins.shadow)
     alias(libs.plugins.git)
 }
@@ -59,6 +62,7 @@ allprojects {
 
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
     apply(plugin = "net.kyori.indra.git")
     apply(plugin = "com.github.johnrengelman.shadow")
 
@@ -80,6 +84,20 @@ subprojects {
 
     tasks.named("build") {
         finalizedBy(tasks.named("shadowJar"))
+    }
+
+    tasks.processResources {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        Properties().apply {
+            putAll(buildData)
+        }.store(OutputStreamWriter(layout.buildDirectory.file("builddata").get().asFile.apply {
+            parentFile?.mkdirs()
+        }.outputStream(), StandardCharsets.UTF_8), "MultiLogin build data.")
+
+        from(layout.buildDirectory) {
+            include("builddata")
+        }
     }
 }
 

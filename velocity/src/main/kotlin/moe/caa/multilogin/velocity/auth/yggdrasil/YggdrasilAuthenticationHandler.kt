@@ -1,26 +1,26 @@
 package moe.caa.multilogin.velocity.auth.yggdrasil
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Failure
+import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Success
 import moe.caa.multilogin.velocity.config.service.yggdrasil.BaseYggdrasilService
 import moe.caa.multilogin.velocity.database.UserDataTableV3
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
-import org.apache.logging.log4j.core.util.Integers
+import java.util.concurrent.CopyOnWriteArrayList
 
 class YggdrasilAuthenticationHandler(
     val plugin: MultiLoginVelocity
-) : IYggdrasilService{
+) {
 
-    override suspend fun authenticate(
-        username: String,
-        serverId: String,
-        playerIp: String
+    suspend fun auth(
+        loginProfile: LoginProfile
     ): YggdrasilAuthenticationResult {
-        val service = plugin.config.serviceMap
-            .values
-            .filterIsInstance<BaseYggdrasilService>()
+        val service = plugin.config.serviceMap.values.filterIsInstance<BaseYggdrasilService>()
 
         if(service.isEmpty()){
-            return YggdrasilAuthenticationResult.Failure(YggdrasilAuthenticationResult.Failure.Reason.NO_YGGDRASIL_SERVICES)
+            return Failure(Failure.Reason.NO_YGGDRASIL_SERVICES)
         }
 
         // 请求优先
@@ -30,7 +30,7 @@ class YggdrasilAuthenticationHandler(
             UserDataTableV3.select(
                 UserDataTableV3.serviceId
             ).where {
-                UserDataTableV3.onlineName eq username
+                UserDataTableV3.onlineName eq loginProfile.username
             }.map {
                 it[UserDataTableV3.serviceId]
             }.map { id ->
@@ -43,36 +43,72 @@ class YggdrasilAuthenticationHandler(
         // 第二队列
         val secondaryList = service.filter { !preferredList.contains(it) }
 
-        // 然后开始验证
-        TODO()
+        return auth(listOf(preferredList, secondaryList), loginProfile)
     }
 
-    private fun auth(
-        baseYggdrasilServices: List<BaseYggdrasilService>,
-        username: String,
-        serverId: String,
-        playerIp: String
-    ) = runBlocking {
-            val completableDeferred = CompletableDeferred<YggdrasilAuthenticationResult>()
+    private suspend fun auth(
+        services: List<List<BaseYggdrasilService>>,
+        loginProfile: LoginProfile,
+    ): YggdrasilAuthenticationResult {
+        return coroutineScope {
+            return@coroutineScope services.map {
+                async(Dispatchers.IO, CoroutineStart.LAZY) {
+                    return@async auth(it, loginProfile)
+                }
+            }.map {
+                when (val result = it.await()) {
+                    is Failure -> return@map result
+                    is Success -> return@coroutineScope result
+                }
+                // 返回一个最坏的结果
+            }.mostFailures()
+        }
+    }
 
-            val failures = ArrayList<YggdrasilAuthenticationResult.Failure>()
-            var size = baseYggdrasilServices.size
-            for (service in baseYggdrasilServices) {
-                launch {
-                    try {
-                        when (val result = service.authenticate(username, serverId, playerIp)) {
-                            is YggdrasilAuthenticationResult.Failure -> failures.add(result)
-                            is YggdrasilAuthenticationResult.Success -> completableDeferred.complete(result)
-                        }
-                    } finally {
-                        --size
-                        if(size == 0){
-                            val failedResult = failures.map { it.reason }.maxByOrNull { it.ordinal } ?: YggdrasilAuthenticationResult.Failure.Reason.NO_YGGDRASIL_SERVICES
-                            completableDeferred.complete(YggdrasilAuthenticationResult.Failure(failedResult))
+    @JvmName("auth0")
+    private suspend fun auth(
+        services: List<BaseYggdrasilService>,
+        loginProfile: LoginProfile
+    ): YggdrasilAuthenticationResult {
+        if (services.isEmpty()) return Failure(Failure.Reason.NO_YGGDRASIL_SERVICES)
+
+        plugin.logDebug(
+            "Verifying the $loginProfile session, current yggdrasil services: [${
+                services.map { it.baseServiceSetting.serviceId }.joinToString(", ")
+            }]."
+        )
+
+        return coroutineScope {
+            val completableDeferred = CompletableDeferred<YggdrasilAuthenticationResult>()
+            val failures = CopyOnWriteArrayList<Failure>()
+            var size = services.size
+
+            val mutex = Mutex()
+            for (service in services) {
+                launch(Dispatchers.IO) {
+                    val result = service.authenticate(loginProfile)
+                    mutex.withLock {
+                        try {
+                            when (result) {
+                                is Failure -> failures.add(result)
+                                is Success -> completableDeferred.complete(result)
+                            }
+                        } finally {
+                            --size
+                            if (size == 0 && !completableDeferred.isCompleted) {
+                                completableDeferred.complete(failures.mostFailures())
+                            }
                         }
                     }
                 }
             }
-        return@runBlocking completableDeferred.await()
+            // 确保一个成功返回, 就马上返回
+            // 否则等待所有任务, 拿到最失败的任务返回
+            return@coroutineScope completableDeferred.await()
+        }
     }
+
+    // 返回最坏的结果
+    private fun Collection<Failure>.mostFailures() = this.maxBy { it.reason.ordinal }
 }
+

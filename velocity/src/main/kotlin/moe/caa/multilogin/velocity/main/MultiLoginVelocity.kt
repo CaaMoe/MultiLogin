@@ -3,6 +3,7 @@ package moe.caa.multilogin.velocity.main
 import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
+import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
@@ -14,10 +15,9 @@ import moe.caa.multilogin.velocity.config.ConfigHandler
 import moe.caa.multilogin.velocity.database.DatabaseHandler
 import moe.caa.multilogin.velocity.inject.VelocityServerChannelInitializerInjector
 import moe.caa.multilogin.velocity.message.Message
-import moe.caa.multilogin.velocity.util.FormattedDaemonThreadFactory
+import moe.caa.multilogin.velocity.netty.handler.LoginEncryptionResponsePacketHandler
 import org.slf4j.Logger
 import java.nio.file.Path
-import java.util.concurrent.Executors
 
 @Plugin(id = "multilogin")
 class MultiLoginVelocity @Inject constructor(
@@ -26,14 +26,17 @@ class MultiLoginVelocity @Inject constructor(
     @DataDirectory val dataDirectory: Path
 ) {
     val proxyServer = proxyServer as VelocityServer
-    val asyncExecutor = Executors.newFixedThreadPool(16, FormattedDaemonThreadFactory("MultiLogin Async Executor #%d"))
 
     val message: Message = Message(this)
-    val config: ConfigHandler = ConfigHandler(this,)
+    val config: ConfigHandler = ConfigHandler(this)
     val database: DatabaseHandler = DatabaseHandler(this)
-    val command: CommandHandler = CommandHandler(this)
 
     val yggdrasilAuthenticationHandler: YggdrasilAuthenticationHandler = YggdrasilAuthenticationHandler(this)
+
+    fun reload() {
+        message.reload()
+        config.reload()
+    }
 
     @Subscribe
     fun init(event: ProxyInitializeEvent) {
@@ -48,13 +51,29 @@ class MultiLoginVelocity @Inject constructor(
 
             message.init()
             config.init()
-            command.init()
+            CommandHandler(this).init()
             database.init(config.configResource.node("database", "data_source"))
+
+            logger.info(
+                "Loaded, using MultiLogin v${
+                    proxyServer.pluginManager.getPlugin("multilogin").get().description.version.get()
+                } on ${
+                    proxyServer.version.name
+                } - ${
+                    proxyServer.version.version
+                }."
+            )
         }
         catch (throwable: Throwable) {
             logger.error("Failed to initialize plugin.", throwable)
             proxyServer.shutdown()
         }
+    }
+
+    @Subscribe
+    fun disable(event: ProxyShutdownEvent) {
+        LoginEncryptionResponsePacketHandler.close()
+        database.close()
     }
 
     private fun checkEnvironment(): Boolean {
@@ -68,11 +87,14 @@ class MultiLoginVelocity @Inject constructor(
 
     private fun inject() {
         VelocityServerChannelInitializerInjector(this).inject()
+        LoginEncryptionResponsePacketHandler.Companion
     }
 
-    fun logDebug(message: String) = if (config.debug) {
-        logger.info("[DEBUG] $message")
+    fun logDebug(message: String, t: Throwable? = null) = if (config.debug) {
+        logger.info("[DEBUG] $message", t)
     } else {
-        logger.debug(message)
+        logger.debug(message, t)
     }
+
+
 }

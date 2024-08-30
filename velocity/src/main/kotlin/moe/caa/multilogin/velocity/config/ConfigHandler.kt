@@ -1,6 +1,5 @@
 package moe.caa.multilogin.velocity.config
 
-import io.ktor.client.engine.*
 import moe.caa.multilogin.velocity.config.service.BaseService
 import moe.caa.multilogin.velocity.config.service.yggdrasil.BaseYggdrasilService
 import moe.caa.multilogin.velocity.config.service.yggdrasil.BlessingSkinYggdrasilService
@@ -107,7 +106,7 @@ class ConfigHandler(
 
 
         if (services.isEmpty()) {
-            plugin.logger.warn("The server has not added any authentication service, please check your config.")
+            plugin.logger.warn("The server has not added any authentication services, please check your configuration.")
         } else {
             plugin.logger.info("Added ${serviceMap.size} authentication services.")
         }

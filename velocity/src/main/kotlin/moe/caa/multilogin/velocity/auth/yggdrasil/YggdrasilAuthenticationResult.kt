@@ -1,6 +1,7 @@
 package moe.caa.multilogin.velocity.auth.yggdrasil
 
 import moe.caa.multilogin.api.profile.GameProfile
+import moe.caa.multilogin.velocity.config.service.yggdrasil.BaseYggdrasilService
 
 /**
  * 表示 Yggdrasil 验证结果返回
@@ -10,13 +11,16 @@ sealed interface YggdrasilAuthenticationResult {
     /**
      * Yggdrasil 验证成功返回
      */
-    class Success(val profile: GameProfile): YggdrasilAuthenticationResult
+    data class Success(
+        val baseYggdrasilService: BaseYggdrasilService, val profile: GameProfile
+    ) : YggdrasilAuthenticationResult
 
     /**
      * 验证失败返回
      */
-    class Failure(val reason: Reason): YggdrasilAuthenticationResult{
+    data class Failure(val reason: Reason) : YggdrasilAuthenticationResult {
 
+        // 从上往下, ordinal 越大 表示越严重
         enum class Reason {
             // 没有找到任何有效的 Yggdrasil Service
             NO_YGGDRASIL_SERVICES,
