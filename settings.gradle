@@ -8,10 +8,10 @@ include 'loader'
 
 include 'velocity'
 include 'velocity:injector'
-
-include 'bungee'
-include 'bungee:injector'
-
-include 'bukkit'
-include 'bukkit:injector'
+//
+//include 'bungee'
+//include 'bungee:injector'
+//
+//include 'bukkit'
+//include 'bukkit:injector'
 

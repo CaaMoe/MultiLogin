@@ -77,8 +77,8 @@ jobs:
       - name: Rename Weekly
         run: |
           mkdir release
-          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/
-          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/
+#          mv bukkit/build/libs/MultiLogin-Bukkit-Build_*.jar release/
+#          mv bungee/build/libs/MultiLogin-Bungee-Build_*.jar release/
           mv velocity/build/libs/MultiLogin-Velocity-Build_*.jar release/
 
       - name: Publish Weekly
