@@ -137,6 +137,4 @@ jobs:
           prerelease: false
           title: "MultiLogin v${{ env.version }}"
           files: |
-#            bukkit/build/libs/MultiLogin-Bukkit-${{ env.version }}.jar
-#            bungee/build/libs/MultiLogin-Bungee-${{ env.version }}.jar
             velocity/build/libs/MultiLogin-Velocity-${{ env.version }}.jar
