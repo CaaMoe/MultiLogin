@@ -213,10 +213,18 @@ public class MultiInitialLoginSessionHandler {
                                 LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
                             }
 
-                            this.mcConnection.setActiveSessionHandler(StateRegistry.LOGIN,
-                                    (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
-                                            this.server, inbound, generateGameProfile(gameProfile), true
-                                    ));
+                            GameProfile finalGameProfile = gameProfile;
+                            mcConnection.getChannel().eventLoop().submit(() -> {
+                                try {
+                                    this.mcConnection.setActiveSessionHandler(StateRegistry.LOGIN,
+                                            (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
+                                                    this.server, inbound, generateGameProfile(finalGameProfile), true
+                                            ));
+                                } catch (Throwable e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }).get();
+
                         } else {
                             this.inbound.disconnect(Component.text(result.getKickMessage()));
                         }
