@@ -181,41 +181,54 @@ public class MultiInitialLoginSessionHandler {
             String serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
             String playerIp = ((InetSocketAddress) this.mcConnection.getRemoteAddress()).getHostString();
 
-            LoginAuthResult result = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(username, serverId, playerIp);
-
-            if (this.mcConnection.isClosed()) return;
-            try {
-                this.mcConnection.enableEncryption(decryptedSharedSecret);
-            } catch (GeneralSecurityException var8) {
-                LoggerProvider.getLogger().error("Unable to enable encryption for connection", var8);
-                this.mcConnection.close(true);
-                return;
-            }
-            if (result.getResult() == AuthResult.Result.ALLOW) {
-                GameProfile gameProfile = result.getResponse();
-
+            multiCoreAPI.getPlugin().getRunServer().getScheduler().runTask(() -> {
+                LoginAuthResult result = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(username, serverId, playerIp);
                 try {
-                    SkinRestorerResult restorerResult = multiCoreAPI.getSkinRestorerHandler().doRestorer(result);
-                    if (restorerResult.getThrowable() != null) {
-                        LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", restorerResult.getThrowable());
-                    }
-                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
+                    if (mcConnection.getChannel().eventLoop().submit(() -> {
+                        if (this.mcConnection.isClosed()) return false;
+                        try {
+                            this.mcConnection.enableEncryption(decryptedSharedSecret);
+                            return true;
+                        } catch (GeneralSecurityException var8) {
+                            LoggerProvider.getLogger().error("Unable to enable encryption for connection", var8);
+                            this.mcConnection.close(true);
+                            return false;
+                        }
+                    }).get()) {
+                        if (result.getResult() == AuthResult.Result.ALLOW) {
+                            GameProfile gameProfile = result.getResponse();
 
-                    if (restorerResult.getResponse() != null) {
-                        gameProfile = restorerResult.getResponse();
+                            try {
+                                SkinRestorerResult restorerResult = multiCoreAPI.getSkinRestorerHandler().doRestorer(result);
+                                if (restorerResult.getThrowable() != null) {
+                                    LoggerProvider.getLogger().error("An exception occurred while processing the skin repair.", restorerResult.getThrowable());
+                                }
+                                LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), restorerResult.getReason()));
+
+                                if (restorerResult.getResponse() != null) {
+                                    gameProfile = restorerResult.getResponse();
+                                }
+                            } catch (Exception e) {
+                                LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), "error"));
+                                LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
+                            }
+
+                            this.mcConnection.setActiveSessionHandler(StateRegistry.LOGIN,
+                                    (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
+                                            this.server, inbound, generateGameProfile(gameProfile), true
+                                    ));
+                        } else {
+                            this.inbound.disconnect(Component.text(result.getKickMessage()));
+                        }
                     }
-                } catch (Exception e) {
-                    LoggerProvider.getLogger().debug(String.format("Skin restore result of %s is %s.", result.getBaseServiceAuthenticationResult().getResponse().getName(), "error"));
-                    LoggerProvider.getLogger().debug("An exception occurred while processing the skin repair.", e);
+                } catch (Throwable e){
+                    LoggerProvider.getLogger().error("An exception occurred while processing validation results.", e);
+                    if (isEncrypted()) {
+                        getInbound().disconnect(Component.text(multiCoreAPI.getLanguageHandler().getMessage("auth_error")));
+                    }
+                    mcConnection.close(true);
                 }
-
-                this.mcConnection.setActiveSessionHandler(StateRegistry.LOGIN,
-                        (AuthSessionHandler) authSessionHandler_allArgsConstructor.invoke(
-                        this.server, inbound, generateGameProfile(gameProfile), true
-                ));
-            } else {
-                this.inbound.disconnect(Component.text(result.getKickMessage()));
-            }
+            });
         } catch (GeneralSecurityException var9) {
             LoggerProvider.getLogger().error("Unable to enable encryption.", var9);
             this.mcConnection.close(true);
