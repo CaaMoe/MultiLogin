@@ -1,6 +1,7 @@
 package moe.caa.multilogin.velocity.auth.yggdrasil
 
 import moe.caa.multilogin.api.profile.GameProfile
+import moe.caa.multilogin.velocity.auth.validate.ValidateContext
 import moe.caa.multilogin.velocity.config.service.yggdrasil.BaseYggdrasilService
 
 /**
@@ -13,7 +14,9 @@ sealed interface YggdrasilAuthenticationResult {
      */
     data class Success(
         val baseYggdrasilService: BaseYggdrasilService, val profile: GameProfile
-    ) : YggdrasilAuthenticationResult
+    ) : YggdrasilAuthenticationResult {
+        fun buildValidateContext() = ValidateContext(baseYggdrasilService, profile)
+    }
 
     /**
      * 验证失败返回

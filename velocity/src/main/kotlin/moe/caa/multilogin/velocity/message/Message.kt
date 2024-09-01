@@ -1,10 +1,11 @@
 package moe.caa.multilogin.velocity.message
 
-import moe.caa.multilogin.velocity.util.getResource
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
+import moe.caa.multilogin.velocity.util.getResource
 import moe.caa.multilogin.velocity.util.saveDefaultResource
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextReplacementConfig
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.spongepowered.configurate.ConfigurationNode
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader
@@ -55,15 +56,20 @@ class Message(
      * 通过给定的键, 读出对应的 Component
      */
     fun message(node: String): Component {
-        val configurationNode = messageResource.node(node.split("."))
+        try {
+            val configurationNode = messageResource.node(node.split("."))
 
-        return MiniMessage.miniMessage().deserialize(
-            if (configurationNode.isList) {
-                configurationNode.getList(String::class.java)?.joinToString { "\n" } ?: ""
-            } else {
-                configurationNode.getString("")
-            }
-        )
+            return MiniMessage.miniMessage().deserialize(
+                if (configurationNode.isList) {
+                    configurationNode.getList(String::class.java)?.joinToString { "\n" } ?: ""
+                } else {
+                    configurationNode.getString("")
+                }
+            )
+        } catch (e: Throwable) {
+            plugin.logger.error("Error occurred with minimessage deserialization(node: $node)", e)
+            return Component.text("Message Error: $node").color(TextColor.color(1.0F, 0F, 0F))
+        }
     }
 }
 

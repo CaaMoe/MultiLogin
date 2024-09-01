@@ -30,6 +30,9 @@ class ConfigHandler(
     var serviceMap: Map<Int, BaseService> = emptyMap()
         private set
 
+    var profileNameSetting: ProfileNameSetting = ProfileNameSetting()
+        private set
+
     /**
      * 重载消息文件
      */
@@ -46,6 +49,10 @@ class ConfigHandler(
 
     private fun readConfig() {
         this.debug = configResource.node("debug").getBoolean(false)
+        this.profileNameSetting = ProfileNameSetting(
+            configResource.node("profile_name_setting").node("auto_cutting").getBoolean(true),
+            configResource.node("profile_name_setting").node("auto_increment").getBoolean(true),
+        )
     }
 
     private fun exportExamples(){
@@ -157,7 +164,7 @@ class ConfigHandler(
         }
     }
 
-    private enum class ServiceType{
+    private enum class ServiceType {
         OFFICIAL,
         BLESSING_SKIN_YGGDRASIL,
         CUSTOM_YGGDRASIL,
@@ -166,3 +173,8 @@ class ConfigHandler(
 
     class ServiceReadException(message: String, e: Throwable? = null) : IOException(message, e)
 }
+
+data class ProfileNameSetting(
+    val autoCutting: Boolean = true,
+    val autoIncrement: Boolean = true,
+)

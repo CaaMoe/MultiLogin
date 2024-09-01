@@ -29,10 +29,9 @@ class DatabaseHandler(
                 }
             })
 
-            SchemaUtils.create(ProfileLoginLogTableV1)
             SchemaUtils.create(UserDataTableV3)
             SchemaUtils.create(ProfileTableV3)
-            SchemaUtils.create(ProfileAuthenticationTableV1)
+            SchemaUtils.create(CacheWhitelistTableV2)
         }
     }
 

@@ -10,6 +10,8 @@ data class GameProfile(
     val username: String,
     val properties: List<Property>,
 ) {
+    fun withUUID(uuid: UUID) = GameProfile(uuid, username, properties)
+    fun withName(username: String) = GameProfile(uuid, username, properties)
 
     data class Property(
         val name: String,

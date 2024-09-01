@@ -43,7 +43,20 @@ class YggdrasilAuthenticationHandler(
         // 第二队列
         val secondaryList = service.filter { !preferredList.contains(it) }
 
-        return auth(listOf(preferredList, secondaryList), loginProfile)
+        val result = auth(listOf(preferredList, secondaryList), loginProfile)
+        if (result is Success) {
+            plugin.logDebug(
+                "${result.profile.username}(uuid: ${
+                    result.profile.uuid
+                }) from yggdrasil service ${
+                    result.baseYggdrasilService.baseServiceSetting.serviceName
+                }(service id: ${
+                    result.baseYggdrasilService.baseServiceSetting.serviceId
+                }) has been authenticated, pass."
+            )
+        }
+
+        return result
     }
 
     private suspend fun auth(
@@ -51,14 +64,10 @@ class YggdrasilAuthenticationHandler(
         loginProfile: LoginProfile,
     ): YggdrasilAuthenticationResult {
         return coroutineScope {
-            return@coroutineScope services.map {
-                async(Dispatchers.IO, CoroutineStart.LAZY) {
-                    return@async auth(it, loginProfile)
-                }
-            }.map {
-                when (val result = it.await()) {
-                    is Failure -> return@map result
+            return@coroutineScope services.map { service ->
+                when (val result = auth(service, loginProfile)) {
                     is Success -> return@coroutineScope result
+                    is Failure -> return@map result
                 }
                 // 返回一个最坏的结果
             }.mostFailures()
@@ -80,7 +89,7 @@ class YggdrasilAuthenticationHandler(
 
         return coroutineScope {
             val completableDeferred = CompletableDeferred<YggdrasilAuthenticationResult>()
-            val failures = CopyOnWriteArrayList<Failure>()
+            val failures = ArrayList<Failure>()
             var size = services.size
 
             val mutex = Mutex()
@@ -104,11 +113,12 @@ class YggdrasilAuthenticationHandler(
             }
             // 确保一个成功返回, 就马上返回
             // 否则等待所有任务, 拿到最失败的任务返回
-            return@coroutineScope completableDeferred.await()
+            val result = completableDeferred.await()
+            return@coroutineScope result
         }
     }
 
     // 返回最坏的结果
-    private fun Collection<Failure>.mostFailures() = this.maxBy { it.reason.ordinal }
+    private fun Collection<Failure>.mostFailures() = this.maxByOrNull { it.reason.ordinal }?: Failure(Failure.Reason.NO_YGGDRASIL_SERVICES)
 }
 
