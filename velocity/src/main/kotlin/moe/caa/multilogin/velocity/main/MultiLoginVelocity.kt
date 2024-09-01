@@ -9,6 +9,7 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.proxy.VelocityServer
 import com.velocitypowered.proxy.config.PlayerInfoForwarding
+import moe.caa.multilogin.velocity.auth.validate.ValidateHandler
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationHandler
 import moe.caa.multilogin.velocity.command.CommandHandler
 import moe.caa.multilogin.velocity.config.ConfigHandler
@@ -31,7 +32,8 @@ class MultiLoginVelocity @Inject constructor(
     val config: ConfigHandler = ConfigHandler(this)
     val database: DatabaseHandler = DatabaseHandler(this)
 
-    val yggdrasilAuthenticationHandler: YggdrasilAuthenticationHandler = YggdrasilAuthenticationHandler(this)
+    val yggdrasilAuthenticationHandler = YggdrasilAuthenticationHandler(this)
+    val validateAuthenticationHandler = ValidateHandler(this)
 
     fun reload() {
         message.reload()

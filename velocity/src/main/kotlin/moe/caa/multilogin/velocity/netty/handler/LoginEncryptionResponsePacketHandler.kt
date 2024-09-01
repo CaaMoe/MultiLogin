@@ -13,6 +13,7 @@ import com.velocitypowered.proxy.protocol.StateRegistry
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket
 import kotlinx.coroutines.*
+import moe.caa.multilogin.velocity.auth.validate.ValidateResult
 import moe.caa.multilogin.velocity.auth.yggdrasil.LoginProfile
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Failure
@@ -207,6 +208,21 @@ class LoginEncryptionResponsePacketHandler(
         }).get()
     }
 
+    private fun loginSucceed(profile: moe.caa.multilogin.api.profile.GameProfile) {
+        channelHandler.connection.eventLoop().submit(Callable {
+            mcConnection.setActiveSessionHandler(
+                StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
+                    server,
+                    inbound.value,
+                    GameProfile(profile.uuid, profile.username, profile.properties.map {
+                        GameProfile.Property(it.name, it.value, it.signature)
+                    }),
+                    true
+                ) as AuthSessionHandler
+            )
+        }).get()
+    }
+
     private fun handleAuthResult(result: YggdrasilAuthenticationResult) {
         if (encryptConnection()) {
             when (result) {
@@ -234,25 +250,12 @@ class LoginEncryptionResponsePacketHandler(
                         }
                     }
 
-                    channelHandler.connection.eventLoop().submit(Callable {
-                        mcConnection.setActiveSessionHandler(
-                            StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
-                                server,
-                                inbound.value,
-                                GameProfile(
-                                    result.profile.uuid,
-                                    result.profile.username,
-                                    result.profile.properties.map {
-                                        GameProfile.Property(
-                                            it.name,
-                                            it.value,
-                                            it.signature
-                                        )
-                                    }),
-                                true
-                            ) as AuthSessionHandler
-                        )
-                    }).get()
+                    val validateContext = result.buildValidateContext()
+                    when (val validateResult =
+                        channelHandler.plugin.validateAuthenticationHandler.checkIn(validateContext)) {
+                        is ValidateResult.Failure -> inbound.value.disconnect(validateResult.reason)
+                        is ValidateResult.Pass -> loginSucceed(validateContext.resultGameProfile)
+                    }
                 }
             }
         }
