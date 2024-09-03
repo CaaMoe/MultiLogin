@@ -38,10 +38,13 @@ class InitialProfileDataValidate(
             var generateProfile: GameProfile =
                 validateContext.baseService.generateNewProfile(validateContext.serviceGameProfile)
 
+            // 如果名字太长
             if (generateProfile.username.length > 16) {
+                // 开启了auto cutting, 截短
                 if (plugin.config.profileNameSetting.autoCutting) {
                     generateProfile = generateProfile.withName(generateProfile.username.limitLength(16))
                 } else {
+                    // 否则直接失败
                     return ValidateResult.Failure(
                         plugin.message.message("validation_failure_reason_profile_name_is_too_long")
                             .replace("{profile_name}", generateProfile.username)
@@ -49,6 +52,7 @@ class InitialProfileDataValidate(
                 }
             }
 
+            // 把档案插入到数据库中
             while (
                 plugin.database.useDatabase {
                     try {
@@ -57,6 +61,7 @@ class InitialProfileDataValidate(
                             it[currentUserNameOriginal] = generateProfile.username
                             it[currentUserNameLowerCase] = generateProfile.username.lowercase()
                         }
+                        // 插入成功中断循环
                         return@useDatabase false
                     } catch (_: SQLIntegrityConstraintViolationException) {
                     }
@@ -64,12 +69,20 @@ class InitialProfileDataValidate(
                     return@useDatabase true
                 }
             ) {
+                // 插入失败继续循环
+
+                // 记录老名字
                 val oldName = generateProfile.username
+                // 随机没有被占用的uuid
                 generateProfile = generateProfile.withUUID(randomProfileUUIDIfOccupy(generateProfile.uuid))
+                // 随机没有被占用的name
                 generateProfile = generateProfile.withName(incrementProfileNameIfOccupy(generateProfile.username))
 
+                // 如果新名和老名不同
                 if (oldName != generateProfile.username) {
+                    // 没有打开 auto increment
                     if (!plugin.config.profileNameSetting.autoIncrement) {
+                        // 中断
                         return ValidateResult.Failure(
                             plugin.message.message("validation_failure_reason_profile_name_occupy")
                                 .replace("{profile_name}", oldName)
@@ -78,10 +91,13 @@ class InitialProfileDataValidate(
                 }
             }
 
+            // pass
             // 档案生成完毕后直接使用
             validateContext.resultGameProfile = generateProfile
             return ValidateResult.Pass
         } else {
+            // profileID存在
+            // 看看表中有没有记录
             val databaseProfile = plugin.database.useDatabase {
                 ProfileTableV3.select(ProfileTableV3.currentUserNameOriginal).where {
                     ProfileTableV3.id eq profileUUID
@@ -92,6 +108,7 @@ class InitialProfileDataValidate(
                 }.firstOrNull()
             }
 
+            // 表中有记录, 不管了
             if (databaseProfile != null) {
                 validateContext.resultGameProfile = databaseProfile
                 return ValidateResult.Pass
@@ -99,8 +116,10 @@ class InitialProfileDataValidate(
 
             // 如果数据库中profile不存在，新建一个profile
             var generateProfile = validateContext.baseService.generateNewProfile(validateContext.serviceGameProfile)
+            // 指定 profile UUID
             generateProfile = generateProfile.withUUID(profileUUID)
 
+            // 和上面的一样
             if (generateProfile.username.length > 16) {
                 if (plugin.config.profileNameSetting.autoCutting) {
                     generateProfile = generateProfile.withName(generateProfile.username.limitLength(16))
@@ -120,6 +139,7 @@ class InitialProfileDataValidate(
                             it[currentUserNameOriginal] = generateProfile.username
                             it[currentUserNameLowerCase] = generateProfile.username.lowercase()
                         }
+                        // 更新名字
                         return@useDatabase false
                     } catch (_: SQLIntegrityConstraintViolationException) {
                     }
@@ -130,6 +150,7 @@ class InitialProfileDataValidate(
                 val oldName = generateProfile.username
                 generateProfile = generateProfile.withName(incrementProfileNameIfOccupy(generateProfile.username))
 
+                // 和上面的一样
                 if (oldName != generateProfile.username) {
                     if (!plugin.config.profileNameSetting.autoIncrement) {
                         return ValidateResult.Failure(
