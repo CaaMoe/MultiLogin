@@ -163,22 +163,16 @@ class LoginEncryptionResponsePacketHandler(
 
     private fun handleAuth(username: String, serverId: String, playerIp: String) {
         authScope.launch(Dispatchers.IO) {
-            coroutineScope {
-                val loginProfile = LoginProfile(
-                    username,
-                    serverId,
-                    playerIp
+            val loginProfile = LoginProfile(username, serverId, playerIp)
+            try {
+                handleAuthResult(channelHandler.plugin.yggdrasilAuthenticationHandler.auth(loginProfile))
+            } catch (t: Throwable) {
+                channelHandler.plugin.logger.error(
+                    "An exception occurred while verifying the $loginProfile session.",
+                    t
                 )
-                try {
-                    handleAuthResult(channelHandler.plugin.yggdrasilAuthenticationHandler.auth(loginProfile))
-                } catch (t: Throwable) {
-                    channelHandler.plugin.logger.error(
-                        "An exception occurred while verifying the $loginProfile session.",
-                        t
-                    )
-                    encryptConnection()
-                    inbound.value.disconnect(channelHandler.plugin.message.message("authentication_yggdrasil_failure_reason_error"))
-                }
+                encryptConnection()
+                inbound.value.disconnect(channelHandler.plugin.message.message("authentication_yggdrasil_failure_reason_error"))
             }
         }
     }

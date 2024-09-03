@@ -1,14 +1,12 @@
 package moe.caa.multilogin.velocity.auth.yggdrasil
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Failure
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Success
 import moe.caa.multilogin.velocity.config.service.yggdrasil.BaseYggdrasilService
 import moe.caa.multilogin.velocity.database.UserDataTableV3
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
-import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.coroutineContext
 
 class YggdrasilAuthenticationHandler(
     val plugin: MultiLoginVelocity
@@ -63,15 +61,14 @@ class YggdrasilAuthenticationHandler(
         services: List<List<BaseYggdrasilService>>,
         loginProfile: LoginProfile,
     ): YggdrasilAuthenticationResult {
-        return coroutineScope {
-            return@coroutineScope services.map { service ->
-                when (val result = auth(service, loginProfile)) {
-                    is Success -> return@coroutineScope result
-                    is Failure -> return@map result
-                }
-                // 返回一个最坏的结果
-            }.mostFailures()
-        }
+        return services.map { service ->
+            when (val result = auth(service, loginProfile)) {
+                is Success -> return result
+                is Failure -> return@map result
+            }
+            // 返回一个最坏的结果
+        }.mostFailures()
+
     }
 
     @JvmName("auth0")
@@ -87,35 +84,34 @@ class YggdrasilAuthenticationHandler(
             }]."
         )
 
-        return coroutineScope {
-            val completableDeferred = CompletableDeferred<YggdrasilAuthenticationResult>()
-            val failures = ArrayList<Failure>()
-            var size = services.size
+        val requestJob = Job(coroutineContext[Job])
+        val requestScope = CoroutineScope(requestJob)
 
-            val mutex = Mutex()
-            for (service in services) {
-                launch(Dispatchers.IO) {
-                    val result = service.authenticate(loginProfile)
-                    mutex.withLock {
-                        try {
-                            when (result) {
-                                is Failure -> failures.add(result)
-                                is Success -> completableDeferred.complete(result)
-                            }
-                        } finally {
-                            --size
-                            if (size == 0 && !completableDeferred.isCompleted) {
-                                completableDeferred.complete(failures.mostFailures())
-                            }
-                        }
-                    }
+
+        // 结果
+        val result = CompletableDeferred<YggdrasilAuthenticationResult>()
+        // 所有请求队列
+        val requests = services.map { service ->
+            requestScope.async {
+                when (val sub = service.authenticate(loginProfile)) {
+                    is Failure -> return@async sub
+                    // 只要请求成功了, 马上完成这个任务
+                    is Success -> result.complete(sub)
+                }
+                return@async null
+            }
+        }
+
+        // 全部请求都没有好的结果
+        requestScope.launch {
+            // 返回一个最坏的结果
+            requests.mapNotNull { it.await() }.mostFailures().apply {
+                if (!result.isCompleted) {
+                    result.complete(this)
                 }
             }
-            // 确保一个成功返回, 就马上返回
-            // 否则等待所有任务, 拿到最失败的任务返回
-            val result = completableDeferred.await()
-            return@coroutineScope result
         }
+        return result.await()
     }
 
     // 返回最坏的结果

@@ -1,10 +1,12 @@
 package moe.caa.multilogin.velocity.command
 
 import com.velocitypowered.api.command.CommandSource
+import moe.caa.multilogin.velocity.command.sub.WhitelistCommand
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.message.replace
 import moe.caa.multilogin.velocity.util.componentText
 import moe.caa.multilogin.velocity.util.getResource
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
@@ -44,51 +46,56 @@ class CommandHandler(
                         .replace("{permission}", it.exception().permissionResult().permission().permissionString())
                 )
             }
+            registerHandler(CommandParseException::class.java) {
+                it.context().sender().sendMessage(it.exception().msg)
+            }
         }
 
-        initAboutCommand()
-
-        register {
-            literal("reload")
-                .permission(COMMAND_RELOAD)
-                .handler { context ->
-                    plugin.reload()
-                    context.sender().sendMessage(plugin.message.message("command_execute_reload_done"))
-                }
-        }
+        registerAboutCommand()
+        registerReloadCommand()
+        WhitelistCommand(this).register()
     }
 
-    private fun initAboutCommand() {
-        register {
-            literal("about")
-                .permission(COMMAND_ABOUT)
-                .handler { context ->
-                    getResource("builddata").use { inputStream ->
-                        InputStreamReader(inputStream).use { reader ->
-                            Properties().apply {
-                                load(reader)
+    private fun registerReloadCommand() = register {
+        literal("reload")
+            .permission(COMMAND_RELOAD)
+            .handler { context ->
+                plugin.reload()
+                context.sender().sendMessage(plugin.message.message("command_execute_reload_done"))
+            }
+    }
 
-                                context.sender().sendMessage("MultiLogin v${this["Plugin-Version"]}".componentText())
-                                context.sender()
-                                    .sendMessage("Build Datetime: ${this["Build-Datetime"]}".componentText())
-                                context.sender()
-                                    .sendMessage("Build Revision: ${this["Build-Revision"]}".componentText())
-                                context.sender().sendMessage(
-                                    "Source Code: ".componentText().append(
-                                        "[Github]".componentText().style(
-                                            Style.style(TextDecoration.UNDERLINED)
-                                        ).clickEvent(ClickEvent.openUrl("https://github.com/CaaMoe/MultiLogin"))
-                                    )
+    private fun registerAboutCommand() = register {
+        literal("about")
+            .permission(COMMAND_ABOUT)
+            .handler { context ->
+                getResource("builddata").use { inputStream ->
+                    InputStreamReader(inputStream).use { reader ->
+                        Properties().apply {
+                            load(reader)
+
+                            context.sender().sendMessage("MultiLogin v${this["Plugin-Version"]}".componentText())
+                            context.sender()
+                                .sendMessage("Build Datetime: ${this["Build-Datetime"]}".componentText())
+                            context.sender()
+                                .sendMessage("Build Revision: ${this["Build-Revision"]}".componentText())
+                            context.sender().sendMessage(
+                                "Source Code: ".componentText().append(
+                                    "[Github]".componentText().style(
+                                        Style.style(TextDecoration.UNDERLINED)
+                                    ).clickEvent(ClickEvent.openUrl("https://github.com/CaaMoe/MultiLogin"))
                                 )
-                            }
+                            )
                         }
                     }
                 }
-        }
+            }
     }
 
 
-    private fun register(builders: Builder<CommandSource>.() -> Builder<CommandSource>) {
+    fun register(builders: Builder<CommandSource>.() -> Builder<CommandSource>) {
         manager.value.command(builders.invoke(manager.value.commandBuilder("multilogin")))
     }
+
+    class CommandParseException(val msg: Component) : IllegalArgumentException()
 }

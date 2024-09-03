@@ -20,13 +20,12 @@ import moe.caa.multilogin.velocity.util.ser.YggdrasilHasJoinedResponseSerializer
 import java.io.File
 
 abstract class BaseYggdrasilService(
-    plugin: MultiLoginVelocity,
     resourceFile: File,
     baseServiceSetting: BaseServiceSetting,
     private val yggdrasilServiceSetting: YggdrasilServiceSetting,
     private val customYggdrasilServiceSetting: CustomYggdrasilServiceSetting
 ) : BaseService(
-    plugin, resourceFile, baseServiceSetting
+    resourceFile, baseServiceSetting
 ), IYggdrasilService {
     private val httpClient = HttpClient(CIO) {
         install(UserAgent) {
@@ -47,7 +46,7 @@ abstract class BaseYggdrasilService(
             level = LogLevel.INFO
             logger = object : Logger {
                 override fun log(message: String) {
-                    plugin.logDebug(message)
+                    MultiLoginVelocity.instance.logDebug(message)
                 }
             }
         }
@@ -99,7 +98,7 @@ abstract class BaseYggdrasilService(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Throwable) {
-            plugin.logDebug(
+            MultiLoginVelocity.instance.logDebug(
                 "An exception occurred while validating the session, service: ${
                     baseServiceSetting.serviceId
                 }, loginProfile: $loginProfile.", e

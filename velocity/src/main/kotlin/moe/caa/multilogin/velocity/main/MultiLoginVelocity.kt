@@ -40,6 +40,14 @@ class MultiLoginVelocity @Inject constructor(
         config.reload()
     }
 
+    companion object {
+        lateinit var instance: MultiLoginVelocity
+    }
+
+    init {
+        instance = this
+    }
+
     @Subscribe
     fun init(event: ProxyInitializeEvent) {
         try {

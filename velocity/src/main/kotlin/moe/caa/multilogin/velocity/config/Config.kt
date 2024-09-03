@@ -149,17 +149,17 @@ class ConfigHandler(
 
         return when (ServiceType.valueOf((configurationNode.node("service_type").get(String::class.java)?:throw IllegalArgumentException("service_type undefined.")).uppercase())) {
             ServiceType.OFFICIAL -> return OfflineYggdrasilService(
-                plugin, file, baseServiceSetting.value, yggdrasilServiceSetting.value
+                file, baseServiceSetting.value, yggdrasilServiceSetting.value
             )
             ServiceType.BLESSING_SKIN_YGGDRASIL -> return BlessingSkinYggdrasilService(
-                plugin, file, baseServiceSetting.value, yggdrasilServiceSetting.value, blessingSkinYggdrasilServiceSetting.value
+                file, baseServiceSetting.value, yggdrasilServiceSetting.value, blessingSkinYggdrasilServiceSetting.value
             )
 
             ServiceType.CUSTOM_YGGDRASIL -> return OfflineYggdrasilService(
-                    plugin, file, baseServiceSetting.value, yggdrasilServiceSetting.value
+                file, baseServiceSetting.value, yggdrasilServiceSetting.value
                 )
             ServiceType.FLOODGATE -> return OfflineYggdrasilService(
-                plugin, file, baseServiceSetting.value, yggdrasilServiceSetting.value
+                file, baseServiceSetting.value, yggdrasilServiceSetting.value
             )
         }
     }

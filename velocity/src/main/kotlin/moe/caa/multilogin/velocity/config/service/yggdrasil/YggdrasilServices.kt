@@ -1,15 +1,13 @@
 package moe.caa.multilogin.velocity.config.service.yggdrasil
 
-import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import java.io.File
 
 class OfflineYggdrasilService (
-    plugin: MultiLoginVelocity,
     resourceFile: File,
     baseServiceSetting: BaseServiceSetting,
     yggdrasilServiceSetting: YggdrasilServiceSetting
 ): BaseYggdrasilService(
-    plugin, resourceFile, baseServiceSetting,
+    resourceFile, baseServiceSetting,
     yggdrasilServiceSetting, CustomYggdrasilServiceSetting(
         HasJoinedRequestMode.GET, OFFLINE_YGGDRASIL_HAS_JOINED_URL_BYTES,
         linkedMapOf(
@@ -87,13 +85,12 @@ class OfflineYggdrasilService (
 }
 
 class BlessingSkinYggdrasilService (
-    plugin: MultiLoginVelocity,
     resourceFile: File,
     baseServiceSetting: BaseServiceSetting,
     yggdrasilServiceSetting: YggdrasilServiceSetting,
     blessingSkinYggdrasilServiceSetting: BlessingSkinYggdrasilServiceSetting
 ): BaseYggdrasilService(
-    plugin, resourceFile, baseServiceSetting,
+    resourceFile, baseServiceSetting,
     yggdrasilServiceSetting, CustomYggdrasilServiceSetting(
         HasJoinedRequestMode.GET,
         blessingSkinYggdrasilServiceSetting.yggdrasilApiRoot.trim('/').toByteArray()

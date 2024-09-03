@@ -2,7 +2,6 @@ package moe.caa.multilogin.velocity.config.service
 
 import moe.caa.multilogin.api.profile.GameProfile
 import moe.caa.multilogin.velocity.config.ConfigHandler
-import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import java.io.File
 import java.util.*
 
@@ -10,7 +9,6 @@ import java.util.*
  * 表示一个 Service
  */
 abstract class BaseService (
-    val plugin: MultiLoginVelocity,
     val resourceFile: File,
     val baseServiceSetting: BaseServiceSetting
 ) {
