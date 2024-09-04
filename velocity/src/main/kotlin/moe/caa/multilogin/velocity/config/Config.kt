@@ -33,6 +33,9 @@ class ConfigHandler(
     var profileNameSetting: ProfileNameSetting = ProfileNameSetting()
         private set
 
+    var commandSetting: CommandSetting = CommandSetting()
+        private set
+
     /**
      * 重载消息文件
      */
@@ -52,7 +55,13 @@ class ConfigHandler(
         this.profileNameSetting = ProfileNameSetting(
             configResource.node("profile_name_setting").node("auto_cutting").getBoolean(true),
             configResource.node("profile_name_setting").node("auto_increment").getBoolean(true),
+            configResource.node("profile_name_setting").node("allowed_regular").getString("^[a-zA-Z0-9_]+\$").toRegex(),
         )
+        this.commandSetting = CommandSetting(
+            configResource.node("command_setting").node("confirm_await_second").getInt(15),
+            configResource.node("command_setting").node("link_accept_confirm_await_second").getInt(60),
+        )
+
     }
 
     private fun exportExamples(){
@@ -177,4 +186,11 @@ class ConfigHandler(
 data class ProfileNameSetting(
     val autoCutting: Boolean = true,
     val autoIncrement: Boolean = true,
+    val allowedRegular: Regex = "^[a-zA-Z0-9_]+\$".toRegex(),
+)
+
+
+data class CommandSetting(
+    val confirmAwaitSecond: Int = 15,
+    val linkAcceptConfirmAwaitSecond: Int = 60,
 )

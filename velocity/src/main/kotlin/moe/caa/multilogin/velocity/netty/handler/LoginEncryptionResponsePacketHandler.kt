@@ -18,6 +18,7 @@ import moe.caa.multilogin.velocity.auth.yggdrasil.LoginProfile
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Failure
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Success
+import moe.caa.multilogin.velocity.main.InGameData
 import moe.caa.multilogin.velocity.netty.MultiLoginChannelHandler
 import moe.caa.multilogin.velocity.util.access
 import moe.caa.multilogin.velocity.util.enumConstant
@@ -248,7 +249,10 @@ class LoginEncryptionResponsePacketHandler(
                     when (val validateResult =
                         channelHandler.plugin.validateAuthenticationHandler.checkIn(validateContext)) {
                         is ValidateResult.Failure -> inbound.value.disconnect(validateResult.reason)
-                        is ValidateResult.Pass -> loginSucceed(validateContext.resultGameProfile)
+                        is ValidateResult.Pass -> {
+                            InGameData.putReadyLoginData(mcConnection, validateContext.toReadyLoginData(mcConnection))
+                            loginSucceed(validateContext.profileGameProfile)
+                        }
                     }
                 }
             }

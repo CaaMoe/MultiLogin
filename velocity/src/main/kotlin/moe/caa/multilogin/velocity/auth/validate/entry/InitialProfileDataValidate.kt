@@ -7,15 +7,18 @@ import moe.caa.multilogin.velocity.database.ProfileTableV3
 import moe.caa.multilogin.velocity.database.UserDataTableV3
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.message.replace
+import moe.caa.multilogin.velocity.util.logCausedSQLIntegrityConstraintViolationOrThrow
+import org.jetbrains.exposed.exceptions.ExposedSQLException
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.sql.update
 import java.math.BigInteger
-import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
 
 // 初始化 Profile Data
 //
 // 功能: 生成新的档案数据(处理 username 和 uuid 生成)
+//    和, 角色用户名正则检查(劝退和部分)
 //
 class InitialProfileDataValidate(
     val plugin: MultiLoginVelocity
@@ -26,8 +29,8 @@ class InitialProfileDataValidate(
             UserDataTableV3
                 .select(UserDataTableV3.inGameProfileUUID)
                 .where {
-                    UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId
-                    UserDataTableV3.onlineUUID eq validateContext.serviceGameProfile.uuid
+                    UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId and
+                            (UserDataTableV3.onlineUUID eq validateContext.userGameProfile.uuid)
                 }.limit(1).map {
                     it[UserDataTableV3.inGameProfileUUID]
                 }.firstOrNull()
@@ -36,7 +39,7 @@ class InitialProfileDataValidate(
         // 如果, 对应的 profile 不存在, 就创建一个档案出来
         if (profileUUID == null) {
             var generateProfile: GameProfile =
-                validateContext.baseService.generateNewProfile(validateContext.serviceGameProfile)
+                validateContext.baseService.generateNewProfile(validateContext.userGameProfile)
 
             // 如果名字太长
             if (generateProfile.username.length > 16) {
@@ -52,6 +55,15 @@ class InitialProfileDataValidate(
                 }
             }
 
+            // 如果正则不对, failed
+            if (!generateProfile.username.matches(plugin.config.profileNameSetting.allowedRegular)) {
+                return ValidateResult.Failure(
+                    plugin.message.message("validation_failure_reason_profile_name_not_match_regular")
+                        .replace("{profile_name}", generateProfile.username)
+                        .replace("{allowed_regular}",plugin.config.profileNameSetting.allowedRegular)
+                )
+            }
+
             // 把档案插入到数据库中
             while (
                 plugin.database.useDatabase {
@@ -63,7 +75,8 @@ class InitialProfileDataValidate(
                         }
                         // 插入成功中断循环
                         return@useDatabase false
-                    } catch (_: SQLIntegrityConstraintViolationException) {
+                    } catch (e: ExposedSQLException) {
+                        e.logCausedSQLIntegrityConstraintViolationOrThrow()
                     }
                     // insert 失败, 走下面的随机名字
                     return@useDatabase true
@@ -91,9 +104,19 @@ class InitialProfileDataValidate(
                 }
             }
 
+            // 保存映射关系
+            plugin.database.useDatabase {
+                UserDataTableV3.update({
+                    UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId and
+                            (UserDataTableV3.onlineUUID eq validateContext.userGameProfile.uuid)
+                }) {
+                    it[inGameProfileUUID] = generateProfile.uuid
+                }
+            }
+
             // pass
             // 档案生成完毕后直接使用
-            validateContext.resultGameProfile = generateProfile
+            validateContext.profileGameProfile = generateProfile
             return ValidateResult.Pass
         } else {
             // profileID存在
@@ -102,20 +125,20 @@ class InitialProfileDataValidate(
                 ProfileTableV3.select(ProfileTableV3.currentUserNameOriginal).where {
                     ProfileTableV3.id eq profileUUID
                 }.limit(1).map {
-                    validateContext.serviceGameProfile
+                    validateContext.userGameProfile
                         .withUUID(profileUUID)
                         .withName(it[ProfileTableV3.currentUserNameOriginal])
                 }.firstOrNull()
             }
 
             // 表中有记录, 不管了
-            if (databaseProfile != null) {
-                validateContext.resultGameProfile = databaseProfile
+            if (databaseProfile != null && databaseProfile.username.isNotEmpty()) {
+                validateContext.profileGameProfile = databaseProfile
                 return ValidateResult.Pass
             }
 
             // 如果数据库中profile不存在，新建一个profile
-            var generateProfile = validateContext.baseService.generateNewProfile(validateContext.serviceGameProfile)
+            var generateProfile = validateContext.baseService.generateNewProfile(validateContext.userGameProfile)
             // 指定 profile UUID
             generateProfile = generateProfile.withUUID(profileUUID)
 
@@ -134,14 +157,16 @@ class InitialProfileDataValidate(
             while (
                 plugin.database.useDatabase {
                     try {
-                        ProfileTableV3.upsert {
-                            it[id] = generateProfile.uuid
-                            it[currentUserNameOriginal] = generateProfile.username
+                        ProfileTableV3.update({
+                            ProfileTableV3.id eq generateProfile.uuid
+                        }) {
                             it[currentUserNameLowerCase] = generateProfile.username.lowercase()
+                            it[currentUserNameOriginal] = generateProfile.username
                         }
                         // 更新名字
                         return@useDatabase false
-                    } catch (_: SQLIntegrityConstraintViolationException) {
+                    } catch (e: ExposedSQLException) {
+                        e.logCausedSQLIntegrityConstraintViolationOrThrow()
                     }
                     // upsert 失败, 随机
                     return@useDatabase true
@@ -161,6 +186,7 @@ class InitialProfileDataValidate(
                 }
             }
 
+            validateContext.profileGameProfile = generateProfile
             return ValidateResult.Pass
         }
     }
@@ -176,6 +202,7 @@ class InitialProfileDataValidate(
                 }.isNotEmpty()) {
 
                 newName = newName.incrementString()
+                MultiLoginVelocity.instance.logDebug("increment name: $newName")
             }
         }
         return newName
@@ -187,12 +214,13 @@ class InitialProfileDataValidate(
         plugin.database.useDatabase {
             // 如果uuid重复了, 换一个
             while (ProfileTableV3.select(ProfileTableV3.id).where {
-                    ProfileTableV3.id eq uuid
+                    ProfileTableV3.id eq newUUID
                 }.map {
                     it[ProfileTableV3.id]
                 }.isNotEmpty()) {
 
                 newUUID = UUID.randomUUID()
+                MultiLoginVelocity.instance.logDebug("random uuid: $newUUID")
             }
         }
         return newUUID

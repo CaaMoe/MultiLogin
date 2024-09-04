@@ -1,9 +1,20 @@
 package moe.caa.multilogin.velocity.util
 
+import com.mojang.brigadier.arguments.ArgumentType
+import com.mojang.brigadier.builder.ArgumentBuilder
+import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.builder.RequiredArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
+import com.velocitypowered.api.command.CommandSource
+import com.velocitypowered.api.command.VelocityBrigadierMessage
+import com.velocitypowered.api.proxy.Player
+import moe.caa.multilogin.velocity.main.InGameData
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import net.kyori.adventure.text.Component
 import java.io.File
 import java.lang.reflect.AccessibleObject
+import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
 
 
@@ -63,4 +74,91 @@ fun String.toUUIDOrNull(): UUID? {
     } catch (ignored: java.lang.Exception) {
     }
     return null
+}
+
+fun Throwable.logCausedSQLIntegrityConstraintViolationOrThrow(throwable: Throwable = this) {
+    if (cause !is SQLIntegrityConstraintViolationException) {
+        throw throwable
+    }
+    MultiLoginVelocity.instance.logDebug(this.message, this)
+}
+
+fun <T : ArgumentBuilder<CommandSource, T>> ArgumentBuilder<CommandSource, T>.handler(handle: CommandContext<CommandSource>.() -> Unit): ArgumentBuilder<CommandSource, T> {
+    executes {
+        handle.invoke(it)
+        return@executes 0
+    }
+    return this
+}
+
+fun <T : ArgumentBuilder<CommandSource, T>> ArgumentBuilder<CommandSource, T>.permission(
+    permission: String
+): ArgumentBuilder<CommandSource, T> {
+    requires {
+        it.hasPermission(permission)
+    }
+    return this
+}
+
+fun ArgumentBuilder<CommandSource, *>.thenLiteral(
+    literal: String,
+    literalBuilder: ArgumentBuilder<CommandSource, *>.() -> Unit
+): ArgumentBuilder<*, *> {
+
+    val builder = LiteralArgumentBuilder.literal<CommandSource>(literal)
+    literalBuilder.invoke(builder)
+
+    return this.then(builder)
+}
+
+fun ArgumentBuilder<CommandSource, *>.thenArgument(
+    argument: String,
+    argumentType: ArgumentType<*>,
+    argumentBuilder: ArgumentBuilder<CommandSource, *>.() -> Unit
+): ArgumentBuilder<*, *> {
+
+    val builder: ArgumentBuilder<CommandSource, *> = RequiredArgumentBuilder.argument(argument, argumentType)
+    argumentBuilder.invoke(builder)
+
+    return this.then(builder)
+}
+
+fun ArgumentBuilder<CommandSource, *>.thenArgumentOptional(
+    argument: String,
+    argumentType: ArgumentType<*>,
+    argumentBuilder: ArgumentBuilder<CommandSource, *>.() -> Unit
+): ArgumentBuilder<*, *> {
+
+    val builder: ArgumentBuilder<CommandSource, *> = RequiredArgumentBuilder.argument(argument, argumentType)
+    argumentBuilder.invoke(builder)
+    argumentBuilder.invoke(this)
+
+    return this.then(builder)
+}
+
+fun <V> CommandContext<*>.getArgumentOrNull(name: String, clazz: Class<V>) =
+    if (arguments.containsKey(name)) {
+        getArgument(name, clazz)
+    } else {
+        null
+    }
+
+fun CommandContext<CommandSource>.player(): Player {
+    if (source is Player) {
+        return source as Player
+    }
+
+    throw SimpleCommandExceptionType(
+        VelocityBrigadierMessage.tooltip(
+            MultiLoginVelocity.instance.message.message("command_require_player_execute")
+        )
+    ).create()
+}
+
+fun Player.commandGetUserData(): InGameData.InGameEntry {
+    return InGameData.findByPlayer(this) ?: throw SimpleCommandExceptionType(
+        VelocityBrigadierMessage.tooltip(
+            MultiLoginVelocity.instance.message.message("command_require_player_user_data")
+        )
+    ).create()
 }

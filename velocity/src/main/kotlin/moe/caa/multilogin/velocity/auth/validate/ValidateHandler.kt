@@ -2,6 +2,7 @@ package moe.caa.multilogin.velocity.auth.validate
 
 import moe.caa.multilogin.velocity.auth.validate.entry.InitialProfileDataValidate
 import moe.caa.multilogin.velocity.auth.validate.entry.InitialUserDataValidate
+import moe.caa.multilogin.velocity.auth.validate.entry.ProfileNameRegularValidate
 import moe.caa.multilogin.velocity.auth.validate.entry.WhitelistValidate
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 
@@ -12,6 +13,7 @@ class ValidateHandler(
         InitialUserDataValidate(plugin),
         WhitelistValidate(plugin),
         InitialProfileDataValidate(plugin),
+        ProfileNameRegularValidate(plugin),
     )
 
 
@@ -22,20 +24,6 @@ class ValidateHandler(
                 is ValidateResult.Pass -> {}
             }
         }
-
-        plugin.logger.info(
-            "${validateContext.serviceGameProfile.username}(uuid: ${
-                validateContext.serviceGameProfile.uuid
-            }) from authentication service ${
-                validateContext.baseService.baseServiceSetting.serviceName
-            }(service id: ${
-                validateContext.baseService.baseServiceSetting.serviceId
-            }) has been authenticated, profile redirected to ${
-                validateContext.resultGameProfile.username
-            }(uuid: ${
-                validateContext.resultGameProfile.uuid
-            })"
-        )
         return ValidateResult.Pass
     }
 }

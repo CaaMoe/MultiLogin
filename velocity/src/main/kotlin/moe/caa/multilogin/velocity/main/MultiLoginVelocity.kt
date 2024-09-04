@@ -9,6 +9,9 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.proxy.VelocityServer
 import com.velocitypowered.proxy.config.PlayerInfoForwarding
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.pool.HikariPool
 import moe.caa.multilogin.velocity.auth.validate.ValidateHandler
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationHandler
 import moe.caa.multilogin.velocity.command.CommandHandler
@@ -17,6 +20,9 @@ import moe.caa.multilogin.velocity.database.DatabaseHandler
 import moe.caa.multilogin.velocity.inject.VelocityServerChannelInitializerInjector
 import moe.caa.multilogin.velocity.message.Message
 import moe.caa.multilogin.velocity.netty.handler.LoginEncryptionResponsePacketHandler
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.config.Configurator
+import org.jetbrains.exposed.sql.exposedLogger
 import org.slf4j.Logger
 import java.nio.file.Path
 
@@ -31,6 +37,7 @@ class MultiLoginVelocity @Inject constructor(
     val message: Message = Message(this)
     val config: ConfigHandler = ConfigHandler(this)
     val database: DatabaseHandler = DatabaseHandler(this)
+    val command = CommandHandler(this)
 
     val yggdrasilAuthenticationHandler = YggdrasilAuthenticationHandler(this)
     val validateAuthenticationHandler = ValidateHandler(this)
@@ -46,6 +53,16 @@ class MultiLoginVelocity @Inject constructor(
 
     init {
         instance = this
+
+        // 鬼叫禁止...
+        for (item in setOf(
+            exposedLogger.name,
+            HikariDataSource::class.java.name,
+            HikariPool::class.java.name,
+            HikariConfig::class.java.name,
+        )) {
+            Configurator.setLevel(item, Level.OFF)
+        }
     }
 
     @Subscribe
@@ -61,7 +78,7 @@ class MultiLoginVelocity @Inject constructor(
 
             message.init()
             config.init()
-            CommandHandler(this).init()
+            command.init()
             database.init(config.configResource.node("database", "data_source"))
 
             logger.info(
@@ -98,9 +115,11 @@ class MultiLoginVelocity @Inject constructor(
     private fun inject() {
         VelocityServerChannelInitializerInjector(this).inject()
         LoginEncryptionResponsePacketHandler.Companion
+
+        proxyServer.eventManager.register(this, InGameData)
     }
 
-    fun logDebug(message: String, t: Throwable? = null) = if (config.debug) {
+    fun logDebug(message: String?, t: Throwable? = null) = if (config.debug) {
         logger.info("[DEBUG] $message", t)
     } else {
         logger.debug(message, t)

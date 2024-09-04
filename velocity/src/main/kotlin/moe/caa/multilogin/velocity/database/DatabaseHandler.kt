@@ -18,6 +18,7 @@ class DatabaseHandler(
     private lateinit var dataSource: HikariDataSource
     private lateinit var database: Database
 
+
     fun init(configurationNode: ConfigurationNode) {
         dataSource = HikariDataSource(readHikariConfig(configurationNode))
         database = Database.connect(dataSource)
@@ -83,4 +84,6 @@ class DatabaseHandler(
             }
         }
     }
+
+
 }

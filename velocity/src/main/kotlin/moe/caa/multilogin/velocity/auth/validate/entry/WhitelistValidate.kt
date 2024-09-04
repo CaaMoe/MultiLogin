@@ -6,7 +6,7 @@ import moe.caa.multilogin.velocity.database.CacheWhitelistTableV2
 import moe.caa.multilogin.velocity.database.UserDataTableV3
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.inList
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 // 校验白名单
 class WhitelistValidate(
@@ -14,35 +14,20 @@ class WhitelistValidate(
 ) : Validate {
     override fun checkIn(validateContext: ValidateContext): ValidateResult {
         // 消耗白名单
-        val findCacheWhitelists = plugin.database.useDatabase {
-            CacheWhitelistTableV2.select(
-                CacheWhitelistTableV2.id
-            ).where {
-                // 数据库名字小写 == 当前名字小写 and (数据库serviceId字段为空 or 数据库serviceId == 当前serviceId)
-                (CacheWhitelistTableV2.target.lowerCase() eq validateContext.serviceGameProfile.username.lowercase()) and
-                        (CacheWhitelistTableV2.serviceId.isNull() or (CacheWhitelistTableV2.serviceId eq validateContext.baseService.baseServiceSetting.serviceId))
-            }.map {
-                it[CacheWhitelistTableV2.id].value
-            }
-        }
-
-        // 查询记录不为空
-        if (findCacheWhitelists.isNotEmpty()) {
-            plugin.database.useDatabase {
+        plugin.database.useDatabase {
+            if (CacheWhitelistTableV2.deleteWhere {
+                    // 数据库名字小写 == 当前名字小写 and (数据库serviceId字段为空 or 数据库serviceId == 当前serviceId)
+                    (target.lowerCase() eq validateContext.userGameProfile.username.lowercase()) and
+                            (serviceId eq -1 or (serviceId eq validateContext.baseService.baseServiceSetting.serviceId))
+                } > 0) {
                 // 更新白名单为 true
                 UserDataTableV3.update({
-                    UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId
-                    UserDataTableV3.onlineUUID eq validateContext.serviceGameProfile.uuid
+                    UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId and
+                            (UserDataTableV3.onlineUUID eq validateContext.userGameProfile.uuid)
                 }) {
                     it[whitelist] = true
                 }
-
-                // 然后删掉
-                CacheWhitelistTableV2.deleteWhere { id inList findCacheWhitelists }
             }
-
-            // 直接给过
-            return ValidateResult.Pass
         }
 
         if (validateContext.baseService.baseServiceSetting.whitelist) {
@@ -50,8 +35,8 @@ class WhitelistValidate(
                 UserDataTableV3
                     .select(UserDataTableV3.whitelist)
                     .where {
-                        UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId
-                        UserDataTableV3.onlineUUID eq validateContext.serviceGameProfile.uuid
+                        UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId and
+                                (UserDataTableV3.onlineUUID eq validateContext.userGameProfile.uuid)
                     }.limit(1).map {
                         it[UserDataTableV3.whitelist]
                     }.firstOrNull() ?: false

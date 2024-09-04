@@ -22,7 +22,7 @@ abstract class BaseService (
     // 根据 service 结果生成新的 profile
     fun generateNewProfile(serviceResult: GameProfile) = GameProfile(
         baseServiceSetting.profileUUIDGenerateType.generateUUID(serviceResult),
-        baseServiceSetting.profileNameGenerateFormat.replace("{name}", serviceResult.username),
+        baseServiceSetting.profileNameGenerateFormat.replace("{username}", serviceResult.username),
         serviceResult.properties
     )
 

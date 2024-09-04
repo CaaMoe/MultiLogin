@@ -1,4 +1,29 @@
 package moe.caa.multilogin.velocity.command
 
-const val COMMAND_ABOUT = "multilogin.command.about"
-const val COMMAND_RELOAD = "multilogin.command.reload"
+const val COMMAND_BASE = "multilogin.command"
+const val COMMAND_ABOUT = "$COMMAND_BASE.about"
+const val COMMAND_RELOAD = "$COMMAND_BASE.reload"
+const val COMMAND_ME = "$COMMAND_BASE.me"
+const val COMMAND_LIST = "$COMMAND_BASE.list"
+const val COMMAND_INFO = "$COMMAND_BASE.info"
+const val COMMAND_CONFIRM = "$COMMAND_BASE.confirm"
+
+const val COMMAND_WHITELIST_BASE = "$COMMAND_BASE.whitelist"
+const val COMMAND_WHITELIST_ADD_CACHE = "$COMMAND_WHITELIST_BASE.add.cache"
+const val COMMAND_WHITELIST_ADD_SPECIFIC = "$COMMAND_WHITELIST_BASE.add.specific"
+const val COMMAND_WHITELIST_REMOVE_CACHE = "$COMMAND_WHITELIST_BASE.remove.cache"
+const val COMMAND_WHITELIST_REMOVE_SPECIFIC = "$COMMAND_WHITELIST_BASE.remove.specific"
+const val COMMAND_WHITELIST_CLEAR_CACHE = "$COMMAND_WHITELIST_BASE.remove.clear.cache"
+
+const val COMMAND_LINK_BASE = "$COMMAND_BASE.link"
+const val COMMAND_LINK_TO = "$COMMAND_LINK_BASE.to"
+const val COMMAND_LINK_ACCEPT = "$COMMAND_LINK_BASE.accept"
+
+const val COMMAND_USER_BASE = "$COMMAND_BASE.user"
+const val COMMAND_USER_INFO = "$COMMAND_USER_BASE.info"
+const val COMMAND_USER_SET_PROFILE = "$COMMAND_USER_BASE.ser.profile"
+
+const val COMMAND_PROFILE_BASE = "$COMMAND_BASE.profile"
+const val COMMAND_PROFILE_INFO = "$COMMAND_PROFILE_BASE.info"
+const val COMMAND_PROFILE_RENAME = "$COMMAND_PROFILE_BASE.rename"
+const val COMMAND_PROFILE_CREATE = "$COMMAND_PROFILE_BASE.create"

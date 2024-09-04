@@ -27,9 +27,6 @@ dependencies {
     implementation(libs.ktorclientcore)
     implementation(libs.ktorclientlogging)
     implementation(libs.ktorclientcio)
-
-    implementation(libs.cloudcore)
-    implementation(libs.cloudveloity)
 }
 
 val buildData: Map<String, String> by rootProject.extra

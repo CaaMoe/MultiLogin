@@ -4,7 +4,8 @@ import moe.caa.multilogin.velocity.auth.validate.ValidateContext
 import moe.caa.multilogin.velocity.auth.validate.ValidateResult
 import moe.caa.multilogin.velocity.database.UserDataTableV3
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
-import org.jetbrains.exposed.sql.upsert
+import org.jetbrains.exposed.sql.insertIgnore
+import org.jetbrains.exposed.sql.update
 
 // 初始化 UserData 数据
 //
@@ -15,10 +16,17 @@ class InitialUserDataValidate(
 ) : Validate {
     override fun checkIn(validateContext: ValidateContext): ValidateResult {
         plugin.database.useDatabase {
-            UserDataTableV3.upsert {
+            UserDataTableV3.insertIgnore {
                 it[serviceId] = validateContext.baseService.baseServiceSetting.serviceId
-                it[onlineUUID] = validateContext.serviceGameProfile.uuid
-                it[onlineName] = validateContext.serviceGameProfile.username
+                it[onlineUUID] = validateContext.userGameProfile.uuid
+                it[onlineName] = validateContext.userGameProfile.username
+            }
+
+            UserDataTableV3.update({
+                UserDataTableV3.serviceId eq validateContext.baseService.baseServiceSetting.serviceId
+                UserDataTableV3.onlineUUID eq validateContext.userGameProfile.uuid
+            }) {
+                it[onlineName] = validateContext.userGameProfile.username
             }
         }
         return ValidateResult.Pass
