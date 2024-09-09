@@ -9,7 +9,6 @@ import moe.caa.multilogin.velocity.command.parser.UserParser
 import moe.caa.multilogin.velocity.config.service.BaseService
 import moe.caa.multilogin.velocity.database.CacheWhitelistTableV2
 import moe.caa.multilogin.velocity.database.UserDataTableV3
-import moe.caa.multilogin.velocity.main.InGameData
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.message.replace
 import moe.caa.multilogin.velocity.util.*
@@ -17,50 +16,52 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class WhitelistCommand(
+class UserWhitelistCommand(
     private val handler: CommandHandler
 ) {
     fun register() {
         handler.register {
-            thenLiteral("whitelist") {
-                permission(COMMAND_WHITELIST_BASE)
-                thenLiteral("addCache") {
-                    permission(COMMAND_WHITELIST_ADD_CACHE)
-                    thenArgumentOptional("service", ServiceParser) {
-                        thenArgument("name_or_uuid", StringParser) {
-                            handler { handleAddCache(this) }
+            thenLiteral("user") {
+                thenLiteral("whitelist") {
+                    permission(COMMAND_WHITELIST_BASE)
+                    thenLiteral("addCache") {
+                        permission(COMMAND_WHITELIST_ADD_CACHE)
+                        thenArgumentOptional("service", ServiceParser) {
+                            thenArgument("name_or_uuid", StringParser) {
+                                handler { handleAddCache(this) }
+                            }
                         }
                     }
-                }
-                thenLiteral("addSpecific") {
-                    permission(COMMAND_WHITELIST_ADD_SPECIFIC)
-                    thenArgument("user", UserParser) {
-                        handler { handleAddSpecific(this) }
-                    }
-                }
-                thenLiteral("removeCache") {
-                    permission(COMMAND_WHITELIST_REMOVE_CACHE)
-                    thenArgumentOptional("service", ServiceParser) {
-                        thenArgument("name_or_uuid", StringParser) {
-                            handler { handleRemoveCache(this) }
+                    thenLiteral("addSpecific") {
+                        permission(COMMAND_WHITELIST_ADD_SPECIFIC)
+                        thenArgument("user", UserParser) {
+                            handler { handleAddSpecific(this) }
                         }
                     }
-                }
-                thenLiteral("removeSpecific") {
-                    permission(COMMAND_WHITELIST_REMOVE_SPECIFIC)
-                    thenArgument("user", UserParser) {
-                        handler { handleRemoveSpecific(this) }
+                    thenLiteral("removeCache") {
+                        permission(COMMAND_WHITELIST_REMOVE_CACHE)
+                        thenArgumentOptional("service", ServiceParser) {
+                            thenArgument("name_or_uuid", StringParser) {
+                                handler { handleRemoveCache(this) }
+                            }
+                        }
                     }
-                }
-                thenLiteral("clearCache") {
-                    permission(COMMAND_WHITELIST_CLEAR_CACHE)
-                    handler {
-                        handler.needConfirm(
-                            source, MultiLoginVelocity.instance.message.message(
-                                "command_execute_whitelist_clear_cache_confirm_aim"
-                            )
-                        ) {
-                            handleClearCache(this)
+                    thenLiteral("removeSpecific") {
+                        permission(COMMAND_WHITELIST_REMOVE_SPECIFIC)
+                        thenArgument("user", UserParser) {
+                            handler { handleRemoveSpecific(this) }
+                        }
+                    }
+                    thenLiteral("clearCache") {
+                        permission(COMMAND_WHITELIST_CLEAR_CACHE)
+                        handler {
+                            handler.needConfirm(
+                                source, MultiLoginVelocity.instance.message.message(
+                                    "command_execute_whitelist_clear_cache_confirm_aim"
+                                )
+                            ) {
+                                handleClearCache(this)
+                            }
                         }
                     }
                 }
@@ -100,9 +101,9 @@ class WhitelistCommand(
         }
 
         if (user.service.baseServiceSetting.whitelist) {
-            InGameData.findByUser(
+            MultiLoginVelocity.instance.findOnlineDataByUser(
                 user.service.baseServiceSetting.serviceId, user.onlineUUID
-            )?.connectedPlayer?.disconnect(
+            )?.lazyPlayer?.value?.disconnect(
                 MultiLoginVelocity.instance.message.message("command_execute_whitelist_remove_specified_success_kick_message")
             )
         }

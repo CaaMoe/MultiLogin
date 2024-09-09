@@ -1,9 +1,8 @@
 package moe.caa.multilogin.velocity.auth.validate
 
-import com.velocitypowered.proxy.connection.MinecraftConnection
 import moe.caa.multilogin.api.profile.GameProfile
+import moe.caa.multilogin.velocity.auth.OnlineGameData
 import moe.caa.multilogin.velocity.config.service.BaseService
-import moe.caa.multilogin.velocity.main.InGameData
 
 data class ValidateContext(
     val baseService: BaseService,
@@ -11,8 +10,7 @@ data class ValidateContext(
 ) {
     lateinit var profileGameProfile: GameProfile
 
-    fun toReadyLoginData(connection: MinecraftConnection) = InGameData.ReadyLoginEntry(
-        connection,
+    fun toGameData() = OnlineGameData(
         userGameProfile,
         baseService,
         profileGameProfile

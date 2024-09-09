@@ -4,12 +4,13 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.velocitypowered.api.command.BrigadierCommand
 import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.proxy.Player
+import moe.caa.multilogin.velocity.auth.GameData
+import moe.caa.multilogin.velocity.auth.OfflineGameData
+import moe.caa.multilogin.velocity.auth.OnlineGameData
 import moe.caa.multilogin.velocity.command.parser.PlayerParser
 import moe.caa.multilogin.velocity.command.sub.LinkCommand
 import moe.caa.multilogin.velocity.command.sub.ProfileCommand
 import moe.caa.multilogin.velocity.command.sub.UserCommand
-import moe.caa.multilogin.velocity.command.sub.WhitelistCommand
-import moe.caa.multilogin.velocity.main.InGameData
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.message.replace
 import moe.caa.multilogin.velocity.util.*
@@ -36,7 +37,6 @@ class CommandHandler(
         registerConfirmCommand()
         registerInfoCommand()
         registerListCommand()
-        WhitelistCommand(this).register()
         LinkCommand(this).register()
         UserCommand(this).register()
         ProfileCommand(this).register()
@@ -68,34 +68,17 @@ class CommandHandler(
         thenLiteral("me") {
             permission(COMMAND_ME)
             handler {
-                val data = InGameData.findByPlayer(player())
-                if (data == null) {
-                    source.sendMessage(
-                        plugin.message.message("command_execute_me_unknown")
-                            .replace("{profile_uuid}", player().uniqueId)
-                            .replace("{profile_name}", player().username)
-                    )
-                    return@handler
-                } else {
-                    handleInfoCommand(source, data)
-                }
+                handleInfoCommand(source, true, player.gameProfile, player.gameData)
+
             }
         }
         thenLiteral("info") {
             permission(COMMAND_INFO)
             thenArgument("target", PlayerParser) {
                 handler {
-                    val data = InGameData.findByPlayer(getArgument("target", Player::class.java))
-                    if (data == null) {
-                        source.sendMessage(
-                            plugin.message.message("command_execute_info_unknown")
-                                .replace("{profile_uuid}", player().uniqueId)
-                                .replace("{profile_name}", player().username)
-                        )
-                        return@handler
-                    } else {
-                        handleInfoCommand(source, data)
-                    }
+                    val player = getArgument("target", Player::class.java)
+
+                    handleInfoCommand(source, player == source, player.gameProfile, player.gameData)
                 }
             }
         }
@@ -133,22 +116,69 @@ class CommandHandler(
         builders.invoke(command)
     }
 
-    private fun handleInfoCommand(sender: CommandSource, data: InGameData.InGameEntry) {
-        sender.sendMessage(
-            plugin.message.message(
-                if (sender == data.connectedPlayer) {
-                    "command_execute_info_self"
+    private fun handleInfoCommand(
+        sender: CommandSource,
+        self: Boolean,
+        inGameProfile: com.velocitypowered.api.util.GameProfile,
+        data: GameData?
+    ) {
+        if (data == null || (data is OfflineGameData && !data.verified)) {
+            if (self) {
+                sender.sendMessage(
+                    plugin.message.message("command_execute_info_self_offline_no_verified")
+                        .replace("{profile_uuid}", inGameProfile.id)
+                        .replace("{profile_name}", inGameProfile.name)
+                )
+            } else {
+                sender.sendMessage(
+                    plugin.message.message("command_execute_info_target_offline_no_verified")
+                        .replace("{profile_uuid}", inGameProfile.id)
+                        .replace("{profile_name}", inGameProfile.name)
+                )
+            }
+            return
+        }
+        when (data) {
+            is OfflineGameData -> {
+                if (self) {
+                    sender.sendMessage(
+                        plugin.message.message("command_execute_info_self_offline")
+                            .replace("{profile_uuid}", inGameProfile.id)
+                            .replace("{profile_name}", inGameProfile.name)
+                    )
                 } else {
-                    "command_execute_info_target"
+                    sender.sendMessage(
+                        plugin.message.message("command_execute_info_target_offline")
+                            .replace("{profile_uuid}", inGameProfile.id)
+                            .replace("{profile_name}", inGameProfile.name)
+                    )
                 }
-            )
-                .replace("{profile_uuid}", data.inGameProfile.uuid)
-                .replace("{profile_name}", data.inGameProfile.username)
-                .replace("{service_id}", data.service.baseServiceSetting.serviceId)
-                .replace("{service_name}", data.service.baseServiceSetting.serviceName)
-                .replace("{user_name}", data.userProfile.username)
-                .replace("{user_uuid}", data.userProfile.uuid)
-        )
+            }
+
+            is OnlineGameData -> {
+                if (self) {
+                    sender.sendMessage(
+                        plugin.message.message("command_execute_info_self_online")
+                            .replace("{profile_uuid}", data.inGameProfile.uuid)
+                            .replace("{profile_name}", data.inGameProfile.username)
+                            .replace("{service_id}", data.service.baseServiceSetting.serviceId)
+                            .replace("{service_name}", data.service.baseServiceSetting.serviceName)
+                            .replace("{user_name}", data.userProfile.username)
+                            .replace("{user_uuid}", data.userProfile.uuid)
+                    )
+                } else {
+                    sender.sendMessage(
+                        plugin.message.message("command_execute_info_target_online")
+                            .replace("{profile_uuid}", data.inGameProfile.uuid)
+                            .replace("{profile_name}", data.inGameProfile.username)
+                            .replace("{service_id}", data.service.baseServiceSetting.serviceId)
+                            .replace("{service_name}", data.service.baseServiceSetting.serviceName)
+                            .replace("{user_name}", data.userProfile.username)
+                            .replace("{user_uuid}", data.userProfile.uuid)
+                    )
+                }
+            }
+        }
     }
 
 

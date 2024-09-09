@@ -12,19 +12,24 @@ import com.velocitypowered.proxy.config.PlayerInfoForwarding
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.pool.HikariPool
+import moe.caa.multilogin.velocity.auth.OnlineGameData
 import moe.caa.multilogin.velocity.auth.validate.ValidateHandler
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationHandler
 import moe.caa.multilogin.velocity.command.CommandHandler
 import moe.caa.multilogin.velocity.config.ConfigHandler
 import moe.caa.multilogin.velocity.database.DatabaseHandler
 import moe.caa.multilogin.velocity.inject.VelocityServerChannelInitializerInjector
+import moe.caa.multilogin.velocity.listener.PlayerLoginListener
 import moe.caa.multilogin.velocity.message.Message
 import moe.caa.multilogin.velocity.netty.handler.LoginEncryptionResponsePacketHandler
+import moe.caa.multilogin.velocity.offline.OfflineLoginHandler
+import moe.caa.multilogin.velocity.util.gameData
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.jetbrains.exposed.sql.exposedLogger
 import org.slf4j.Logger
 import java.nio.file.Path
+import java.util.*
 
 @Plugin(id = "multilogin")
 class MultiLoginVelocity @Inject constructor(
@@ -68,6 +73,7 @@ class MultiLoginVelocity @Inject constructor(
     @Subscribe
     fun init(event: ProxyInitializeEvent) {
         try {
+
             if (!checkEnvironment()) {
                 logger.warn("The proxy will be shut down.")
                 proxyServer.shutdown()
@@ -75,6 +81,9 @@ class MultiLoginVelocity @Inject constructor(
             }
 
             inject()
+
+            PlayerLoginListener.init()
+            OfflineLoginHandler.init()
 
             message.init()
             config.init()
@@ -115,8 +124,6 @@ class MultiLoginVelocity @Inject constructor(
     private fun inject() {
         VelocityServerChannelInitializerInjector(this).inject()
         LoginEncryptionResponsePacketHandler.Companion
-
-        proxyServer.eventManager.register(this, InGameData)
     }
 
     fun logDebug(message: String?, t: Throwable? = null) = if (config.debug) {
@@ -126,4 +133,20 @@ class MultiLoginVelocity @Inject constructor(
     }
 
 
+    fun findOnlineDataByUser(
+        serviceId: Int,
+        userUUID: UUID
+    ): OnlineGameData? {
+        proxyServer.allPlayers.forEach {
+            val data = it.gameData
+            if (data is OnlineGameData) {
+                if (data.userProfile.uuid == userUUID) {
+                    if (data.service.baseServiceSetting.serviceId == serviceId) {
+                        return data
+                    }
+                }
+            }
+        }
+        return null
+    }
 }

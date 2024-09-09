@@ -9,8 +9,13 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.command.VelocityBrigadierMessage
 import com.velocitypowered.api.proxy.Player
-import moe.caa.multilogin.velocity.main.InGameData
+import com.velocitypowered.api.util.GameProfile
+import com.velocitypowered.proxy.connection.client.ConnectedPlayer
+import io.netty.channel.Channel
+import moe.caa.multilogin.velocity.auth.GameData
+import moe.caa.multilogin.velocity.inject.VelocityServerChannelInitializerInjector
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
+import moe.caa.multilogin.velocity.netty.ChannelInboundHandler
 import net.kyori.adventure.text.Component
 import java.io.File
 import java.lang.reflect.AccessibleObject
@@ -143,22 +148,32 @@ fun <V> CommandContext<*>.getArgumentOrNull(name: String, clazz: Class<V>) =
         null
     }
 
-fun CommandContext<CommandSource>.player(): Player {
-    if (source is Player) {
-        return source as Player
-    }
-
-    throw SimpleCommandExceptionType(
+val CommandContext<CommandSource>.player: Player
+    get() = source as? Player ?: throw SimpleCommandExceptionType(
         VelocityBrigadierMessage.tooltip(
             MultiLoginVelocity.instance.message.message("command_require_player_execute")
         )
     ).create()
+
+
+val Player.channel: Channel
+    get() = (this as ConnectedPlayer).connection.channel
+
+
+var Player.gameData: GameData?
+    get() = channel.getMultiLoginInboundHandler().gameData
+    set(value){
+        channel.getMultiLoginInboundHandler().gameData = value
+    }
+
+
+fun Channel.getMultiLoginInboundHandler(): ChannelInboundHandler {
+    return this.pipeline().get(VelocityServerChannelInitializerInjector.MULTI_LOGIN_PACKET_INBOUND_HANDLER_NAME)
+            as ChannelInboundHandler
 }
 
-fun Player.commandGetUserData(): InGameData.InGameEntry {
-    return InGameData.findByPlayer(this) ?: throw SimpleCommandExceptionType(
-        VelocityBrigadierMessage.tooltip(
-            MultiLoginVelocity.instance.message.message("command_require_player_user_data")
-        )
-    ).create()
+fun moe.caa.multilogin.api.profile.GameProfile.toVelocityGameProfile(): GameProfile {
+    return GameProfile(this.uuid, this.username, this.properties.map {
+        GameProfile.Property(it.name, it.value, it.signature)
+    })
 }

@@ -22,19 +22,12 @@ class ConfigHandler(
     private val examplesDirectory: File = File(plugin.dataDirectory.toFile(), "examples")
 
     var configResource: ConfigurationNode = HoconConfigurationLoader.builder().buildAndLoadString("")
-        private set
+    var debug = false
+    var serviceMap = emptyMap<Int, BaseService>()
+    var profileNameSetting = ProfileNameSetting()
+    var commandSetting = CommandSetting()
+    var offlineAuthSetting = OfflineAuthSetting()
 
-    var debug: Boolean = false
-        private set
-
-    var serviceMap: Map<Int, BaseService> = emptyMap()
-        private set
-
-    var profileNameSetting: ProfileNameSetting = ProfileNameSetting()
-        private set
-
-    var commandSetting: CommandSetting = CommandSetting()
-        private set
 
     /**
      * 重载消息文件
@@ -62,6 +55,23 @@ class ConfigHandler(
             configResource.node("command_setting").node("link_accept_confirm_await_second").getInt(60),
         )
 
+        this.offlineAuthSetting = OfflineAuthSetting(
+            configResource.node("offline_auth_setting").node("enable").getBoolean(false),
+            configResource.node("offline_auth_setting").node("bind_hosts").getList(String::class.java, emptyList()),
+            configResource.node("offline_auth_setting").node("bind_plank_server").getString(""),
+            configResource.node("offline_auth_setting").node("auth_success_transfer").getString(""),
+            OfflineAuthSetting.ChooseProfileNameFromHostSetting(
+                configResource.node("offline_auth_setting").node("choose_profile_name_from_host_pattern").node("enable")
+                    .getBoolean(false),
+                configResource.node("offline_auth_setting").node("choose_profile_name_from_host_pattern").node("patterns")
+                    .childrenList().map {
+                        OfflineAuthSetting.ChooseProfileNameFromHostSetting.Pattern(
+                            it.node("starts_with").getString(""),
+                            it.node("ends_with").getString(""),
+                        )
+                    }
+            )
+        )
     }
 
     private fun exportExamples(){
@@ -133,7 +143,8 @@ class ConfigHandler(
 
         val baseServiceSetting = lazy {
             BaseService.BaseServiceSetting(
-                configurationNode.node("service_id").get(Int::class.java) ?: throw IllegalArgumentException("service_id undefined."),
+                configurationNode.node("service_id").get(Int::class.java)
+                    ?: throw IllegalArgumentException("service_id is undefined."),
                 configurationNode.node("service_name").getString("Unnamed"),
                 configurationNode.node("profile_uuid_generate_type").get(BaseService.ProfileUUIDGenerateType::class.java, BaseService.ProfileUUIDGenerateType.SERVICE),
                 configurationNode.node("profile_name_generate_format").getString("{username}"),
@@ -152,11 +163,15 @@ class ConfigHandler(
 
         val blessingSkinYggdrasilServiceSetting = lazy {
             BlessingSkinYggdrasilServiceSetting(
-                configurationNode.node("blessing_skin_yggdrasil_service_setting").node("yggdrasil_api_root").get(String::class.java)?:throw IllegalArgumentException("yggdrasil_api_root undefined."),
+                configurationNode.node("blessing_skin_yggdrasil_service_setting").node("yggdrasil_api_root")
+                    .get(String::class.java) ?: throw IllegalArgumentException("yggdrasil_api_root is undefined."),
             )
         }
 
-        return when (ServiceType.valueOf((configurationNode.node("service_type").get(String::class.java)?:throw IllegalArgumentException("service_type undefined.")).uppercase())) {
+        return when (ServiceType.valueOf(
+            (configurationNode.node("service_type").get(String::class.java)
+                ?: throw IllegalArgumentException("service_type is undefined.")).uppercase()
+        )) {
             ServiceType.OFFICIAL -> return OfflineYggdrasilService(
                 file, baseServiceSetting.value, yggdrasilServiceSetting.value
             )
@@ -194,3 +209,63 @@ data class CommandSetting(
     val confirmAwaitSecond: Int = 15,
     val linkAcceptConfirmAwaitSecond: Int = 60,
 )
+
+data class OfflineAuthSetting(
+    val enable: Boolean = false,
+    val bindHosts: List<String> = emptyList(),
+    val bindPlankServer: String = "",
+    val authSuccessTransfer: String = "",
+    val chooseProfileNameFromHostSetting: ChooseProfileNameFromHostSetting = ChooseProfileNameFromHostSetting(),
+) {
+    init {
+        if (enable) {
+            if (bindHosts.isEmpty()) {
+                throw IllegalArgumentException("bind_host is empty.")
+            }
+            if (bindPlankServer.isEmpty()) {
+                throw IllegalArgumentException("bind_plank_server is undefined.")
+            }
+            if (authSuccessTransfer.isEmpty()) {
+                throw IllegalArgumentException("auth_success_transfer is undefined.")
+            }
+        }
+    }
+
+    data class ChooseProfileNameFromHostSetting(
+        val enable: Boolean = false,
+        val patterns: List<Pattern> = emptyList(),
+    ) {
+        init {
+            if (enable) {
+                if (patterns.isEmpty()) {
+                    throw IllegalArgumentException("patterns is empty.")
+                }
+            }
+        }
+
+        fun chooseNameOrNull(host: String?): String? {
+            patterns.forEach { pattern ->
+                pattern.chooseNameOrNull(host)?.let { return it }
+            }
+            return null
+        }
+
+        data class Pattern(
+            val startsWith: String = "",
+            val endsWith: String = ""
+        ) {
+            fun chooseNameOrNull(host: String?): String? {
+                var result = host ?: return null
+
+                val indexOfStart = result.indexOf(startsWith, ignoreCase = true)
+                if (indexOfStart < 0) return null
+                result = result.replaceRange(indexOfStart, indexOfStart + startsWith.length, "")
+
+                val indexOfEnd = result.lastIndexOf(endsWith, ignoreCase = true)
+                if (indexOfEnd < 0) return null
+                result = result.replaceRange(indexOfEnd, indexOfEnd + endsWith.length, "")
+                return result
+            }
+        }
+    }
+}

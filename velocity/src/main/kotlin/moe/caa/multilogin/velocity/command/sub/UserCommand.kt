@@ -36,6 +36,7 @@ class UserCommand(
                 }
             }
         }
+        UserWhitelistCommand(handler).register()
     }
 
     private fun handleSetProfile(context: CommandContext<CommandSource>) {

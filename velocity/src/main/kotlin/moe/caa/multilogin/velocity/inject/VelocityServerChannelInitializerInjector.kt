@@ -6,7 +6,7 @@ import com.velocitypowered.proxy.network.ServerChannelInitializerHolder
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
-import moe.caa.multilogin.velocity.netty.MultiLoginChannelHandler
+import moe.caa.multilogin.velocity.netty.ChannelInboundHandler
 import moe.caa.multilogin.velocity.util.access
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -20,7 +20,7 @@ class VelocityServerChannelInitializerInjector(
 
     companion object {
         // handler 名字
-        const val MULTI_LOGIN_PACKET_HANDLER_NAME = "multilogin-handler"
+        const val MULTI_LOGIN_PACKET_INBOUND_HANDLER_NAME = "multilogin-inbound-handler"
 
         // io.netty.channel.ChannelInitializer.initChannel(Channel)
         private val INIT_CHANNEL_METHOD_HANDLER: MethodHandle
@@ -60,8 +60,8 @@ class VelocityServerChannelInitializerInjector(
         val connection = channel.pipeline().get("handler") as MinecraftConnection
 
         channel.pipeline().addBefore(
-            "handler", MULTI_LOGIN_PACKET_HANDLER_NAME,
-            MultiLoginChannelHandler(plugin, connection)
+            "handler", MULTI_LOGIN_PACKET_INBOUND_HANDLER_NAME,
+            ChannelInboundHandler(plugin, connection)
         )
     }
 

@@ -26,40 +26,6 @@
     * 权限 `multilogin.command.confirm`
     * 描述: 风险操作确认
 
-## 白名单指令
-
-* `/multilogin whitelist addCache [service] <name_or_uuid>`
-    * 权限: `multilogin.command.whitelist.add.cache`
-    * 描述: `添加缓存白名单, 当缓存白名单匹配到任何一个角色时自动删除并且自动给予当前角色永久白名单`
-    * 参数:
-        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
-        * `[service]` 可选参数, 填写角色来源验证服务id, 不填则匹配所有服务
-
-* `/multilogin whitelist addSpecific <service> <name_or_uuid>`
-    * 权限: `multilogin.command.whitelist.add.specific`
-    * 描述: `给指定角色添加永久白名单`
-    * 参数:
-        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
-        * `<service>` 必填参数, 角色的来源验证服务id
-
-* `/multilogin whitelist removeCache [service] <name_or_uuid>`
-    * 权限: `multilogin.command.whitelist.remove.cache`
-    * 描述: `删除缓存白名单`
-    * 参数:
-        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
-        * `[service]` 可选参数, 填写角色来源验证服务id, 不填则匹配所有服务
-
-* `/multilogin whitelist removeSpecific <service> <name_or_uuid>`
-    * 权限: `multilogin.command.whitelist.remove.specific`
-    * 描述: `删除指定角色的永久白名单`
-    * 参数:
-        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
-        * `<service>` 必填参数, 角色的来源验证服务id
-
-* `/multilogin whitelist clearCache`
-    * 权限: `multilogin.command.whitelist.clear.cache`
-    * 描述: `清空缓存白名单`
-
 ## 档案操作指令
 
 * `/multilogin profile create <profile_name> [profile_uuid]`
@@ -102,7 +68,41 @@
         * `<service_id>` 必填参数, 角色来源服务id
         * `<user_name_or_user_uuid>` 必填参数, 角色名称或者uuid
 
-## LINK相关指令
+### 角色白名单指令
+
+* `/multilogin user whitelist addCache [service] <name_or_uuid>`
+    * 权限: `multilogin.command.user.whitelist.add.cache`
+    * 描述: `添加缓存白名单, 当缓存白名单匹配到任何一个角色时自动删除并且自动给予当前角色永久白名单`
+    * 参数:
+        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
+        * `[service]` 可选参数, 填写角色来源验证服务id, 不填则匹配所有服务
+
+* `/multilogin user whitelist addSpecific <service> <name_or_uuid>`
+    * 权限: `multilogin.command.user.whitelist.add.specific`
+    * 描述: `给指定角色添加永久白名单`
+    * 参数:
+        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
+        * `<service>` 必填参数, 角色的来源验证服务id
+
+* `/multilogin user whitelist removeCache [service] <name_or_uuid>`
+    * 权限: `multilogin.command.user.whitelist.remove.cache`
+    * 描述: `删除缓存白名单`
+    * 参数:
+        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
+        * `[service]` 可选参数, 填写角色来源验证服务id, 不填则匹配所有服务
+
+* `/multilogin user whitelist removeSpecific <service> <name_or_uuid>`
+    * 权限: `multilogin.command.user.whitelist.remove.specific`
+    * 描述: `删除指定角色的永久白名单`
+    * 参数:
+        * `<name_or_uuid>` 必填参数, 可填角色名称或者uuid
+        * `<service>` 必填参数, 角色的来源验证服务id
+
+* `/multilogin user whitelist clearCache`
+    * 权限: `multilogin.command.user.whitelist.clear.cache`
+    * 描述: `清空缓存白名单`
+
+## LINK指令
 
 * `/multilogin link to <profile_name_or_profile_uuid>`
     * 权限: `multilogin.command.link.to`

@@ -5,6 +5,7 @@ import com.velocitypowered.api.command.CommandSource
 import moe.caa.multilogin.velocity.command.*
 import moe.caa.multilogin.velocity.command.parser.ProfileParser
 import moe.caa.multilogin.velocity.command.parser.StringParser
+import moe.caa.multilogin.velocity.command.parser.UUIDParser
 import moe.caa.multilogin.velocity.util.*
 
 class ProfileCommand(
@@ -17,7 +18,7 @@ class ProfileCommand(
                 thenLiteral("create") {
                     permission(COMMAND_PROFILE_CREATE)
                     thenArgument("name", StringParser) {
-                        thenArgumentOptional("uuid", TODO()) {
+                        thenArgumentOptional("uuid", UUIDParser) {
                             handler { handleCreate(this) }
                         }
                     }

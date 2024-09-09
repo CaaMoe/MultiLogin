@@ -2,6 +2,7 @@ package moe.caa.multilogin.velocity.command.sub
 
 import com.mojang.brigadier.context.CommandContext
 import com.velocitypowered.api.command.CommandSource
+import moe.caa.multilogin.velocity.auth.OnlineGameData
 import moe.caa.multilogin.velocity.command.COMMAND_LINK_ACCEPT
 import moe.caa.multilogin.velocity.command.COMMAND_LINK_TO
 import moe.caa.multilogin.velocity.command.CommandHandler
@@ -9,7 +10,6 @@ import moe.caa.multilogin.velocity.command.parser.ProfileParser
 import moe.caa.multilogin.velocity.command.parser.StringParser
 import moe.caa.multilogin.velocity.command.parser.UserParser
 import moe.caa.multilogin.velocity.database.UserDataTableV3
-import moe.caa.multilogin.velocity.main.InGameData
 import moe.caa.multilogin.velocity.main.MultiLoginVelocity
 import moe.caa.multilogin.velocity.message.replace
 import moe.caa.multilogin.velocity.util.*
@@ -49,14 +49,13 @@ class LinkCommand(
     private fun handleLinkAccept(context: CommandContext<CommandSource>) {
         val requester = context.getArgument("user", UserParser.ParseResult::class.java)
         val verifyCode = context.getArgument("verify_code", String::class.java)
-        val profileData = context.player().commandGetUserData()
 
         dataMap.values.removeIf { it.isExpired() }
 
         val linkData = dataMap.values.firstOrNull {
             it.requesterUUID == requester.onlineUUID
                     && it.requestServiceId == requester.service.baseServiceSetting.serviceId
-                    && it.targetProfileUUID == profileData.inGameProfile.uuid
+                    && it.targetProfileUUID == context.player.uniqueId
         }
 
         if (linkData == null) {
@@ -75,8 +74,8 @@ class LinkCommand(
                 .replace("{service_id}", requester.service.baseServiceSetting.serviceId)
                 .replace("{user_uuid}", requester.onlineUUID)
                 .replace("{user_name}", requester.onlineName)
-                .replace("{profile_uuid}", profileData.inGameProfile.uuid)
-                .replace("{profile_name}", profileData.inGameProfile.username)
+                .replace("{profile_uuid}", context.player.uniqueId)
+                .replace("{profile_name}", context.player.username)
         ) {
             MultiLoginVelocity.instance.database.useDatabase {
                 UserDataTableV3.update({
@@ -88,10 +87,12 @@ class LinkCommand(
                 }
             }
 
-            InGameData.findByUser(linkData.requestServiceId, linkData.requesterUUID)?.connectedPlayer?.disconnect(
+            MultiLoginVelocity.instance.findOnlineDataByUser(
+                linkData.requestServiceId, linkData.requesterUUID
+            )?.lazyPlayer?.value?.disconnect(
                 MultiLoginVelocity.instance.message.message("command_execute_link_accepted_kick_msg")
-                    .replace("{profile_uuid}", profileData.inGameProfile.uuid)
-                    .replace("{profile_name}", profileData.inGameProfile.username)
+                    .replace("{profile_uuid}", context.player.uniqueId)
+                    .replace("{profile_name}", context.player.username)
             )
 
             context.source.sendMessage(
@@ -100,16 +101,20 @@ class LinkCommand(
                     .replace("{service_id}", requester.service.baseServiceSetting.serviceId)
                     .replace("{user_uuid}", requester.onlineUUID)
                     .replace("{user_name}", requester.onlineName)
-                    .replace("{profile_uuid}", profileData.inGameProfile.uuid)
-                    .replace("{profile_name}", profileData.inGameProfile.username)
+                    .replace("{profile_uuid}", context.player.uniqueId)
+                    .replace("{profile_name}", context.player.username)
             )
         }
     }
 
     private fun handleLinkTo(context: CommandContext<CommandSource>) {
-        val userData = context.player().commandGetUserData()
+        val userData = context.player.gameData
         val parseResult = context.getArgument("profile", ProfileParser.ParseResult::class.java)
 
+        if (userData == null || userData !is OnlineGameData) {
+            context.source.sendMessage(handler.plugin.message.message("command_execute_link_to_no_user_data"))
+            return
+        }
         if (userData.inGameProfile.uuid.equals(parseResult.profileName)) {
             context.source.sendMessage(
                 handler.plugin.message.message("command_execute_link_to_nothing")

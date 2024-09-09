@@ -18,10 +18,10 @@ import moe.caa.multilogin.velocity.auth.yggdrasil.LoginProfile
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Failure
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationResult.Success
-import moe.caa.multilogin.velocity.main.InGameData
-import moe.caa.multilogin.velocity.netty.MultiLoginChannelHandler
+import moe.caa.multilogin.velocity.netty.ChannelInboundHandler
 import moe.caa.multilogin.velocity.util.access
 import moe.caa.multilogin.velocity.util.enumConstant
+import moe.caa.multilogin.velocity.util.toVelocityGameProfile
 import net.kyori.adventure.text.Component
 import java.lang.invoke.MethodHandle
 import java.lang.invoke.MethodHandles
@@ -32,7 +32,7 @@ import java.util.concurrent.Callable
 
 class LoginEncryptionResponsePacketHandler(
     private val loginSessionHandler: InitialLoginSessionHandler,
-    private val channelHandler: MultiLoginChannelHandler
+    private val channelHandler: ChannelInboundHandler
 ) {
     companion object {
         private val LOGIN_PACKET_EXPECTED: Any
@@ -209,9 +209,7 @@ class LoginEncryptionResponsePacketHandler(
                 StateRegistry.LOGIN, AUTH_SESSION_HANDLER_CONSTRUCTOR.invoke(
                     server,
                     inbound.value,
-                    GameProfile(profile.uuid, profile.username, profile.properties.map {
-                        GameProfile.Property(it.name, it.value, it.signature)
-                    }),
+                    profile.toVelocityGameProfile(),
                     true
                 ) as AuthSessionHandler
             )
@@ -250,7 +248,7 @@ class LoginEncryptionResponsePacketHandler(
                         channelHandler.plugin.validateAuthenticationHandler.checkIn(validateContext)) {
                         is ValidateResult.Failure -> inbound.value.disconnect(validateResult.reason)
                         is ValidateResult.Pass -> {
-                            InGameData.putReadyLoginData(mcConnection, validateContext.toReadyLoginData(mcConnection))
+                            channelHandler.gameData = validateContext.toGameData()
                             loginSucceed(validateContext.profileGameProfile)
                         }
                     }
