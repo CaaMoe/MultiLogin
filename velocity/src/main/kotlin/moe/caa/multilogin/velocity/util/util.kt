@@ -19,6 +19,8 @@ import moe.caa.multilogin.velocity.netty.ChannelInboundHandler
 import net.kyori.adventure.text.Component
 import java.io.File
 import java.lang.reflect.AccessibleObject
+import java.security.DigestInputStream
+import java.security.MessageDigest
 import java.sql.SQLIntegrityConstraintViolationException
 import java.util.*
 
@@ -49,6 +51,23 @@ fun saveDefaultResource(folder: File, resource: String, cover: Boolean = false):
     return file
 }
 
+fun File.md5Digest(): ByteArray {
+    val md = MessageDigest.getInstance("MD5")
+    DigestInputStream(inputStream(), md).use {
+        val buf = ByteArray(1024)
+        while (it.read(buf) != -1) {}
+        it.close()
+    }
+    return md.digest()
+}
+
+fun String.hexToByteArray(): ByteArray {
+    val data = ByteArray(length / 2)
+    for (i in indices step 2) {
+        data[i / 2] = ((Character.digit(this[i], 16) shl 4) + Character.digit(this[i + 1], 16)).toByte()
+    }
+    return data
+}
 
 fun <T : AccessibleObject> T.access(): T {
     isAccessible = true

@@ -1,0 +1,3 @@
+# database_load_driver_mysql
+com.mysql:mysql-connector-j:9.0.0
+
