@@ -26,7 +26,6 @@ dependencies {
     implementation(libs.exposedjdbc)
     implementation(libs.exposedjavatime)
     implementation(libs.exposedkotlindatetime)
-    implementation(libs.hikaricp)
     implementation(libs.mysql)
 
     implementation(libs.ktorclientcore)

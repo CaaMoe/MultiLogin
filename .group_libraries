@@ -1,3 +1,8 @@
+# database_general
+com.zaxxer:HikariCP:5.1.0
+org.slf4j:slf4j-api:1.7.36
+
+
 # database_load_driver_mysql
 com.mysql:mysql-connector-j:9.0.0
-
+com.google.protobuf:protobuf-java:4.26.1

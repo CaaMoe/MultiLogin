@@ -8,7 +8,6 @@ kotlinxserializationjson = "1.6.3"
 velocityapi = "3.3.0-SNAPSHOT"
 
 exposed = "0.53.0"
-hikaricp = "5.1.0"
 mysql = "9.0.0"
 
 ktor = "2.3.12"
@@ -27,13 +26,10 @@ exposeddao = { group = "org.jetbrains.exposed", name = "exposed-dao", version.re
 exposedjdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
 exposedjavatime = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
 exposedkotlindatetime = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
-hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricp" }
 mysql = { group = "com.mysql", name = "mysql-connector-j", version.ref = "mysql"}
 ktorclientcore = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor"}
 ktorclientcio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor"}
 ktorclientlogging = { group = "io.ktor", name = "ktor-client-logging", version.ref = "ktor"}
-cloudcore = { group = "org.incendo", name = "cloud-core", version.ref = "cloud"}
-cloudveloity = { group = "org.incendo", name = "cloud-velocity", version = "2.0.0-beta.9"}
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

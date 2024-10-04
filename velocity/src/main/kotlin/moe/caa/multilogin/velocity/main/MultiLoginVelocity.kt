@@ -9,9 +9,6 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
 import com.velocitypowered.proxy.VelocityServer
 import com.velocitypowered.proxy.config.PlayerInfoForwarding
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import com.zaxxer.hikari.pool.HikariPool
 import moe.caa.multilogin.velocity.auth.OnlineGameData
 import moe.caa.multilogin.velocity.auth.validate.ValidateHandler
 import moe.caa.multilogin.velocity.auth.yggdrasil.YggdrasilAuthenticationHandler
@@ -62,9 +59,9 @@ class MultiLoginVelocity @Inject constructor(
         // 鬼叫禁止...
         for (item in setOf(
             exposedLogger.name,
-            HikariDataSource::class.java.name,
-            HikariPool::class.java.name,
-            HikariConfig::class.java.name,
+//            HikariDataSource::class.java.name,
+//            HikariPool::class.java.name,
+//            HikariConfig::class.java.name,
         )) {
             Configurator.setLevel(item, Level.OFF)
         }
