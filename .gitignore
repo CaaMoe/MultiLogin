@@ -3,4 +3,5 @@
 /build/
 /**/build/
 /.kotlin/
-/libraries/*
+/velocity/libraries/*
+/jar/

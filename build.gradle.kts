@@ -1,19 +1,22 @@
 import groovy.json.JsonOutput
-import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
-val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSet()
+val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSortedSet()
 val contributorsJson: String = JsonOutput.toJson(contributors)
 
 val buildArchiveVersion: String = System.getProperty("build_type", "auto")
-    .equals("final", true).ifTrue {
-        project.properties["plugin_version"] as String
-    } ?: indraGit.commit()?.name().let {
-    "build_${it?.substring(0, 8) ?: "unknown"}"
-}
+    .equals("final", true).let {
+        if (it) {
+            project.properties["plugin_version"] as String
+        } else {
+            indraGit.commit()?.name().let { a ->
+                "build_${a?.substring(0, 8) ?: "unknown"}"
+            }
+        }
+    }
 
 val buildData by extra(
     fun(): Map<String, String> = mapOf(
@@ -55,8 +58,10 @@ allprojects {
     group = "moe.caa"
 
     repositories {
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
         mavenCentral()
-        google()
     }
 }
 
@@ -69,19 +74,7 @@ subprojects {
     java.sourceCompatibility = rootProject.java.sourceCompatibility
     java.targetCompatibility = rootProject.java.targetCompatibility
 
-
-    dependencies {
-        compileOnly(fileTree(mapOf("dir" to rootDir.resolve("libraries"), "include" to listOf("*.jar"))))
-
-        "com.velocitypowered:velocity-api:3.3.0-SNAPSHOT".apply {
-            annotationProcessor(this)
-            compileOnly(this)
-        }
-    }
-
     tasks.shadowJar {
-//        configurations = listOf()
-
         archiveAppendix = "${rootProject.name}-${project.name.substring(rootProject.name.length + 1)}"
         archiveBaseName = ""
         archiveVersion = buildArchiveVersion

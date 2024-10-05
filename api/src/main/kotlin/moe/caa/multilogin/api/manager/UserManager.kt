@@ -6,6 +6,9 @@ import moe.caa.multilogin.api.profile.MinimalProfile
 import moe.caa.multilogin.api.service.BaseService
 import java.util.*
 
+/**
+ * 用户管理器
+ */
 interface UserManager {
 
     /**
@@ -29,12 +32,4 @@ interface UserManager {
      * @throws InGameProfileNotFoundException 如果找不到 inGameProfile
      */
     fun setInGameProfile(service: BaseService, userProfile: MinimalProfile, inGameProfileUUID: UUID)
-
-    /**
-     * 通过给定的登录方式设置它的 InGameProfile
-     *
-     * @throws InGameProfileNotFoundException 如果找不到 inGameProfile
-     */
-    fun setInGameProfile(service: BaseService, userProfile: MinimalProfile, inGameProfile: MinimalProfile) =
-        setInGameProfile(service, userProfile, inGameProfile.id)
 }

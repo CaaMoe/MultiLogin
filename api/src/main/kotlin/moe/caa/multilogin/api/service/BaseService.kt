@@ -10,7 +10,8 @@ import moe.caa.multilogin.api.profile.MinimalProfile
  * @see moe.caa.multilogin.api.event.PlayerLoginSourceRequestEvent
  */
 abstract class BaseService(
-    val serviceId: Int
+    val serviceId: Int,
+    val serviceName: String
 ) {
 
     /**
