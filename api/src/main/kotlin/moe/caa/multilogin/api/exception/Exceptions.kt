@@ -1,21 +1,17 @@
 package moe.caa.multilogin.api.exception
 
-sealed class APIException(message: String) : RuntimeException(message)
+open class APIException(message: String, cause: Throwable? = null) : RuntimeException(message, cause)
 
-class ServiceDuplicateRegistrationException(message: String) : APIException(message)
+class ProfileConflictException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
-class ServiceIdDuplicateException(message: String) : APIException(message)
+class ServiceDuplicateRegistrationException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
-class ServiceNotRegisteredException(message: String) : APIException(message)
+class ServiceIdDuplicateException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
+class ServiceNotRegisteredException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
-class LoginSourceRepeatSetException(message: String) : APIException(message)
+class LoginSourceRepeatSetException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
-class LoginSourceInGameProfileMismatchException(message: String) : APIException(message)
+class LoginSourceInGameProfileMismatchException(message: String, cause: Throwable? = null) : APIException(message, cause)
 
-class UUIDDuplicationException(message: String) : APIException(message)
-
-
-class UsernameDuplicationException(message: String) : APIException(message)
-
-class InGameProfileNotFoundException(message: String) : APIException(message)
+class InGameProfileNotFoundException(message: String, cause: Throwable? = null) : APIException(message, cause)

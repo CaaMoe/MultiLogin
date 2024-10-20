@@ -19,7 +19,7 @@ interface ServiceManager {
      *
      * @return 是否取消成功(如果它本来就没有被注册时返回 false)
      */
-    fun deregisterService(service: BaseService): Boolean
+    fun deregisterService(serviceId: Int): Boolean
 
     /**
      * 通过 service id 获取 BaseService 实例

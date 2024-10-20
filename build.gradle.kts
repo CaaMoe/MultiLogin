@@ -1,16 +1,19 @@
 import groovy.json.JsonOutput
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.jetbrains.kotlin.utils.addToStdlib.ifTrue
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 
-val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSet()
+val contributors = project.rootProject.file("contributors").readLines().map { it.trim() }.toSortedSet()
 val contributorsJson: String = JsonOutput.toJson(contributors)
 
 val buildArchiveVersion: String = System.getProperty("build_type", "auto")
     .equals("final", true).ifTrue {
         project.properties["plugin_version"] as String
+
+
     } ?: indraGit.commit()?.name().let {
     "build_${it?.substring(0, 8) ?: "unknown"}"
 }
@@ -55,8 +58,10 @@ allprojects {
     group = "moe.caa"
 
     repositories {
+        mavenLocal()
+        maven { url = uri("https://maven.aliyun.com/repository/public") }
+        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
         mavenCentral()
-        google()
     }
 }
 
@@ -70,8 +75,6 @@ subprojects {
     java.targetCompatibility = rootProject.java.targetCompatibility
 
     tasks.shadowJar {
-//        configurations = listOf()
-
         archiveAppendix = "${rootProject.name}-${project.name.substring(rootProject.name.length + 1)}"
         archiveBaseName = ""
         archiveVersion = buildArchiveVersion
