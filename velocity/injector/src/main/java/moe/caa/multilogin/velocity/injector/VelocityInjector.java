@@ -6,14 +6,12 @@ import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import moe.caa.multilogin.api.internal.injector.Injector;
-import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.api.internal.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.internal.util.reflect.ReflectUtil;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.auth.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.auth.MultiServerLogin;
-import moe.caa.multilogin.velocity.injector.redirect.chat.PlayerSessionPacketBlocker;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -37,19 +35,6 @@ public class VelocityInjector implements Injector {
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.LOGIN);
             redirectInput(serverbound, EncryptionResponsePacket.class, () -> new MultiEncryptionResponse(multiCoreAPI));
             redirectInput(serverbound, ServerLoginPacket.class, () -> new MultiServerLogin(multiCoreAPI));
-        }
-
-        // chat
-        try {
-            StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
-            StateRegistry.PacketMapping[] playerSessionPacketMapping = {
-                    createPacketMapping(0x20, ProtocolVersion.MINECRAFT_1_19_3, false),
-                    createPacketMapping(0x06, ProtocolVersion.MINECRAFT_1_19_4, false),
-                    createPacketMapping(0x07, ProtocolVersion.MINECRAFT_1_20_5, false)
-            };
-            registerPacket(serverbound, PlayerSessionPacketBlocker.class, PlayerSessionPacketBlocker::new, playerSessionPacketMapping);
-        } catch (Throwable throwable){
-            LoggerProvider.getLogger().error("Unable to register PlayerSessionPacketBlocker, chat session blocker does not work as expected.", throwable);
         }
     }
 
