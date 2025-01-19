@@ -6,18 +6,26 @@ import com.velocitypowered.proxy.protocol.StateRegistry;
 import com.velocitypowered.proxy.protocol.packet.EncryptionResponsePacket;
 import com.velocitypowered.proxy.protocol.packet.ServerLoginPacket;
 import moe.caa.multilogin.api.internal.injector.Injector;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.main.MultiCoreAPI;
 import moe.caa.multilogin.api.internal.util.reflect.NoSuchEnumException;
 import moe.caa.multilogin.api.internal.util.reflect.ReflectUtil;
+import moe.caa.multilogin.core.configuration.MapperConfig;
 import moe.caa.multilogin.velocity.injector.handler.MultiInitialLoginSessionHandler;
 import moe.caa.multilogin.velocity.injector.redirect.auth.MultiEncryptionResponse;
 import moe.caa.multilogin.velocity.injector.redirect.auth.MultiServerLogin;
+import moe.caa.multilogin.velocity.injector.redirect.chat.PlayerSessionPacketBlocker;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -29,12 +37,29 @@ public class VelocityInjector implements Injector {
     @Override
     public void inject(MultiCoreAPI multiCoreAPI) throws NoSuchFieldException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, NoSuchEnumException, InstantiationException {
         MultiInitialLoginSessionHandler.init();
-
         // auth
         {
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.LOGIN);
             redirectInput(serverbound, EncryptionResponsePacket.class, () -> new MultiEncryptionResponse(multiCoreAPI));
             redirectInput(serverbound, ServerLoginPacket.class, () -> new MultiServerLogin(multiCoreAPI));
+        }
+
+        // chat
+        try {
+            CommentedConfigurationNode mapperConfigurationNode =
+                    YamlConfigurationLoader.builder().file(new File(multiCoreAPI.getPlugin().getDataFolder(), "mapper.yml")).build().load();
+
+            MapperConfig mapperConfig = MapperConfig.read(mapperConfigurationNode);
+            StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
+
+            LinkedList<StateRegistry.PacketMapping> playerSessionPacketMapping = new LinkedList<>();
+            for (Map.Entry<String, Integer> entry : mapperConfig.getPacketMapping().entrySet()) {
+                LoggerProvider.getLogger().debug("Register PlayerSessionPacketBlocker for protocol version: " + entry.getKey());
+                playerSessionPacketMapping.add(createPacketMapping(entry.getValue(), ProtocolVersion.valueOf(entry.getKey()), false));
+            }
+            registerPacket(serverbound, PlayerSessionPacketBlocker.class, PlayerSessionPacketBlocker::new, playerSessionPacketMapping.toArray(new StateRegistry.PacketMapping[0]));
+        } catch (Throwable throwable){
+            LoggerProvider.getLogger().error("Unable to register PlayerSessionPacketBlocker, chat session blocker does not work as expected.", throwable);
         }
     }
 
