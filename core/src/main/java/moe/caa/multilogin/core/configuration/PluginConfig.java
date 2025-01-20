@@ -84,6 +84,7 @@ public class PluginConfig {
 
         IOUtil.removeAllFiles(new File(dataFolder, "examples"));
         saveResource("config.yml", false);
+        saveResource("mapper.yml", false);
         saveResourceDir("examples", true);
 
         CommentedConfigurationNode configConfigurationNode =
