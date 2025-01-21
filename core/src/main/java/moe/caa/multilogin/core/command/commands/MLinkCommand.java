@@ -82,8 +82,7 @@ public class MLinkCommand {
     private int executeLinkAccept(CommandContext<ISender> context) throws CommandSyntaxException {
         handler.requireDataCacheArgumentSelf(context);
         String string = StringArgumentType.getString(context, "name");
-
-        gameProfileEntryMap.values().removeIf(e -> e.timeMills < System.currentTimeMillis() - 30000);
+        gameProfileEntryMap.values().removeIf(e -> e.timeMills < System.currentTimeMillis() - CommandHandler.getCore().getPluginConfig().getLinkAcceptValidTimeMills());
         Optional<Map.Entry<GameProfile, Entry>> entry = gameProfileEntryMap.entrySet().stream()
                 .filter(e -> e.getKey().getName().equalsIgnoreCase(string))
                 .filter(e -> e.getValue().receiverUserInGameUUID.equals(context.getSource().getAsPlayer().getUniqueId()))

@@ -62,6 +62,11 @@ autoNameChange: true
 # 默认值 15000
 confirmCommandValidTimeMills: 15000
 
+# link指令接受过期时间设置
+#
+# 默认值 30000
+linkAcceptValidTimeMills: 30000
+
 # 插件数据设置
 sql:
 
