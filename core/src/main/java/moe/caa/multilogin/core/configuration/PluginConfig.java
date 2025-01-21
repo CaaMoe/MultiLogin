@@ -58,6 +58,8 @@ public class PluginConfig {
     private Map<Integer, BaseServiceConfig> serviceIdMap = new HashMap<>();
     @Getter
     private long confirmCommandValidTimeMills;
+    @Getter
+    private long linkAcceptValidTimeMills;
 
     public PluginConfig(File dataFolder, MultiCore core) {
         this.dataFolder = dataFolder;
@@ -105,6 +107,7 @@ public class PluginConfig {
         nameCorrect = configConfigurationNode.node("nameCorrect").getBoolean(true);
         autoNameChange = configConfigurationNode.node("autoNameChange").getBoolean(true);
         confirmCommandValidTimeMills = configConfigurationNode.node("confirmCommandValidTimeMills").getLong(15000);
+        linkAcceptValidTimeMills = configConfigurationNode.node("linkAcceptValidTimeMills").getLong(30000);
 
         Map<Integer, BaseServiceConfig> idMap = new HashMap<>();
         try (Stream<Path> list = Files.list(servicesFolder.toPath())) {
