@@ -22,3 +22,4 @@ fabric/.gradle/
 /bungee/injector/bin
 /velocity/libraries/*
 !/velocity/libraries/README.md
+/velocity/libraries/Velocity/
