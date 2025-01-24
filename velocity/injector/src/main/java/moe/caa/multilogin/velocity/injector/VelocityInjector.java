@@ -43,21 +43,20 @@ public class VelocityInjector implements Injector {
             redirectInput(serverbound, EncryptionResponsePacket.class, () -> new MultiEncryptionResponse(multiCoreAPI));
             redirectInput(serverbound, ServerLoginPacket.class, () -> new MultiServerLogin(multiCoreAPI));
         }
+    }
 
+    public void registerChatSession(Map<Integer,Integer> packetMapping) {
         // chat
         try {
-            CommentedConfigurationNode mapperConfigurationNode =
-                    YamlConfigurationLoader.builder().file(new File(multiCoreAPI.getPlugin().getDataFolder(), "mapper.yml")).build().load();
-
-            MapperConfig mapperConfig = MapperConfig.read(mapperConfigurationNode);
             StateRegistry.PacketRegistry serverbound = getServerboundPacketRegistry(StateRegistry.PLAY);
 
             LinkedList<StateRegistry.PacketMapping> playerSessionPacketMapping = new LinkedList<>();
-            for (Map.Entry<String, Integer> entry : mapperConfig.getPacketMapping().entrySet()) {
+            for (Map.Entry<Integer, Integer> entry : packetMapping.entrySet()) {
                 LoggerProvider.getLogger().debug("Register PlayerSessionPacketBlocker for protocol version: " + entry.getKey());
-                playerSessionPacketMapping.add(createPacketMapping(entry.getValue(), ProtocolVersion.valueOf(entry.getKey()), false));
+                playerSessionPacketMapping.add(createPacketMapping(entry.getValue(), ProtocolVersion.getProtocolVersion(entry.getKey()), false));
             }
             registerPacket(serverbound, PlayerSessionPacketBlocker.class, PlayerSessionPacketBlocker::new, playerSessionPacketMapping.toArray(new StateRegistry.PacketMapping[0]));
+
         } catch (Throwable throwable){
             LoggerProvider.getLogger().error("Unable to register PlayerSessionPacketBlocker, chat session blocker does not work as expected.", throwable);
         }

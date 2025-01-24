@@ -50,6 +50,8 @@ public class PluginConfig {
     @Getter
     private SqlConfig sqlConfig;
     @Getter
+    private MapperConfig mapperConfig;
+    @Getter
     private String nameAllowedRegular;
     private final MultiCore core;
     @Getter
@@ -88,6 +90,10 @@ public class PluginConfig {
         saveResource("config.yml", false);
         saveResource("mapper.yml", false);
         saveResourceDir("examples", true);
+        if (mapperConfig != null)
+            mapperConfig.save();
+        mapperConfig = new MapperConfig(dataFolder);
+        mapperConfig.reload();
 
         CommentedConfigurationNode configConfigurationNode =
                 YamlConfigurationLoader.builder().file(new File(dataFolder, "config.yml")).build().load();
