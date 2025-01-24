@@ -1,5 +1,6 @@
 package moe.caa.multilogin.api.internal.main;
 
+import moe.caa.multilogin.api.MapperConfigAPI;
 import moe.caa.multilogin.api.internal.auth.AuthAPI;
 import moe.caa.multilogin.api.internal.command.CommandAPI;
 import moe.caa.multilogin.api.internal.handle.HandlerAPI;
@@ -45,6 +46,11 @@ public interface MultiCoreAPI {
      * 获得缓存
      */
     HandlerAPI getPlayerHandler();
+
+    /**
+     * 获得版本映射
+     */
+    MapperConfigAPI getMapperConfig();
 
     /**
      * 获得插件对象

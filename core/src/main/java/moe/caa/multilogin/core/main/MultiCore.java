@@ -3,6 +3,7 @@ package moe.caa.multilogin.core.main;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.Getter;
+import moe.caa.multilogin.api.MapperConfigAPI;
 import moe.caa.multilogin.api.MultiLoginAPI;
 import moe.caa.multilogin.api.MultiLoginAPIProvider;
 import moe.caa.multilogin.api.data.MultiLoginPlayerData;
@@ -17,6 +18,7 @@ import moe.caa.multilogin.core.auth.service.floodgate.FloodgateAuthenticationSer
 import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.GameProfileSerializer;
 import moe.caa.multilogin.core.auth.service.yggdrasil.serialize.PropertySerializer;
 import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.configuration.MapperConfig;
 import moe.caa.multilogin.core.configuration.PluginConfig;
 import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.database.SQLManager;
@@ -69,7 +71,6 @@ public class MultiCore implements MultiCoreAPI, MultiLoginAPI {
     private boolean floodgateSupported = false;
     @Getter
     private final String httpRequestHeaderUserAgent = "MultiLogin/v2.0";
-
 
     /**
      * 构建猫踢核心，这个方法将会被反射调用
@@ -173,6 +174,11 @@ public class MultiCore implements MultiCoreAPI, MultiLoginAPI {
     @Override
     public void close() {
         sqlManager.close();
+    }
+
+    @Override
+    public MapperConfigAPI getMapperConfig() {
+        return pluginConfig.getMapperConfig();
     }
 
     @NotNull
