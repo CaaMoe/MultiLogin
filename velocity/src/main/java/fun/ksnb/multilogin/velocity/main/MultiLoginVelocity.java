@@ -97,6 +97,7 @@ public class MultiLoginVelocity implements IPlugin {
             );
             server.getEventManager().register(this, NewChatSessionPacketIDEvent.class,
                     (AwaitingEventExecutor<NewChatSessionPacketIDEvent>) packetEvent -> EventTask.withContinuation(continuation -> {
+                        runServer.getPlayerManager().kickPlayerIfOnline(packetEvent.getPlayer().getUniqueId(), multiCoreAPI.getLanguageHandler().getMessage("reconnect_msg"));
                         multiCoreAPI.getMapperConfig().getPacketMapping().put(packetEvent.getVersion().getProtocol(),packetEvent.getPacketID());
                         multiCoreAPI.getMapperConfig().save();
                         injector.registerChatSession(multiCoreAPI.getMapperConfig().getPacketMapping());

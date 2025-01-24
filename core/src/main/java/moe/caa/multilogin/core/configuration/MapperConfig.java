@@ -1,22 +1,15 @@
 package moe.caa.multilogin.core.configuration;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 import moe.caa.multilogin.api.MapperConfigAPI;
-import moe.caa.multilogin.core.main.MultiCore;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.ConfigurateException;
 import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ChatSessionBlocker 数据包映射配置
@@ -24,7 +17,7 @@ import java.util.Map;
 @Getter
 @ToString
 public class MapperConfig implements MapperConfigAPI {
-    private final LinkedHashMap<Integer,Integer> packetMapping = new LinkedHashMap<>() {
+    private final TreeMap<Integer,Integer> packetMapping = new TreeMap<>() {
         @Override
         public Integer put(Integer key, Integer value) {
             if(key<761) return value;

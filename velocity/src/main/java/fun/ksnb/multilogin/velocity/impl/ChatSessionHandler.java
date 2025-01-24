@@ -27,7 +27,7 @@ public class ChatSessionHandler extends ChannelDuplexHandler {
                 int packetId = c.readByte();
                 ProtocolUtils.readUuid(c);
                 ProtocolUtils.readPlayerKey(player.getProtocolVersion(), c);
-                eventManager.fire(new NewChatSessionPacketIDEvent(packetId,player.getProtocolVersion()));
+                eventManager.fire(new NewChatSessionPacketIDEvent(packetId,player.getProtocolVersion(),player));
             } catch (Exception ignore) { } finally {
                 c.resetReaderIndex();
             }
