@@ -22,13 +22,14 @@ public class ChatSessionHandler extends ChannelDuplexHandler {
             final @NotNull Object packet
     ) throws Exception {
         if (packet instanceof ByteBuf buffer) {
-            ByteBuf c = buffer.copy();
+            ByteBuf c = buffer.asReadOnly();
+            c.markReaderIndex();
             try {
                 int packetId = c.readByte();
                 ProtocolUtils.readUuid(c);
                 ProtocolUtils.readPlayerKey(player.getProtocolVersion(), c);
                 eventManager.fire(new NewChatSessionPacketIDEvent(packetId,player.getProtocolVersion(),player));
-            } catch (Exception ignore) { } finally {
+            } catch (Throwable ignore) { } finally {
                 c.resetReaderIndex();
             }
         }

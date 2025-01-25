@@ -12,7 +12,7 @@ import java.util.UUID;
 public class PlayerSessionPacketBlocker implements MinecraftPacket {
     private UUID sessionId;
     private IdentifiedKey identifiedKey;
-    private boolean hasKey = false;
+    private boolean hasKey = true;
 
     public PlayerSessionPacketBlocker(){
 
@@ -30,18 +30,10 @@ public class PlayerSessionPacketBlocker implements MinecraftPacket {
 
     @Override
     public void encode(ByteBuf byteBuf, ProtocolUtils.Direction direction, ProtocolVersion protocolVersion) {
-        try {
-            //不发送ChatSession
-            if (hasKey) {
-                ProtocolUtils.writeUuid(byteBuf, sessionId);
-                ProtocolUtils.writePlayerKey(byteBuf, identifiedKey);
-            }
-        } catch (Exception ignore) {
-            //idk why does it throw the `java.lang.IllegalArgumentException`
-            //Caused by: java.lang.IllegalArgumentException: Unknown node type 3
-            //        at com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket.deserializeNode(AvailableCommandsPacket.java:219)
-            //        at com.velocitypowered.proxy.protocol.packet.AvailableCommandsPacket.decode(AvailableCommandsPacket.java:88)
-            //        at com.velocitypowered.proxy.protocol.netty.MinecraftDecoder.tryDecode(MinecraftDecoder.java:83)
+        //不发送ChatSession
+        if (hasKey) {
+            ProtocolUtils.writeUuid(byteBuf, sessionId);
+            ProtocolUtils.writePlayerKey(byteBuf, identifiedKey);
         }
     }
 
