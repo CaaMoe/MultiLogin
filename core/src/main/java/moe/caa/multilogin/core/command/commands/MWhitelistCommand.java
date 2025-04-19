@@ -144,7 +144,7 @@ public class MWhitelistCommand {
         return 0;
     }
 
-    // /MultiLogin whitelist remove <add>
+    // /MultiLogin whitelist add <name>
     @SneakyThrows
     private int executeAddUsername(CommandContext<ISender> context) {
         String username = StringArgumentType.getString(context, "username").toLowerCase(Locale.ROOT);
