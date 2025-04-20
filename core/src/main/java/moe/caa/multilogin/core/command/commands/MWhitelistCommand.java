@@ -193,7 +193,7 @@ public class MWhitelistCommand {
 
         var cache = CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist();
         context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage(
-            "command_message_whitelist_cache",
+            "command_message_whitelist_list_cache",
             new Pair<>("list", cache.stream().collect(Collectors.joining(", "))),
             new Pair<>("count", cache.size())
         ));
