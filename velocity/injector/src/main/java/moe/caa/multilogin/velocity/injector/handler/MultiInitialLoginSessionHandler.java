@@ -181,7 +181,7 @@ public class MultiInitialLoginSessionHandler {
             String serverId = EncryptionUtils.generateServerId(decryptedSharedSecret, serverKeyPair.getPublic());
             String playerIp = ((InetSocketAddress) this.mcConnection.getRemoteAddress()).getHostString();
 
-            multiCoreAPI.getPlugin().getRunServer().getScheduler().runTask(() -> {
+            multiCoreAPI.getPlugin().getRunServer().getScheduler().runTaskAsync(() -> {
                 LoginAuthResult result = (LoginAuthResult) multiCoreAPI.getAuthHandler().auth(username, serverId, playerIp);
                 try {
                     if (mcConnection.getChannel().eventLoop().submit(() -> {

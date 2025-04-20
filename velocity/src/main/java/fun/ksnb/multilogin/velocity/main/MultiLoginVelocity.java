@@ -84,9 +84,12 @@ public class MultiLoginVelocity implements IPlugin {
         {
             server.getEventManager().register(this, PostLoginEvent.class,
                     (AwaitingEventExecutor<PostLoginEvent>) postLoginEvent -> EventTask.withContinuation(continuation -> {
-                        if(postLoginEvent.getPlayer().getProtocolVersion().getProtocol() < 761) return;
-                        injectPlayer(postLoginEvent.getPlayer());
-                        continuation.resume();
+                        try {
+                            if(postLoginEvent.getPlayer().getProtocolVersion().getProtocol() < 761) return;
+                            injectPlayer(postLoginEvent.getPlayer());
+                        } finally {
+                            continuation.resume();
+                        }
                     })
             );
             server.getEventManager().register(this, DisconnectEvent.class, PostOrder.LAST,

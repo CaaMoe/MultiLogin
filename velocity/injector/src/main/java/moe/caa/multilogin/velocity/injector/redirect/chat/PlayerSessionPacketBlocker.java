@@ -6,6 +6,7 @@ import com.velocitypowered.proxy.connection.MinecraftSessionHandler;
 import com.velocitypowered.proxy.protocol.MinecraftPacket;
 import com.velocitypowered.proxy.protocol.ProtocolUtils;
 import io.netty.buffer.ByteBuf;
+import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 
 import java.util.UUID;
 
@@ -20,10 +21,13 @@ public class PlayerSessionPacketBlocker implements MinecraftPacket {
 
     @Override
     public void decode(ByteBuf byteBuf, ProtocolUtils.Direction direction, ProtocolVersion protocolVersion) {
+        byteBuf.markReaderIndex();
         try {
             sessionId = ProtocolUtils.readUuid(byteBuf);
             identifiedKey = ProtocolUtils.readPlayerKey(protocolVersion, byteBuf);
-        } catch (Exception ignore) {
+        } catch (Throwable t) {
+            byteBuf.resetReaderIndex();
+            LoggerProvider.getLogger().debug("Failed to decode player session packet.", t);
             hasKey = false;
         }
     }
