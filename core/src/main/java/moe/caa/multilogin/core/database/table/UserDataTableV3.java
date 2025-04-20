@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import moe.caa.multilogin.api.internal.logger.LoggerProvider;
 import moe.caa.multilogin.api.internal.util.There;
 import moe.caa.multilogin.api.internal.util.ValueUtil;
+import moe.caa.multilogin.core.command.CommandHandler;
+import moe.caa.multilogin.core.configuration.service.BaseServiceConfig;
 import moe.caa.multilogin.core.database.SQLManager;
 
 import java.sql.*;
@@ -377,6 +379,46 @@ public class UserDataTableV3 {
             statement.setBytes(2, ValueUtil.uuidToBytes(inGameUUID));
             statement.executeUpdate();
         }
+    }
+
+    /**
+     * 列出白名单
+     */
+    public List<String> listWhitelist(boolean verbose) throws SQLException {
+        String sql = verbose ? String.format(
+            "SELECT %s, %s, %s, %s FROM %s WHERE %s = true",
+            fieldOnlineName, fieldServiceId, fieldOnlineUUID, fieldInGameProfileUuid,
+            tableName, fieldWhitelist
+        ) : String.format(
+            "SELECT %s FROM %s WHERE %s = true",
+            fieldOnlineName, tableName, fieldWhitelist
+        );
+        List<String> result = new ArrayList<>();
+        try (
+            Connection connection = sqlManager.getPool().getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery()
+        ) {
+            if (verbose)
+                while (resultSet.next()) {
+                    int serviceId = resultSet.getInt(2);
+                    BaseServiceConfig serviceConfig = CommandHandler.getCore()
+                            .getPluginConfig().getServiceIdMap().get(serviceId);
+                    String serviceName = serviceConfig == null ? CommandHandler.getCore().getLanguageHandler()
+                            .getMessage("command_message_find_profile_entry_unused_service") : serviceConfig.getName();
+                    result.add(String.format(
+                        "%s (%s=%d(%s), %s=%s, %s=%s)",
+                        resultSet.getString(1),
+                        fieldServiceId, serviceId, serviceName,
+                        fieldOnlineUUID, ValueUtil.bytesToUuid(resultSet.getBytes(3)),
+                        fieldInGameProfileUuid, Optional.ofNullable(resultSet.getBytes(4)).map(ValueUtil::bytesToUuid).orElse(null)
+                    ));
+                }
+            else
+                while (resultSet.next())
+                    result.add(String.format("%s", resultSet.getString(1)));
+        }
+        return result;
     }
 
     public void setOnlineName(UUID onlineUUID, int serviceId, String onlineName) throws SQLException {

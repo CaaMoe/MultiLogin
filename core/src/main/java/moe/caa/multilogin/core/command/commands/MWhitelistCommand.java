@@ -11,8 +11,10 @@ import moe.caa.multilogin.core.command.Permissions;
 import moe.caa.multilogin.core.command.argument.OnlineArgumentType;
 import moe.caa.multilogin.core.command.argument.StringArgumentType;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * /MultiLogin whitelist * 指令处理程序
@@ -51,7 +53,13 @@ public class MWhitelistCommand {
                                 .then(handler.argument("online", OnlineArgumentType.online())
                                         .executes(this::executeRemove)
                                 )
-
+                        )
+                ).then(handler.literal("list")
+                        .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_LIST))
+                        .executes(this::executeList)
+                        .then(handler.literal("verbose")
+                                .requires(sender -> sender.hasPermission(Permissions.COMMAND_MULTI_LOGIN_WHITELIST_LIST_VERBOSE))
+                                .executes(this::executeListVerbose)
                         )
                 );
     }
@@ -170,5 +178,36 @@ public class MWhitelistCommand {
                 new Pair<>("name", username)
         ));
         return 0;
+    }
+
+    // /MultiLogin whitelist list [verbose]
+    @SneakyThrows
+    private int executeList(CommandContext<ISender> context, boolean verbose) {
+        List<String> list = CommandHandler.getCore().getSqlManager().getUserDataTable().listWhitelist(verbose);
+        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage(
+            "command_message_whitelist_list_table",
+            new Pair<>("count", list.size()),
+            new Pair<>("list", String.join(verbose ? ", \n" : ", ", list))
+        ));
+
+
+        var cache = CommandHandler.getCore().getCacheWhitelistHandler().getCachedWhitelist();
+        context.getSource().sendMessagePL(CommandHandler.getCore().getLanguageHandler().getMessage(
+            "command_message_whitelist_cache",
+            new Pair<>("list", cache.stream().collect(Collectors.joining(", "))),
+            new Pair<>("count", cache.size())
+        ));
+
+        return 0;
+    }
+
+    @SneakyThrows
+    private int executeList(CommandContext<ISender> context) {
+        return this.executeList(context, false);
+    }
+
+    @SneakyThrows
+    private int executeListVerbose(CommandContext<ISender> context) {
+        return this.executeList(context, true);
     }
 }
