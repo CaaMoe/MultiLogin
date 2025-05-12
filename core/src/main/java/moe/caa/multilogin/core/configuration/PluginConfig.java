@@ -214,9 +214,10 @@ public class PluginConfig {
             ProxyConfig authProxy = ProxyConfig.read(yggdrasilAuthNode.node("authProxy"));
 
             if (serviceType == ServiceType.OFFICIAL) {
-                return new OfficialYggdrasilServiceConfig(id, name,
+                String customSessionServer = yggdrasilAuthNode.node("official").node("sessionServer").getString("https://sessionserver.mojang.com");
+		        return new OfficialYggdrasilServiceConfig(id, name,
                         initUUID,initNameFormat, whitelist,
-                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+                        skinRestorer, trackIp, timeout, retry, retryDelay, authProxy, customSessionServer);
             }
 
             if (serviceType == ServiceType.BLESSING_SKIN) {
