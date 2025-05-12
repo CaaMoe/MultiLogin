@@ -10,20 +10,21 @@ import org.jetbrains.annotations.NotNull;
  * 正版官方 Yggdrasil
  */
 public class OfficialYggdrasilServiceConfig extends BaseYggdrasilServiceConfig {
-    public OfficialYggdrasilServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy) throws ConfException {
+    private final String customSessionServer;
+
+    public OfficialYggdrasilServiceConfig(int id, String name, InitUUID initUUID, String initNameFormat, boolean whitelist, SkinRestorerConfig skinRestorer, boolean trackIp, int timeout, int retry, long retryDelay, ProxyConfig authProxy, String customSessionServer) throws ConfException {
         super(id, name, initUUID, initNameFormat, whitelist, skinRestorer, trackIp, timeout, retry, retryDelay, authProxy);
+        if (!customSessionServer.endsWith("/")) {
+            customSessionServer = customSessionServer.concat("/");
+        }
+        this.customSessionServer = customSessionServer;
     }
+
 
     @Override
     protected String getAuthURL() {
-        return "https://".concat("session")
-                .concat("server.")
-                .concat("mojang")
-                .concat(".com")
-                .concat("/session")
-                .concat("/minecraft")
-                .concat("/hasJoined?")
-                .concat("username={0}&serverId={1}{2}");
+	    String baseUrl = customSessionServer;
+	    return baseUrl.concat("session/minecraft/hasJoined?username={0}&serverId={1}{2}");
     }
 
     @Override

@@ -71,6 +71,14 @@ yggdrasilAuth:
   # 默认值 ‘0’
   retryDelay: 0
 
+  # OFFCIAL 专用设置。
+  #
+  # 仅当 serviceType 为 OFFICIAL 时，此配置片段有效。
+  official:
+
+    # 可选，指定自定义 Session 验证服务器地址。
+    sessionServer: 'https://sessionserver.example.com'
+
   # BLESSING_SKIN 专用设置。
   #
   # 仅当 serviceType 为 BLESSING_SKIN 时，此配置片段有效。
