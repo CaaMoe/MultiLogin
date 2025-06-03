@@ -119,7 +119,16 @@ public class SkinRestorerFlows implements Callable<SkinRestorerResultImpl> {
                 throw new SkinRestorerException("Skin height is not 64 or 32.");
             }
             x64 = image.getHeight() == 64;
-            // TODO: 2022/7/13 皮肤半透明判断
+            for (int y = 0; y < image.getHeight(); y++) {
+                for (int x = 0; x < image.getWidth(); x++) {
+                    int pixel = image.getRGB(x, y);
+                    int alpha = (pixel >> 24) & 0xff; 
+                    if (alpha < 255) {
+                        throw new SkinRestorerException("Skin contains semi-transparent pixels.");
+                    }
+                }
+            }
+            // Finished 皮肤半透明判断
 
             return bytes;
         }
