@@ -122,13 +122,13 @@ public class SkinRestorerFlows implements Callable<SkinRestorerResultImpl> {
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     int pixel = image.getRGB(x, y);
-                    int alpha = (pixel >> 24) & 0xff; 
-                    if (alpha < 255) {
-                        throw new SkinRestorerException("Skin contains semi-transparent pixels.");
+                    int alpha = (pixel >> 24) & 0xff;
+                    if (alpha == 0) {
+                        throw new SkinRestorerException("Skin contains fully transparent pixels.");
                     }
                 }
             }
-            // Finished 皮肤半透明判断
+            // Finished 皮肤透明判断
 
             return bytes;
         }
