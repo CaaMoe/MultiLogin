@@ -26,7 +26,7 @@ jobs:
 
             const options = {
               hostname: "api.github.com",
-              path: "" + "/repos/$GITHUB_REPOSITORY/contributors",
+              path: "" + '/repos/$GITHUB_REPOSITORY/contributors',
               port: 443,
               headers: {
                 'User-Agent': 'Bot'
