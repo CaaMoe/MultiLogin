@@ -25,7 +25,7 @@ jobs:
             const https = require('https');
 
             const options = {
-              hostname: "api.github.com",
+              hostname: 'api.github.com',
               path: "" + '/repos/$GITHUB_REPOSITORY/contributors',
               port: 443,
               headers: {
