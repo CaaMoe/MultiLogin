@@ -9,25 +9,68 @@ jobs:
   update-contributors:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: 'Check and Update'
+      - name: Set up node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - name: Fetch 
+        env:
+          REPOSITORY: "$GITHUB_REPOSITORY"
         run: |
-          curl https://api.github.com/repos/$GITHUB_REPOSITORY/contributors \
-            | grep login \
-            | sed 's#    "login": "##g' \
-            | sed 's#",##g' \
-            | sed 's#github-actions\[bot\]##g' \
-            | sed '/^[[:space:]]*$/d' \
-            > contributors
-          git config user.name 'github-actions'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -A
+          node -e "
+            const https = require('https');
+
+            const options = {
+              hostname: "api.github.com",
+              path: "/repos/" + process.env.REPOSITORY + "/contributors",
+              port: 443,
+              headers: {
+                'User-Agent': 'Bot'
+              }
+            };
+            
+            https.get(options, (res) => {
+              let data = '';
+            
+              res.on('data', (chunk) => {
+                data += chunk;
+              });
+            
+              res.on('end', () => {
+                try {
+                  const jsonArray = JSON.parse(data);
+            
+                  const names = jsonArray
+                    .filter(item => item.type === 'User')
+                    .map(item => item.login);
+            
+                  const fs = require('fs');
+                  fs.writeFileSync('contributors', names.join('\n'));
+            
+                } catch (error) {
+                  console.error('Error processing contributors data:', error);
+                  process.exit(1);
+                }
+              });
+            }).on('error', (error) => {
+              console.error('Error fetching contributors data:', error);
+              process.exit(1);
+            });
+          "
+      - name: Check for changes
+        id: check_changes
+        run: |
           if ! git diff-index --quiet HEAD; then
-            echo "New Contributors available, push now"
+            echo "New Contributors available, push now."
+            git config --global user.name "GitHub Actions Bot"
+            git config --global user.email "actions@github.com"
+            git add -A
             git commit -am "Update contributors"
             git push
           else
-              echo "No new Contributors, no Push required"
+            echo "No new contributors."
           fi
