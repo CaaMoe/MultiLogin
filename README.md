@@ -5,11 +5,9 @@
 
 _✨ 正版与多种外置登录共存 ✨_
 
-[![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
 [![Join our Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&label=)](https://discord.gg/9vh4kZRFCj)
-[![jitpack](https://jitpack.io/v/moe.caa/MultiLogin.svg)](https://jitpack.io/#moe.caa/MultiLogin)
 
 </div>
 
@@ -27,7 +25,7 @@ MultiLogin 是一款主要为 Minecraft 代理端设计的插件，旨在实现�
 
 ## 安装
 
-最低需要 `Java 17`， 不需要安装 `authlib-injector` ，没有任何前置插件，也不需要添加和更改 `JVM` 参数
+最低需要 `Java 21`， 不需要安装 `authlib-injector` ，没有任何前置插件，也不需要添加和更改 `JVM` 参数
 
 ~~把大象装进冰箱需要几步？~~
 
