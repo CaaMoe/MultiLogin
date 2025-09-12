@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.gradleup.shadow' version '9.1.0'
 }
 
 repositories {
@@ -14,8 +14,8 @@ dependencies {
     compileOnly 'org.geysermc.geyser:api:2.2.0-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 shadowJar {
     archiveFileName = 'MultiLogin-Core.JarFile'

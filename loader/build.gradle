@@ -13,8 +13,8 @@ dependencies {
     compileOnly 'org.ow2.asm:asm-commons:9.3'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 processResources {
     // 存放已计算摘要的依赖列表(value: sha256 as String)

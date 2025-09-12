@@ -40,9 +40,8 @@ MultiLogin 是一款主要为 Minecraft 代理端设计的插件，旨在实现�
 ## 构建
 
 1. 克隆这个项目
-2. 参照 [说明](https://github.com/CaaMoe/MultiLogin/blob/v6/velocity/libraries/README.md) 补全 velocity 的依赖
-3. 执行 `./gradlew shadowJar` / `gradlew shadowJar`
-4. 在 `*/build/libs` 下寻找你需要的
+2. 执行 `./gradlew shadowJar` / `gradlew shadowJar`
+3. 在 `*/build/libs` 下寻找你需要的
 
 或者你也可以
 
