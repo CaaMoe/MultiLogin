@@ -11,68 +11,7 @@ on:
         type: boolean
 
 jobs:
-  velocity-lib:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Velocity Library Cache
-        if: ${{ ! inputs.force-update }}
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
-
-      - name: Check library cache validity period
-        if: ${{ ! inputs.force-update }}
-        id: check-cache
-        run: |
-          if [ ! -e velocity/libraries/velocity-api-*.jar ]; then
-            echo "cache-hit=false" >> $GITHUB_ENV
-          else
-            last_modified=$(stat -c %Y velocity/libraries/velocity-api-*.jar)
-            current_time=$(date +%s)
-            elapsed_time=$((current_time - last_modified))
-            if ((elapsed_time > 30 * 24 * 60 * 60)); then
-              echo "cache-hit=false" >> $GITHUB_ENV
-            fi
-          fi
-
-      - name: Get Velocity
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
-        uses: actions/checkout@v3
-        with:
-          repository: 'PaperMC/Velocity'
-
-      - name: Setup JDK 21
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: 'gradle'
-
-      - name: Build Velocity
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: current
-          arguments: build
-
-      - name: Collection Library
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
-        run: |
-          mkdir -p velocity/libraries
-          cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
-          cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
-
-      - name: Cache Velocity Library
-        if: ${{ env.cache-hit == 'false' || inputs.force-update }}
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
-
   build:
-    needs: velocity-lib
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -86,12 +25,6 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
-
-      - name: Get Velocity Library
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
 
       - name: Patch Gradle Repositories
         run:

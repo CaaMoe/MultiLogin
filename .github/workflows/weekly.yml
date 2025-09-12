@@ -6,41 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  velocity-lib:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get Velocity
-        uses: actions/checkout@v3
-        with:
-          repository: 'PaperMC/Velocity'
-
-      - name: Setup JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: 21
-          cache: 'gradle'
-
-      - name: Build Velocity
-        uses: gradle/gradle-build-action@v2
-        with:
-          gradle-version: current
-          arguments: build
-
-      - name: Collection Library
-        run: |
-          mkdir -p velocity/libraries
-          cp api/build/libs/velocity-api-*-SNAPSHOT.jar velocity/libraries
-          cp proxy/build/libs/velocity-proxy-*-SNAPSHOT.jar velocity/libraries
-
-      - name: Cache Velocity Library
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
-
   build:
-    needs: velocity-lib
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
@@ -52,12 +18,6 @@ jobs:
           distribution: 'temurin'
           java-version: 21
           cache: 'gradle'
-
-      - name: Get Velocity Library
-        uses: actions/cache@v3
-        with:
-          path: velocity/libraries
-          key: ${{ runner.os }}-build-${{ env.cache-name }}}}
 
       - name: Patch Gradle Repositories
         run:
