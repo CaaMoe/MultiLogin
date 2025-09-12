@@ -3,8 +3,7 @@ plugins {
     id 'com.gradleup.shadow' version '9.1.0'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
+
 
 dependencies {
     implementation("org.jetbrains:annotations:24.1.0")
@@ -21,6 +20,8 @@ shadowJar{
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     withSourcesJar()
 }
 

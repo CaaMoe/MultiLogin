@@ -2,6 +2,7 @@ plugins {
     id 'com.gradleup.shadow' version '9.1.0'
 }
 
+
 repositories {
     maven { url = 'https://repo.opencollab.dev/main' }
 }
@@ -9,16 +10,17 @@ repositories {
 dependencies {
     compileOnly project(":api")
     compileOnly project(":flows")
-
     compileOnly 'org.geysermc.floodgate:api:2.2.2-SNAPSHOT'
     compileOnly 'org.geysermc.geyser:api:2.2.0-SNAPSHOT'
 }
 
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
 shadowJar {
     archiveFileName = 'MultiLogin-Core.JarFile'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 artifacts {
