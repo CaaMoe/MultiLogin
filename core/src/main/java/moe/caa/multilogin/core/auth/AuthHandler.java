@@ -68,7 +68,7 @@ public class AuthHandler implements AuthAPI {
             ValidateAuthenticationResult validateAuthenticationResult = validateAuthenticationService.checkIn(baseServiceAuthenticationResult);
             if (validateAuthenticationResult.getReason() == ValidateAuthenticationResult.Reason.ALLOWED) {
                 LoggerProvider.getLogger().info(
-                        String.format("%s(uuid: %s) from authentication service %s(yid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
+                        String.format("%s(uuid: %s) from authentication service %s(sid: %d) has been authenticated, profile redirected to %s(uuid: %s).",
                                 baseServiceAuthenticationResult.getResponse().getName(),
                                 baseServiceAuthenticationResult.getResponse().getId().toString(),
                                 baseServiceAuthenticationResult.getServiceConfig().getName(),
