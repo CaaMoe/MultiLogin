@@ -1,0 +1,9 @@
+kotlin moe.caa.multilogin.libraries.kotlin
+kotlinx moe.caa.multilogin.libraries.kotlinx
+
+org.bstats moe.caa.multilogin.libraries.org.bstats
+
+org.jetbrains.exposed moe.caa.multilogin.libraries.org.jetbrains.exposed
+
+org.spongepowered moe.caa.multilogin.libraries.org.spongepowered
+com.typesafe moe.caa.multilogin.libraries.com.typesafe

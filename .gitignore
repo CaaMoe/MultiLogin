@@ -43,3 +43,5 @@ bin/
 /.idea/
 /.kotlin/
 /run/
+/paper/run/
+/outputs/
