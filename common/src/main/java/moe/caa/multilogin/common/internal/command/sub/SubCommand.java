@@ -2,7 +2,6 @@ package moe.caa.multilogin.common.internal.command.sub;
 
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import moe.caa.multilogin.common.internal.command.CMDSender;
 import moe.caa.multilogin.common.internal.command.CommandManager;
 import net.kyori.adventure.text.Component;
 
@@ -37,18 +36,11 @@ public abstract class SubCommand<SENDER> {
     }
 
     protected boolean hasPermission(SENDER sender, String permission) {
-        return manager.senderMap.apply(sender).hasPermission(permission);
+        return manager.senderUnwrapper.hasPermission(sender, permission);
     }
 
     protected void sendMessage(SENDER sender, Component component) {
-        manager.senderMap.apply(sender).sendMessage(component);
-    }
-
-    protected void sendMessage(SENDER sender, Component... components) {
-        CMDSender cmdSender = manager.senderMap.apply(sender);
-        for (Component component : components) {
-            cmdSender.sendMessage(component);
-        }
+        manager.senderUnwrapper.sendMessage(sender, component);
     }
 
 

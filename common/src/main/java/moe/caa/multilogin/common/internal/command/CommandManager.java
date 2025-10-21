@@ -1,5 +1,6 @@
 package moe.caa.multilogin.common.internal.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import moe.caa.multilogin.common.internal.command.sub.HelpCommand;
@@ -7,19 +8,20 @@ import moe.caa.multilogin.common.internal.command.sub.SubCommand;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
 import java.util.List;
-import java.util.function.Function;
 
 public class CommandManager<SENDER> {
     public final MultiCore core;
-    public final Function<SENDER, CMDSender> senderMap;
+    public final SenderUnwrapper<SENDER> senderUnwrapper;
     public final List<SubCommand<SENDER>> subCommands;
 
-    public CommandManager(MultiCore core, Function<SENDER, CMDSender> senderMap) {
+    public final HelpCommand<SENDER> helpCommand = new HelpCommand<>(this);
+
+    public CommandManager(MultiCore core, SenderUnwrapper<SENDER> senderUnwrapper) {
         this.core = core;
-        this.senderMap = senderMap;
+        this.senderUnwrapper = senderUnwrapper;
 
         this.subCommands = List.of(
-                new HelpCommand<>(this)
+                helpCommand
         );
     }
 
@@ -28,6 +30,10 @@ public class CommandManager<SENDER> {
         for (SubCommand<SENDER> command : subCommands) {
             command.register(literal);
         }
+        literal.executes(context -> {
+            helpCommand.showHelp(context.getSource());
+            return Command.SINGLE_SUCCESS;
+        });
         return literal;
     }
 
