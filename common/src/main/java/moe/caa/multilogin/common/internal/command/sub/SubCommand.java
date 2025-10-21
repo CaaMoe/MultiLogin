@@ -36,11 +36,11 @@ public abstract class SubCommand<SENDER> {
     }
 
     protected boolean hasPermission(SENDER sender, String permission) {
-        return manager.senderUnwrapper.hasPermission(sender, permission);
+        return manager.hasPermission(sender, permission);
     }
 
     protected void sendMessage(SENDER sender, Component component) {
-        manager.senderUnwrapper.sendMessage(sender, component);
+        manager.sendMessage(sender, component);
     }
 
 
