@@ -1,9 +1,9 @@
-package moe.caa.multilogin.paper.channel;
+package moe.caa.multilogin.paper.internal.channel;
 
 import io.netty.channel.Channel;
 import io.papermc.paper.network.ChannelInitializeListener;
 import io.papermc.paper.network.ChannelInitializeListenerHolder;
-import moe.caa.multilogin.paper.main.MultiLoginPaperMain;
+import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.key.Key;
 import org.checkerframework.checker.nullness.qual.NonNull;
 

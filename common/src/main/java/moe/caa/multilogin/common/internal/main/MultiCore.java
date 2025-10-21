@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class MultiCore {
     public final MessageConfig messageConfig = new MessageConfig();
     public final Platform platform;
+    public final Executor asyncExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+            .name("MultiLogin Async #", 0)
+            .factory());
 
     public MultiCore(Platform platform) {
         this.platform = platform;

@@ -1,11 +1,11 @@
-package moe.caa.multilogin.paper.channel;
+package moe.caa.multilogin.paper.internal.channel;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.papermc.paper.adventure.PaperAdventure;
 import moe.caa.multilogin.common.internal.util.ReflectUtil;
-import moe.caa.multilogin.paper.main.MultiLoginPaperMain;
+import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
@@ -135,31 +135,22 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
         SocketAddress remoteAddress = serverLoginPacketListener.connection.getRemoteAddress();
 
         String serverID = setupCrypt(packet);
-        String playerName = Objects.requireNonNull(serverLoginPacketListener.requestedUsername, "Player name not initialized");
+        String username = Objects.requireNonNull(serverLoginPacketListener.requestedUsername, "Player name not initialized");
         InetAddress playerIP = server.getPreventProxyConnections() && remoteAddress instanceof InetSocketAddress ? ((InetSocketAddress) remoteAddress).getAddress() : null;
 
-        GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes(new byte[]{0, 0, 0, 0, 0, 0}), playerName);
-        gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
-        multiLoginPaperMain.getPlatformLogger().info("UUID of player " + gameProfile.getName() + " is " + gameProfile.getId());
-        listenerCallStartClientVerification.invoke(serverLoginPacketListener, gameProfile);
+        multiLoginPaperMain.getCore().asyncExecutor.execute(() -> processYggdrasilAuthenticate(serverID, username, playerIP));
+    }
 
-//
-//        ProfileResult profileResult = listener.server.getSessionService().hasJoinedServer(playerName, serverID, playerIP);
-//        if (profileResult != null) {
-//            GameProfile gameProfile = profileResult.profile();
-//            if (!listener.connection.isConnected()) {
-//                return;
-//            }
-//
-//            gameProfile = listener.callPlayerPreLoginEvents(gameProfile);
-//            ServerLoginPacketListenerImpl.LOGGER.info("UUID of player {} is {}", gameProfile.getName(), gameProfile.getId());
-//            listener.startClientVerification(gameProfile);
-//        } else if (listener.server.isSingleplayer()) {
-//            ServerLoginPacketListenerImpl.LOGGER.warn("Failed to verify username but will let them in anyway!");
-//            listener.startClientVerification(listener.createOfflineProfile(string1));
-//        } else {
-//            listener.disconnect(Component.translatable("multiplayer.disconnect.unverified_username"));
-//            ServerLoginPacketListenerImpl.LOGGER.error("Username '{}' tried to join with an invalid session", string1);
-//        }
+    private void processYggdrasilAuthenticate(String serverID, String username, InetAddress playerIP) {
+        try {
+            // todo test bypass
+            GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes(new byte[]{0, 0, 0, 0, 0, 0}), username);
+            gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
+            multiLoginPaperMain.getPlatformLogger().info("UUID of player " + gameProfile.getName() + " is " + gameProfile.getId());
+            listenerCallStartClientVerification.invoke(serverLoginPacketListener, gameProfile);
+        } catch (Throwable t) {
+            multiLoginPaperMain.getPlatformLogger().error("Failed to authenticate player " + username, t);
+            disconnect(multiLoginPaperMain.getCore().messageConfig.loginUnknownError.get());
+        }
     }
 }

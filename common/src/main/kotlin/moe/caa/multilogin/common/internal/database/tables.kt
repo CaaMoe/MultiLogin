@@ -7,11 +7,12 @@ object UserTable : IntIdTable("multilogin_user_data", "user_id") {
     val uuid = uuid("user_uuid")
     val loginMethod = varchar("login_method", 64)
     val lastKnownName = varchar("last_known_name", 256)
-    val currentUseProfile = reference("current_use_profile_id", ProfileTable.id)
+    val selectProfile = reference("select_profile", ProfileTable.id)
 
     init {
         uniqueIndex(uuid, loginMethod)
         index(false, lastKnownName)
+        index(false, selectProfile)
     }
 }
 

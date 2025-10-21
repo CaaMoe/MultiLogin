@@ -37,8 +37,8 @@ fun DependencyHandler.compileOnlyAndExtra(dependencyNotation: Any) {
 
 paperPluginYaml {
     name = project.rootProject.name
-    main = "moe.caa.multilogin.paper.main.MultiLoginPaperMain"
-    loader = "moe.caa.multilogin.paper.bootstrap.MultiLoginPaperLoader"
+    main = "moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain"
+    loader = "moe.caa.multilogin.paper.internal.bootstrap.MultiLoginPaperLoader"
     apiVersion = "1.21"
     version = project.version.toString()
     contributors = project.rootDir.resolve("config").resolve("contributors.txt").readLines().filter {

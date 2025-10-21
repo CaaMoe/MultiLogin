@@ -1,4 +1,4 @@
-package moe.caa.multilogin.paper.bootstrap;
+package moe.caa.multilogin.paper.internal.bootstrap;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
