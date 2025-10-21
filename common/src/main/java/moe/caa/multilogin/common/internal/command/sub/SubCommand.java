@@ -8,6 +8,7 @@ import moe.caa.multilogin.common.internal.command.CommandManager;
 import moe.caa.multilogin.common.internal.command.Sender;
 import moe.caa.multilogin.common.internal.online.OnlinePlayer;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,12 @@ public abstract class SubCommand<S> {
         if (player != null) {
             consumer.accept(player);
         } else {
-            sender.sendMessage(manager.core.messageConfig.commandArgumentOnlinePlayerNotFound.get());
+            sender.sendMessage(manager.core.messageConfig.commandArgumentOnlinePlayerNotFound.get().replaceText(
+                    TextReplacementConfig.builder()
+                            .matchLiteral("<target>")
+                            .replacement(Component.text(target))
+                            .build()
+            ));
         }
     }
 
