@@ -63,24 +63,27 @@ public class InfoCommand<S> extends SubCommand<S> {
     private Component replacePlaceholder(OnlineData data, Component component) {
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_name>")
-                .replacement(data.onlineUser.username())
+                .replacement(data.onlineUser().username())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_uuid>")
-                .replacement(data.onlineUser.userUUID().toString())
+                .replacement(data.onlineUser().userUUID().toString())
                 .build());
 
-        // todo <service_display_name>
+        component = component.replaceText(TextReplacementConfig.builder()
+                .matchLiteral("<service_display_name>")
+                .replacement(data.onlineUser().loginMethodDisplayName())
+                .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<profile_name>")
-                .replacement(data.onlineProfile.profileName())
+                .replacement(data.onlineProfile().profileName())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<profile_uuid>")
-                .replacement(data.onlineProfile.profileUUID().toString())
+                .replacement(data.onlineProfile().profileUUID().toString())
                 .build());
 
         return component;

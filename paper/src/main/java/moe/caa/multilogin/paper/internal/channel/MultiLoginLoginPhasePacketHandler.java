@@ -4,6 +4,9 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.papermc.paper.adventure.PaperAdventure;
+import moe.caa.multilogin.common.internal.online.OnlineData;
+import moe.caa.multilogin.common.internal.online.OnlineProfile;
+import moe.caa.multilogin.common.internal.online.OnlineUser;
 import moe.caa.multilogin.common.internal.util.ReflectUtil;
 import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.text.Component;
@@ -145,7 +148,21 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
         try {
             // todo test bypass
             GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes(new byte[]{0, 0, 0, 0, 0, 0}), username);
+
+            OnlineData data = new OnlineData(
+                    new OnlineUser(23, "official", Component.text("测试登录"), UUID.randomUUID(), "testUser"),
+                    new OnlineProfile(59, gameProfile.getId(), gameProfile.getName())
+            );
+            multiLoginPaperMain.getOnlinePlayerManager().putOnlineData(serverLoginPacketListener.connection, data);
+
             gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
+
+            if (!gameProfile.getId().equals(data.onlineProfile().profileUUID()) || !gameProfile.getName().equals(data.onlineProfile().profileName())) {
+                multiLoginPaperMain.getPlatformLogger().warn("Check your plugin list as players triggered profile changes during the PreLoginEvent. (expected: " + data.onlineProfile().profileUUID() + "/" + data.onlineProfile().profileName() + ", got: " + gameProfile.getId() + "/" + gameProfile.getName() + ")");
+                disconnect(multiLoginPaperMain.getCore().messageConfig.loginUnknownError.get());
+                return;
+            }
+
             multiLoginPaperMain.getPlatformLogger().info("UUID of player " + gameProfile.getName() + " is " + gameProfile.getId());
             listenerCallStartClientVerification.invoke(serverLoginPacketListener, gameProfile);
         } catch (Throwable t) {
