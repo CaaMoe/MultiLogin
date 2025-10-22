@@ -137,7 +137,7 @@ public class ProfileManager {
 
     }
 
-    public sealed static class CreateProfileResult {
+    public sealed abstract static class CreateProfileResult {
 
         public sealed static class CreateProfileFailedResult extends CreateProfileResult {
             public final static class CreateProfileFailedBecauseReasonResult extends CreateProfileFailedResult {
