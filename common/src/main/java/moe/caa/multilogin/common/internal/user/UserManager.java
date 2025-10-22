@@ -1,8 +1,10 @@
 package moe.caa.multilogin.common.internal.user;
 
 import moe.caa.multilogin.common.internal.main.MultiCore;
-import moe.caa.multilogin.common.internal.profile.ProfileManager;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public class UserManager {
@@ -12,24 +14,37 @@ public class UserManager {
         this.core = core;
     }
 
+    public Optional<Integer> getOneTimeLoginProfileIDByUserID(int userID) {
+        Optional<Integer> result = Optional.ofNullable(core.databaseHandler.getAndRemoveOneTimeLoginDataByUserID(userID))
+                .filter(oneTimeLogin -> oneTimeLogin.expirationTime.isAfter(LocalDateTime.now()))
+                .map(it -> it.profileID);
+
+        core.databaseHandler.removeAllExpiredOneTimeLoginData();
+        return result;
+    }
+
+    public List<Integer> getAvailableProfileIDListByUserID(int userID) {
+        return core.databaseHandler.getAvailableProfileIDListByUserID(userID);
+    }
+
     public GetUserResult getOrCreateUser(String loginMethod, UUID userUUID, String username) {
         try {
             User user = core.databaseHandler.getUserByUUIDAndLoginMethod(userUUID, loginMethod);
             if (user != null) return new GetUserResult.GetUserSucceedResult(user);
-
-            ProfileManager.CreateProfileResult profileResult = core.profileManager.createProfile(userUUID, username, ProfileManager.AmendRuleUUID.RANDOM, ProfileManager.AmendRuleName.INCREMENT_NUMBER_AND_RIGHT_TRUNCATE);
-            return switch (profileResult) {
-                case ProfileManager.CreateProfileResult.CreateProfileSucceedResult result -> {
-                    user = core.databaseHandler.createUser(userUUID, loginMethod, username, result.profile.profileID());
-                    core.platform.getPlatformLogger().info("Created new user: " + username + "(" + userUUID + "), user id: " + user.userID);
-                    yield new GetUserResult.GetUserSucceedResult(user);
-                }
-                case ProfileManager.CreateProfileResult.CreateProfileFailedResult result ->
-                        new GetUserResult.GetUserFailedResult.GetUserFailedBecauseCreateProfileFailedResult(result);
-            };
+            user = core.databaseHandler.createUser(userUUID, loginMethod, username);
+            core.platform.getPlatformLogger().info("Created new user: " + user.getDisplayName());
+            return new GetUserResult.GetUserSucceedResult(user);
         } catch (Throwable t) {
-            return new GetUserResult.GetUserFailedResult.GetUserFailedBecauseThrowResult(t);
+            return new GetUserResult.GetUserFailedResult(t);
         }
+    }
+
+    public record OneTimeLogin(
+            int userID,
+            int profileID,
+            LocalDateTime expirationTime
+    ) {
+
     }
 
     public record User(
@@ -37,27 +52,19 @@ public class UserManager {
             String loginMethod,
             UUID userUUID,
             String username,
-            int selectProfileID
+            Optional<Integer> selectProfileID
     ) {
-
+        public String getDisplayName() {
+            return username + "(id: " + userID + ", login method: " + loginMethod + ")";
+        }
     }
 
     public sealed abstract static class GetUserResult {
-        public sealed static abstract class GetUserFailedResult extends GetUserResult {
-            public final static class GetUserFailedBecauseCreateProfileFailedResult extends GetUserFailedResult {
-                public final ProfileManager.CreateProfileResult.CreateProfileFailedResult reason;
+        public final static class GetUserFailedResult extends GetUserResult {
+            public final Throwable throwable;
 
-                public GetUserFailedBecauseCreateProfileFailedResult(ProfileManager.CreateProfileResult.CreateProfileFailedResult reason) {
-                    this.reason = reason;
-                }
-            }
-
-            public final static class GetUserFailedBecauseThrowResult extends GetUserFailedResult {
-                public final Throwable throwable;
-
-                public GetUserFailedBecauseThrowResult(Throwable throwable) {
-                    this.throwable = throwable;
-                }
+            public GetUserFailedResult(Throwable throwable) {
+                this.throwable = throwable;
             }
         }
 

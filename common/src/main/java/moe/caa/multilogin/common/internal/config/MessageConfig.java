@@ -9,6 +9,10 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<Component> loginUnknownError = miniMsg(NodePath.path("login-unknown-error"));
     public final ConfigurationValue<Component> loginInvalidCharactersInName = miniMsg(NodePath.path("login-invalid-characters-in-name"));
 
+    public final ConfigurationValue<Component> loginProfileCreateUuidConflict = miniMsg(NodePath.path("login-profile-create-uuid-conflict"));
+    public final ConfigurationValue<Component> loginProfileCreateNameConflict = miniMsg(NodePath.path("login-profile-create-name-conflict"));
+    public final ConfigurationValue<Component> loginProfileCreateNameAmendRestrict = miniMsg(NodePath.path("login-profile-create-name-amend-restrict"));
+
     public final ConfigurationValue<Component> commandRequiredPlayer = miniMsg(NodePath.path("command-required-player"));
     public final ConfigurationValue<Component> commandDescriptionHelp = miniMsg(NodePath.path("command-description-help"));
     public final ConfigurationValue<Component> commandHelpNone = miniMsg(NodePath.path("command-help-none"));

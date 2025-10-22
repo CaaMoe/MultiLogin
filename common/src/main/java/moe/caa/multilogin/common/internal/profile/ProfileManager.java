@@ -53,7 +53,7 @@ public class ProfileManager {
             }
 
             Profile profile = core.databaseHandler.createProfile(expectUUID, expectName);
-            core.platform.getPlatformLogger().info("Created new profile: " + profile.profileName + "(" + profile.profileUUID + "), profile id: " + profile.profileID);
+            core.platform.getPlatformLogger().info("Created new profile: " + profile.getDisplayName());
             return new CreateProfileResult.CreateProfileSucceedResult(profile);
         } catch (Throwable throwable) {
             return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseThrowResult(throwable);
@@ -134,7 +134,9 @@ public class ProfileManager {
             UUID profileUUID,
             String profileName
     ) {
-
+        public String getDisplayName() {
+            return profileName + "(id: " + profileID + ", uuid: " + profileUUID + ")";
+        }
     }
 
     public sealed abstract static class CreateProfileResult {

@@ -13,6 +13,7 @@ import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import java.io.FileReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.time.LocalDateTime
 import java.util.*
 
 class DatabaseHandler(
@@ -67,7 +68,7 @@ class DatabaseHandler(
                 it[UserTable.loginMethod],
                 it[UserTable.uuid],
                 it[UserTable.lastKnownName],
-                it[UserTable.selectProfile].value
+                Optional.ofNullable(it[UserTable.selectProfile]).map { it.value }
             )
         }.firstOrNull()
     }
@@ -80,12 +81,11 @@ class DatabaseHandler(
         UserTable.id eq userID
     }
 
-    fun createUser(userUUID: UUID, loginMethod: String, username: String, selectProfileID: Int) = useTransaction {
+    fun createUser(userUUID: UUID, loginMethod: String, username: String) = useTransaction {
         getUserByID(UserTable.insertAndGetId {
             it[UserTable.uuid] = userUUID
             it[UserTable.loginMethod] = loginMethod
             it[UserTable.lastKnownName] = username
-            it[UserTable.selectProfile] = selectProfileID
         }.value)!!
     }
 
@@ -117,5 +117,39 @@ class DatabaseHandler(
             it[ProfileTable.profileLowerCastName] = profileName.lowercase()
             it[ProfileTable.profileOriginalName] = profileName
         }.value)!!
+    }
+
+    fun getAndRemoveOneTimeLoginDataByUserID(userID: Int) = useTransaction {
+        val oneTimeLogin = OneTimeLoginTable.selectAll().where {
+            OneTimeLoginTable.user eq userID
+        }.limit(1).map {
+            UserManager.OneTimeLogin(
+                it[OneTimeLoginTable.user].value,
+                it[OneTimeLoginTable.profile].value,
+                it[OneTimeLoginTable.expirationTime]
+            )
+        }.firstOrNull()
+
+        OneTimeLoginTable.deleteWhere {
+            (OneTimeLoginTable.user eq userID)
+        }
+
+        oneTimeLogin
+    }
+
+    fun removeAllExpiredOneTimeLoginData() = useTransaction {
+        val dateTimeNow = LocalDateTime.now()
+
+        OneTimeLoginTable.deleteWhere {
+            (OneTimeLoginTable.expirationTime greater dateTimeNow)
+        }
+    }
+
+    fun getAvailableProfileIDListByUserID(userID: Int) = useTransaction {
+        UserHaveProfilesTable.selectAll().where {
+            UserHaveProfilesTable.user eq userID
+        }.map {
+            it[UserHaveProfilesTable.profile].value
+        }
     }
 }

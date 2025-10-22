@@ -23,6 +23,7 @@ dependencies {
     compileOnlyAndExtra(libs.kotlin.reflect)
     compileOnlyAndExtra(libs.exposed.core)
     compileOnlyAndExtra(libs.exposed.jdbc)
+    compileOnlyAndExtra(libs.exposed.java.time)
     compileOnlyAndExtra(libs.exposed.migration.core)
     compileOnlyAndExtra(libs.exposed.migration.jdbc)
     compileOnlyAndExtra(libs.hikaricp)

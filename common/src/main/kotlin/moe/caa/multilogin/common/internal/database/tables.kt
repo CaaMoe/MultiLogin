@@ -2,6 +2,7 @@ package moe.caa.multilogin.common.internal.database
 
 import org.jetbrains.exposed.v1.core.dao.id.CompositeIdTable
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
+import org.jetbrains.exposed.v1.javatime.datetime
 
 sealed interface MultiLoginTable
 
@@ -9,12 +10,24 @@ object UserTable : MultiLoginTable, IntIdTable("multilogin_user_data", "user_id"
     val uuid = uuid("user_uuid")
     val loginMethod = varchar("login_method", 64)
     val lastKnownName = varchar("last_known_name", 256)
-    val selectProfile = reference("select_profile", ProfileTable.id)
+    val selectProfile = reference("select_profile", ProfileTable.id).nullable()
 
     init {
         uniqueIndex(uuid, loginMethod)
         index(false, lastKnownName)
         index(false, selectProfile)
+    }
+}
+
+object OneTimeLoginTable : MultiLoginTable, CompositeIdTable("multilogin_one_time_login_data") {
+    val user = reference("user_id", UserTable.id)
+    val profile = reference("profile_id", ProfileTable.id)
+    val expirationTime = datetime("expiration_time")
+
+    override val primaryKey: PrimaryKey = PrimaryKey(user)
+
+    init {
+        index(true, user)
     }
 }
 
