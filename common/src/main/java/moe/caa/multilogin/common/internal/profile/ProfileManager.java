@@ -2,6 +2,7 @@ package moe.caa.multilogin.common.internal.profile;
 
 import kotlin.collections.ArraysKt;
 import moe.caa.multilogin.common.internal.main.MultiCore;
+import moe.caa.multilogin.common.internal.util.StringUtil;
 
 import java.math.BigInteger;
 import java.util.UUID;
@@ -24,9 +25,14 @@ public class ProfileManager {
             // uuid 重复处理
             if (core.databaseHandler.getProfileByUUID(expectUUID) != null) {
                 switch (amendRuleUUID) {
-                    case RANDOM -> createProfile(UUID.randomUUID(), expectName, amendRuleUUID, amendRuleName);
+                    case RANDOM -> {
+                        UUID amended = UUID.randomUUID();
+                        core.platform.getPlatformLogger().warn("Create profile UUID conflict detected, amended from " + expectUUID + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(amendRuleUUID.name()));
+                        createProfile(amended, expectName, amendRuleUUID, amendRuleName);
+                    }
                     case FAIL ->
-                            new CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason(CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason.Reason.UUID_ALREADY_EXISTS);
+                            new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
+                                    CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.UUID_CONFLICT);
                 }
             }
             // name 重复处理
@@ -35,20 +41,22 @@ public class ProfileManager {
                     case INCREMENT_NUMBER_AND_LEFT_TRUNCATE, INCREMENT_NUMBER_AND_RIGHT_TRUNCATE, INCREMENT_NUMBER -> {
                         String amended = amendRuleName.amend(expectName);
                         if (amended.length() > MAX_PROFILE_NAME_LENGTH) {
-                            return new CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason(CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason.Reason.NAME_AMEND_TOO_LONG);
+                            return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_AMEND_RESTRICT);
                         }
+                        core.platform.getPlatformLogger().warn("Create profile name conflict detected, amended from " + expectName + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(amendRuleName.name()));
                         return createProfile(expectUUID, amended, amendRuleUUID, amendRuleName);
                     }
                     case FAIL ->
-                            new CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason(CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureReason.Reason.NAME_ALREADY_EXISTS);
+                            new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
+                                    CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_CONFLICT);
                 }
             }
 
-            return new CreateProfileResult.CreateProfileResultSuccess(
-                    core.databaseHandler.createProfile(expectUUID, expectName)
-            );
+            Profile profile = core.databaseHandler.createProfile(expectUUID, expectName);
+            core.platform.getPlatformLogger().info("Created new profile: " + profile.profileName + "(" + profile.profileUUID + "), profile id: " + profile.profileID);
+            return new CreateProfileResult.CreateProfileSucceedResult(profile);
         } catch (Throwable throwable) {
-            return new CreateProfileResult.CreateProfileResultFailure.CreateProfileResultFailureThrow(throwable);
+            return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseThrowResult(throwable);
         }
     }
 
@@ -130,34 +138,35 @@ public class ProfileManager {
     }
 
     public sealed static class CreateProfileResult {
-        public sealed static class CreateProfileResultFailure extends CreateProfileResult {
-            public final static class CreateProfileResultFailureReason extends CreateProfileResultFailure {
+
+        public sealed static class CreateProfileFailedResult extends CreateProfileResult {
+            public final static class CreateProfileFailedBecauseReasonResult extends CreateProfileFailedResult {
                 public final Reason reason;
 
-                public CreateProfileResultFailureReason(Reason reason) {
+                CreateProfileFailedBecauseReasonResult(Reason reason) {
                     this.reason = reason;
                 }
 
                 public enum Reason {
-                    UUID_ALREADY_EXISTS,
-                    NAME_ALREADY_EXISTS,
-                    NAME_AMEND_TOO_LONG;
+                    UUID_CONFLICT,
+                    NAME_CONFLICT,
+                    NAME_AMEND_RESTRICT;
                 }
             }
 
-            public final static class CreateProfileResultFailureThrow extends CreateProfileResultFailure {
+            public final static class CreateProfileFailedBecauseThrowResult extends CreateProfileFailedResult {
                 public final Throwable throwable;
 
-                public CreateProfileResultFailureThrow(Throwable throwable) {
+                CreateProfileFailedBecauseThrowResult(Throwable throwable) {
                     this.throwable = throwable;
                 }
             }
         }
 
-        public final static class CreateProfileResultSuccess extends CreateProfileResult {
+        public final static class CreateProfileSucceedResult extends CreateProfileResult {
             public final Profile profile;
 
-            public CreateProfileResultSuccess(Profile profile) {
+            CreateProfileSucceedResult(Profile profile) {
                 this.profile = profile;
             }
         }

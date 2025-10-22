@@ -4,15 +4,10 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import moe.caa.multilogin.common.internal.main.MultiCore
 import moe.caa.multilogin.common.internal.profile.ProfileManager
+import moe.caa.multilogin.common.internal.user.UserManager
 import moe.caa.multilogin.common.internal.util.IOUtil
-import org.jetbrains.exposed.v1.core.Op
-import org.jetbrains.exposed.v1.core.Table
-import org.jetbrains.exposed.v1.core.eq
-import org.jetbrains.exposed.v1.core.lowerCase
-import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
-import org.jetbrains.exposed.v1.jdbc.insertAndGetId
-import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.core.*
+import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import java.io.FileReader
@@ -62,20 +57,40 @@ class DatabaseHandler(
         }
     }
 
-    fun createProfile(profileUUID: UUID, profileName: String) = transaction {
-        getProfileByID(ProfileTable.insertAndGetId {
-            it[ProfileTable.profileUUID] = profileUUID
-            it[ProfileTable.profileLowerCastName] = profileName.lowercase()
-            it[ProfileTable.profileOriginalName] = profileName
-        }.value)
+    private fun <T> useTransaction(statement: JdbcTransaction.() -> T): T = transaction(database, statement)
+
+
+    private fun getUser0(predicate: () -> Op<Boolean>) = transaction(database) {
+        UserTable.selectAll().where(predicate).limit(1).map {
+            UserManager.User(
+                it[UserTable.id].value,
+                it[UserTable.loginMethod],
+                it[UserTable.uuid],
+                it[UserTable.lastKnownName],
+                it[UserTable.selectProfile].value
+            )
+        }.firstOrNull()
     }
 
-    private fun getProfile0(predicate: () -> Op<Boolean>) = transaction(database) {
-        ProfileTable.select(
-            ProfileTable.id,
-            ProfileTable.profileUUID,
-            ProfileTable.profileOriginalName
-        ).where(predicate).limit(1).map {
+    fun getUserByUUIDAndLoginMethod(userUUID: UUID, loginMethod: String) = getUser0 {
+        (UserTable.uuid eq userUUID) and (UserTable.loginMethod eq loginMethod)
+    }
+
+    fun getUserByID(userID: Int) = getUser0 {
+        UserTable.id eq userID
+    }
+
+    fun createUser(userUUID: UUID, loginMethod: String, username: String, selectProfileID: Int) = useTransaction {
+        getUserByID(UserTable.insertAndGetId {
+            it[UserTable.uuid] = userUUID
+            it[UserTable.loginMethod] = loginMethod
+            it[UserTable.lastKnownName] = username
+            it[UserTable.selectProfile] = selectProfileID
+        }.value)!!
+    }
+
+    private fun getProfile0(predicate: () -> Op<Boolean>) = useTransaction {
+        ProfileTable.selectAll().where(predicate).limit(1).map {
             ProfileManager.Profile(
                 it[ProfileTable.id].value,
                 it[ProfileTable.profileUUID],
@@ -92,8 +107,15 @@ class DatabaseHandler(
         ProfileTable.profileLowerCastName.lowerCase() eq profileName.lowercase()
     }
 
-
     fun getProfileByUUID(profileUUID: UUID) = getProfile0 {
         ProfileTable.profileUUID eq profileUUID
+    }
+
+    fun createProfile(profileUUID: UUID, profileName: String) = useTransaction {
+        getProfileByID(ProfileTable.insertAndGetId {
+            it[ProfileTable.profileUUID] = profileUUID
+            it[ProfileTable.profileLowerCastName] = profileName.lowercase()
+            it[ProfileTable.profileOriginalName] = profileName
+        }.value)!!
     }
 }
