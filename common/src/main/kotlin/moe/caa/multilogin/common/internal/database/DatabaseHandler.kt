@@ -3,10 +3,16 @@ package moe.caa.multilogin.common.internal.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import moe.caa.multilogin.common.internal.main.MultiCore
+import moe.caa.multilogin.common.internal.profile.ProfileManager
 import moe.caa.multilogin.common.internal.util.IOUtil
+import org.jetbrains.exposed.v1.core.Op
 import org.jetbrains.exposed.v1.core.Table
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.lowerCase
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.insertAndGetId
+import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import java.io.FileReader
@@ -54,5 +60,40 @@ class DatabaseHandler(
         if (this::dataSource.isInitialized) {
             dataSource.close()
         }
+    }
+
+    fun createProfile(profileUUID: UUID, profileName: String) = transaction {
+        getProfileByID(ProfileTable.insertAndGetId {
+            it[ProfileTable.profileUUID] = profileUUID
+            it[ProfileTable.profileLowerCastName] = profileName.lowercase()
+            it[ProfileTable.profileOriginalName] = profileName
+        }.value)
+    }
+
+    private fun getProfile0(predicate: () -> Op<Boolean>) = transaction(database) {
+        ProfileTable.select(
+            ProfileTable.id,
+            ProfileTable.profileUUID,
+            ProfileTable.profileOriginalName
+        ).where(predicate).limit(1).map {
+            ProfileManager.Profile(
+                it[ProfileTable.id].value,
+                it[ProfileTable.profileUUID],
+                it[ProfileTable.profileOriginalName]
+            )
+        }.firstOrNull()
+    }
+
+    fun getProfileByID(profileID: Int) = getProfile0 {
+        ProfileTable.id eq profileID
+    }
+
+    fun getProfileByName(profileName: String) = getProfile0 {
+        ProfileTable.profileLowerCastName.lowerCase() eq profileName.lowercase()
+    }
+
+
+    fun getProfileByUUID(profileUUID: UUID) = getProfile0 {
+        ProfileTable.profileUUID eq profileUUID
     }
 }

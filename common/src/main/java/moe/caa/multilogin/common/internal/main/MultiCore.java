@@ -4,6 +4,7 @@ import moe.caa.multilogin.common.internal.Platform;
 import moe.caa.multilogin.common.internal.config.MainConfig;
 import moe.caa.multilogin.common.internal.config.MessageConfig;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
+import moe.caa.multilogin.common.internal.profile.ProfileManager;
 import moe.caa.multilogin.common.internal.util.IOUtil;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
@@ -23,6 +24,7 @@ public class MultiCore {
     public final MainConfig mainConfig = new MainConfig();
     public final Platform platform;
     public final DatabaseHandler databaseHandler = new DatabaseHandler(this);
+    public final ProfileManager profileManager = new ProfileManager(this);
     public final Executor asyncExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
             .name("MultiLogin Async #", 0)
             .factory());

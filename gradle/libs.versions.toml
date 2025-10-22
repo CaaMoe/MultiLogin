@@ -13,6 +13,7 @@ exposed = "1.0.0-rc-2"
 hikaricp = "7.0.1"
 configurate = "4.1.2"
 typesafe = "1.4.3"
+caffeine = "3.2.2"
 
 [libraries]
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-api" }
@@ -30,3 +31,4 @@ hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricp" }
 configurate-core = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurate-hocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
 typesafe = { group = "com.typesafe", name = "config", version.ref = "typesafe" }
+caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }

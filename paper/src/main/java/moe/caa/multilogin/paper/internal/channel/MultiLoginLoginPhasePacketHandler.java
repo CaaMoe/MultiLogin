@@ -5,8 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.papermc.paper.adventure.PaperAdventure;
 import moe.caa.multilogin.common.internal.online.OnlineData;
-import moe.caa.multilogin.common.internal.online.OnlineProfile;
-import moe.caa.multilogin.common.internal.online.OnlineUser;
 import moe.caa.multilogin.common.internal.util.ReflectUtil;
 import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.text.Component;
@@ -150,8 +148,8 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
             GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes(new byte[]{0, 0, 0, 0, 0, 0}), username);
 
             OnlineData data = new OnlineData(
-                    new OnlineUser(23, "official", Component.text("测试登录"), UUID.randomUUID(), "testUser"),
-                    new OnlineProfile(59, gameProfile.getId(), gameProfile.getName())
+                    new OnlineData.OnlineUser(23, "official", Component.text("测试登录"), UUID.randomUUID(), "testUser"),
+                    new OnlineData.OnlineProfile(59, gameProfile.getId(), gameProfile.getName())
             );
             multiLoginPaperMain.getOnlinePlayerManager().putOnlineData(serverLoginPacketListener.connection, data);
 
