@@ -3,6 +3,8 @@ package moe.caa.multilogin.common.internal.database
 import org.jetbrains.exposed.v1.core.dao.id.CompositeIdTable
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.javatime.datetime
+import org.jetbrains.exposed.v1.javatime.timestamp
+import java.time.LocalDateTime
 
 sealed interface MultiLoginTable
 
@@ -28,6 +30,7 @@ object OneTimeLoginTable : MultiLoginTable, CompositeIdTable("multilogin_one_tim
 
     init {
         index(true, user)
+        index(false, expirationTime)
     }
 }
 
