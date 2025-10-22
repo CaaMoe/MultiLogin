@@ -43,7 +43,7 @@ public class UserManager {
     }
 
     public sealed abstract static class GetUserResult {
-        public sealed static class GetUserFailedResult extends GetUserResult {
+        public sealed static abstract class GetUserFailedResult extends GetUserResult {
             public final static class GetUserFailedBecauseCreateProfileFailedResult extends GetUserFailedResult {
                 public final ProfileManager.CreateProfileResult.CreateProfileFailedResult reason;
 
