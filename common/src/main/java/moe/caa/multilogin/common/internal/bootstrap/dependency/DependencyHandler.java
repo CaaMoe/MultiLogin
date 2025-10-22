@@ -27,6 +27,10 @@ class DependencyHandler implements Closeable {
         dependencyRelocator.relocations.put(original, relocated);
     }
 
+    public void addExclude(String pattern) {
+        dependencyRelocator.excludes.add(pattern);
+    }
+
     public Path processDependency(Dependency dependency) throws Throwable {
         Path dependencyPath = dependencyDownloader.fetchDependency(dependency);
         return dependencyRelocator.relocate(dependency, dependencyPath);

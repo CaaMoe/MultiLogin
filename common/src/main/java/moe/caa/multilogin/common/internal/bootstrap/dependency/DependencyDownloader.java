@@ -24,7 +24,7 @@ class DependencyDownloader {
     }
 
     protected Path fetchDependency(Dependency dependency) throws IOException, NoSuchAlgorithmException {
-        String expectSha1Hex = new String(downloadFromAnyURL(dependency + "'s sha1", repositories.stream().map(dependency::generateJarDownloadSha1URL).toList()), StandardCharsets.UTF_8);
+        String expectSha1Hex = new String(downloadFromAnyURL(dependency + "'s sha1", repositories.stream().map(dependency::generateJarDownloadSha1URL).toList()), StandardCharsets.UTF_8).trim();
         Path savePath = dependencyHandler.handler.dependenciesDirectory.resolve(dependency.getJarPath());
         if (Files.exists(savePath)) {
             String activeSha1Hex = IOUtil.bytesToHex(MessageDigest.getInstance("SHA-1").digest(Files.readAllBytes(savePath)));

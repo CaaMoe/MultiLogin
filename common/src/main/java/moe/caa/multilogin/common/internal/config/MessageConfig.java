@@ -25,6 +25,10 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<Component> commandInfoOtherContent = miniMsg(NodePath.path("command-info-other-content"));
 
     private ConfigurationValue<Component> miniMsg(NodePath path) {
-        return raw(path, node -> MiniMessage.miniMessage().deserialize(node.getString("")));
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return null;
+            return MiniMessage.miniMessage().deserialize(string);
+        });
     }
 }

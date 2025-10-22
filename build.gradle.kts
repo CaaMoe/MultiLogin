@@ -32,16 +32,25 @@ subprojects {
     tasks.withType<JavaCompile> { options.encoding = "UTF-8" }
 
     tasks.withType<ShadowJar> {
+        val relocates = arrayListOf<Pair<String, String>>()
+        val excludes = arrayListOf<String>()
         file("${project.rootDir}/config/relocations.txt").readLines()
             .map { it.trim() }
             .filter { it.isNotEmpty() }
             .forEach {
                 val parts = it.split("\\s+".toRegex())
-                if (parts.size != 2) {
-                    throw IllegalArgumentException("Invalid relocation entry: $it")
+                when (parts.size) {
+                    2 -> relocates += parts[0] to parts[1]
+                    1 -> excludes += parts[0]
+                    else -> throw IllegalArgumentException("Invalid relocation entry: $it")
                 }
-                relocate(parts[0], parts[1])
             }
+
+        for ((pattern, destination) in relocates) {
+            relocate(pattern, destination) {
+                excludes.forEach { exclude(it) }
+            }
+        }
 
         manifest {
             attributes["Built-By"] = System.getProperty("user.name")

@@ -25,6 +25,7 @@ dependencies {
     compileOnlyAndExtra(libs.exposed.jdbc)
     compileOnlyAndExtra(libs.exposed.migration.core)
     compileOnlyAndExtra(libs.exposed.migration.jdbc)
+    compileOnlyAndExtra(libs.hikaricp)
     compileOnlyAndExtra(libs.configurate.core)
     compileOnlyAndExtra(libs.configurate.hocon)
     compileOnlyAndExtra(libs.typesafe)

@@ -9,6 +9,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +24,7 @@ class DependencyRelocator implements Closeable {
     );
     private final DependencyHandler dependencyHandler;
     Map<String, String> relocations = new ConcurrentHashMap<>();
+    List<String> excludes = new CopyOnWriteArrayList<>();
     private volatile RelocateTool relocateTool;
 
     DependencyRelocator(DependencyHandler dependencyHandler) {
@@ -54,6 +57,8 @@ class DependencyRelocator implements Closeable {
         private final MethodHandle jarRelocatorConstructor;
         private final MethodHandle jarRelocatorRunMethod;
 
+        private final MethodHandle relocationConstructor;
+
         private RelocateTool() throws Throwable {
             long startTimeMills = System.currentTimeMillis();
             dependencyHandler.handler.logger.debug("Initializing dependency relocator tool...");
@@ -70,8 +75,11 @@ class DependencyRelocator implements Closeable {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
 
             Class<?> jarRelocatorClass = urlClassLoader.loadClass("me.lucko.jarrelocator.JarRelocator");
-            jarRelocatorConstructor = lookup.unreflectConstructor(jarRelocatorClass.getConstructor(File.class, File.class, Map.class));
+            jarRelocatorConstructor = lookup.unreflectConstructor(jarRelocatorClass.getConstructor(File.class, File.class, Collection.class));
             jarRelocatorRunMethod = lookup.unreflect(jarRelocatorClass.getMethod("run"));
+
+            Class<?> relocationClass = urlClassLoader.loadClass("me.lucko.jarrelocator.Relocation");
+            relocationConstructor = lookup.unreflectConstructor(relocationClass.getConstructor(String.class, String.class, Collection.class, Collection.class));
 
             dependencyHandler.handler.logger.debug("Initialized dependency relocator tool, took " +
                     (System.currentTimeMillis() - startTimeMills) + " ms");
@@ -83,10 +91,20 @@ class DependencyRelocator implements Closeable {
             if (!Files.exists(relocatedDependencyJarPath.getParent())) {
                 Files.createDirectories(relocatedDependencyJarPath.getParent());
             }
+
+            List<Object> relocationRules = new ArrayList<>();
+            for (Map.Entry<String, String> entry : relocations.entrySet()) {
+                String pattern = entry.getKey();
+                String destination = entry.getValue();
+                Collection<String> excludes = DependencyRelocator.this.excludes;
+                Object relocationRule = relocationConstructor.invoke(pattern, destination, null, excludes);
+                relocationRules.add(relocationRule);
+            }
+
             Object jarRelocatorObject = jarRelocatorConstructor.invoke(
                     dependencyJarPath.toFile(),
                     relocatedDependencyJarPath.toFile(),
-                    relocations
+                    relocationRules
             );
 
             jarRelocatorRunMethod.invoke(jarRelocatorObject);

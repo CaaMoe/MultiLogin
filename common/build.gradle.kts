@@ -11,6 +11,7 @@ dependencies {
 
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.kotlin.reflect)
+    compileOnly(libs.hikaricp)
     compileOnly(libs.exposed.core)
     compileOnly(libs.exposed.jdbc)
     compileOnly(libs.exposed.migration.core)

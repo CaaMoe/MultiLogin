@@ -84,11 +84,24 @@ public abstract class Configuration {
         });
     }
 
+    public void loadFrom(ConfigurationNode node, ConfigurationNode defaultNode) {
+        for (var configurationValue : configurationValues) {
+            switch (configurationValue) {
+                case ConfigurationSpecifiedValue<?> csv ->
+                        configurationValue.parse(node.node(csv.path), defaultNode.node(csv.path));
+                case ConfigurationSubConfiguration<?> csc ->
+                        configurationValue.parse(node.node(csc.path), defaultNode.node(csc.path));
+            }
+        }
+    }
+
     public void loadFrom(ConfigurationNode node) {
         for (var configurationValue : configurationValues) {
             switch (configurationValue) {
-                case ConfigurationSpecifiedValue<?> csv -> configurationValue.parse(node.node(csv.path));
-                case ConfigurationSubConfiguration<?> csc -> configurationValue.parse(node.node(csc.path));
+                case ConfigurationSpecifiedValue<?> csv ->
+                        configurationValue.parse(node.node(csv.path), node.node(csv.path));
+                case ConfigurationSubConfiguration<?> csc ->
+                        configurationValue.parse(node.node(csc.path), node.node(csc.path));
             }
         }
     }
@@ -98,7 +111,7 @@ public abstract class Configuration {
     }
 
     private sealed interface ParseableConfigurationValue<T> extends ConfigurationValue<T> {
-        void parse(ConfigurationNode node);
+        void parse(ConfigurationNode node, ConfigurationNode defaultNode);
     }
 
     private final class ConfigurationSubConfiguration<T extends Configuration> implements ParseableConfigurationValue<T> {
@@ -118,8 +131,8 @@ public abstract class Configuration {
         }
 
         @Override
-        public void parse(ConfigurationNode node) {
-            configurationInstance.loadFrom(node);
+        public void parse(ConfigurationNode node, ConfigurationNode defaultNode) {
+            configurationInstance.loadFrom(node, defaultNode);
         }
     }
 
@@ -142,8 +155,10 @@ public abstract class Configuration {
         }
 
         @Override
-        public void parse(ConfigurationNode node) {
-            parsedValue = Objects.requireNonNullElseGet(mapValue.apply(node), defaultProvider);
+        public void parse(ConfigurationNode node, ConfigurationNode defaultNode) {
+            parsedValue = Objects.requireNonNullElseGet(mapValue.apply(node),
+                    () -> Objects.requireNonNullElseGet(mapValue.apply(defaultNode), defaultProvider)
+            );
         }
 
         @Override

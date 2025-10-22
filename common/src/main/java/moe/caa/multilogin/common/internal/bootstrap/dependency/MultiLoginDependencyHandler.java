@@ -23,7 +23,7 @@ public class MultiLoginDependencyHandler implements Closeable {
     final DependencyHandler dependencyHandler;
 
     final List<String> defaultOutsideDependencies = List.of(
-            "org.xerial:sqlite-jdbc:3.50.3.0"
+            "com.h2database:h2:2.4.240"
     );
     final List<String> defaultOutsideRepositories = List.of();
     final List<String> defaultOutsideRelocations = List.of();
@@ -118,10 +118,17 @@ public class MultiLoginDependencyHandler implements Closeable {
                 .map(s -> s.split("\\s+"))
                 .toList();
         for (String[] relocation : relocations) {
-            String original = relocation[0];
-            String relocated = relocation[1];
-            dependencyHandler.addRelocation(original, relocated);
-            logger.debug("Added dependency relocation: " + original + " -> " + relocated);
+            if (relocation.length == 1) {
+                dependencyHandler.addExclude(relocation[0]);
+                logger.debug("Added dependency relocate exclusion: " + relocation[0]);
+            } else if (relocation.length == 2) {
+                String original = relocation[0];
+                String relocated = relocation[1];
+                dependencyHandler.addRelocation(original, relocated);
+                logger.debug("Added dependency relocation: " + original + " -> " + relocated);
+            } else {
+                throw new IllegalArgumentException("Invalid relocation entry: " + Arrays.toString(relocation));
+            }
         }
         List<String[]> outsideRelocationsList = Files.readAllLines(outsideRelocations).stream()
                 .map(String::trim)
@@ -129,10 +136,17 @@ public class MultiLoginDependencyHandler implements Closeable {
                 .map(s -> s.split("\\s+"))
                 .toList();
         for (String[] outsideRelocation : outsideRelocationsList) {
-            String original = outsideRelocation[0];
-            String relocated = outsideRelocation[1];
-            dependencyHandler.addRelocation(original, relocated);
-            logger.info("Added outside dependency relocation: " + original + " -> " + relocated);
+            if (outsideRelocation.length == 1) {
+                dependencyHandler.addExclude(outsideRelocation[0]);
+                logger.info("Added outside dependency relocate exclusion: " + outsideRelocation[0]);
+            } else if (outsideRelocation.length == 2) {
+                String original = outsideRelocation[0];
+                String relocated = outsideRelocation[1];
+                dependencyHandler.addRelocation(original, relocated);
+                logger.info("Added outside dependency relocation: " + original + " -> " + relocated);
+            } else {
+                throw new IllegalArgumentException("Invalid relocation entry: " + Arrays.toString(outsideRelocation));
+            }
         }
 
         // dependency
