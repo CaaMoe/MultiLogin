@@ -168,7 +168,7 @@ class DatabaseHandler(
     }
 
     fun addUserHaveProfile(userID: Int, profileID: Int): Unit = useTransaction {
-        UserHaveProfilesTable.insertIgnore {
+        UserHaveProfilesTable.insert {
             it[user] = userID
             it[profile] = profileID
         }

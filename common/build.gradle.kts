@@ -11,10 +11,12 @@ dependencies {
 
     compileOnly(libs.kotlin.stdlib)
     compileOnly(libs.kotlin.reflect)
+    compileOnly(libs.kotlinx.datetime)
     compileOnly(libs.hikaricp)
     compileOnly(libs.exposed.core)
     compileOnly(libs.exposed.jdbc)
     compileOnly(libs.exposed.java.time)
+    compileOnly(libs.exposed.kotlin.time)
     compileOnly(libs.exposed.migration.core)
     compileOnly(libs.exposed.migration.jdbc)
     compileOnly(libs.configurate.core)

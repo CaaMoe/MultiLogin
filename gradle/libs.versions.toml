@@ -1,5 +1,6 @@
 [versions]
 kotlin = "2.2.0"
+kotlinx-datetime = "0.7.1-0.6.x-compat"
 shadow = "8.3.8"
 slf4j-api = "2.0.9"
 adventure-api = "4.14.0"
@@ -13,7 +14,6 @@ exposed = "1.0.0-rc-2"
 hikaricp = "7.0.1"
 configurate = "4.1.2"
 typesafe = "1.4.3"
-caffeine = "3.2.2"
 
 [libraries]
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-api" }
@@ -23,13 +23,14 @@ brigadier = { group = "com.mojang", name = "brigadier", version.ref = "brigadier
 
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime-jvm", version.ref = "kotlinx-datetime" }
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }
 exposed-jdbc = { group = "org.jetbrains.exposed", name = "exposed-jdbc", version.ref = "exposed" }
 exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
+exposed-kotlin-time = { group = "org.jetbrains.exposed", name = "exposed-kotlin-datetime", version.ref = "exposed" }
 exposed-migration-core = { group = "org.jetbrains.exposed", name = "exposed-migration-core", version.ref = "exposed" }
 exposed-migration-jdbc = { group = "org.jetbrains.exposed", name = "exposed-migration-jdbc", version.ref = "exposed" }
 hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricp" }
 configurate-core = { group = "org.spongepowered", name = "configurate-core", version.ref = "configurate" }
 configurate-hocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
 typesafe = { group = "com.typesafe", name = "config", version.ref = "typesafe" }
-caffeine = { group = "com.github.ben-manes.caffeine", name = "caffeine", version.ref = "caffeine" }

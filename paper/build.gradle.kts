@@ -21,16 +21,17 @@ dependencies {
 
     compileOnlyAndExtra(libs.kotlin.stdlib)
     compileOnlyAndExtra(libs.kotlin.reflect)
+    compileOnlyAndExtra(libs.kotlinx.datetime)
     compileOnlyAndExtra(libs.exposed.core)
     compileOnlyAndExtra(libs.exposed.jdbc)
     compileOnlyAndExtra(libs.exposed.java.time)
+    compileOnlyAndExtra(libs.exposed.kotlin.time)
     compileOnlyAndExtra(libs.exposed.migration.core)
     compileOnlyAndExtra(libs.exposed.migration.jdbc)
     compileOnlyAndExtra(libs.hikaricp)
     compileOnlyAndExtra(libs.configurate.core)
     compileOnlyAndExtra(libs.configurate.hocon)
     compileOnlyAndExtra(libs.typesafe)
-    compileOnlyAndExtra(libs.caffeine)
 }
 
 fun DependencyHandler.compileOnlyAndExtra(dependencyNotation: Any) {
