@@ -1,89 +1,141 @@
 <div align="center">
 
-# MultiLogin
+# 🌐 MultiLogin
 
-_✨ 多登录 ✨_
+_✨ 一款支持多平台、多账号登录的 Minecraft 服务器验证插件 ✨_
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/CaaMoe/MultiLogin?style=flat-square)
 [![GitHub release](https://img.shields.io/github/release/CaaMoe/MultiLogin.svg?style=flat-square)](https://github.com/CaaMoe/MultiLogin/releases/)
 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
 [![QQ Group](https://img.shields.io/badge/QQ%20group-832210691-yellow?style=flat-square)](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
-[![Join our Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&style=flat-square)](https://discord.gg/9vh4kZRFCj)
-[![bStats](https://img.shields.io/bstats/servers/21890?color=brightgreen&label=bStats&logo=bs&style=flat-square)](https://bstats.org/plugin/velocity/MultiLogin/21890)
+[![Discord](https://img.shields.io/discord/1225725211727499347.svg?logo=discord&style=flat-square)](https://discord.gg/9vh4kZRFCj)
+[![bStats](https://img.shields.io/bstats/servers/21890?color=brightgreen&label=bStats&style=flat-square)](https://bstats.org/plugin/velocity/MultiLogin/21890)
 
 </div>
 
 > [!CAUTION]
-> 当前分支还在验证开发中, 目前还不能使用, 绝对不能用于生产环境, 请耐心等待测试/正式版本发布.
+> 🚧 当前分支仍处于验证开发阶段，尚未稳定。  
+> **请勿在生产环境中使用！**  
+> 测试/正式版本将于未来更新中发布，敬请期待。
 
-## 概述
+---
 
-MultiLogin 是一个用于 Minecraft 服务器的多登录插件, 它允许玩家使用多个平台的不同账号登录服务器, 并提供了丰富的管理功能和配置选项, 以满足不同服务器的需求, 包括但不限于以下功能:
+## 📖 项目概述
 
-- 支持多种外置登录方式: 玩家可以使用多种不同的外置账号登录到服务器, 如 [MC正版](https://www.minecraft.net), [LittleSkin 外置登录](https://manual.littlesk.in/yggdrasil) 等.
-- 角色切换功能: 玩家可以方便地创建和切换游戏内不同的角色, 实现小号/多角色切换.
-- 角色编辑功能: 玩家可以自定义角色的一些基本信息, 如昵称等.
-- 跨平台支持: 插件设计为兼容多种 Minecraft 服务器平台, 如 [Paper](https://papermc.io/software/paper), [Velocity*](https://papermc.io/software/velocity) 等.
-- MiniMessage支持: 插件内置对 [MiniMessage](https://docs.papermc.io/adventure/minimessage) 格式的支持, 允许管理员使用丰富的文本格式和颜色来定制消息内容.
-- 数据存储支持: 使用 [Exposed](https://github.com/JetBrains/Exposed) 支持多种数据库存储方式, 包括 [SQLite](https://sqlite.org/)、 [MySQL](https://www.mysql.com/)、[PostgreSQL](https://www.postgresql.org/) 等.
-- 还有更多功能正在开发中...
+**MultiLogin** 是一个为 **Minecraft 服务器** 提供多登录支持的插件。  
+它允许玩家使用不同来源的账号登录到同一服务器，并提供灵活的配置和扩展能力。
 
-## 安装
+主要功能包括：
 
-1. 下载对应平台的 MultiLogin 插件 JAR 文件, 可从 [GitHub Releases 页面](https://github.com/CaaMoe/MultiLogin/releases) 获取.
-2. 将下载的 JAR 文件放入 Minecraft 服务器的 `plugins`(或者是`mods`) 目录.
-3. 重启服务器即可使用.
+- 🔐 **分离验证服务器**：  
+  支持将验证流程与主游戏服务器分离，玩家在独立的验证服务器上完成登录后再被传送回主服。
+- 👥 **多角色支持**：  
+  玩家可自由创建、编辑、切换多个游戏角色（如“小号”或不同身份角色）。
+- 🧩 **跨平台兼容**：  
+  兼容多种 Minecraft
+  服务端平台（如 [Paper](https://papermc.io/software/paper)、[Velocity*](https://papermc.io/software/velocity) 等）。
+- 📝 **MiniMessage 消息格式**：  
+  支持 [MiniMessage](https://docs.papermc.io/adventure/minimessage) 格式，允许自定义带样式和颜色的消息。
+- 💾 **多数据库后端**：  
+  使用 [Exposed](https://github.com/JetBrains/Exposed) ORM 框架，支持多种数据库：  
+  `SQLite`、`MySQL`、`PostgreSQL` 等。
+- 🧠 更多功能正在开发中……
 
-## 配置
+---
 
-插件首次运行时会生成默认的配置文件, 位于 `plugins/MultiLogin`(或者是`plugins/multilogin`, 也可能是`config/multilogin`) 下. 你可以根据需要修改配置文件中的选项, 例如启用或禁用特定的登录方式, 设置角色绑定规则等.
-修改配置文件后, 需要重启服务器或使用 `/multilogin reload` 命令来应用更改.
+## 🧭 验证服务器分离原理
 
-## 命令
-以下是 MultiLogin 插件提供的主要命令:
-- `/multilogin help` - 显示帮助信息.
+MultiLogin 支持将“验证逻辑”从主服务器中独立出来。  
+玩家首先连接验证服务器，在该服务器完成登录、认证或角色选择操作后，再通过 `transfer` 协议被转送至主服务器。
 
-## 权限节点
-- `multilogin.help` - 允许使用 `/multilogin help` 命令.
+在转送时，验证服务器会通过 **cookie** 携带经过 **非对称加密** 后的验证数据，从而实现安全的身份传递。
 
-## 构建
-如果你想从源代码构建 MultiLogin 插件, 请按照以下步骤操作:
-1. 克隆本仓库:
+这种结构的优势在于：
+
+- ✅ 理论上可实现所有登录方式同时并存(特殊条件下需要客户端安装对应的MOD)
+- ✅ 验证逻辑与业务逻辑完全解耦
+- ✅ 提高安全性与可维护性
+
+---
+
+## ⚙️ 安装指南
+
+1. 从 [GitHub Releases 页面](https://github.com/CaaMoe/MultiLogin/releases) 下载适配你服务端的平台版本。
+2. 将 `.jar` 文件放入服务器的 `plugins`（或 `mods`）目录。
+3. 启动或重启服务器以加载插件。
+
+---
+
+## 🛠️ 配置说明
+
+首次运行插件后，将在以下目录自动生成配置文件： `plugins/MultiLogin/` 或（取决于平台）`plugins/multilogin/`、
+`config/multilogin/`
+
+你可以通过编辑配置文件来自定义：
+
+- 验证服务器分离/单独本地在线验证
+- 角色绑定策略
+- 数据库连接设置  
+  等等……
+
+修改完成后，可使用命令 `/multilogin reload` 或重启服务器以应用更改。
+
+---
+
+## 🧩 从源码构建
+
+如果你希望自行编译 MultiLogin，可按以下步骤操作：
+
+1. 克隆仓库：
    ```bash
    git clone https://github.com/CaaMoe/MultiLogin.git
-    ```
-2. 进入项目目录:
-   ```bash
+   ```
+
+2. 进入项目目录：
+    ```bash
    cd MultiLogin
+    ```
+
+3. 构建项目：
+    ```bash
+    ./gradlew build
    ```
-3. 使用 Gradle 构建项目:
-   ```bash
-   ./gradlew build
+4. 构建完成后，生成的插件文件位于：
    ```
-4. 构建完成后, 生成的 JAR 文件将位于 `outputs` 目录下.
+   outputs/
+   ```
 
-或者你也可以
+### 💡 或使用 GitHub Actions 自动构建
 
-1. [Fork](https://github.com/CaaMoe/MultiLogin/fork) 本仓库到你的 GitHub 账户.
-2. 开启 GitHub Actions 自动构建.
-3. 随便提交/修改/删除一个文件以触发工作流来使用预设的环境构建插件.
+1. [Fork](https://github.com/CaaMoe/MultiLogin/fork) 本仓库
+2. 启用 GitHub Actions。
+3. 任意提交一次代码，即可自动触发构建流程。
 
+---
 
-## 联系我们
-如果你在使用过程中遇到任何问题或有任何建议, 欢迎通过以下方式联系我们:
+## 📞 联系我们
 
-- 加入我们的 [QQ 群](https://jq.qq.com/?_wv=1027&k=WrOTGIC7)
-- 访问我们的 [Discord 服务器](https://discord.gg/9vh4kZRFCj)
-- 在 GitHub 上提交 [问题](https://github.com/CaaMoe/MultiLogin/issues/new)
+如果你在使用过程中遇到问题或有建议，欢迎通过以下渠道反馈：
 
-## 许可证
-本项目采用 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE) 许可证, 详情请参阅 [LICENSE](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE) 文件.
+- 💬 加入 [QQ](https://jq.qq.com/?_wv=1027&k=WrOTGIC7) 群
+- 🌍 加入 [Discord](https://discord.gg/9vh4kZRFCj) 服务器
+- 🐛 提交 [Issue](https://github.com/CaaMoe/MultiLogin/issues/new)
 
-## 致谢
-感谢所有为 MultiLogin 插件做出贡献的开发者和社区成员, 你们的支持和反馈使得这个项目得以不断改进和发展!
+---
 
-<a href="https://github.com/CaaMoe/MultiLogin/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=CaaMoe/MultiLogin"  alt="作者头像"/>
-</a>
+## 📜 开源许可证
 
-[我也想为贡献者之一?](https://github.com/CaaMoe/MultiLogin/pulls)
+本项目基于 [![GitHub license](https://img.shields.io/github/license/CaaMoe/MultiLogin?style=flat-square)](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE)
+协议发布。
+详细内容请参阅 [LICENSE](https://github.com/CaaMoe/MultiLogin/blob/master/LICENSE) 文件。
+
+---
+
+## 💖 致谢
+
+感谢所有为 MultiLogin 做出贡献的开发者与社区成员！
+你们的支持与反馈让项目不断完善与成长。
+
+<a href="https://github.com/CaaMoe/MultiLogin/graphs/contributors"> <img src="https://contrib.rocks/image?repo=CaaMoe/MultiLogin" alt="贡献者头像"/> </a>
+
+> Made with ❤️ by the MultiLogin Community.

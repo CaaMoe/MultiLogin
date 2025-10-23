@@ -2,7 +2,6 @@ package moe.caa.multilogin.common.internal.config;
 
 import moe.caa.multilogin.common.internal.util.Configuration;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.spongepowered.configurate.NodePath;
 
 public class MessageConfig extends Configuration {
@@ -27,12 +26,4 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<Component> commandDescriptionInfoOther = miniMsg(NodePath.path("command-description-info-other"));
     public final ConfigurationValue<Component> commandInfoOtherNone = miniMsg(NodePath.path("command-info-other-none"));
     public final ConfigurationValue<Component> commandInfoOtherContent = miniMsg(NodePath.path("command-info-other-content"));
-
-    private ConfigurationValue<Component> miniMsg(NodePath path) {
-        return raw(path, node -> {
-            String string = node.getString();
-            if (string == null) return null;
-            return MiniMessage.miniMessage().deserialize(string);
-        });
-    }
 }

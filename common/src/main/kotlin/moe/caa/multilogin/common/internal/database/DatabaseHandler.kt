@@ -24,7 +24,7 @@ class DatabaseHandler(
 
     fun initDatabase() {
         val hikariConfigurationPath =
-            core.platform.platformConfigPath.resolve(core.mainConfig.databaseConfiguration.get())
+            core.platform.platformConfigPath.resolve(core.mainConfig.databaseConfig.get())
 
         if (!Files.exists(hikariConfigurationPath)) {
             Objects.requireNonNull<ByteArray>(IOUtil.readNestResource("default_hikari.properties"))

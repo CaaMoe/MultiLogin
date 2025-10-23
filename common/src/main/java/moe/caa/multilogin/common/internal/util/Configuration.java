@@ -1,5 +1,7 @@
 package moe.caa.multilogin.common.internal.util;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 
@@ -45,6 +47,22 @@ public abstract class Configuration {
             }
             throw new IllegalArgumentException("Invalid enum value '" + value + "' for enum " + enumClass.getName() + " at path " + Arrays.stream(path.array()).map(Object::toString).collect(Collectors.joining(".")));
 
+        });
+    }
+
+    protected ConfigurationValue<Component> miniMsg(NodePath path) {
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return null;
+            return MiniMessage.miniMessage().deserialize(string);
+        });
+    }
+
+    protected ConfigurationValue<Component> miniMsgOpt(NodePath path, Component defaultValue) {
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return defaultValue;
+            return MiniMessage.miniMessage().deserialize(string);
         });
     }
 

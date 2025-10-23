@@ -20,33 +20,33 @@ public class ProfileManager {
         return core.databaseHandler.getProfileByID(profileID);
     }
 
-    public CreateProfileResult createProfile(UUID expectUUID, String expectName, AmendRuleUUID amendRuleUUID, AmendRuleName amendRuleName) {
+    public CreateProfileResult createProfile(UUID expectUUID, String expectName, UUIDConflictPolicy UUIDConflictPolicy, NameConflictPolicy nameConflictPolicy) {
         try {
             // uuid 重复处理
             if (core.databaseHandler.getProfileByUUID(expectUUID) != null) {
-                switch (amendRuleUUID) {
+                switch (UUIDConflictPolicy) {
                     case RANDOM -> {
                         UUID amended = UUID.randomUUID();
-                        core.platform.getPlatformLogger().warn("Create profile UUID conflict detected, amended from " + expectUUID + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(amendRuleUUID.name()));
-                        createProfile(amended, expectName, amendRuleUUID, amendRuleName);
+                        core.platform.getPlatformLogger().warn("Create profile UUID conflict detected, amended from " + expectUUID + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(UUIDConflictPolicy.name()));
+                        createProfile(amended, expectName, UUIDConflictPolicy, nameConflictPolicy);
                     }
-                    case FAIL ->
+                    case REJECT ->
                             new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
                                     CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.UUID_CONFLICT);
                 }
             }
             // name 重复处理
             if (core.databaseHandler.getProfileByName(expectName) != null) {
-                switch (amendRuleName) {
-                    case INCREMENT_NUMBER_AND_LEFT_TRUNCATE, INCREMENT_NUMBER_AND_RIGHT_TRUNCATE, INCREMENT_NUMBER -> {
-                        String amended = amendRuleName.amend(expectName);
+                switch (nameConflictPolicy) {
+                    case INCREMENT_LEFT_TRUNCATE, INCREMENT_RIGHT_TRUNCATE, INCREMENT -> {
+                        String amended = nameConflictPolicy.amend(expectName);
                         if (amended.length() > MAX_PROFILE_NAME_LENGTH) {
                             return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_AMEND_RESTRICT);
                         }
-                        core.platform.getPlatformLogger().warn("Create profile name conflict detected, amended from " + expectName + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(amendRuleName.name()));
-                        return createProfile(expectUUID, amended, amendRuleUUID, amendRuleName);
+                        core.platform.getPlatformLogger().warn("Create profile name conflict detected, amended from " + expectName + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(nameConflictPolicy.name()));
+                        return createProfile(expectUUID, amended, UUIDConflictPolicy, nameConflictPolicy);
                     }
-                    case FAIL ->
+                    case REJECT ->
                             new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
                                     CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_CONFLICT);
                 }
@@ -60,14 +60,14 @@ public class ProfileManager {
         }
     }
 
-    public enum AmendRuleUUID {
-        FAIL,
+    public enum UUIDConflictPolicy {
+        REJECT,
         RANDOM;
     }
 
-    public enum AmendRuleName {
-        FAIL(name -> name),
-        INCREMENT_NUMBER(name -> {
+    public enum NameConflictPolicy {
+        REJECT(name -> name),
+        INCREMENT(name -> {
             StringBuilder numberSpec = new StringBuilder();
             for (char c : ArraysKt.reversedArray(name.toCharArray())) {
                 if (Character.isDigit(c)) {
@@ -81,8 +81,8 @@ public class ProfileManager {
 
             return nameSpec + numberSpec;
         }),
-        INCREMENT_NUMBER_AND_LEFT_TRUNCATE(name -> {
-            name = INCREMENT_NUMBER.amend(name);
+        INCREMENT_LEFT_TRUNCATE(name -> {
+            name = INCREMENT.amend(name);
             if (name.length() <= MAX_PROFILE_NAME_LENGTH) {
                 return name;
             }
@@ -99,8 +99,8 @@ public class ProfileManager {
             }
             return nameSpec.substring(1) + numberSpec;
         }),
-        INCREMENT_NUMBER_AND_RIGHT_TRUNCATE(name -> {
-            name = INCREMENT_NUMBER.amend(name);
+        INCREMENT_RIGHT_TRUNCATE(name -> {
+            name = INCREMENT.amend(name);
             if (name.length() <= MAX_PROFILE_NAME_LENGTH) {
                 return name;
             }
@@ -120,7 +120,7 @@ public class ProfileManager {
 
         private final Function<String, String> amendFunction;
 
-        AmendRuleName(Function<String, String> amendFunction) {
+        NameConflictPolicy(Function<String, String> amendFunction) {
             this.amendFunction = amendFunction;
         }
 

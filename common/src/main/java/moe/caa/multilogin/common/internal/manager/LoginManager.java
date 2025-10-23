@@ -63,8 +63,8 @@ public class LoginManager {
                 ProfileManager.CreateProfileResult profileCreateResult = core.profileManager.createProfile(
                         user.userUUID(),
                         user.username(),
-                        ProfileManager.AmendRuleUUID.RANDOM,
-                        ProfileManager.AmendRuleName.INCREMENT_NUMBER_AND_RIGHT_TRUNCATE
+                        ProfileManager.UUIDConflictPolicy.RANDOM,
+                        ProfileManager.NameConflictPolicy.INCREMENT_RIGHT_TRUNCATE
                 );
                 switch (profileCreateResult) {
                     case ProfileManager.CreateProfileResult.CreateProfileFailedResult createProfileFailedResult -> {
