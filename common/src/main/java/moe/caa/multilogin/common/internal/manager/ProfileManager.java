@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.profile;
+package moe.caa.multilogin.common.internal.manager;
 
 import kotlin.collections.ArraysKt;
 import moe.caa.multilogin.common.internal.main.MultiCore;

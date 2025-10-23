@@ -1,8 +1,9 @@
-package moe.caa.multilogin.common.internal.command;
+package moe.caa.multilogin.common.internal.manager;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import moe.caa.multilogin.common.internal.command.Sender;
 import moe.caa.multilogin.common.internal.command.sub.HelpCommand;
 import moe.caa.multilogin.common.internal.command.sub.InfoCommand;
 import moe.caa.multilogin.common.internal.command.sub.SubCommand;

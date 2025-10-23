@@ -2,7 +2,7 @@ package moe.caa.multilogin.common.internal.command.sub;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import moe.caa.multilogin.common.internal.command.CommandManager;
+import moe.caa.multilogin.common.internal.manager.CommandManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;

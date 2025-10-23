@@ -4,9 +4,8 @@ import com.mojang.authlib.GameProfile;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.papermc.paper.adventure.PaperAdventure;
+import moe.caa.multilogin.common.internal.manager.LoginManager;
 import moe.caa.multilogin.common.internal.online.OnlineData;
-import moe.caa.multilogin.common.internal.profile.ProfileManager;
-import moe.caa.multilogin.common.internal.user.UserManager;
 import moe.caa.multilogin.common.internal.util.ReflectUtil;
 import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.text.Component;
@@ -30,9 +29,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.PrivateKey;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -146,114 +143,40 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
         paperMain.getCore().asyncExecutor.execute(() -> processYggdrasilAuthenticate(serverID, username, playerIP));
     }
 
-    private void handleCreateProfileFailedResult(ProfileManager.CreateProfileResult.CreateProfileFailedResult result) {
-        Component disconnectReason = switch (result) {
-            case ProfileManager.CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult enumResult ->
-                    switch (enumResult.reason) {
-                        case UUID_CONFLICT -> paperMain.getCore().messageConfig.loginProfileCreateUuidConflict.get();
-                        case NAME_CONFLICT -> paperMain.getCore().messageConfig.loginProfileCreateNameConflict.get();
-                        case NAME_AMEND_RESTRICT ->
-                                paperMain.getCore().messageConfig.loginProfileCreateNameAmendRestrict.get();
-                    };
-            case ProfileManager.CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseThrowResult throwResult -> {
-                paperMain.getPlatformLogger().error("Failed to create profile during user creation.", throwResult.throwable);
-                yield paperMain.getCore().messageConfig.loginUnknownError.get();
-            }
-        };
-        disconnect(disconnectReason);
-    }
-
-
-    private void handleGetUserSucceedResult(UserManager.GetUserResult.GetUserSucceedResult result, GameProfile gameProfile) throws Throwable {
-        ProfileManager.Profile profile = null;
-
-        // 一次性登录
-        Optional<Integer> oneTimeLoginProfileID = paperMain.getCore().userManager.getOneTimeLoginProfileIDByUserID(result.user.userID());
-        if (oneTimeLoginProfileID.isPresent()) {
-            paperMain.getPlatformLogger().info("User " + result.user.getDisplayName() + " is using one-time login profile ID " + oneTimeLoginProfileID.get());
-            profile = paperMain.getCore().profileManager.getProfileSnapshotByID(oneTimeLoginProfileID.get());
-
-            if (profile == null) {
-                paperMain.getPlatformLogger().error("User " + result.user.getDisplayName() + " attempted to use one-time login profile ID " + oneTimeLoginProfileID.get() + " which does not exist. Falling back to their selected profile ID " + result.user.selectProfileID() + ".");
-            }
-        }
-
-
-        if (profile == null) {
-            Optional<Integer> selectedProfile = result.user.selectProfileID();
-            // 登录到默认档案
-            if (selectedProfile.isPresent()) {
-                profile = paperMain.getCore().profileManager.getProfileSnapshotByID(selectedProfile.get());
-            } else {
-                // 没有选择档案
-                // 看看有没有已拥有的档案
-                List<Integer> avaliableProfileIDList = paperMain.getCore().userManager.getAvailableProfileIDListByUserID(result.user.userID());
-                if (!avaliableProfileIDList.isEmpty()) {
-                    paperMain.getPlatformLogger().warn("User " + result.user.getDisplayName() + " has no selected profile and will choose from their available profiles.");
-                    for (Integer profileID : avaliableProfileIDList) {
-                        profile = paperMain.getCore().profileManager.getProfileSnapshotByID(profileID);
-                        if (profile != null) {
-                            // set selected profile todo
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (profile == null) {
-                paperMain.getPlatformLogger().warn("User " + result.user.getDisplayName() + " has no selected profile and no available profiles, Creating new profile...");
-
-                ProfileManager.CreateProfileResult profileCreateResult = paperMain.getCore().profileManager.createProfile(
-                        result.user.userUUID(),
-                        result.user.username(),
-                        ProfileManager.AmendRuleUUID.RANDOM,
-                        ProfileManager.AmendRuleName.INCREMENT_NUMBER_AND_RIGHT_TRUNCATE
-                );
-                switch (profileCreateResult) {
-                    case ProfileManager.CreateProfileResult.CreateProfileFailedResult createProfileFailedResult -> {
-                        handleCreateProfileFailedResult(createProfileFailedResult);
-                        return;
-                    }
-                    case ProfileManager.CreateProfileResult.CreateProfileSucceedResult createProfileSucceedResult -> {
-                        profile = createProfileSucceedResult.profile;
-                        // todo 写入 selectedProfile 和 have profile
-                    }
-                }
-            }
-        }
-
-        OnlineData data = new OnlineData(
-                new OnlineData.OnlineUser(result.user.userID(), "official", Component.text("测试登录"), result.user.userUUID(), result.user.username()),
-                new OnlineData.OnlineProfile(profile.profileID(), profile.profileUUID(), profile.profileName())
-        );
-        paperMain.getOnlinePlayerManager().putOnlineData(serverLoginPacketListener.connection, data);
-
-        gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
-
-        if (!gameProfile.getId().equals(data.onlineProfile().profileUUID()) || !gameProfile.getName().equals(data.onlineProfile().profileName())) {
-            paperMain.getPlatformLogger().warn("Check your plugin list as players triggered profile changes during the PreLoginEvent. (expected: " + data.onlineProfile().profileUUID() + "/" + data.onlineProfile().profileName() + ", got: " + gameProfile.getId() + "/" + gameProfile.getName() + ")");
-            disconnect(paperMain.getCore().messageConfig.loginUnknownError.get());
-            return;
-        }
-
-        paperMain.getPlatformLogger().info("User " + result.user.getDisplayName() + " logged in with profile " + profile.getDisplayName());
-        listenerCallStartClientVerification.invoke(serverLoginPacketListener, gameProfile);
-    }
-
-
     private void processYggdrasilAuthenticate(String serverID, String username, InetAddress playerIP) {
         try {
             // todo test bypass
             GameProfile gameProfile = new GameProfile(UUID.nameUUIDFromBytes(new byte[]{0, 0, 0, 0, 0, 0}), username);
             String loginMethod = "official";
-            UserManager.GetUserResult userResult = paperMain.getCore().userManager.getOrCreateUser(loginMethod, gameProfile.getId(), gameProfile.getName());
-            switch (userResult) {
-                case UserManager.GetUserResult.GetUserSucceedResult result -> {
-                    handleGetUserSucceedResult(result, gameProfile);
+
+            switch (paperMain.getCore().loginManager.processLogin(gameProfile.getId(), gameProfile.getName(), loginMethod)) {
+                case LoginManager.ProcessLoginResult.ProcessLoginFailedResult failedResult -> {
+                    Component disconnectReason = switch (failedResult) {
+                        case LoginManager.ProcessLoginResult.ProcessLoginFailedResult.ProcessLoginFailedBecauseReasonResult reasonResult ->
+                                reasonResult.reason;
+                        case LoginManager.ProcessLoginResult.ProcessLoginFailedResult.ProcessLoginFailedBecauseThrowResult throwResult -> {
+                            paperMain.getPlatformLogger().error("Failed to processed login player: " + username, throwResult.throwable);
+                            yield paperMain.getCore().messageConfig.loginUnknownError.get();
+                        }
+                    };
+
+                    disconnect(disconnectReason);
                 }
-                case UserManager.GetUserResult.GetUserFailedResult result -> {
-                    paperMain.getPlatformLogger().error("Failed to get user data.", result.throwable);
-                    disconnect(paperMain.getCore().messageConfig.loginUnknownError.get());
+                case LoginManager.ProcessLoginResult.ProcessLoginSucceedResult succeedResult -> {
+                    OnlineData data = succeedResult.data;
+                    paperMain.getOnlinePlayerManager().putOnlineData(serverLoginPacketListener.connection, data);
+
+
+                    gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
+
+                    if (!gameProfile.getId().equals(data.onlineProfile().profileUUID()) || !gameProfile.getName().equals(data.onlineProfile().profileName())) {
+                        paperMain.getPlatformLogger().warn("Check your plugin list as players triggered profile changes during the PreLoginEvent. (expected: " + data.onlineProfile().profileUUID() + "/" + data.onlineProfile().profileName() + ", got: " + gameProfile.getId() + "/" + gameProfile.getName() + ")");
+                        disconnect(paperMain.getCore().messageConfig.loginUnknownError.get());
+                        return;
+                    }
+
+                    listenerCallStartClientVerification.invoke(serverLoginPacketListener, gameProfile);
+
                 }
             }
         } catch (Throwable t) {

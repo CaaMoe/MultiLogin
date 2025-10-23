@@ -3,8 +3,8 @@ package moe.caa.multilogin.common.internal.database
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import moe.caa.multilogin.common.internal.main.MultiCore
-import moe.caa.multilogin.common.internal.profile.ProfileManager
-import moe.caa.multilogin.common.internal.user.UserManager
+import moe.caa.multilogin.common.internal.manager.ProfileManager
+import moe.caa.multilogin.common.internal.manager.UserManager
 import moe.caa.multilogin.common.internal.util.IOUtil
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
@@ -150,6 +150,29 @@ class DatabaseHandler(
             UserHaveProfilesTable.user eq userID
         }.map {
             it[UserHaveProfilesTable.profile].value
+        }
+    }
+
+    fun removeUserSelectedProfileID(userID: Int): Unit = useTransaction {
+        UserTable.update({
+            UserTable.id eq userID
+        }) {
+            it[selectProfile] = null
+        }
+    }
+
+    fun setUserSelectedProfileID(userID: Int, profileID: Int): Unit = useTransaction {
+        UserTable.update({
+            UserTable.id eq userID
+        }) {
+            it[selectProfile] = profileID
+        }
+    }
+
+    fun addUserHaveProfile(userID: Int, profileID: Int): Unit = useTransaction {
+        UserHaveProfilesTable.insertIgnore {
+            it[user] = userID
+            it[profile] = profileID
         }
     }
 }

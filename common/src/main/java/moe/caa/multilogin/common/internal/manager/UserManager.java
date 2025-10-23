@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.user;
+package moe.caa.multilogin.common.internal.manager;
 
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
@@ -14,7 +14,7 @@ public class UserManager {
         this.core = core;
     }
 
-    public Optional<Integer> getOneTimeLoginProfileIDByUserID(int userID) {
+    public Optional<Integer> getAndRemoveOneTimeLoginProfileIDByUserID(int userID) {
         Optional<Integer> result = Optional.ofNullable(core.databaseHandler.getAndRemoveOneTimeLoginDataByUserID(userID))
                 .filter(oneTimeLogin -> oneTimeLogin.expirationTime.isAfter(LocalDateTime.now()))
                 .map(it -> it.profileID);
@@ -27,17 +27,27 @@ public class UserManager {
         return core.databaseHandler.getAvailableProfileIDListByUserID(userID);
     }
 
-    public GetUserResult getOrCreateUser(String loginMethod, UUID userUUID, String username) {
-        try {
-            User user = core.databaseHandler.getUserByUUIDAndLoginMethod(userUUID, loginMethod);
-            if (user != null) return new GetUserResult.GetUserSucceedResult(user);
+    public void removeUserSelectedProfileID(int userID) {
+        core.databaseHandler.removeUserSelectedProfileID(userID);
+    }
+
+    public void setUserSelectedProfileID(int userID, int profileID) {
+        core.databaseHandler.setUserSelectedProfileID(userID, profileID);
+    }
+
+    public void addUserHaveProfile(int userID, int profileID) {
+        core.databaseHandler.addUserHaveProfile(userID, profileID);
+    }
+
+    public User getOrCreateUser(String loginMethod, UUID userUUID, String username) {
+        User user = core.databaseHandler.getUserByUUIDAndLoginMethod(userUUID, loginMethod);
+        if (user == null) {
             user = core.databaseHandler.createUser(userUUID, loginMethod, username);
             core.platform.getPlatformLogger().info("Created new user: " + user.getDisplayName());
-            return new GetUserResult.GetUserSucceedResult(user);
-        } catch (Throwable t) {
-            return new GetUserResult.GetUserFailedResult(t);
         }
+        return user;
     }
+
 
     public record OneTimeLogin(
             int userID,
@@ -56,24 +66,6 @@ public class UserManager {
     ) {
         public String getDisplayName() {
             return username + "(id: " + userID + ", login method: " + loginMethod + ")";
-        }
-    }
-
-    public sealed abstract static class GetUserResult {
-        public final static class GetUserFailedResult extends GetUserResult {
-            public final Throwable throwable;
-
-            public GetUserFailedResult(Throwable throwable) {
-                this.throwable = throwable;
-            }
-        }
-
-        public final static class GetUserSucceedResult extends GetUserResult {
-            public final User user;
-
-            public GetUserSucceedResult(User user) {
-                this.user = user;
-            }
         }
     }
 }

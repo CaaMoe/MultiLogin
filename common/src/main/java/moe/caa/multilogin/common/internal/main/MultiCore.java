@@ -4,8 +4,9 @@ import moe.caa.multilogin.common.internal.Platform;
 import moe.caa.multilogin.common.internal.config.MainConfig;
 import moe.caa.multilogin.common.internal.config.MessageConfig;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
-import moe.caa.multilogin.common.internal.profile.ProfileManager;
-import moe.caa.multilogin.common.internal.user.UserManager;
+import moe.caa.multilogin.common.internal.manager.LoginManager;
+import moe.caa.multilogin.common.internal.manager.ProfileManager;
+import moe.caa.multilogin.common.internal.manager.UserManager;
 import moe.caa.multilogin.common.internal.util.IOUtil;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
@@ -24,6 +25,7 @@ public class MultiCore {
     public final MessageConfig messageConfig = new MessageConfig();
     public final MainConfig mainConfig = new MainConfig();
     public final Platform platform;
+    public final LoginManager loginManager = new LoginManager(this);
     public final DatabaseHandler databaseHandler = new DatabaseHandler(this);
     public final ProfileManager profileManager = new ProfileManager(this);
     public final UserManager userManager = new UserManager(this);

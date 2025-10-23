@@ -1,9 +1,9 @@
 package moe.caa.multilogin.paper.internal.command;
 
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import moe.caa.multilogin.common.internal.command.CommandManager;
 import moe.caa.multilogin.common.internal.command.Sender;
 import moe.caa.multilogin.common.internal.main.MultiCore;
+import moe.caa.multilogin.common.internal.manager.CommandManager;
 import moe.caa.multilogin.paper.internal.online.PaperOnlinePlayer;
 import org.bukkit.entity.Player;
 
