@@ -13,7 +13,7 @@ import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import java.io.FileReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.*
 
 class DatabaseHandler(
@@ -138,10 +138,8 @@ class DatabaseHandler(
     }
 
     fun removeAllExpiredOneTimeLoginData() = useTransaction {
-        val dateTimeNow = LocalDateTime.now()
-
         OneTimeLoginTable.deleteWhere {
-            (OneTimeLoginTable.expirationTime greater dateTimeNow)
+            (OneTimeLoginTable.expirationTime greater Instant.now())
         }
     }
 
