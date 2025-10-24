@@ -32,7 +32,7 @@ jobs:
 
       - name: Create Release
         if: false
-#        if: (github.event_name != 'pull_request')
+        # if: (github.event_name != 'pull_request')
         id: create_release
         uses: ncipollo/release-action@v1
         with:

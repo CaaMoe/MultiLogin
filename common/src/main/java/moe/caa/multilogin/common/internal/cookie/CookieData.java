@@ -34,7 +34,7 @@ public abstract class CookieData {
                 cookieTypeMap.putAll(collectTypeMap(lookup, permittedSubclass));
             } else {
                 if (!permittedSubclass.isAnnotationPresent(CookieDataType.class)) {
-                    throw new IllegalStateException(""); //todo
+                    throw new IllegalStateException(permittedSubclass.getCanonicalName() + " is not annotated with " + CookieDataType.class.getCanonicalName());
                 }
 
                 cookieTypeMap.put(permittedSubclass.getAnnotation(CookieDataType.class).type(), lookup.unreflectConstructor(permittedSubclass.getConstructor()));
@@ -78,7 +78,7 @@ public abstract class CookieData {
         String type = jsonObject.getAsJsonPrimitive("type").getAsString();
         MethodHandle handle = typeCookieMap.get(type);
         if (handle == null) {
-            throw new IllegalArgumentException(""); //todo
+            throw new IllegalArgumentException("Invalid data type: " + type);
         }
         CookieData cookieData = (CookieData) handle.invoke();
         cookieData.readSignatureContent = readSignatureContent;

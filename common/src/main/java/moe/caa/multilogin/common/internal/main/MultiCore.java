@@ -1,10 +1,7 @@
 package moe.caa.multilogin.common.internal.main;
 
 import moe.caa.multilogin.common.internal.Platform;
-import moe.caa.multilogin.common.internal.config.LocalAuthenticationConfig;
-import moe.caa.multilogin.common.internal.config.MainConfig;
-import moe.caa.multilogin.common.internal.config.MessageConfig;
-import moe.caa.multilogin.common.internal.config.RemoteAuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.*;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
 import moe.caa.multilogin.common.internal.manager.LoginManager;
 import moe.caa.multilogin.common.internal.manager.ProfileManager;
@@ -17,10 +14,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
@@ -39,6 +33,8 @@ public class MultiCore {
 
     public LocalAuthenticationConfig localAuthenticationConfig = null;
     public List<RemoteAuthenticationConfig> remoteAuthenticationConfigs = Collections.emptyList();
+
+    public Map<String, AuthenticationConfig> authenticationServiceMap = Collections.emptyMap();
 
 
     public MultiCore(Platform platform) {
@@ -70,6 +66,7 @@ public class MultiCore {
 
         LocalAuthenticationConfig localAuthenticationConfig = null;
         List<RemoteAuthenticationConfig> remoteAuthenticationConfigs = new ArrayList<>();
+        Map<String, AuthenticationConfig> authenticationServiceMap = new HashMap<>();
 
 
         Path messagesConfigPath = configPath.resolve("messages.conf");
@@ -96,6 +93,7 @@ public class MultiCore {
         if (authMode == MainConfig.AuthMode.LOCAL || authMode == MainConfig.AuthMode.MIXED) {
             localAuthenticationConfig = new LocalAuthenticationConfig(mainConfig);
             localAuthenticationConfig.loadFrom(configurationNode.node("local-auth-service"));
+            authenticationServiceMap.put(localAuthenticationConfig.id.get(), localAuthenticationConfig);
         }
         if (authMode == MainConfig.AuthMode.REMOTE || authMode == MainConfig.AuthMode.MIXED) {
             try (Stream<Path> pathStream = Files.list(remoteServicePath)) {
@@ -105,19 +103,25 @@ public class MultiCore {
                     RemoteAuthenticationConfig remoteAuthenticationConfig = new RemoteAuthenticationConfig(mainConfig);
                     remoteAuthenticationConfig.loadFrom(HoconConfigurationLoader.builder().file(file).build().load());
                     remoteAuthenticationConfigs.add(remoteAuthenticationConfig);
+
+                    if (authenticationServiceMap.containsKey(remoteAuthenticationConfig.id.get())) {
+                        throw new IllegalArgumentException("The same authentication service id " + remoteAuthenticationConfig.id.get() + " exists.");
+                    }
+                    authenticationServiceMap.put(remoteAuthenticationConfig.id.get(), remoteAuthenticationConfig);
                 }
             }
         }
 
+        this.authenticationServiceMap = Collections.unmodifiableMap(authenticationServiceMap);
         this.localAuthenticationConfig = localAuthenticationConfig;
-        this.remoteAuthenticationConfigs = remoteAuthenticationConfigs;
+        this.remoteAuthenticationConfigs = Collections.unmodifiableList(remoteAuthenticationConfigs);
 
         platform.getPlatformLogger().info("Authentication mode: " + authMode.name());
         if (localAuthenticationConfig != null) {
-            platform.getPlatformLogger().info("");
+            platform.getPlatformLogger().info("Add a local authentication service with id " + localAuthenticationConfig.id.get());
         }
         for (RemoteAuthenticationConfig authenticationConfig : remoteAuthenticationConfigs) {
-            platform.getPlatformLogger().info("Add");
+            platform.getPlatformLogger().info("Add a remote authentication service with id " + authenticationConfig.id.get());
         }
     }
 }
