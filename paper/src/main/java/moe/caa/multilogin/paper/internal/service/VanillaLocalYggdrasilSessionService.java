@@ -20,7 +20,7 @@ public class VanillaLocalYggdrasilSessionService implements LocalYggdrasilSessio
     public HasJoinedResult hasJoined(String serverID, String username, InetAddress playerIP) {
         try {
             ProfileResult profileResult = ((CraftServer) paperMain.getServer()).getServer().getSessionService().hasJoinedServer(
-                    serverID, username, playerIP
+                    username, serverID, playerIP
             );
             if (profileResult == null) {
                 return new HasJoinedResult.HasJoinedFailedResult.HasJoinedFailedInvalidSessionResult();

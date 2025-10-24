@@ -131,7 +131,6 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
 
     private void channelReadHelloPacket(ChannelHandlerContext ctx, ServerboundHelloPacket packet) throws Throwable {
         if (handledHelloPacket.getAndSet(true)) throw new IllegalStateException("Already handled hello packet");
-        Validate.validState(serverLoginPacketListener.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
 
         serverLoginPacketListener = (ServerLoginPacketListenerImpl) ((Connection) ctx.pipeline().get(ChannelInjector.MINECRAFT_PACKET_HANDLER_NAME)).getPacketListener();
         server = (MinecraftServer) listenerGetServer.invoke(serverLoginPacketListener);
@@ -139,6 +138,8 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
         paperLoginConnection = (PaperPlayerLoginConnection) listenerGetPaperLoginConnection.invoke(serverLoginPacketListener);
         serverLoginPacketListener.requestedUuid = packet.profileId();
         serverLoginPacketListener.requestedUsername = packet.name();
+
+        Validate.validState(serverLoginPacketListener.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
 
         attachActivityCheck();
         paperMain.getCore().virtualPerTaskExecutor.execute(() -> paperMain.getCore().loginManager.handleLogging(this));

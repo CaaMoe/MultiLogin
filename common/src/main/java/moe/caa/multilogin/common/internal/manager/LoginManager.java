@@ -81,7 +81,10 @@ public class LoginManager {
             // directly login.
             if (!loggingUser.isTransferred()) {
                 handleDirectlyLogin(loggingUser);
+                return;
             }
+
+            core.platform.getPlatformLogger().debug("Start processing the login(transfer) request of " + loggingUser.getExpectUsername());
 
             byte[] cookie = loggingUser.requestCookie(new Key("multilogin", "cookie"));
             if (cookie == null || cookie.length == 0) {
@@ -98,6 +101,8 @@ public class LoginManager {
     }
 
     private void handleDirectlyLogin(LoggingUser loggingUser) throws Throwable {
+        core.platform.getPlatformLogger().debug("Start processing the login(directly) request of " + loggingUser.getExpectUsername());
+
         LocalAuthenticationConfig localAuthenticationConfig = core.localAuthenticationConfig;
         // 服务器只允许 remote authentication
         if (localAuthenticationConfig == null) {
@@ -117,6 +122,7 @@ public class LoginManager {
                     serverID = succeedResult.serverID;
         }
 
+        core.platform.getPlatformLogger().debug("Start verifying the session login of " + loggingUser.getExpectUsername() + "(serverID: " + serverID + ", playerIP: " + loggingUser.getPlayerIP() + ").");
         GameProfile gameProfile;
         switch (core.platform.getLocalYggdrasilSessionService().hasJoined(
                 serverID,

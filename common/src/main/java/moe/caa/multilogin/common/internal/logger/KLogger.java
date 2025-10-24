@@ -43,7 +43,7 @@ public class KLogger {
 
     public void debug(String message) {
         if (debugAsInfo) {
-            info(message);
+            info("[DEBUG] " + message);
         } else {
             handle.debug(message);
         }
