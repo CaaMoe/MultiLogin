@@ -8,4 +8,9 @@ public class StringUtil {
     public static String underscoreUpperCaseToKebabCase(String str) {
         return str.replace("_", "-").toLowerCase();
     }
+
+    public static boolean isNullOrEmpty(String input) {
+        if (input == null) return true;
+        return input.isEmpty();
+    }
 }

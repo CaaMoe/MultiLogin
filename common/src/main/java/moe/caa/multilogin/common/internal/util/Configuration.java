@@ -41,7 +41,7 @@ public abstract class Configuration {
             }
 
             for (E constant : enumClass.getEnumConstants()) {
-                if (constant.name().equalsIgnoreCase(value)) {
+                if (constant.name().equalsIgnoreCase(StringUtil.underscoreUpperCaseToKebabCase(value))) {
                     return constant;
                 }
             }

@@ -24,10 +24,10 @@ class DatabaseHandler(
 
     fun initDatabase() {
         val hikariConfigurationPath =
-            core.platform.platformConfigPath.resolve(core.mainConfig.databaseConfig.get())
+            core.platform.platformConfigPath.resolve(core.mainConfig.databaseConfigPath.get())
 
         if (!Files.exists(hikariConfigurationPath)) {
-            Objects.requireNonNull<ByteArray>(IOUtil.readNestResource("default_hikari.properties"))
+            Objects.requireNonNull(IOUtil.readNestResource("default_hikari.properties"))
                 .apply {
                     var input = String(this, StandardCharsets.UTF_8)
                     input = input.replace(
