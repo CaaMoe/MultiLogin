@@ -80,4 +80,19 @@ public class MultiLoginPaperMain extends JavaPlugin implements Platform {
     public PaperOnlinePlayerManager getOnlinePlayerManager() {
         return onlinePlayerManager;
     }
+
+    @Override
+    public String getPluginVersion() {
+        return getPluginMeta().getVersion();
+    }
+
+    @Override
+    public String getServerName() {
+        return getServer().getName();
+    }
+
+    @Override
+    public String getServerVersion() {
+        return getServer().getVersion();
+    }
 }

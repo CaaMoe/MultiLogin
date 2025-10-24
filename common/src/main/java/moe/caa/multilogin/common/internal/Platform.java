@@ -13,4 +13,10 @@ public interface Platform {
     Path getPlatformConfigPath();
 
     OnlinePlayerManager getOnlinePlayerManager();
+
+    String getPluginVersion();
+
+    String getServerName();
+
+    String getServerVersion();
 }

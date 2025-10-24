@@ -43,8 +43,8 @@ public class MultiCore {
 
     public void load() throws IOException {
         reload();
-
         databaseHandler.initDatabase();
+        platform.getPlatformLogger().info("Loaded, using MultiLogin v" + platform.getPluginVersion() + " on " + platform.getServerName() + " - " + platform.getServerVersion());
     }
 
     public void unload() {
@@ -105,7 +105,7 @@ public class MultiCore {
                     remoteAuthenticationConfigs.add(remoteAuthenticationConfig);
 
                     if (authenticationServiceMap.containsKey(remoteAuthenticationConfig.id.get())) {
-                        throw new IllegalArgumentException("The same authentication service id " + remoteAuthenticationConfig.id.get() + " exists.");
+                        throw new IOException("Duplicate authentication service id: " + remoteAuthenticationConfig.id.get());
                     }
                     authenticationServiceMap.put(remoteAuthenticationConfig.id.get(), remoteAuthenticationConfig);
                 }
@@ -116,12 +116,13 @@ public class MultiCore {
         this.localAuthenticationConfig = localAuthenticationConfig;
         this.remoteAuthenticationConfigs = Collections.unmodifiableList(remoteAuthenticationConfigs);
 
-        platform.getPlatformLogger().info("Authentication mode: " + authMode.name());
+        platform.getPlatformLogger().info("Authentication mode: " + authMode.name().toLowerCase());
         if (localAuthenticationConfig != null) {
             platform.getPlatformLogger().info("Add a local authentication service with id " + localAuthenticationConfig.id.get());
         }
         for (RemoteAuthenticationConfig authenticationConfig : remoteAuthenticationConfigs) {
             platform.getPlatformLogger().info("Add a remote authentication service with id " + authenticationConfig.id.get());
         }
+        platform.getPlatformLogger().info("Total " + this.authenticationServiceMap.size() + " authentication services loaded.");
     }
 }
