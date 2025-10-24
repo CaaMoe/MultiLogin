@@ -89,15 +89,16 @@ public class LoginManager {
             byte[] cookie = loggingUser.requestCookie(new Key("multilogin", "cookie"));
             if (cookie == null || cookie.length == 0) {
                 core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but did not carry a valid cookie.");
-                // todo 空 cookie, 阻止登录
+                loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotCarryCookie.get());
                 return;
             }
 
             CookieData cookieData = CookieData.deserialize(cookie);
+            // todo 还没有实现
         } catch (Throwable t) {
-
+            core.platform.getPlatformLogger().error("Failed to processed login player: " + loggingUser.getExpectUsername(), t);
+            loggingUser.closeConnect(core.messageConfig.loginUnknownError.get());
         }
-
     }
 
     private void handleDirectlyLogin(LoggingUser loggingUser) throws Throwable {

@@ -16,6 +16,8 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<Component> loginFailedLocalAuthenticationInvalidSession = miniMsg(NodePath.path("login-failed-local-authentication-invalid-session"));
     public final ConfigurationValue<Component> loginFailedLocalAuthenticationUnavailable = miniMsg(NodePath.path("login-failed-local-authentication-unavailable"));
 
+    public final ConfigurationValue<Component> loginFailedRemoteAuthenticationNotCarryCookie = miniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
+
     public final ConfigurationValue<Component> commandRequiredPlayer = miniMsg(NodePath.path("command-required-player"));
     public final ConfigurationValue<Component> commandDescriptionHelp = miniMsg(NodePath.path("command-description-help"));
     public final ConfigurationValue<Component> commandHelpNone = miniMsg(NodePath.path("command-help-none"));
