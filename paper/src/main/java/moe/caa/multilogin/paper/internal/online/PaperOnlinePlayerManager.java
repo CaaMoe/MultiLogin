@@ -1,10 +1,10 @@
 package moe.caa.multilogin.paper.internal.online;
 
 import com.google.common.collect.MapMaker;
+import moe.caa.multilogin.common.internal.data.OnlineData;
+import moe.caa.multilogin.common.internal.data.OnlinePlayer;
 import moe.caa.multilogin.common.internal.main.MultiCore;
-import moe.caa.multilogin.common.internal.online.OnlineData;
-import moe.caa.multilogin.common.internal.online.OnlinePlayer;
-import moe.caa.multilogin.common.internal.online.OnlinePlayerManager;
+import moe.caa.multilogin.common.internal.manager.OnlinePlayerManager;
 import net.minecraft.network.Connection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

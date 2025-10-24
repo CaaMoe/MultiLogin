@@ -1,7 +1,7 @@
 package moe.caa.multilogin.paper.internal.online;
 
-import moe.caa.multilogin.common.internal.online.OnlineData;
-import moe.caa.multilogin.common.internal.online.OnlinePlayer;
+import moe.caa.multilogin.common.internal.data.OnlineData;
+import moe.caa.multilogin.common.internal.data.OnlinePlayer;
 import moe.caa.multilogin.paper.internal.command.PaperSender;
 import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import org.bukkit.craftbukkit.entity.CraftPlayer;

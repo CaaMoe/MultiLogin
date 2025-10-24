@@ -6,11 +6,15 @@ import org.spongepowered.configurate.NodePath;
 
 public class MessageConfig extends Configuration {
     public final ConfigurationValue<Component> loginUnknownError = miniMsg(NodePath.path("login-unknown-error"));
-    public final ConfigurationValue<Component> loginInvalidCharactersInName = miniMsg(NodePath.path("login-invalid-characters-in-name"));
+    public final ConfigurationValue<Component> loginHelloPacketInvalidCharactersInName = miniMsg(NodePath.path("login-hello-packet-invalid-characters-in-name"));
 
     public final ConfigurationValue<Component> loginProfileCreateUuidConflict = miniMsg(NodePath.path("login-profile-create-uuid-conflict"));
     public final ConfigurationValue<Component> loginProfileCreateNameConflict = miniMsg(NodePath.path("login-profile-create-name-conflict"));
     public final ConfigurationValue<Component> loginProfileCreateNameAmendRestrict = miniMsg(NodePath.path("login-profile-create-name-amend-restrict"));
+
+    public final ConfigurationValue<Component> loginFailedRemoteAuthenticationOnly = miniMsg(NodePath.path("login-failed-remote-authentication-only"));
+    public final ConfigurationValue<Component> loginFailedLocalAuthenticationInvalidSession = miniMsg(NodePath.path("login-failed-local-authentication-invalid-session"));
+    public final ConfigurationValue<Component> loginFailedLocalAuthenticationUnavailable = miniMsg(NodePath.path("login-failed-local-authentication-unavailable"));
 
     public final ConfigurationValue<Component> commandRequiredPlayer = miniMsg(NodePath.path("command-required-player"));
     public final ConfigurationValue<Component> commandDescriptionHelp = miniMsg(NodePath.path("command-description-help"));

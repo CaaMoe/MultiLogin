@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.cookie;
+package moe.caa.multilogin.common.internal.data.cookie;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class CookieData {
+public sealed abstract class CookieData permits ExpirableData {
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
     private ReadSignatureContent readSignatureContent;
 

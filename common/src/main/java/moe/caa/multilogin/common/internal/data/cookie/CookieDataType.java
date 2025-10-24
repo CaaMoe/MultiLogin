@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.cookie;
+package moe.caa.multilogin.common.internal.data.cookie;
 
 import java.lang.annotation.*;
 

@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.command;
+package moe.caa.multilogin.common.internal.data;
 
 import net.kyori.adventure.text.Component;
 

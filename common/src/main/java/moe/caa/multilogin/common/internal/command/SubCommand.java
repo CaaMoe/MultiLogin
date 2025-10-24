@@ -1,12 +1,12 @@
-package moe.caa.multilogin.common.internal.command.sub;
+package moe.caa.multilogin.common.internal.command;
 
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import moe.caa.multilogin.common.internal.command.Sender;
+import moe.caa.multilogin.common.internal.data.OnlinePlayer;
+import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.manager.CommandManager;
-import moe.caa.multilogin.common.internal.online.OnlinePlayer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 

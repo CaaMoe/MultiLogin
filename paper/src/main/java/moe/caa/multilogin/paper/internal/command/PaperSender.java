@@ -1,6 +1,6 @@
 package moe.caa.multilogin.paper.internal.command;
 
-import moe.caa.multilogin.common.internal.command.Sender;
+import moe.caa.multilogin.common.internal.data.Sender;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 

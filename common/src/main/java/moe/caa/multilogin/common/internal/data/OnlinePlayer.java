@@ -1,6 +1,4 @@
-package moe.caa.multilogin.common.internal.online;
-
-import moe.caa.multilogin.common.internal.command.Sender;
+package moe.caa.multilogin.common.internal.data;
 
 import java.util.UUID;
 

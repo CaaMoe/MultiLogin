@@ -1,4 +1,4 @@
-package moe.caa.multilogin.common.internal.command.sub;
+package moe.caa.multilogin.common.internal.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;

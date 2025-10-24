@@ -13,7 +13,6 @@ import org.jetbrains.exposed.v1.migration.jdbc.MigrationUtils
 import java.io.FileReader
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import java.time.Instant
 import java.util.*
 
 class DatabaseHandler(
@@ -117,30 +116,6 @@ class DatabaseHandler(
             it[ProfileTable.profileLowerCastName] = profileName.lowercase()
             it[ProfileTable.profileOriginalName] = profileName
         }.value)!!
-    }
-
-    fun getAndRemoveOneTimeLoginDataByUserID(userID: Int) = useTransaction {
-        val oneTimeLogin = OneTimeLoginTable.selectAll().where {
-            OneTimeLoginTable.user eq userID
-        }.limit(1).map {
-            UserManager.OneTimeLogin(
-                it[OneTimeLoginTable.user].value,
-                it[OneTimeLoginTable.profile].value,
-                it[OneTimeLoginTable.expirationTime]
-            )
-        }.firstOrNull()
-
-        OneTimeLoginTable.deleteWhere {
-            (OneTimeLoginTable.user eq userID)
-        }
-
-        oneTimeLogin
-    }
-
-    fun removeAllExpiredOneTimeLoginData() = useTransaction {
-        OneTimeLoginTable.deleteWhere {
-            (OneTimeLoginTable.expirationTime greater Instant.now())
-        }
     }
 
     fun getAvailableProfileIDListByUserID(userID: Int) = useTransaction {

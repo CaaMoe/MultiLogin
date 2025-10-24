@@ -1,11 +1,11 @@
-package moe.caa.multilogin.common.internal.command.sub;
+package moe.caa.multilogin.common.internal.command;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
-import moe.caa.multilogin.common.internal.command.Sender;
+import moe.caa.multilogin.common.internal.data.OnlineData;
+import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.manager.CommandManager;
-import moe.caa.multilogin.common.internal.online.OnlineData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextReplacementConfig;
 
@@ -63,17 +63,17 @@ public class InfoCommand<S> extends SubCommand<S> {
     private Component replacePlaceholder(OnlineData data, Component component) {
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_name>")
-                .replacement(data.onlineUser().username())
+                .replacement(data.onlineUser().profile().username())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_uuid>")
-                .replacement(data.onlineUser().userUUID().toString())
+                .replacement(data.onlineUser().profile().uuid().toString())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<service_display_name>")
-                .replacement(data.onlineUser().loginMethodDisplayName())
+                .replacement(data.onlineUser().service().displayName.get())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()

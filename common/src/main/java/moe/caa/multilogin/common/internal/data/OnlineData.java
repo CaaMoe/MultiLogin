@@ -1,10 +1,11 @@
-package moe.caa.multilogin.common.internal.online;
+package moe.caa.multilogin.common.internal.data;
 
-import net.kyori.adventure.text.Component;
+import moe.caa.multilogin.common.internal.config.AuthenticationConfig;
 
 import java.util.UUID;
 
 public record OnlineData(OnlineUser onlineUser, OnlineProfile onlineProfile) {
+
     public record OnlineProfile(
             int profileID,
             UUID profileUUID,
@@ -14,10 +15,8 @@ public record OnlineData(OnlineUser onlineUser, OnlineProfile onlineProfile) {
 
     public record OnlineUser(
             int userID,
-            String loginMethod,
-            Component loginMethodDisplayName,
-            UUID userUUID,
-            String username
+            AuthenticationConfig service,
+            GameProfile profile
     ) {
     }
 }

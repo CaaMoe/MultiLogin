@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
@@ -27,7 +27,7 @@ public class MultiCore {
     public final DatabaseHandler databaseHandler = new DatabaseHandler(this);
     public final ProfileManager profileManager = new ProfileManager(this);
     public final UserManager userManager = new UserManager(this);
-    public final Executor asyncExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
+    public final ExecutorService virtualPerTaskExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
             .name("MultiLogin Async #", 0)
             .factory());
 

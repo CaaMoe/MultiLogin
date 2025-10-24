@@ -3,10 +3,10 @@ package moe.caa.multilogin.common.internal.manager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import moe.caa.multilogin.common.internal.command.Sender;
-import moe.caa.multilogin.common.internal.command.sub.HelpCommand;
-import moe.caa.multilogin.common.internal.command.sub.InfoCommand;
-import moe.caa.multilogin.common.internal.command.sub.SubCommand;
+import moe.caa.multilogin.common.internal.command.HelpCommand;
+import moe.caa.multilogin.common.internal.command.InfoCommand;
+import moe.caa.multilogin.common.internal.command.SubCommand;
+import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public abstract class CommandManager<S> {
     }
 
     public void executeAsync(Runnable runnable) {
-        core.asyncExecutor.execute(runnable);
+        core.virtualPerTaskExecutor.execute(runnable);
     }
 
     public abstract Sender wrapSender(S s);

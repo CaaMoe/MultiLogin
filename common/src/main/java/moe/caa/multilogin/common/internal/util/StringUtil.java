@@ -13,4 +13,14 @@ public class StringUtil {
         if (input == null) return true;
         return input.isEmpty();
     }
+
+    public static boolean isReasonablePlayerName(String name) {
+        if (name == null || name.isEmpty() || name.length() > 16) return false;
+        for (char c : name.toCharArray()) {
+            if (!(Character.isLetterOrDigit(c) || c == '_' || c == '.')) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

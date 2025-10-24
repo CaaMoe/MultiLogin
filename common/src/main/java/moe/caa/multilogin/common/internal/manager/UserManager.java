@@ -2,7 +2,6 @@ package moe.caa.multilogin.common.internal.manager;
 
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,15 +11,6 @@ public class UserManager {
 
     public UserManager(MultiCore core) {
         this.core = core;
-    }
-
-    public Optional<Integer> getAndRemoveOneTimeLoginProfileIDByUserID(int userID) {
-        Optional<Integer> result = Optional.ofNullable(core.databaseHandler.getAndRemoveOneTimeLoginDataByUserID(userID))
-                .filter(oneTimeLogin -> oneTimeLogin.expirationTime.isAfter(Instant.now()))
-                .map(it -> it.profileID);
-
-        core.databaseHandler.removeAllExpiredOneTimeLoginData();
-        return result;
     }
 
     public List<Integer> getAvailableProfileIDListByUserID(int userID) {
@@ -46,15 +36,6 @@ public class UserManager {
             core.platform.getPlatformLogger().info("Created new user: " + user.getDisplayName());
         }
         return user;
-    }
-
-
-    public record OneTimeLogin(
-            int userID,
-            int profileID,
-            Instant expirationTime
-    ) {
-
     }
 
     public record User(

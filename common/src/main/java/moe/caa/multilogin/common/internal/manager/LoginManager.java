@@ -1,12 +1,19 @@
 package moe.caa.multilogin.common.internal.manager;
 
+import moe.caa.multilogin.common.internal.config.AuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.LocalAuthenticationConfig;
+import moe.caa.multilogin.common.internal.data.GameProfile;
+import moe.caa.multilogin.common.internal.data.LoggingUser;
+import moe.caa.multilogin.common.internal.data.OnlineData;
+import moe.caa.multilogin.common.internal.data.cookie.CookieData;
 import moe.caa.multilogin.common.internal.main.MultiCore;
-import moe.caa.multilogin.common.internal.online.OnlineData;
+import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
+import moe.caa.multilogin.common.internal.util.Key;
+import moe.caa.multilogin.common.internal.util.StringUtil;
 import net.kyori.adventure.text.Component;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class LoginManager {
     private final MultiCore core;
@@ -15,33 +22,133 @@ public class LoginManager {
         this.core = core;
     }
 
-    public ProcessLoginResult processLogin(UUID userUUID, String username, String loginMethod) {
+    private void handleFailedResult(LoggingUser user, LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult result) {
+        switch (result) {
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult.SwitchToEncryptedFailedReasonResult reasonResult -> {
+                switch (reasonResult.cause) {
+                    case CLOSED -> {
+                        user.closeConnection();
+                    }
+                }
+            }
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult.SwitchToEncryptedFailedThrowResult throwResult -> {
+                core.platform.getPlatformLogger().error("Failed to encrypt " + user.getExpectUsername() + " connection.", throwResult.throwable);
+                user.closeConnect(core.messageConfig.loginUnknownError.get());
+            }
+        }
+    }
+
+    private void handleFailedResult(LoggingUser user, HandleLoginResult.HandleLoginFailedResult result) {
+        Component disconnectReason = switch (result) {
+            case LoginManager.HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseReasonResult reasonResult ->
+                    reasonResult.reason;
+            case LoginManager.HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult throwResult -> {
+                core.platform.getPlatformLogger().error("Failed to processed login player: " + user.getExpectUsername(), throwResult.throwable);
+                yield core.messageConfig.loginUnknownError.get();
+            }
+        };
+
+        user.closeConnect(disconnectReason);
+    }
+
+    private void handleFailedResult(LoggingUser user, LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult result) {
+        switch (result) {
+            case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.HasJoinedFailedInvalidSessionResult ignored -> {
+                core.platform.getPlatformLogger().warn("Player " + user.getExpectUsername() + " tried to join with an invalid session.");
+                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationInvalidSession.get());
+            }
+            case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.hasJoinedFailedServiceUnavailableResult unavailableResult -> {
+                core.platform.getPlatformLogger().error("Player " + user.getExpectUsername() + " tried to join but the session server was unavailable.", unavailableResult.throwable);
+                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationUnavailable.get());
+            }
+            case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.HasJoinedFailedThrowResult throwResult -> {
+                core.platform.getPlatformLogger().error("Failed to verify " + user.getExpectUsername() + " session.", throwResult.throwable);
+                user.closeConnect(core.messageConfig.loginUnknownError.get());
+            }
+        }
+    }
+
+    public void handleLogging(LoggingUser loggingUser) {
         try {
-            UserManager.User user = core.userManager.getOrCreateUser(loginMethod, userUUID, username);
-
-            ProfileManager.Profile profile = null;
-
-            Optional<Integer> oneTimeLoginProfileID = core.userManager.getAndRemoveOneTimeLoginProfileIDByUserID(user.userID());
-            if (oneTimeLoginProfileID.isPresent()) {
-                // 一次性登录
-                core.platform.getPlatformLogger().info("User " + user.getDisplayName() + " is using one-time login profile ID " + oneTimeLoginProfileID.get());
-                profile = core.profileManager.getProfileSnapshotByID(oneTimeLoginProfileID.get());
-
-                if (profile == null) {
-                    core.platform.getPlatformLogger().error("User " + user.getDisplayName() + " attempted to use one-time login profile ID " + oneTimeLoginProfileID.get() + " which does not exist. Cancelled one-time login.");
+            // 检查 expect name
+            if (!core.mainConfig.disableHelloPacketUsernameValidation.get()) {
+                if (!StringUtil.isReasonablePlayerName(loggingUser.getExpectUsername())) {
+                    core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to login with invalid characters in name.");
+                    loggingUser.closeConnect(core.messageConfig.loginHelloPacketInvalidCharactersInName.get());
                 }
             }
 
+            // directly login.
+            if (!loggingUser.isTransferred()) {
+                handleDirectlyLogin(loggingUser);
+            }
 
-            if (profile == null) {
-                Optional<Integer> selectedProfile = user.selectProfileID();
-                if (selectedProfile.isPresent()) {
-                    // 使用当前选中档案登录
-                    profile = core.profileManager.getProfileSnapshotByID(selectedProfile.get());
-                    if (profile == null) {
-                        core.platform.getPlatformLogger().error("User " + user.getDisplayName() + " attempted to use selected profile ID " + selectedProfile.get() + " which does not exist. Will try to choose other available profile.");
-                        core.userManager.removeUserSelectedProfileID(user.userID());
-                    }
+            byte[] cookie = loggingUser.requestCookie(new Key("multilogin", "cookie"));
+            if (cookie == null || cookie.length == 0) {
+                core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but did not carry a valid cookie.");
+                // todo 空 cookie, 阻止登录
+                return;
+            }
+
+            CookieData cookieData = CookieData.deserialize(cookie);
+        } catch (Throwable t) {
+
+        }
+
+    }
+
+    private void handleDirectlyLogin(LoggingUser loggingUser) throws Throwable {
+        LocalAuthenticationConfig localAuthenticationConfig = core.localAuthenticationConfig;
+        // 服务器只允许 remote authentication
+        if (localAuthenticationConfig == null) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to login directly, but the server only allowed transfer login(remote authentication only).");
+            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationOnly.get());
+            return;
+        }
+
+        // 本地验证
+        String serverID;
+        switch (loggingUser.switchToEncryptedState(true)) {
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult failedResult -> {
+                handleFailedResult(loggingUser, failedResult);
+                return;
+            }
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedSucceedResult succeedResult ->
+                    serverID = succeedResult.serverID;
+        }
+
+        GameProfile gameProfile;
+        switch (core.platform.getLocalYggdrasilSessionService().hasJoined(
+                serverID,
+                loggingUser.getExpectUsername(),
+                loggingUser.getPlayerIP())
+        ) {
+            case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult failedResult -> {
+                handleFailedResult(loggingUser, failedResult);
+                return;
+            }
+            case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedSucceedResult succeedResult ->
+                    gameProfile = succeedResult.profile;
+        }
+
+        switch (handleLogged(localAuthenticationConfig, core.userManager.getOrCreateUser(localAuthenticationConfig.id.get(), gameProfile.uuid(), gameProfile.username()), gameProfile)) {
+            case HandleLoginResult.HandleLoginFailedResult failedResult -> handleFailedResult(loggingUser, failedResult);
+            case HandleLoginResult.HandleLoginSucceedResult succeedResult -> loggingUser.completeLogin(succeedResult.data);
+        }
+    }
+
+
+    private HandleLoginResult handleLogged(AuthenticationConfig authentication, UserManager.User user, GameProfile onlineGameProfile) {
+        try {
+            ProfileManager.Profile profile = null;
+
+            Optional<Integer> selectedProfile = user.selectProfileID();
+            if (selectedProfile.isPresent()) {
+                // 使用当前选中档案登录
+                profile = core.profileManager.getProfileSnapshotByID(selectedProfile.get());
+                if (profile == null) {
+                    core.platform.getPlatformLogger().error("User " + user.getDisplayName() + " attempted to use selected profile ID " + selectedProfile.get() + " which does not exist. Will try to choose other available profile.");
+                    core.userManager.removeUserSelectedProfileID(user.userID());
                 }
             }
 
@@ -77,10 +184,10 @@ public class LoginManager {
                                             core.messageConfig.loginProfileCreateNameAmendRestrict.get();
                                 };
 
-                                yield new ProcessLoginResult.ProcessLoginFailedResult.ProcessLoginFailedBecauseReasonResult(disconnectReason);
+                                yield new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseReasonResult(disconnectReason);
                             }
                             case ProfileManager.CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseThrowResult throwResult ->
-                                    new ProcessLoginResult.ProcessLoginFailedResult.ProcessLoginFailedBecauseThrowResult(new IllegalStateException(
+                                    new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult(new IllegalStateException(
                                             "Failed to create profile during user login.", throwResult.throwable
                                     ));
                         };
@@ -96,42 +203,42 @@ public class LoginManager {
             assert profile != null;
 
             OnlineData data = new OnlineData(
-                    new OnlineData.OnlineUser(user.userID(), "official", Component.text("测试登录"), user.userUUID(), user.username()),
+                    new OnlineData.OnlineUser(user.userID(), authentication, onlineGameProfile),
                     new OnlineData.OnlineProfile(profile.profileID(), profile.profileUUID(), profile.profileName())
             );
 
             core.platform.getPlatformLogger().info("User " + user.getDisplayName() + " logged in with profile " + profile.getDisplayName());
-            return new ProcessLoginResult.ProcessLoginSucceedResult(data);
+            return new HandleLoginResult.HandleLoginSucceedResult(data);
         } catch (Throwable t) {
-            return new ProcessLoginResult.ProcessLoginFailedResult.ProcessLoginFailedBecauseThrowResult(t);
+            return new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult(t);
         }
     }
 
 
-    public sealed abstract static class ProcessLoginResult {
+    public sealed abstract static class HandleLoginResult {
 
-        public sealed static abstract class ProcessLoginFailedResult extends ProcessLoginResult {
-            public final static class ProcessLoginFailedBecauseReasonResult extends ProcessLoginFailedResult {
+        public sealed static abstract class HandleLoginFailedResult extends HandleLoginResult {
+            public final static class HandleLoginFailedBecauseReasonResult extends HandleLoginFailedResult {
                 public final Component reason;
 
-                public ProcessLoginFailedBecauseReasonResult(Component reason) {
+                public HandleLoginFailedBecauseReasonResult(Component reason) {
                     this.reason = reason;
                 }
             }
 
-            public final static class ProcessLoginFailedBecauseThrowResult extends ProcessLoginFailedResult {
+            public final static class HandleLoginFailedBecauseThrowResult extends HandleLoginFailedResult {
                 public final Throwable throwable;
 
-                ProcessLoginFailedBecauseThrowResult(Throwable throwable) {
+                HandleLoginFailedBecauseThrowResult(Throwable throwable) {
                     this.throwable = throwable;
                 }
             }
         }
 
-        public final static class ProcessLoginSucceedResult extends ProcessLoginResult {
+        public final static class HandleLoginSucceedResult extends HandleLoginResult {
             public final OnlineData data;
 
-            public ProcessLoginSucceedResult(OnlineData data) {
+            public HandleLoginSucceedResult(OnlineData data) {
                 this.data = data;
             }
         }

@@ -1,10 +1,10 @@
-package moe.caa.multilogin.common.internal.cookie;
+package moe.caa.multilogin.common.internal.data.cookie;
 
 import com.google.gson.JsonObject;
 
 import java.time.Instant;
 
-public abstract sealed class ExpirableData extends CookieData permits RemoteAuthenticatedData {
+public abstract sealed class ExpirableData extends CookieData permits RejoinData, RemoteAuthenticatedData {
     private Instant expiresAt;
 
 
