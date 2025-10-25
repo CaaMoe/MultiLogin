@@ -2,9 +2,7 @@ package moe.caa.multilogin.common.internal.manager;
 
 import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
 import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
-import moe.caa.multilogin.common.internal.data.GameProfile;
-import moe.caa.multilogin.common.internal.data.LoggingUser;
-import moe.caa.multilogin.common.internal.data.OnlineData;
+import moe.caa.multilogin.common.internal.data.*;
 import moe.caa.multilogin.common.internal.data.cookie.SignedCookieData;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
@@ -12,7 +10,6 @@ import moe.caa.multilogin.common.internal.util.StringUtil;
 import net.kyori.adventure.text.Component;
 
 import java.util.List;
-import java.util.Optional;
 
 public class LoginManager {
     private final MultiCore core;
@@ -137,47 +134,44 @@ public class LoginManager {
                     gameProfile = succeedResult.profile;
         }
 
-        switch (handleLogged(localAuthenticationConfig, core.userManager.getOrCreateUser(localAuthenticationConfig.id.get(), gameProfile.uuid(), gameProfile.username()), gameProfile)) {
+        switch (handleLogged(localAuthenticationConfig, core.databaseHandler.updateOrCreateUser(localAuthenticationConfig, gameProfile), gameProfile)) {
             case HandleLoginResult.HandleLoginFailedResult failedResult -> handleFailedResult(loggingUser, failedResult);
             case HandleLoginResult.HandleLoginSucceedResult succeedResult -> loggingUser.completeLogin(succeedResult.data);
         }
     }
 
 
-    private HandleLoginResult handleLogged(AuthenticationConfig authentication, UserManager.User user, GameProfile onlineGameProfile) {
+    private HandleLoginResult handleLogged(AuthenticationConfig authentication, User user, GameProfile authenticatedGameProfile) {
         try {
-            ProfileManager.Profile profile = null;
+            Profile profile = null;
 
-            Optional<Integer> selectedProfile = user.selectProfileID();
-            if (selectedProfile.isPresent()) {
+            Integer currentSelectProfileSlot = core.databaseHandler.getUserCurrentSelectProfileSlot(user.userID);
+
+            if (currentSelectProfileSlot != null) {
                 // 使用当前选中档案登录
-                profile = core.profileManager.getProfileSnapshotByID(selectedProfile.get());
+                profile = core.databaseHandler.getProfileByOwnerIDAndSlotID(user.userID, currentSelectProfileSlot);
                 if (profile == null) {
-                    core.platform.getPlatformLogger().error("User " + user.getDisplayName() + " attempted to use selected profile ID " + selectedProfile.get() + " which does not exist. Will try to choose other available profile.");
-                    core.userManager.removeUserSelectedProfileID(user.userID());
+                    core.platform.getPlatformLogger().error("User " + user.displayName() + " tried to use selected profile ID " + currentSelectProfileSlot + " which does not exist. Will try to choose other slot profile.");
+                    core.databaseHandler.removeCurrentSelectProfile(user.userID);
                 }
             }
 
             if (profile == null) {
-                // 使用其他可登录档案
-                List<Integer> avaliableProfileIDList = core.userManager.getAvailableProfileIDListByUserID(user.userID());
-                for (Integer profileID : avaliableProfileIDList) {
-                    profile = core.profileManager.getProfileSnapshotByID(profileID);
-                    if (profile != null) {
-                        core.userManager.setUserSelectedProfileID(user.userID(), profileID);
-                        break;
-                    }
+                // 使用其他槽位
+                List<Profile> profiles = core.databaseHandler.getProfilesByOwnerID(user.userID);
+                if (!profiles.isEmpty()) {
+                    profile = profiles.getFirst();
+                    core.databaseHandler.updateUserCurrentSelectProfileSlot(user.userID, profile.profileSlot);
                 }
             }
 
             if (profile == null) {
-                core.platform.getPlatformLogger().info("User " + user.getDisplayName() + " has no selected profile and no available profiles, Creating new profile...");
+                core.platform.getPlatformLogger().info("User " + user.displayName() + " has no selected profile and no available profiles, Creating new profile...");
 
                 ProfileManager.CreateProfileResult profileCreateResult = core.profileManager.createProfile(
-                        user.userUUID(),
-                        user.username(),
-                        ProfileManager.UUIDConflictPolicy.RANDOM,
-                        ProfileManager.NameConflictPolicy.INCREMENT_RIGHT_TRUNCATE
+                        authentication,
+                        user,
+                        0
                 );
                 switch (profileCreateResult) {
                     case ProfileManager.CreateProfileResult.CreateProfileFailedResult createProfileFailedResult -> {
@@ -200,20 +194,18 @@ public class LoginManager {
                     }
                     case ProfileManager.CreateProfileResult.CreateProfileSucceedResult createProfileSucceedResult -> {
                         profile = createProfileSucceedResult.profile;
-
-                        core.userManager.addUserHaveProfile(user.userID(), profile.profileID());
-                        core.userManager.setUserSelectedProfileID(user.userID(), profile.profileID());
+                        core.databaseHandler.updateUserCurrentSelectProfileSlot(user.userID, profile.profileSlot);
                     }
                 }
             }
             assert profile != null;
 
             OnlineData data = new OnlineData(
-                    new OnlineData.OnlineUser(user.userID(), authentication, onlineGameProfile),
-                    new OnlineData.OnlineProfile(profile.profileID(), profile.profileUUID(), profile.profileName())
+                    new OnlineData.OnlineUser(user.userID, authentication, authenticatedGameProfile),
+                    new OnlineData.OnlineProfile(profile.profileID, profile.profileUUID, profile.profileName)
             );
 
-            core.platform.getPlatformLogger().info("User " + user.getDisplayName() + " logged in with profile " + profile.getDisplayName());
+            core.platform.getPlatformLogger().info("User " + user.displayName() + " logged in with profile " + profile.displayName());
             return new HandleLoginResult.HandleLoginSucceedResult(data);
         } catch (Throwable t) {
             return new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult(t);

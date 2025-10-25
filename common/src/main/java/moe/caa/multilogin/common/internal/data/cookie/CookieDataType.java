@@ -6,5 +6,5 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CookieDataType {
-    String type();
+    String value();
 }

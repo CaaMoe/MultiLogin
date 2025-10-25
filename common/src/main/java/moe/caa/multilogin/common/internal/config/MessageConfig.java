@@ -26,10 +26,10 @@ public class MessageConfig extends Configuration {
 
     public final ConfigurationValue<Component> commandArgumentOnlinePlayerNotFound = miniMsg(NodePath.path("command-argument-online-player-not-found"));
 
+    public final ConfigurationValue<Component> commandDescriptionMe = miniMsg(NodePath.path("command-description-me"));
+    public final ConfigurationValue<Component> commandMeNone = miniMsg(NodePath.path("command-me-none"));
+    public final ConfigurationValue<Component> commandMeContent = miniMsg(NodePath.path("command-me-content"));
     public final ConfigurationValue<Component> commandDescriptionInfo = miniMsg(NodePath.path("command-description-info"));
     public final ConfigurationValue<Component> commandInfoNone = miniMsg(NodePath.path("command-info-none"));
     public final ConfigurationValue<Component> commandInfoContent = miniMsg(NodePath.path("command-info-content"));
-    public final ConfigurationValue<Component> commandDescriptionInfoOther = miniMsg(NodePath.path("command-description-info-other"));
-    public final ConfigurationValue<Component> commandInfoOtherNone = miniMsg(NodePath.path("command-info-other-none"));
-    public final ConfigurationValue<Component> commandInfoOtherContent = miniMsg(NodePath.path("command-info-other-content"));
 }

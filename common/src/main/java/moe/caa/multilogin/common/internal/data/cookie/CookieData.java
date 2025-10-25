@@ -4,12 +4,13 @@ import com.google.gson.JsonObject;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public sealed abstract class CookieData permits ExpirableData {
+public sealed abstract class CookieData permits ReconnectCookieData {
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
     private Instant expiresAt = Instant.MIN;
 
@@ -24,6 +25,13 @@ public sealed abstract class CookieData permits ExpirableData {
 
     private static Map<String, MethodHandle> collectTypeMap(MethodHandles.Lookup lookup, Class<?> sealedClass) throws IllegalAccessException, NoSuchMethodException {
         Map<String, MethodHandle> cookieTypeMap = new HashMap<>();
+
+        if (!Modifier.isAbstract(sealedClass.getModifiers())) {
+            if (!sealedClass.isAnnotationPresent(CookieDataType.class)) {
+                throw new IllegalStateException(sealedClass.getCanonicalName() + " is not annotated with " + CookieDataType.class.getCanonicalName());
+            }
+        }
+
         for (Class<?> permittedSubclass : sealedClass.getPermittedSubclasses()) {
             if (permittedSubclass.isSealed()) {
                 cookieTypeMap.putAll(collectTypeMap(lookup, permittedSubclass));
@@ -32,7 +40,7 @@ public sealed abstract class CookieData permits ExpirableData {
                     throw new IllegalStateException(permittedSubclass.getCanonicalName() + " is not annotated with " + CookieDataType.class.getCanonicalName());
                 }
 
-                cookieTypeMap.put(permittedSubclass.getAnnotation(CookieDataType.class).type(), lookup.unreflectConstructor(permittedSubclass.getConstructor()));
+                cookieTypeMap.put(permittedSubclass.getAnnotation(CookieDataType.class).value(), lookup.unreflectConstructor(permittedSubclass.getConstructor()));
             }
         }
         return cookieTypeMap;
@@ -40,7 +48,7 @@ public sealed abstract class CookieData permits ExpirableData {
 
     public static JsonObject serialize(CookieData cookieData) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("type", cookieData.getClass().getAnnotation(CookieDataType.class).type());
+        jsonObject.addProperty("type", cookieData.getClass().getAnnotation(CookieDataType.class).value());
         jsonObject.addProperty("expires_at", cookieData.expiresAt.toString());
         cookieData.serializeData(jsonObject);
         return jsonObject;

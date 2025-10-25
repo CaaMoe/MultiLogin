@@ -16,19 +16,21 @@ public class InfoCommand<S> extends SubCommand<S> {
 
     @Override
     public void register(ArgumentBuilder<S, ?> builder) {
-        String permissionSelf = "multilogin.command.info";
-        String permissionOther = "multilogin.command.info.other";
-        addCommandDescription("info", permissionSelf, manager.core.messageConfig.commandDescriptionInfo.get());
-        addCommandDescription("info <target>", permissionOther, manager.core.messageConfig.commandDescriptionInfoOther.get());
+        String permissionMe = "multilogin.command.me";
+        String permissionInfo = "multilogin.command.info";
+        addCommandDescription("me", permissionMe, manager.core.messageConfig.commandDescriptionInfo.get());
+        addCommandDescription("info <target>", permissionInfo, manager.core.messageConfig.commandDescriptionInfo.get());
+
+        builder.then(literal("me"))
+                .requires(predicateHasPermission(permissionMe))
+                .executes(context -> {
+                    manager.executeAsync(() -> me(context.getSource()));
+                    return Command.SINGLE_SUCCESS;
+                });
 
         builder.then(literal("info")
-                .requires(predicateHasPermission(permissionSelf))
-                .executes(context -> {
-                    manager.executeAsync(() -> infoSelf(context.getSource()));
-                    return Command.SINGLE_SUCCESS;
-                })
                 .then(argument("target", StringArgumentType.string())
-                        .requires(predicateHasPermission(permissionOther))
+                        .requires(predicateHasPermission(permissionInfo))
                         .executes(context -> {
                             manager.executeAsync(() -> infoOther(context.getSource(), StringArgumentType.getString(context, "target")));
                             return Command.SINGLE_SUCCESS;
@@ -42,20 +44,20 @@ public class InfoCommand<S> extends SubCommand<S> {
         resolveOnlinePlayerRunOrElseTip(source, target, targetPlayer -> {
             OnlineData data = targetPlayer.getOnlineData();
             if (data == null) {
-                sender.sendMessage(manager.core.messageConfig.commandInfoOtherNone.get());
+                sender.sendMessage(manager.core.messageConfig.commandInfoNone.get());
             } else {
-                sender.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoOtherContent.get()));
+                sender.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoContent.get()));
             }
         });
     }
 
-    protected void infoSelf(S s) {
+    protected void me(S s) {
         ifOnlinePlayerRunOrElseTip(s, player -> {
             OnlineData data = player.getOnlineData();
             if (data == null) {
-                player.sendMessage(manager.core.messageConfig.commandInfoNone.get());
+                player.sendMessage(manager.core.messageConfig.commandMeNone.get());
             } else {
-                player.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoContent.get()));
+                player.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandMeContent.get()));
             }
         });
     }

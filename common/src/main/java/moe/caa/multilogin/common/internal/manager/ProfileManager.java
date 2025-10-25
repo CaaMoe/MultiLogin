@@ -1,6 +1,9 @@
 package moe.caa.multilogin.common.internal.manager;
 
 import kotlin.collections.ArraysKt;
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
+import moe.caa.multilogin.common.internal.data.Profile;
+import moe.caa.multilogin.common.internal.data.User;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.util.StringUtil;
 
@@ -16,19 +19,34 @@ public class ProfileManager {
         this.core = core;
     }
 
-    public Profile getProfileSnapshotByID(int profileID) {
-        return core.databaseHandler.getProfileByID(profileID);
+
+    public CreateProfileResult createProfile(AuthenticationConfig config, User ownedUser, int putProfileSlot) {
+        return createProfile(
+                ownedUser,
+                config.uuidConflictPolicy.get(),
+                config.nameConflictPolicy.get(),
+                ownedUser.userUUID,
+                ownedUser.username,
+                putProfileSlot
+        );
     }
 
-    public CreateProfileResult createProfile(UUID expectUUID, String expectName, UUIDConflictPolicy UUIDConflictPolicy, NameConflictPolicy nameConflictPolicy) {
+    public CreateProfileResult createProfile(
+            User ownedUser,
+            UUIDConflictPolicy uuidConflictPolicy,
+            NameConflictPolicy nameConflictPolicy,
+            UUID expectUUID,
+            String expectName,
+            int putProfileSlot
+    ) {
         try {
             // uuid 重复处理
-            if (core.databaseHandler.getProfileByUUID(expectUUID) != null) {
-                switch (UUIDConflictPolicy) {
+            if (core.databaseHandler.getProfileByProfileUUID(expectUUID) != null) {
+                switch (uuidConflictPolicy) {
                     case RANDOM -> {
                         UUID amended = UUID.randomUUID();
-                        core.platform.getPlatformLogger().warn("Create profile UUID conflict detected, amended from " + expectUUID + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(UUIDConflictPolicy.name()));
-                        createProfile(amended, expectName, UUIDConflictPolicy, nameConflictPolicy);
+                        core.platform.getPlatformLogger().warn("Create profile UUID conflict detected, amended from " + expectUUID + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(uuidConflictPolicy.name()));
+                        return createProfile(ownedUser, uuidConflictPolicy, nameConflictPolicy, amended, expectName, putProfileSlot);
                     }
                     case REJECT ->
                             new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
@@ -36,7 +54,7 @@ public class ProfileManager {
                 }
             }
             // name 重复处理
-            if (core.databaseHandler.getProfileByName(expectName) != null) {
+            if (core.databaseHandler.getProfileByProfileName(expectName) != null) {
                 switch (nameConflictPolicy) {
                     case INCREMENT_LEFT_TRUNCATE, INCREMENT_RIGHT_TRUNCATE, INCREMENT -> {
                         String amended = nameConflictPolicy.amend(expectName);
@@ -44,7 +62,7 @@ public class ProfileManager {
                             return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_AMEND_RESTRICT);
                         }
                         core.platform.getPlatformLogger().warn("Create profile name conflict detected, amended from " + expectName + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(nameConflictPolicy.name()));
-                        return createProfile(expectUUID, amended, UUIDConflictPolicy, nameConflictPolicy);
+                        return createProfile(ownedUser, uuidConflictPolicy, nameConflictPolicy, expectUUID, amended, putProfileSlot);
                     }
                     case REJECT ->
                             new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
@@ -52,8 +70,8 @@ public class ProfileManager {
                 }
             }
 
-            Profile profile = core.databaseHandler.createProfile(expectUUID, expectName);
-            core.platform.getPlatformLogger().info("Created new profile: " + profile.getDisplayName());
+            Profile profile = core.databaseHandler.createProfile(expectUUID, expectName, ownedUser, putProfileSlot);
+            core.platform.getPlatformLogger().info("Created new profile: " + profile.displayName());
             return new CreateProfileResult.CreateProfileSucceedResult(profile);
         } catch (Throwable throwable) {
             return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseThrowResult(throwable);
@@ -126,16 +144,6 @@ public class ProfileManager {
 
         public String amend(String name) {
             return amendFunction.apply(name);
-        }
-    }
-
-    public record Profile(
-            int profileID,
-            UUID profileUUID,
-            String profileName
-    ) {
-        public String getDisplayName() {
-            return profileName + "(id: " + profileID + ", uuid: " + profileUUID + ")";
         }
     }
 

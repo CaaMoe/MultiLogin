@@ -10,7 +10,6 @@ import moe.caa.multilogin.common.internal.data.cookie.CookieData;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
 import moe.caa.multilogin.common.internal.manager.LoginManager;
 import moe.caa.multilogin.common.internal.manager.ProfileManager;
-import moe.caa.multilogin.common.internal.manager.UserManager;
 import moe.caa.multilogin.common.internal.util.CookieKey;
 import moe.caa.multilogin.common.internal.util.IOUtil;
 import moe.caa.multilogin.common.internal.util.RSAUtil;
@@ -38,7 +37,6 @@ public class MultiCore {
     public final LoginManager loginManager = new LoginManager(this);
     public final DatabaseHandler databaseHandler = new DatabaseHandler(this);
     public final ProfileManager profileManager = new ProfileManager(this);
-    public final UserManager userManager = new UserManager(this);
     public final ExecutorService virtualPerTaskExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()
             .name("MultiLogin Async #", 0)
             .factory());

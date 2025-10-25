@@ -2,9 +2,11 @@ package moe.caa.multilogin.common.internal.database
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig
+import moe.caa.multilogin.common.internal.data.GameProfile
+import moe.caa.multilogin.common.internal.data.Profile
+import moe.caa.multilogin.common.internal.data.User
 import moe.caa.multilogin.common.internal.main.MultiCore
-import moe.caa.multilogin.common.internal.manager.ProfileManager
-import moe.caa.multilogin.common.internal.manager.UserManager
 import moe.caa.multilogin.common.internal.util.IOUtil
 import org.jetbrains.exposed.v1.core.*
 import org.jetbrains.exposed.v1.jdbc.*
@@ -59,93 +61,105 @@ class DatabaseHandler(
 
     private fun <T> useTransaction(statement: JdbcTransaction.() -> T): T = transaction(database, statement)
 
+    fun updateOrCreateUser(authenticationConfig: AuthenticationConfig, authenticatedProfile: GameProfile) =
+        useTransaction {
+            getUsers0 {
+                (UserTable.loginMethod eq authenticationConfig.id.get()) and
+                        (UserTable.uuid eq authenticatedProfile.uuid)
+            }.firstOrNull()?.apply {
+                updateUserLastKnownName(this.userID, authenticatedProfile.username)
+                return@useTransaction copy(username = authenticatedProfile.username())
+            }
 
-    private fun getUser0(predicate: () -> Op<Boolean>) = transaction(database) {
+            return@useTransaction getUsers0 {
+                UserTable.id eq UserTable.insertAndGetId {
+                    it[UserTable.uuid] = authenticatedProfile.uuid()
+                    it[UserTable.loginMethod] = authenticationConfig.id.get()
+                    it[UserTable.lastKnownName] = authenticatedProfile.username
+                }
+            }.first()
+        }
+
+    fun getUserCurrentSelectProfileSlot(userID: Int) = useTransaction {
+        CurrentSelectSlot.selectAll().where {
+            CurrentSelectSlot.userID eq userID
+        }.map {
+            it[CurrentSelectSlot.selectedProfileSlot]
+        }.firstOrNull()
+    }
+
+    fun updateUserCurrentSelectProfileSlot(userID: Int, selectedSlot: Int) = useTransaction {
+        CurrentSelectSlot.update({ CurrentSelectSlot.userID eq userID }) {
+            it[CurrentSelectSlot.selectedProfileSlot] = selectedSlot
+        }
+    }
+
+    fun removeCurrentSelectProfile(userID: Int) = useTransaction {
+        CurrentSelectSlot.deleteWhere {
+            CurrentSelectSlot.userID eq userID
+        }
+    }
+
+    fun getProfilesByOwnerID(ownerUserID: Int) = getProfiles0 {
+        ProfileTable.ownerUserID eq ownerUserID
+    }
+
+    fun getProfileByProfileName(profileName: String) = getProfiles0 {
+        ProfileTable.profileLowerCastName.lowerCase() eq profileName.lowercase()
+    }.firstOrNull()
+
+
+    fun getProfileByProfileUUID(profileUUID: UUID) = getProfiles0 {
+        ProfileTable.profileUUID eq profileUUID
+    }.firstOrNull()
+
+    fun getProfileByOwnerIDAndSlotID(ownerUserID: Int, slotID: Int) = getProfiles0 {
+        (ProfileTable.ownerUserID eq ownerUserID) and (ProfileTable.profileSlot eq slotID)
+    }.firstOrNull()
+
+    private fun updateUserLastKnownName(userID: Int, lastKnownName: String) = useTransaction {
+        UserTable.update({ UserTable.id eq userID }) {
+            it[UserTable.lastKnownName] = lastKnownName
+        }
+    }
+
+    private fun getUsers0(predicate: () -> Op<Boolean>) = useTransaction {
         UserTable.selectAll().where(predicate).limit(1).map {
-            UserManager.User(
+            User(
                 it[UserTable.id].value,
                 it[UserTable.loginMethod],
                 it[UserTable.uuid],
-                it[UserTable.lastKnownName],
-                Optional.ofNullable(it[UserTable.selectProfile]).map { it.value }
+                it[UserTable.lastKnownName]
             )
-        }.firstOrNull()
+        }
     }
 
-    fun getUserByUUIDAndLoginMethod(userUUID: UUID, loginMethod: String) = getUser0 {
-        (UserTable.uuid eq userUUID) and (UserTable.loginMethod eq loginMethod)
-    }
-
-    fun getUserByID(userID: Int) = getUser0 {
-        UserTable.id eq userID
-    }
-
-    fun createUser(userUUID: UUID, loginMethod: String, username: String) = useTransaction {
-        getUserByID(UserTable.insertAndGetId {
-            it[UserTable.uuid] = userUUID
-            it[UserTable.loginMethod] = loginMethod
-            it[UserTable.lastKnownName] = username
-        }.value)!!
-    }
-
-    private fun getProfile0(predicate: () -> Op<Boolean>) = useTransaction {
-        ProfileTable.selectAll().where(predicate).limit(1).map {
-            ProfileManager.Profile(
+    private fun getProfiles0(predicate: () -> Op<Boolean>) = useTransaction {
+        ProfileTable.selectAll().where(predicate).map {
+            Profile(
                 it[ProfileTable.id].value,
+                it[ProfileTable.ownerUserID].value,
+                it[ProfileTable.profileSlot],
                 it[ProfileTable.profileUUID],
-                it[ProfileTable.profileOriginalName]
+                it[ProfileTable.profileOriginalName],
             )
-        }.firstOrNull()
-    }
-
-    fun getProfileByID(profileID: Int) = getProfile0 {
-        ProfileTable.id eq profileID
-    }
-
-    fun getProfileByName(profileName: String) = getProfile0 {
-        ProfileTable.profileLowerCastName.lowerCase() eq profileName.lowercase()
-    }
-
-    fun getProfileByUUID(profileUUID: UUID) = getProfile0 {
-        ProfileTable.profileUUID eq profileUUID
-    }
-
-    fun createProfile(profileUUID: UUID, profileName: String) = useTransaction {
-        getProfileByID(ProfileTable.insertAndGetId {
-            it[ProfileTable.profileUUID] = profileUUID
-            it[ProfileTable.profileLowerCastName] = profileName.lowercase()
-            it[ProfileTable.profileOriginalName] = profileName
-        }.value)!!
-    }
-
-    fun getAvailableProfileIDListByUserID(userID: Int) = useTransaction {
-        UserHaveProfilesTable.selectAll().where {
-            UserHaveProfilesTable.user eq userID
-        }.map {
-            it[UserHaveProfilesTable.profile].value
         }
     }
 
-    fun removeUserSelectedProfileID(userID: Int): Unit = useTransaction {
-        UserTable.update({
-            UserTable.id eq userID
-        }) {
-            it[selectProfile] = null
-        }
-    }
-
-    fun setUserSelectedProfileID(userID: Int, profileID: Int): Unit = useTransaction {
-        UserTable.update({
-            UserTable.id eq userID
-        }) {
-            it[selectProfile] = profileID
-        }
-    }
-
-    fun addUserHaveProfile(userID: Int, profileID: Int): Unit = useTransaction {
-        UserHaveProfilesTable.insert {
-            it[user] = userID
-            it[profile] = profileID
-        }
+    fun createProfile(
+        profileUUID: UUID,
+        profileName: String,
+        ownedUser: User,
+        putProfileSlot: Int
+    ) = useTransaction {
+        getProfiles0 {
+            ProfileTable.id eq ProfileTable.insertAndGetId {
+                it[ProfileTable.profileUUID] = profileUUID
+                it[ProfileTable.profileLowerCastName] = profileName.lowercase()
+                it[ProfileTable.profileOriginalName] = profileName
+                it[ProfileTable.ownerUserID] = ownedUser.userID
+                it[ProfileTable.profileSlot] = putProfileSlot
+            }
+        }.first()
     }
 }
