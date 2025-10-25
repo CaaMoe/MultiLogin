@@ -3,6 +3,7 @@ package moe.caa.multilogin.common.internal.manager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import moe.caa.multilogin.common.internal.command.CreateCommand;
 import moe.caa.multilogin.common.internal.command.HelpCommand;
 import moe.caa.multilogin.common.internal.command.InfoCommand;
 import moe.caa.multilogin.common.internal.command.SubCommand;
@@ -22,7 +23,8 @@ public abstract class CommandManager<S> {
 
         this.subCommands = List.of(
                 helpCommand = new HelpCommand<>(this),
-                new InfoCommand<>(this)
+                new InfoCommand<>(this),
+                new CreateCommand<>(this)
         );
     }
 

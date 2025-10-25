@@ -18,15 +18,16 @@ public class InfoCommand<S> extends SubCommand<S> {
     public void register(ArgumentBuilder<S, ?> builder) {
         String permissionMe = "multilogin.command.me";
         String permissionInfo = "multilogin.command.info";
-        addCommandDescription("me", permissionMe, manager.core.messageConfig.commandDescriptionInfo.get());
+        addCommandDescription("me", permissionMe, manager.core.messageConfig.commandDescriptionMe.get());
         addCommandDescription("info <target>", permissionInfo, manager.core.messageConfig.commandDescriptionInfo.get());
 
-        builder.then(literal("me"))
+        builder.then(literal("me")
                 .requires(predicateHasPermission(permissionMe))
                 .executes(context -> {
                     manager.executeAsync(() -> me(context.getSource()));
                     return Command.SINGLE_SUCCESS;
-                });
+                })
+        );
 
         builder.then(literal("info")
                 .then(argument("target", StringArgumentType.string())
@@ -44,7 +45,7 @@ public class InfoCommand<S> extends SubCommand<S> {
         resolveOnlinePlayerRunOrElseTip(source, target, targetPlayer -> {
             OnlineData data = targetPlayer.getOnlineData();
             if (data == null) {
-                sender.sendMessage(manager.core.messageConfig.commandInfoNone.get());
+                sender.sendMessage(manager.core.messageConfig.commandInfoNotFoundOnlineData.get());
             } else {
                 sender.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoContent.get()));
             }
@@ -55,7 +56,7 @@ public class InfoCommand<S> extends SubCommand<S> {
         ifOnlinePlayerRunOrElseTip(s, player -> {
             OnlineData data = player.getOnlineData();
             if (data == null) {
-                player.sendMessage(manager.core.messageConfig.commandMeNone.get());
+                player.sendMessage(manager.core.messageConfig.commandMeNotFoundOnlineData.get());
             } else {
                 player.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandMeContent.get()));
             }

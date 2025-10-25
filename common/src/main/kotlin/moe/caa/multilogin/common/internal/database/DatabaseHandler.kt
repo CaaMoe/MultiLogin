@@ -102,7 +102,7 @@ class DatabaseHandler(
 
     fun getProfilesByOwnerID(ownerUserID: Int) = getProfiles0 {
         ProfileTable.ownerUserID eq ownerUserID
-    }
+    }.associateBy { it.profileSlot }
 
     fun getProfileByProfileName(profileName: String) = getProfiles0 {
         ProfileTable.profileLowerCastName.lowerCase() eq profileName.lowercase()
@@ -138,7 +138,7 @@ class DatabaseHandler(
         ProfileTable.selectAll().where(predicate).map {
             Profile(
                 it[ProfileTable.id].value,
-                it[ProfileTable.ownerUserID].value,
+                it[ProfileTable.ownerUserID],
                 it[ProfileTable.profileSlot],
                 it[ProfileTable.profileUUID],
                 it[ProfileTable.profileOriginalName],
@@ -149,7 +149,7 @@ class DatabaseHandler(
     fun createProfile(
         profileUUID: UUID,
         profileName: String,
-        ownedUser: User,
+        ownedUserID: Int,
         putProfileSlot: Int
     ) = useTransaction {
         getProfiles0 {
@@ -157,9 +157,13 @@ class DatabaseHandler(
                 it[ProfileTable.profileUUID] = profileUUID
                 it[ProfileTable.profileLowerCastName] = profileName.lowercase()
                 it[ProfileTable.profileOriginalName] = profileName
-                it[ProfileTable.ownerUserID] = ownedUser.userID
+                it[ProfileTable.ownerUserID] = ownedUserID
                 it[ProfileTable.profileSlot] = putProfileSlot
             }
         }.first()
     }
+
+    fun getUserByUserID(userID: Int) = getUsers0 {
+        UserTable.id eq userID
+    }.firstOrNull()
 }

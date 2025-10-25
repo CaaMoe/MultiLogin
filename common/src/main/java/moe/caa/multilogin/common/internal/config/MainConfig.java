@@ -14,7 +14,8 @@ public class MainConfig extends Configuration {
 
 
     public final ConfigurationValue<LocalRSAConfig> localRsa = sub(NodePath.path("local-rsa"), new LocalRSAConfig());
-    public final ConfigurationValue<ReconnectFeature> reconnectFeature = sub(NodePath.path("reconnect-feature"), new ReconnectFeature());
+    public final ConfigurationValue<ReconnectFeatureConfig> reconnectFeature = sub(NodePath.path("reconnect-feature"), new ReconnectFeatureConfig());
+    public final ConfigurationValue<ProfileLimitConfig> userProfileSlotCountLimit = sub(NodePath.path("profile-limit"), new ProfileLimitConfig());
 
 
     public enum AuthMode {

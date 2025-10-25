@@ -9,8 +9,6 @@ import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
 import moe.caa.multilogin.common.internal.util.StringUtil;
 import net.kyori.adventure.text.Component;
 
-import java.util.List;
-
 public class LoginManager {
     private final MultiCore core;
 
@@ -158,15 +156,15 @@ public class LoginManager {
 
             if (profile == null) {
                 // 使用其他槽位
-                List<Profile> profiles = core.databaseHandler.getProfilesByOwnerID(user.userID);
+                var profiles = core.databaseHandler.getProfilesByOwnerID(user.userID);
                 if (!profiles.isEmpty()) {
-                    profile = profiles.getFirst();
+                    profile = profiles.values().iterator().next();
                     core.databaseHandler.updateUserCurrentSelectProfileSlot(user.userID, profile.profileSlot);
                 }
             }
 
             if (profile == null) {
-                core.platform.getPlatformLogger().info("User " + user.displayName() + " has no selected profile and no available profiles, Creating new profile...");
+                core.platform.getPlatformLogger().info("User " + user.displayName() + " has no selected profile and no available profiles, creating new profile in slot 0...");
 
                 ProfileManager.CreateProfileResult profileCreateResult = core.profileManager.createProfile(
                         authentication,

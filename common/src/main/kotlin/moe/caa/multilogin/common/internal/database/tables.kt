@@ -16,14 +16,14 @@ object UserTable : MultiLoginTable, IntIdTable("multilogin_user_data", "user_id"
 }
 
 object CurrentSelectSlot : MultiLoginTable, CompositeIdTable("multilogin_current_select_slot") {
-    val userID = reference("user_id", UserTable.id)
-    val selectedProfileSlot = reference("selected_profile_slot", ProfileTable.profileSlot)
+    val userID = integer("user_id")
+    val selectedProfileSlot = integer("selected_profile_slot")
 
     override val primaryKey = PrimaryKey(userID)
 }
 
 object ProfileTable : MultiLoginTable, IntIdTable("multilogin_profiles", "profile_id") {
-    val ownerUserID = reference("owner_user_id", UserTable.id)
+    val ownerUserID = integer("owner_user_id")
     val profileSlot = integer("profile_slot")
 
     val profileUUID = uuid("profile_uuid").index()

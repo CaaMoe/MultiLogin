@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
+@CookieDataType("reconnect")
 public sealed class ReconnectCookieData extends CookieData permits ReconnectSpecifiedProfileIDCookieData {
     public int userID;
 
