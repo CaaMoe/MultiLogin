@@ -14,6 +14,7 @@ public class MainConfig extends Configuration {
 
 
     public final ConfigurationValue<LocalRSAConfig> localRsa = sub(NodePath.path("local-rsa"), new LocalRSAConfig());
+    public final ConfigurationValue<ReconnectFeature> reconnectFeature = sub(NodePath.path("reconnect-feature"), new ReconnectFeature());
 
 
     public enum AuthMode {
