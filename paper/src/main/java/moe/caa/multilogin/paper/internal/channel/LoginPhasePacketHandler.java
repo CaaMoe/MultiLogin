@@ -8,7 +8,7 @@ import io.papermc.paper.adventure.PaperAdventure;
 import io.papermc.paper.connection.PaperPlayerLoginConnection;
 import moe.caa.multilogin.common.internal.data.LoggingUser;
 import moe.caa.multilogin.common.internal.data.OnlineData;
-import moe.caa.multilogin.common.internal.util.Key;
+import moe.caa.multilogin.common.internal.util.CookieKey;
 import moe.caa.multilogin.common.internal.util.ReflectUtil;
 import moe.caa.multilogin.paper.internal.main.MultiLoginPaperMain;
 import net.kyori.adventure.text.Component;
@@ -92,7 +92,7 @@ public class LoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<
     }
 
     @Override
-    public byte[] requestCookie(Key cookieKey) throws Exception {
+    public byte[] requestCookie(CookieKey cookieKey) throws Exception {
         return paperLoginConnection.retrieveCookie(new NamespacedKey(cookieKey.namespace(), cookieKey.key())).get();
     }
 

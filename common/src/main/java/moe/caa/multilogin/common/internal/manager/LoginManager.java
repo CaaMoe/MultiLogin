@@ -5,10 +5,9 @@ import moe.caa.multilogin.common.internal.config.LocalAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.GameProfile;
 import moe.caa.multilogin.common.internal.data.LoggingUser;
 import moe.caa.multilogin.common.internal.data.OnlineData;
-import moe.caa.multilogin.common.internal.data.cookie.CookieData;
+import moe.caa.multilogin.common.internal.data.cookie.SignedCookieData;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
-import moe.caa.multilogin.common.internal.util.Key;
 import moe.caa.multilogin.common.internal.util.StringUtil;
 import net.kyori.adventure.text.Component;
 
@@ -86,14 +85,14 @@ public class LoginManager {
 
             core.platform.getPlatformLogger().debug("Start processing the login(transfer) request of " + loggingUser.getExpectUsername());
 
-            byte[] cookie = loggingUser.requestCookie(new Key("multilogin", "cookie"));
-            if (cookie == null || cookie.length == 0) {
+            byte[] cookieDataBytes = loggingUser.requestCookie(MultiCore.COOKIE_KEY);
+            if (cookieDataBytes == null || cookieDataBytes.length == 0) {
                 core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but did not carry a valid cookie.");
                 loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotCarryCookie.get());
                 return;
             }
 
-            CookieData cookieData = CookieData.deserialize(cookie);
+            SignedCookieData signedCookieData = SignedCookieData.readSignedCookieData(cookieDataBytes);
             // todo 还没有实现
         } catch (Throwable t) {
             core.platform.getPlatformLogger().error("Failed to processed login player: " + loggingUser.getExpectUsername(), t);

@@ -1,6 +1,6 @@
 package moe.caa.multilogin.common.internal.data;
 
-import moe.caa.multilogin.common.internal.util.Key;
+import moe.caa.multilogin.common.internal.util.CookieKey;
 import net.kyori.adventure.text.Component;
 
 import java.net.InetAddress;
@@ -17,7 +17,7 @@ public interface LoggingUser {
 
     boolean isTransferred();
 
-    byte[] requestCookie(Key cookieKey) throws ExecutionException, InterruptedException, Exception;
+    byte[] requestCookie(CookieKey cookieKey) throws ExecutionException, InterruptedException, Exception;
 
     SwitchToEncryptedResult switchToEncryptedState(boolean shouldClientAuthenticate) throws ExecutionException, InterruptedException, Exception;
 

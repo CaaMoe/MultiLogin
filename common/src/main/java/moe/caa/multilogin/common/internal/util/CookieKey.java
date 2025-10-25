@@ -1,6 +1,6 @@
 package moe.caa.multilogin.common.internal.util;
 
-public record Key(
+public record CookieKey(
         String namespace,
         String key
 ) {

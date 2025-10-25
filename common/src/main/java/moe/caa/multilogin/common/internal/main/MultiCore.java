@@ -2,10 +2,12 @@ package moe.caa.multilogin.common.internal.main;
 
 import moe.caa.multilogin.common.internal.Platform;
 import moe.caa.multilogin.common.internal.config.*;
+import moe.caa.multilogin.common.internal.data.cookie.CookieData;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
 import moe.caa.multilogin.common.internal.manager.LoginManager;
 import moe.caa.multilogin.common.internal.manager.ProfileManager;
 import moe.caa.multilogin.common.internal.manager.UserManager;
+import moe.caa.multilogin.common.internal.util.CookieKey;
 import moe.caa.multilogin.common.internal.util.IOUtil;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
@@ -20,6 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 public class MultiCore {
+    public static final CookieKey COOKIE_KEY = new CookieKey("multilogin", "cookie");
+
     public final MessageConfig messageConfig = new MessageConfig();
     public final MainConfig mainConfig = new MainConfig();
     public final Platform platform;
@@ -41,7 +45,8 @@ public class MultiCore {
         this.platform = platform;
     }
 
-    public void load() throws IOException {
+    public void load() throws Exception {
+        CookieData.init();
         reload();
         databaseHandler.initDatabase();
         platform.getPlatformLogger().info("Loaded, using MultiLogin v" + platform.getPluginVersion() + " on " + platform.getServerName() + " - " + platform.getServerVersion());
