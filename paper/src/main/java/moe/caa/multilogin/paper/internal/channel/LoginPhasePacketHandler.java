@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<?>> implements LoggingUser {
+public class LoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<?>> implements LoggingUser {
     private static MethodHandle listenerGetServer;
     private static MethodHandle listenerGetChallenger;
     private static MethodHandle listenerGetPaperLoginConnection;
@@ -56,18 +56,18 @@ public class MultiLoginLoginPhasePacketHandler extends SimpleChannelInboundHandl
     private byte[] challenge;
 
 
-    public MultiLoginLoginPhasePacketHandler(MultiLoginPaperMain paperMain) {
+    public LoginPhasePacketHandler(MultiLoginPaperMain paperMain) {
         this.paperMain = paperMain;
     }
 
     public static void init() throws Exception {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-        MultiLoginLoginPhasePacketHandler.listenerGetServer = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("server")));
-        MultiLoginLoginPhasePacketHandler.listenerGetChallenger = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("challenge")));
-        MultiLoginLoginPhasePacketHandler.listenerGetPaperLoginConnection = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("paperLoginConnection")));
-        MultiLoginLoginPhasePacketHandler.listenerCallCallPlayerPreLoginEvent = lookup.unreflect(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredMethod("callPlayerPreLoginEvents", GameProfile.class)));
-        MultiLoginLoginPhasePacketHandler.listenerCallStartClientVerification = lookup.unreflect(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredMethod("startClientVerification", GameProfile.class)));
+        LoginPhasePacketHandler.listenerGetServer = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("server")));
+        LoginPhasePacketHandler.listenerGetChallenger = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("challenge")));
+        LoginPhasePacketHandler.listenerGetPaperLoginConnection = lookup.unreflectGetter(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredField("paperLoginConnection")));
+        LoginPhasePacketHandler.listenerCallCallPlayerPreLoginEvent = lookup.unreflect(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredMethod("callPlayerPreLoginEvents", GameProfile.class)));
+        LoginPhasePacketHandler.listenerCallStartClientVerification = lookup.unreflect(ReflectUtil.openAccess(ServerLoginPacketListenerImpl.class.getDeclaredMethod("startClientVerification", GameProfile.class)));
     }
 
     @Override

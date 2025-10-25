@@ -1,10 +1,12 @@
-package moe.caa.multilogin.paper.internal.online;
+package moe.caa.multilogin.paper.internal.manager;
 
 import com.google.common.collect.MapMaker;
 import moe.caa.multilogin.common.internal.data.OnlineData;
 import moe.caa.multilogin.common.internal.data.OnlinePlayer;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.manager.OnlinePlayerManager;
+import moe.caa.multilogin.paper.internal.sender.PaperOnlinePlayer;
+import moe.caa.multilogin.paper.internal.sender.PaperSender;
 import net.minecraft.network.Connection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.concurrent.ConcurrentMap;
 
 public class PaperOnlinePlayerManager extends OnlinePlayerManager {
-    protected final ConcurrentMap<Connection, OnlineData> onlineDataMap = new MapMaker()
+    public final ConcurrentMap<Connection, OnlineData> onlineDataMap = new MapMaker()
             .weakKeys()
             .makeMap();
 
@@ -24,7 +26,7 @@ public class PaperOnlinePlayerManager extends OnlinePlayerManager {
     public OnlinePlayer getPlayerExactByName(String name) {
         Player player = Bukkit.getPlayerExact(name);
         if (player == null) return null;
-        return new PaperOnlinePlayer(player);
+        return PaperSender.wrapSender(player);
     }
 
     public void putOnlineData(Connection connection, OnlineData onlineData) {

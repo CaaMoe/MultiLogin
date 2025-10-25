@@ -6,8 +6,8 @@ import moe.caa.multilogin.common.internal.logger.KLogger;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
 import moe.caa.multilogin.paper.internal.channel.ChannelInjector;
-import moe.caa.multilogin.paper.internal.command.PaperCommandManager;
-import moe.caa.multilogin.paper.internal.online.PaperOnlinePlayerManager;
+import moe.caa.multilogin.paper.internal.manager.PaperCommandManager;
+import moe.caa.multilogin.paper.internal.manager.PaperOnlinePlayerManager;
 import moe.caa.multilogin.paper.internal.service.VanillaLocalYggdrasilSessionService;
 import org.bukkit.plugin.java.JavaPlugin;
 

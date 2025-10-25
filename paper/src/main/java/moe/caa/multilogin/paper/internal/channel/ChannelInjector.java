@@ -17,7 +17,7 @@ public class ChannelInjector implements ChannelInitializeListener {
     }
 
     public void inject() throws Exception {
-        MultiLoginLoginPhasePacketHandler.init();
+        LoginPhasePacketHandler.init();
         ChannelInitializeListenerHolder.addListener(Key.key("multilogin:main"), this);
     }
 
@@ -27,6 +27,6 @@ public class ChannelInjector implements ChannelInitializeListener {
 
     @Override
     public void afterInitChannel(@NonNull Channel channel) {
-        channel.pipeline().addBefore(MINECRAFT_PACKET_HANDLER_NAME, "multilogin_login_phase_packet_handler", new MultiLoginLoginPhasePacketHandler(multiLoginPaperMain));
+        channel.pipeline().addBefore(MINECRAFT_PACKET_HANDLER_NAME, "multilogin_login_phase_packet_handler", new LoginPhasePacketHandler(multiLoginPaperMain));
     }
 }
