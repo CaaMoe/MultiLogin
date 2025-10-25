@@ -33,7 +33,7 @@ _✨ 一款支持多平台、多账号登录的 Minecraft 服务器验证插件 
   玩家可自由创建、编辑、切换多个游戏角色（如“小号”或不同身份角色）。
 - 🧩 **跨平台兼容**：  
   兼容多种 Minecraft
-  服务端平台（如 [Paper](https://papermc.io/software/paper)、[Velocity*](https://papermc.io/software/velocity) 等）。
+  服务端平台（如 [Paper](https://papermc.io/software/paper)、[Velocity](https://papermc.io/software/velocity) 等）。
 - 📝 **MiniMessage 消息格式**：  
   支持 [MiniMessage](https://docs.papermc.io/adventure/minimessage) 格式，允许自定义带样式和颜色的消息。
 - 💾 **多数据库后端**：  
@@ -48,7 +48,7 @@ _✨ 一款支持多平台、多账号登录的 Minecraft 服务器验证插件 
 MultiLogin 支持将“验证逻辑”从主服务器中独立出来。  
 玩家首先连接验证服务器，在该服务器完成登录、认证或角色选择操作后，再通过 `transfer` 协议被转送至主服务器。
 
-在转送时，验证服务器会通过 **cookie** 携带经过 **非对称加密** 后的验证数据，从而实现安全的身份传递。
+在转送时，验证服务器会通过 **cookie** 携带经过 **签名** 后的验证数据，从而实现安全的身份传递。
 
 这种结构的优势在于：
 
