@@ -1,7 +1,7 @@
 package moe.caa.multilogin.common.internal.manager;
 
-import moe.caa.multilogin.common.internal.config.AuthenticationConfig;
-import moe.caa.multilogin.common.internal.config.LocalAuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.GameProfile;
 import moe.caa.multilogin.common.internal.data.LoggingUser;
 import moe.caa.multilogin.common.internal.data.OnlineData;

@@ -1,10 +1,14 @@
 package moe.caa.multilogin.common.internal.util;
 
+import moe.caa.multilogin.common.internal.main.MultiCore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.NodePath;
 
+import java.nio.file.Path;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +51,34 @@ public abstract class Configuration {
             }
             throw new IllegalArgumentException("Invalid enum value '" + value + "' for enum " + enumClass.getName() + " at path " + Arrays.stream(path.array()).map(Object::toString).collect(Collectors.joining(".")));
 
+        });
+    }
+
+    protected ConfigurationValue<PublicKey> rsaPublicKey(NodePath path) {
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return null;
+            Path resolve = MultiCore.instance.platform.getPlatformConfigPath().resolve(string).normalize();
+
+            try {
+                return RSAUtil.loadPublicKey(resolve);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid public key file " + resolve.toFile().getAbsolutePath());
+            }
+        });
+    }
+
+    protected ConfigurationValue<PrivateKey> rsaPrivateKey(NodePath path) {
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return null;
+            Path resolve = MultiCore.instance.platform.getPlatformConfigPath().resolve(string).normalize();
+
+            try {
+                return RSAUtil.loadPrivateKey(resolve);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid private key file " + resolve.toFile().getAbsolutePath());
+            }
         });
     }
 

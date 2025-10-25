@@ -1,5 +1,6 @@
 package moe.caa.multilogin.common.internal.config;
 
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationOptionConfig;
 import moe.caa.multilogin.common.internal.util.Configuration;
 import org.spongepowered.configurate.NodePath;
 
@@ -10,6 +11,9 @@ public class MainConfig extends Configuration {
 
     public final ConfigurationValue<Boolean> disableHelloPacketUsernameValidation = boolOpt(NodePath.path("disable-hello-packet-username-validation"), false);
     public final ConfigurationValue<Boolean> reconnectFeatureEnable = boolOpt(NodePath.path("reconnect-feature-enable"), true);
+
+
+    public final ConfigurationValue<LocalRSAConfig> localRsa = sub(NodePath.path("local-rsa"), new LocalRSAConfig());
 
 
     public enum AuthMode {

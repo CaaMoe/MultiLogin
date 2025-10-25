@@ -1,5 +1,6 @@
-package moe.caa.multilogin.common.internal.config;
+package moe.caa.multilogin.common.internal.config.authentication;
 
+import moe.caa.multilogin.common.internal.config.MainConfig;
 import moe.caa.multilogin.common.internal.manager.ProfileManager;
 import moe.caa.multilogin.common.internal.util.Configuration;
 import org.spongepowered.configurate.NodePath;

@@ -1,7 +1,11 @@
 package moe.caa.multilogin.common.internal.main;
 
 import moe.caa.multilogin.common.internal.Platform;
-import moe.caa.multilogin.common.internal.config.*;
+import moe.caa.multilogin.common.internal.config.MainConfig;
+import moe.caa.multilogin.common.internal.config.MessageConfig;
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.RemoteAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.cookie.CookieData;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
 import moe.caa.multilogin.common.internal.manager.LoginManager;
@@ -9,6 +13,7 @@ import moe.caa.multilogin.common.internal.manager.ProfileManager;
 import moe.caa.multilogin.common.internal.manager.UserManager;
 import moe.caa.multilogin.common.internal.util.CookieKey;
 import moe.caa.multilogin.common.internal.util.IOUtil;
+import moe.caa.multilogin.common.internal.util.RSAUtil;
 import org.spongepowered.configurate.CommentedConfigurationNode;
 import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
 
@@ -16,6 +21,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +30,7 @@ import java.util.stream.Stream;
 
 public class MultiCore {
     public static final CookieKey COOKIE_KEY = new CookieKey("multilogin", "cookie");
+    public static MultiCore instance;
 
     public final MessageConfig messageConfig = new MessageConfig();
     public final MainConfig mainConfig = new MainConfig();
@@ -46,6 +54,7 @@ public class MultiCore {
     }
 
     public void load() throws Exception {
+        instance = this;
         CookieData.init();
         reload();
         databaseHandler.initDatabase();
@@ -56,7 +65,7 @@ public class MultiCore {
         databaseHandler.close();
     }
 
-    public void reload() throws IOException {
+    public void reload() throws IOException, NoSuchAlgorithmException {
         Path configPath = platform.getPlatformConfigPath();
         if (!Files.exists(configPath)) {
             Files.createDirectories(configPath);
@@ -88,6 +97,19 @@ public class MultiCore {
         byte[] mainConfigNestResource = Objects.requireNonNull(IOUtil.readNestResource("config.conf"), "Default config.conf resource is missing!");
         if (!Files.exists(mainConfigConfigPath)) {
             Files.write(mainConfigConfigPath, mainConfigNestResource);
+
+            Path keysPath = configPath.resolve("keys");
+            Path defaultPrivateKeyPath = configPath.resolve("keys/local-private-key.pem");
+            Path defaultPublicKeyPath = configPath.resolve("keys/local-public-key.pem");
+            if (!Files.exists(keysPath)) {
+                Files.createDirectories(keysPath);
+            }
+            if (!Files.exists(defaultPrivateKeyPath) || !Files.exists(defaultPublicKeyPath)) {
+                KeyPair keyPair = RSAUtil.generateKeyPair(2048);
+                RSAUtil.savePrivateKey(keyPair.getPrivate(), defaultPrivateKeyPath);
+                RSAUtil.savePublicKey(keyPair.getPublic(), defaultPublicKeyPath);
+                platform.getPlatformLogger().info("Generate the local key pair at " + keysPath.toFile().getAbsolutePath());
+            }
         }
         CommentedConfigurationNode configurationNode = HoconConfigurationLoader.builder().path(mainConfigConfigPath).build().load();
         mainConfig.loadFrom(configurationNode, HoconConfigurationLoader.builder().source(() ->

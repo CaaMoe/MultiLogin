@@ -4,12 +4,14 @@ import com.google.gson.JsonObject;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public sealed abstract class CookieData permits ExpirableData {
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
+    private Instant expiresAt = Instant.MIN;
 
     public static void init() throws IllegalAccessException, NoSuchMethodException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -39,6 +41,7 @@ public sealed abstract class CookieData permits ExpirableData {
     public static JsonObject serialize(CookieData cookieData) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("type", cookieData.getClass().getAnnotation(CookieDataType.class).type());
+        jsonObject.addProperty("expires_at", cookieData.expiresAt.toString());
         cookieData.serializeData(jsonObject);
         return jsonObject;
     }
@@ -46,13 +49,19 @@ public sealed abstract class CookieData permits ExpirableData {
 
     public static CookieData deserialize(JsonObject data) throws Throwable {
         String type = data.getAsJsonPrimitive("type").getAsString();
+        Instant expiresAt = Instant.parse(data.getAsJsonPrimitive("expires_at").getAsString());
         MethodHandle handle = typeCookieMap.get(type);
         if (handle == null) {
             throw new IllegalArgumentException("Invalid data type: " + type);
         }
         CookieData cookieData = (CookieData) handle.invoke();
+        cookieData.expiresAt = expiresAt;
         cookieData.deserializeData(data);
         return cookieData;
+    }
+
+    public void setRelativelyExpireSecond(long seconds) {
+        expiresAt = Instant.now().plusSeconds(seconds);
     }
 
     protected abstract void deserializeData(JsonObject data);

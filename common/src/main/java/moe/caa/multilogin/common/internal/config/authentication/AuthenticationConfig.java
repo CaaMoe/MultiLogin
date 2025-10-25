@@ -1,5 +1,6 @@
-package moe.caa.multilogin.common.internal.config;
+package moe.caa.multilogin.common.internal.config.authentication;
 
+import moe.caa.multilogin.common.internal.config.MainConfig;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.spongepowered.configurate.NodePath;

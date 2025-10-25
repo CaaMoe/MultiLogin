@@ -1,6 +1,6 @@
 package moe.caa.multilogin.common.internal.data;
 
-import moe.caa.multilogin.common.internal.config.AuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
 
 import java.util.UUID;
 
