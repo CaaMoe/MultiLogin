@@ -3,8 +3,6 @@ package moe.caa.multilogin.common.internal.command;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import moe.caa.multilogin.common.internal.manager.CommandManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.event.ClickEvent;
 
 import java.util.List;
@@ -33,25 +31,17 @@ public class HelpCommand<S> extends SubCommand<S> {
                 .filter(it -> hasPermission(s, it.permission())).toList();
 
         if (descriptions.isEmpty()) {
-            sendMessage(s, manager.core.messageConfig.commandHelpNone.get());
+            sendMessage(s, manager.core.messageConfig.commandHelpNone.get().build());
         }
 
-        sendMessage(s, manager.core.messageConfig.commandHelpHeader.get());
+        sendMessage(s, manager.core.messageConfig.commandHelpHeader.get().build());
         for (CommandDescription description : descriptions) {
             String command = "/multilogin " + description.label();
             sendMessage(s, manager.core.messageConfig.commandHelpEntry.get()
-                    .replaceText(TextReplacementConfig.builder()
-                            .matchLiteral("<description>")
-                            .replacement(description.description())
-                            .build())
-                    .replaceText(TextReplacementConfig.builder()
-                            .matchLiteral("<command>")
-                            .replacement(Component.text(command))
-                            .build())
-                    .replaceText(TextReplacementConfig.builder()
-                            .matchLiteral("<permission>")
-                            .replacement(Component.text(description.permission()))
-                            .build())
+                    .replace("<description>", description.description().originalMiniMessageStr())
+                    .replace("<command>", command)
+                    .replace("<permission>", description.permission())
+                    .build()
                     .clickEvent(ClickEvent.suggestCommand(command))
             );
         }

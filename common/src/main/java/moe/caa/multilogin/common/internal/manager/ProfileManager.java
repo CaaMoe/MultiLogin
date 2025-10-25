@@ -64,9 +64,10 @@ public class ProfileManager {
                         core.platform.getPlatformLogger().warn("Create profile name conflict detected, amended from " + expectName + " to " + amended + " using role: " + StringUtil.underscoreUpperCaseToKebabCase(nameConflictPolicy.name()));
                         return createProfile(ownedUserID, uuidConflictPolicy, nameConflictPolicy, expectUUID, amended, putProfileSlot);
                     }
-                    case REJECT ->
-                            new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
-                                    CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_CONFLICT);
+                    case REJECT -> {
+                        return new CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult(
+                                CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult.Reason.NAME_CONFLICT);
+                    }
                 }
             }
 

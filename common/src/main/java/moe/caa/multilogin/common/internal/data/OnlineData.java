@@ -8,6 +8,7 @@ public record OnlineData(OnlineUser onlineUser, OnlineProfile onlineProfile) {
 
     public record OnlineProfile(
             int profileID,
+            int profileSlotID,
             UUID profileUUID,
             String profileName
     ) {
@@ -16,7 +17,7 @@ public record OnlineData(OnlineUser onlineUser, OnlineProfile onlineProfile) {
     public record OnlineUser(
             int userID,
             AuthenticationConfig service,
-            GameProfile profile
+            GameProfile authenticatedGameProfile
     ) {
     }
 }

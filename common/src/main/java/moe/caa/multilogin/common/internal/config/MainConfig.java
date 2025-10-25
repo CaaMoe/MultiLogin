@@ -10,8 +10,6 @@ public class MainConfig extends Configuration {
     public final ConfigurationValue<AuthenticationOptionConfig> defaultAuthServiceOption = sub(NodePath.path("default-auth-service-option"), new AuthenticationOptionConfig());
 
     public final ConfigurationValue<Boolean> disableHelloPacketUsernameValidation = boolOpt(NodePath.path("disable-hello-packet-username-validation"), false);
-    public final ConfigurationValue<Boolean> reconnectFeatureEnable = boolOpt(NodePath.path("reconnect-feature-enable"), true);
-
 
     public final ConfigurationValue<LocalRSAConfig> localRsa = sub(NodePath.path("local-rsa"), new LocalRSAConfig());
     public final ConfigurationValue<ReconnectFeatureConfig> reconnectFeature = sub(NodePath.path("reconnect-feature"), new ReconnectFeatureConfig());

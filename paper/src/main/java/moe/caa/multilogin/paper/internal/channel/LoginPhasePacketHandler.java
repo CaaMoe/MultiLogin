@@ -115,14 +115,14 @@ public class LoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<
                 channelReadKeyPacket(ctx, packet);
             } catch (Throwable t) {
                 paperMain.getPlatformLogger().error("Failed to process key packet", t);
-                closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get());
+                closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get().build());
             }
         } else if (msg instanceof ServerboundHelloPacket packet) {
             try {
                 channelReadHelloPacket(ctx, packet);
             } catch (Throwable t) {
                 paperMain.getPlatformLogger().error("Failed to process hello packet", t);
-                closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get());
+                closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get().build());
             }
         } else {
             ctx.fireChannelRead(msg);
@@ -196,16 +196,16 @@ public class LoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<
         paperMain.getOnlinePlayerManager().putOnlineData(serverLoginPacketListener.connection, data);
 
 
-        GameProfile gameProfile = new GameProfile(data.onlineUser().profile().uuid(), data.onlineUser().profile().username());
-        for (moe.caa.multilogin.common.internal.data.GameProfile.Property property : data.onlineUser().profile().properties()) {
+        GameProfile gameProfile = new GameProfile(data.onlineProfile().profileUUID(), data.onlineProfile().profileName());
+        for (moe.caa.multilogin.common.internal.data.GameProfile.Property property : data.onlineUser().authenticatedGameProfile().properties()) {
             gameProfile.getProperties().put(property.name(), new Property(property.name(), property.value(), property.signature()));
         }
 
         gameProfile = (GameProfile) listenerCallCallPlayerPreLoginEvent.invoke(serverLoginPacketListener, gameProfile);
 
-        if (!gameProfile.getId().equals(data.onlineUser().profile().uuid()) || !gameProfile.getName().equals(data.onlineUser().profile().username())) {
-            paperMain.getPlatformLogger().warn("Check your plugin list as players triggered profile changes during the PreLoginEvent. (expected: " + data.onlineUser().profile().username() + "/" + data.onlineUser().profile().username() + ", got: " + gameProfile.getId() + "/" + gameProfile.getName() + ")");
-            closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get());
+        if (!gameProfile.getId().equals(data.onlineProfile().profileUUID()) || !gameProfile.getName().equals(data.onlineProfile().profileName())) {
+            paperMain.getPlatformLogger().warn("Check your plugin list as players triggered profile changes during the PreLoginEvent. (expected: " + data.onlineProfile().profileUUID() + "/" + data.onlineProfile().profileName() + ", got: " + gameProfile.getId() + "/" + gameProfile.getName() + ")");
+            closeConnect(paperMain.getCore().messageConfig.loginUnknownError.get().build());
             return;
         }
 

@@ -89,6 +89,14 @@ class DatabaseHandler(
     }
 
     fun updateUserCurrentSelectProfileSlot(userID: Int, selectedSlot: Int) = useTransaction {
+        runCatching {
+            if (getUserCurrentSelectProfileSlot(userID) == null) {
+                CurrentSelectSlot.insert {
+                    it[CurrentSelectSlot.selectedProfileSlot] = selectedSlot
+                    it[CurrentSelectSlot.userID] = userID
+                }
+            }
+        }
         CurrentSelectSlot.update({ CurrentSelectSlot.userID eq userID }) {
             it[CurrentSelectSlot.selectedProfileSlot] = selectedSlot
         }
@@ -165,5 +173,9 @@ class DatabaseHandler(
 
     fun getUserByUserID(userID: Int) = getUsers0 {
         UserTable.id eq userID
+    }.firstOrNull()
+
+    fun getProfileByProfileID(profileID: Int) = getProfiles0 {
+        ProfileTable.id eq profileID
     }.firstOrNull()
 }

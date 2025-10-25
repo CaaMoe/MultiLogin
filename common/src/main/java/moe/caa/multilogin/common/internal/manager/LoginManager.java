@@ -3,6 +3,8 @@ package moe.caa.multilogin.common.internal.manager;
 import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
 import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.*;
+import moe.caa.multilogin.common.internal.data.cookie.ReconnectCookieData;
+import moe.caa.multilogin.common.internal.data.cookie.ReconnectSpecifiedProfileIDCookieData;
 import moe.caa.multilogin.common.internal.data.cookie.SignedCookieData;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 import moe.caa.multilogin.common.internal.service.LocalYggdrasilSessionService;
@@ -27,7 +29,7 @@ public class LoginManager {
             }
             case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult.SwitchToEncryptedFailedThrowResult throwResult -> {
                 core.platform.getPlatformLogger().error("Failed to encrypt " + user.getExpectUsername() + " connection.", throwResult.throwable);
-                user.closeConnect(core.messageConfig.loginUnknownError.get());
+                user.closeConnect(core.messageConfig.loginUnknownError.get().build());
             }
         }
     }
@@ -38,7 +40,7 @@ public class LoginManager {
                     reasonResult.reason;
             case LoginManager.HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult throwResult -> {
                 core.platform.getPlatformLogger().error("Failed to processed login player: " + user.getExpectUsername(), throwResult.throwable);
-                yield core.messageConfig.loginUnknownError.get();
+                yield core.messageConfig.loginUnknownError.get().build();
             }
         };
 
@@ -49,15 +51,15 @@ public class LoginManager {
         switch (result) {
             case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.HasJoinedFailedInvalidSessionResult ignored -> {
                 core.platform.getPlatformLogger().warn("Player " + user.getExpectUsername() + " tried to join with an invalid session.");
-                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationInvalidSession.get());
+                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationInvalidSession.get().build());
             }
             case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.hasJoinedFailedServiceUnavailableResult unavailableResult -> {
                 core.platform.getPlatformLogger().error("Player " + user.getExpectUsername() + " tried to join but the session server was unavailable.", unavailableResult.throwable);
-                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationUnavailable.get());
+                user.closeConnect(core.messageConfig.loginFailedLocalAuthenticationUnavailable.get().build());
             }
             case LocalYggdrasilSessionService.HasJoinedResult.HasJoinedFailedResult.HasJoinedFailedThrowResult throwResult -> {
                 core.platform.getPlatformLogger().error("Failed to verify " + user.getExpectUsername() + " session.", throwResult.throwable);
-                user.closeConnect(core.messageConfig.loginUnknownError.get());
+                user.closeConnect(core.messageConfig.loginUnknownError.get().build());
             }
         }
     }
@@ -68,7 +70,7 @@ public class LoginManager {
             if (!core.mainConfig.disableHelloPacketUsernameValidation.get()) {
                 if (!StringUtil.isReasonablePlayerName(loggingUser.getExpectUsername())) {
                     core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to login with invalid characters in name.");
-                    loggingUser.closeConnect(core.messageConfig.loginHelloPacketInvalidCharactersInName.get());
+                    loggingUser.closeConnect(core.messageConfig.loginHelloPacketInvalidCharactersInName.get().build());
                 }
             }
 
@@ -83,17 +85,67 @@ public class LoginManager {
             byte[] cookieDataBytes = loggingUser.requestCookie(MultiCore.COOKIE_KEY);
             if (cookieDataBytes == null || cookieDataBytes.length == 0) {
                 core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but did not carry a valid cookie.");
-                loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotCarryCookie.get());
+                loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotCarryCookie.get().build());
                 return;
             }
 
-            SignedCookieData signedCookieData = SignedCookieData.readSignedCookieData(cookieDataBytes);
-            // todo 还没有实现
+            SignedCookieData<?> signedCookieData = SignedCookieData.readSignedCookieData(cookieDataBytes);
+            if (signedCookieData.cookieData().isExpired()) {
+                // todo 包过期
+            }
+
+            if (signedCookieData.cookieData().isLocalSignature()) {
+                if (!signedCookieData.validateSignature(
+                        core.mainConfig.localRsa.get().publicKey.get(),
+                        core.mainConfig.localRsa.get().verifyDigitalSignatureAlgorithm.get()
+                )) {
+                    // todo 签名无效
+                }
+            }
+
+            switch (signedCookieData.cookieData()) {
+                case ReconnectSpecifiedProfileIDCookieData cookieData -> {
+                    handleReconnectSpecifiedProfileLogin(loggingUser, cookieData);
+                }
+                case ReconnectCookieData cookieData -> {
+
+                }
+            }
         } catch (Throwable t) {
             core.platform.getPlatformLogger().error("Failed to processed login player: " + loggingUser.getExpectUsername(), t);
-            loggingUser.closeConnect(core.messageConfig.loginUnknownError.get());
+            loggingUser.closeConnect(core.messageConfig.loginUnknownError.get().build());
         }
     }
+
+    public void handleReconnectSpecifiedProfileLogin(LoggingUser loggingUser, ReconnectSpecifiedProfileIDCookieData cookieData) throws Throwable {
+        core.platform.getPlatformLogger().debug("Start processing the login(local reconnection, specified login profile) request of " + loggingUser.getExpectUsername());
+
+        int profileID = cookieData.specifiedProfileID;
+        int userID = cookieData.userID;
+        GameProfile gameProfile = cookieData.authenticatedGameProfile;
+
+        LocalAuthenticationConfig localAuthenticationConfig = core.localAuthenticationConfig;
+        // 服务器只允许 remote authentication
+        if (localAuthenticationConfig == null) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login(local reconnection, specified login profile), but the server only allowed transfer login(remote authentication only).");
+            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationOnly.get().build());  // todo 改掉
+            return;
+        }
+
+        User user = core.databaseHandler.getUserByUserID(userID);
+        Profile profile = core.databaseHandler.getProfileByProfileID(profileID);
+
+        if (profile == null || user == null) {
+            // 档案不存在处理
+            return;
+        }
+
+        loggingUser.switchToEncryptedState(false);
+
+        OnlineData onlineData = completedLogin(core.localAuthenticationConfig, user, gameProfile, profile);
+        loggingUser.completeLogin(onlineData);
+    }
+
 
     private void handleDirectlyLogin(LoggingUser loggingUser) throws Throwable {
         core.platform.getPlatformLogger().debug("Start processing the login(directly) request of " + loggingUser.getExpectUsername());
@@ -102,7 +154,7 @@ public class LoginManager {
         // 服务器只允许 remote authentication
         if (localAuthenticationConfig == null) {
             core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to login directly, but the server only allowed transfer login(remote authentication only).");
-            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationOnly.get());
+            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationOnly.get().build());
             return;
         }
 
@@ -138,6 +190,15 @@ public class LoginManager {
         }
     }
 
+    private OnlineData completedLogin(AuthenticationConfig authentication, User user, GameProfile authenticatedGameProfile, Profile profile) {
+        OnlineData data = new OnlineData(
+                new OnlineData.OnlineUser(user.userID, authentication, authenticatedGameProfile),
+                new OnlineData.OnlineProfile(profile.profileID, profile.profileSlot, profile.profileUUID, profile.profileName)
+        );
+
+        core.platform.getPlatformLogger().info("User " + user.displayName() + " logged in with profile " + profile.displayName());
+        return data;
+    }
 
     private HandleLoginResult handleLogged(AuthenticationConfig authentication, User user, GameProfile authenticatedGameProfile) {
         try {
@@ -176,10 +237,12 @@ public class LoginManager {
                         return switch (createProfileFailedResult) {
                             case ProfileManager.CreateProfileResult.CreateProfileFailedResult.CreateProfileFailedBecauseReasonResult enumResult -> {
                                 Component disconnectReason = switch (enumResult.reason) {
-                                    case UUID_CONFLICT -> core.messageConfig.loginProfileCreateUuidConflict.get();
-                                    case NAME_CONFLICT -> core.messageConfig.loginProfileCreateNameConflict.get();
+                                    case UUID_CONFLICT ->
+                                            core.messageConfig.loginProfileCreateUuidConflict.get().build();
+                                    case NAME_CONFLICT ->
+                                            core.messageConfig.loginProfileCreateNameConflict.get().build();
                                     case NAME_AMEND_RESTRICT ->
-                                            core.messageConfig.loginProfileCreateNameAmendRestrict.get();
+                                            core.messageConfig.loginProfileCreateNameAmendRestrict.get().build();
                                 };
 
                                 yield new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseReasonResult(disconnectReason);
@@ -198,13 +261,12 @@ public class LoginManager {
             }
             assert profile != null;
 
-            OnlineData data = new OnlineData(
-                    new OnlineData.OnlineUser(user.userID, authentication, authenticatedGameProfile),
-                    new OnlineData.OnlineProfile(profile.profileID, profile.profileUUID, profile.profileName)
-            );
-
-            core.platform.getPlatformLogger().info("User " + user.displayName() + " logged in with profile " + profile.displayName());
-            return new HandleLoginResult.HandleLoginSucceedResult(data);
+            return new HandleLoginResult.HandleLoginSucceedResult(completedLogin(
+                    authentication,
+                    user,
+                    authenticatedGameProfile,
+                    profile
+            ));
         } catch (Throwable t) {
             return new HandleLoginResult.HandleLoginFailedResult.HandleLoginFailedBecauseThrowResult(t);
         }

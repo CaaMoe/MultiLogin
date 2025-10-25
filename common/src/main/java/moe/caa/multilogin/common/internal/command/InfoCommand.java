@@ -43,22 +43,20 @@ public class InfoCommand<S> extends SubCommand<S> {
     private void infoOther(S source, String target) {
         Sender sender = manager.wrapSender(source);
         resolveOnlinePlayerRunOrElseTip(source, target, targetPlayer -> {
-            OnlineData data = targetPlayer.getOnlineData();
-            if (data == null) {
-                sender.sendMessage(manager.core.messageConfig.commandInfoNotFoundOnlineData.get());
-            } else {
-                sender.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoContent.get()));
-            }
+            ifFetchOtherOnlineDataRunOrElseTip(sender, targetPlayer, data -> {
+                sender.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandInfoContent.get().build()));
+            });
         });
     }
 
     protected void me(S s) {
-        ifOnlinePlayerRunOrElseTip(s, player -> {
+        Sender sender = manager.wrapSender(s);
+        ifOnlinePlayerRunOrElseTip(sender, player -> {
             OnlineData data = player.getOnlineData();
             if (data == null) {
-                player.sendMessage(manager.core.messageConfig.commandMeNotFoundOnlineData.get());
+                player.sendMessage(manager.core.messageConfig.commandGeneralNotFoundOnlineDataMe.get().build());
             } else {
-                player.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandMeContent.get()));
+                player.sendMessage(replacePlaceholder(data, manager.core.messageConfig.commandMeContent.get().build()));
             }
         });
     }
@@ -66,12 +64,12 @@ public class InfoCommand<S> extends SubCommand<S> {
     private Component replacePlaceholder(OnlineData data, Component component) {
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_name>")
-                .replacement(data.onlineUser().profile().username())
+                .replacement(data.onlineUser().authenticatedGameProfile().username())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()
                 .matchLiteral("<user_uuid>")
-                .replacement(data.onlineUser().profile().uuid().toString())
+                .replacement(data.onlineUser().authenticatedGameProfile().uuid().toString())
                 .build());
 
         component = component.replaceText(TextReplacementConfig.builder()

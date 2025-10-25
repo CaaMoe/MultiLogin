@@ -82,6 +82,16 @@ public abstract class Configuration {
         });
     }
 
+    protected ConfigurationValue<EditableMiniMessage> editableMiniMsg(NodePath path) {
+        return raw(path, node -> {
+            String string = node.getString();
+            if (string == null) return null;
+            EditableMiniMessage editableMiniMessage = new EditableMiniMessage(string);
+            editableMiniMessage.build(); // try build;
+            return editableMiniMessage;
+        });
+    }
+
     protected ConfigurationValue<Component> miniMsg(NodePath path) {
         return raw(path, node -> {
             String string = node.getString();
