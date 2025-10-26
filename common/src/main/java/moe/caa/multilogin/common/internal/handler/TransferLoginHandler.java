@@ -54,7 +54,7 @@ public final class TransferLoginHandler extends LoginHandler {
         AuthenticationConfig authenticationConfig = core.authenticationServiceMap.get(serviceID);
         if (!(authenticationConfig instanceof RemoteAuthenticationConfig remoteAuthenticationConfig)) {
             core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the specified remote authentication service was not found. (remote authentication service: " + cookieData.serviceID + ")");
-            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotFoundService.get());
+            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotFoundService.get().build());
             return;
         }
 
