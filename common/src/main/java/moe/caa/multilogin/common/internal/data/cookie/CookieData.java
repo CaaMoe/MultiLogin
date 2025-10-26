@@ -16,10 +16,7 @@ public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSp
 
     public static void init() throws IllegalAccessException, NoSuchMethodException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
-        Map<String, MethodHandle> cookieTypeMap = new HashMap<>();
-        for (Class<?> permittedSubclass : CookieData.class.getPermittedSubclasses()) {
-            cookieTypeMap.putAll(collectTypeMap(lookup, permittedSubclass));
-        }
+        Map<String, MethodHandle> cookieTypeMap = collectTypeMap(lookup, CookieData.class);
         CookieData.typeCookieMap = Collections.unmodifiableMap(cookieTypeMap);
     }
 
