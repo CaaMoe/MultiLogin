@@ -11,6 +11,9 @@ import net.minecraft.network.Connection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 public class PaperOnlinePlayerManager extends OnlinePlayerManager {
@@ -27,6 +30,16 @@ public class PaperOnlinePlayerManager extends OnlinePlayerManager {
         Player player = Bukkit.getPlayerExact(name);
         if (player == null) return null;
         return PaperSender.wrapSender(player);
+    }
+
+    @Override
+    public Map<String, OnlinePlayer> getOnlinePlayers() {
+        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
+        Map<String, OnlinePlayer> map = new HashMap<>(players.size());
+        for (Player player : players) {
+            map.put(player.getName(), PaperOnlinePlayer.wrapSender(player));
+        }
+        return map;
     }
 
     public void putOnlineData(Connection connection, OnlineData onlineData) {

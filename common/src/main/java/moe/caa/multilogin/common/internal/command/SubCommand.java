@@ -4,17 +4,22 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.mojang.brigadier.suggestion.Suggestions;
 import moe.caa.multilogin.common.internal.data.OnlineData;
 import moe.caa.multilogin.common.internal.data.OnlinePlayer;
 import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.manager.CommandManager;
 import moe.caa.multilogin.common.internal.util.EditableMiniMessage;
-import net.kyori.adventure.text.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public abstract class SubCommand<S> {
     public final List<CommandDescription> commandDescriptions = new ArrayList<>();
@@ -34,6 +39,36 @@ public abstract class SubCommand<S> {
         commandDescriptions.add(new CommandDescription(label, permission, description));
     }
 
+    protected SuggestionProvider<S> suggestWith(Supplier<Collection<String>> listSupplier) {
+        return (context, builder) -> {
+            CompletableFuture<Suggestions> future = new CompletableFuture<>();
+            manager.core.virtualPerTaskExecutor.execute(() -> {
+                for (String s : listSupplier.get()) {
+                    if (s.toLowerCase().contains(builder.getRemaining())) {
+                        builder.suggest(s);
+                    }
+                }
+                future.complete(builder.build());
+            });
+            return future;
+        };
+    }
+
+    protected SuggestionProvider<S> suggestWith(Function<String, List<String>> function) {
+        return (context, builder) -> {
+            CompletableFuture<Suggestions> future = new CompletableFuture<>();
+            manager.core.virtualPerTaskExecutor.execute(() -> {
+                function.apply(builder.getRemaining());
+                future.complete(builder.build());
+            });
+            return future;
+        };
+    }
+
+    protected SuggestionProvider<S> suggestWithOnlinePlayer() {
+        suggestWith(() -> manager.core.platform.getOnlinePlayerManager().getOnlinePlayers().keySet());
+    }
+
     protected LiteralArgumentBuilder<S> literal(final String name) {
         return LiteralArgumentBuilder.literal(name);
     }
@@ -48,10 +83,6 @@ public abstract class SubCommand<S> {
 
     protected boolean hasPermission(S s, String permission) {
         return manager.wrapSender(s).hasPermission(permission);
-    }
-
-    protected void sendMessage(S s, Component component) {
-        manager.wrapSender(s).sendMessage(component);
     }
 
     protected void resolveOnlinePlayerRunOrElseTip(S s, String target, Consumer<OnlinePlayer> consumer) {
@@ -109,6 +140,4 @@ public abstract class SubCommand<S> {
             EditableMiniMessage description
     ) {
     }
-
-
 }

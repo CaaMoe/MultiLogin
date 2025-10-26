@@ -32,6 +32,7 @@ public class InfoCommand<S> extends SubCommand<S> {
         builder.then(literal("info")
                 .then(argument("target", StringArgumentType.string())
                         .requires(predicateHasPermission(permissionInfo))
+                        .suggests(suggestWithOnlinePlayer())
                         .executes(context -> {
                             manager.executeAsync(() -> infoOther(context.getSource(), StringArgumentType.getString(context, "target")));
                             return Command.SINGLE_SUCCESS;
