@@ -1,12 +1,15 @@
 package moe.caa.multilogin.common.internal.handler;
 
+import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
 import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
+import moe.caa.multilogin.common.internal.config.authentication.RemoteAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.GameProfile;
 import moe.caa.multilogin.common.internal.data.LoggingUser;
 import moe.caa.multilogin.common.internal.data.Profile;
 import moe.caa.multilogin.common.internal.data.User;
 import moe.caa.multilogin.common.internal.data.cookie.ReconnectCookieData;
 import moe.caa.multilogin.common.internal.data.cookie.ReconnectSpecifiedProfileIDCookieData;
+import moe.caa.multilogin.common.internal.data.cookie.RemoteAuthenticatedCookieData;
 import moe.caa.multilogin.common.internal.data.cookie.SignedCookieData;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
@@ -41,6 +44,38 @@ public final class TransferLoginHandler extends LoginHandler {
             case ReconnectSpecifiedProfileIDCookieData cookieData ->
                     handleReconnectSpecifiedProfileLogin(loggingUser, signedCookieData, cookieData);
             case ReconnectCookieData cookieData -> handleReconnectLogin(loggingUser, signedCookieData, cookieData);
+            case RemoteAuthenticatedCookieData cookieData ->
+                    handleRemoteAuthenticatedLogin(loggingUser, signedCookieData, cookieData);
+        }
+    }
+
+    private void handleRemoteAuthenticatedLogin(LoggingUser loggingUser, SignedCookieData<?> signedCookieData, RemoteAuthenticatedCookieData cookieData) throws Throwable {
+        String serviceID = cookieData.serviceID;
+        AuthenticationConfig authenticationConfig = core.authenticationServiceMap.get(serviceID);
+        if (!(authenticationConfig instanceof RemoteAuthenticationConfig remoteAuthenticationConfig)) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the specified remote authentication service was not found. (remote authentication service: " + cookieData.serviceID + ")");
+            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationNotFoundService.get());
+            return;
+        }
+
+        if (!validateSignatureOrCloseConnect(loggingUser, signedCookieData,
+                remoteAuthenticationConfig.remoteRSAPublicKey.get(),
+                remoteAuthenticationConfig.remoteRSAVerifyDigitalSignatureAlgorithm.get()
+        )) {
+            return;
+        }
+
+
+        core.platform.getPlatformLogger().debug("Start handle the remote login(" + cookieData.getDescription() + ") of " + loggingUser.getExpectUsername());
+
+        switch (loggingUser.switchToEncryptedState(false)) {
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult failedResult ->
+                    handleSwitchToEncryptedFailedResult(loggingUser, failedResult);
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedSucceedResult ignored ->
+                    autoSelectProfileLogin(loggingUser, remoteAuthenticationConfig,
+                            core.databaseHandler.updateOrCreateUser(remoteAuthenticationConfig,
+                                    cookieData.authenticatedGameProfile), cookieData.authenticatedGameProfile
+                    );
         }
     }
 

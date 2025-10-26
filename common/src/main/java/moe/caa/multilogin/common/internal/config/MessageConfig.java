@@ -67,4 +67,7 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> commandAdminReloadSucceed = editableMiniMsg(NodePath.path("command-admin-reload-succeed"));
 
 
+    public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationNotFoundService = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-found-service"));
+
+
 }

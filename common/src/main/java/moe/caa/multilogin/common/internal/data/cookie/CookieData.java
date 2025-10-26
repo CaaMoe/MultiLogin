@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSpecifiedProfileIDCookieData {
+public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSpecifiedProfileIDCookieData, RemoteAuthenticatedCookieData {
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
     private Instant expiresAt = Instant.MIN;
 
