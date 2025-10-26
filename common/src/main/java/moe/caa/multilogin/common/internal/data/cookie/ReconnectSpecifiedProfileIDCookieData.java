@@ -2,9 +2,14 @@ package moe.caa.multilogin.common.internal.data.cookie;
 
 import com.google.gson.JsonObject;
 
-@CookieDataType("reconnect_specified_profile_id")
+@CookieDataType("local_reconnect_specified_profile_id")
 public final class ReconnectSpecifiedProfileIDCookieData extends ReconnectCookieData {
     public int specifiedProfileID;
+
+    @Override
+    public String getDescription() {
+        return "local reconnection, specified login profile.";
+    }
 
     @Override
     protected void deserializeData(JsonObject data) {

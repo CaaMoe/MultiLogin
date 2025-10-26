@@ -11,8 +11,8 @@ public sealed class ReconnectCookieData extends CookieData permits ReconnectSpec
     public GameProfile authenticatedGameProfile;
 
     @Override
-    public boolean isLocalSignature() {
-        return true;
+    public String getDescription() {
+        return "local reconnection.";
     }
 
     @Override

@@ -76,7 +76,7 @@ public sealed abstract class CookieData permits ReconnectCookieData {
         return Instant.now().isBefore(expiresAt);
     }
 
-    public abstract boolean isLocalSignature();
+    public abstract String getDescription();
 
     protected abstract void deserializeData(JsonObject data);
 

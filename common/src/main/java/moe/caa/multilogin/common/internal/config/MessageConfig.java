@@ -17,6 +17,8 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> loginFailedLocalAuthenticationUnavailable = editableMiniMsg(NodePath.path("login-failed-local-authentication-unavailable"));
 
     public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationNotCarryCookie = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationCarryCookieHasExpired = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedReconnectSpecifiedProfileInvalidSignature = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
 
     public final ConfigurationValue<EditableMiniMessage> commandGeneralRequiredPlayer = editableMiniMsg(NodePath.path("command-general-required-player"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralNotFoundOnlineDataMe = editableMiniMsg(NodePath.path("command-general-not-found-online-data-me"));

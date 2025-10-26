@@ -91,24 +91,17 @@ public class LoginManager {
 
             SignedCookieData<?> signedCookieData = SignedCookieData.readSignedCookieData(cookieDataBytes);
             if (signedCookieData.cookieData().isExpired()) {
-                // todo 包过期
-            }
-
-            if (signedCookieData.cookieData().isLocalSignature()) {
-                if (!signedCookieData.validateSignature(
-                        core.mainConfig.localRsa.get().publicKey.get(),
-                        core.mainConfig.localRsa.get().verifyDigitalSignatureAlgorithm.get()
-                )) {
-                    // todo 签名无效
-                }
+                core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the cookie(" + signedCookieData.cookieData().getDescription() + ") carried has expired.");
+                loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationCarryCookieHasExpired.get().build());
+                return;
             }
 
             switch (signedCookieData.cookieData()) {
                 case ReconnectSpecifiedProfileIDCookieData cookieData -> {
-                    handleReconnectSpecifiedProfileLogin(loggingUser, cookieData);
+                    handleReconnectSpecifiedProfileLogin(loggingUser, signedCookieData, cookieData);
                 }
                 case ReconnectCookieData cookieData -> {
-
+                    handleReconnectLogin(loggingUser, signedCookieData, cookieData);
                 }
             }
         } catch (Throwable t) {
@@ -117,8 +110,18 @@ public class LoginManager {
         }
     }
 
-    public void handleReconnectSpecifiedProfileLogin(LoggingUser loggingUser, ReconnectSpecifiedProfileIDCookieData cookieData) throws Throwable {
-        core.platform.getPlatformLogger().debug("Start processing the login(local reconnection, specified login profile) request of " + loggingUser.getExpectUsername());
+    private void handleReconnectSpecifiedProfileLogin(LoggingUser loggingUser, SignedCookieData<?> signedCookieData, ReconnectSpecifiedProfileIDCookieData cookieData) throws Throwable {
+        // 本机签名验证
+        if (!signedCookieData.validateSignature(
+                core.mainConfig.localRsa.get().publicKey.get(),
+                core.mainConfig.localRsa.get().verifyDigitalSignatureAlgorithm.get()
+        )) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the signature of the cookie(" + signedCookieData.cookieData().getDescription() + ") carried was invalid.");
+            loggingUser.closeConnect(core.messageConfig.loginFailedReconnectSpecifiedProfileInvalidSignature.get().build());
+            return;
+        }
+
+        core.platform.getPlatformLogger().debug("Start processing the login(" + cookieData.getDescription() + ") request of " + loggingUser.getExpectUsername());
 
         int profileID = cookieData.specifiedProfileID;
         int userID = cookieData.userID;
@@ -127,25 +130,78 @@ public class LoginManager {
         LocalAuthenticationConfig localAuthenticationConfig = core.localAuthenticationConfig;
         // 服务器只允许 remote authentication
         if (localAuthenticationConfig == null) {
-            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login(local reconnection, specified login profile), but the server only allowed transfer login(remote authentication only).");
-            loggingUser.closeConnect(core.messageConfig.loginFailedRemoteAuthenticationOnly.get().build());  // todo 改掉
-            return;
+            throw new IllegalStateException("Player " + loggingUser.getExpectUsername() + " tried to transfer login(" + cookieData.getDescription() + "), but the server only allowed transfer login(remote authentication only).");
         }
 
         User user = core.databaseHandler.getUserByUserID(userID);
         Profile profile = core.databaseHandler.getProfileByProfileID(profileID);
 
         if (profile == null || user == null) {
-            // 档案不存在处理
-            return;
+            throw new IllegalStateException("Player " + loggingUser.getExpectUsername() + " tried to transfer login(" + cookieData.getDescription() + "), but the specified user or profile did not exist.");
         }
 
-        loggingUser.switchToEncryptedState(false);
+        // 请求加密连接
+        switch (loggingUser.switchToEncryptedState(false)) {
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult failedResult -> {
+                handleFailedResult(loggingUser, failedResult);
+                return;
+            }
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedSucceedResult ignored -> {
+            }
+        }
 
+        // 完成登录
         OnlineData onlineData = completedLogin(core.localAuthenticationConfig, user, gameProfile, profile);
         loggingUser.completeLogin(onlineData);
     }
 
+    private void handleReconnectLogin(LoggingUser loggingUser, SignedCookieData<?> signedCookieData, ReconnectCookieData cookieData) throws Throwable {
+        // 本机签名验证
+        if (!signedCookieData.validateSignature(
+                core.mainConfig.localRsa.get().publicKey.get(),
+                core.mainConfig.localRsa.get().verifyDigitalSignatureAlgorithm.get()
+        )) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the signature of the cookie(" + signedCookieData.cookieData().getDescription() + ") carried was invalid.");
+            loggingUser.closeConnect(core.messageConfig.loginFailedReconnectSpecifiedProfileInvalidSignature.get().build());
+            return;
+        }
+
+
+        core.platform.getPlatformLogger().debug("Start processing the login(" + cookieData.getDescription() + ") request of " + loggingUser.getExpectUsername());
+
+        int userID = cookieData.userID;
+        GameProfile gameProfile = cookieData.authenticatedGameProfile;
+
+        LocalAuthenticationConfig localAuthenticationConfig = core.localAuthenticationConfig;
+        // 服务器只允许 remote authentication
+        if (localAuthenticationConfig == null) {
+            throw new IllegalStateException("Player " + loggingUser.getExpectUsername() + " tried to transfer login(" + cookieData.getDescription() + "), but the server only allowed transfer login(remote authentication only).");
+        }
+
+        User user = core.databaseHandler.getUserByUserID(userID);
+
+        if (user == null) {
+            throw new IllegalStateException("Player " + loggingUser.getExpectUsername() + " tried to transfer login(" + cookieData.getDescription() + "), but the specified user did not exist.");
+        }
+
+
+        switch (loggingUser.switchToEncryptedState(false)) {
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedFailedResult failedResult -> {
+                handleFailedResult(loggingUser, failedResult);
+                return;
+            }
+            case LoggingUser.SwitchToEncryptedResult.SwitchToEncryptedSucceedResult succeedResult -> {
+            }
+        }
+
+
+        switch (handleLogged(localAuthenticationConfig, user, gameProfile)) {
+            case HandleLoginResult.HandleLoginFailedResult failedResult ->
+                    handleFailedResult(loggingUser, failedResult);
+            case HandleLoginResult.HandleLoginSucceedResult succeedResult ->
+                    loggingUser.completeLogin(succeedResult.data);
+        }
+    }
 
     private void handleDirectlyLogin(LoggingUser loggingUser) throws Throwable {
         core.platform.getPlatformLogger().debug("Start processing the login(directly) request of " + loggingUser.getExpectUsername());
