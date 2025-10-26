@@ -12,13 +12,13 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> loginProfileCreateNameConflict = editableMiniMsg(NodePath.path("login-profile-create-name-conflict"));
     public final ConfigurationValue<EditableMiniMessage> loginProfileCreateNameAmendRestrict = editableMiniMsg(NodePath.path("login-profile-create-name-amend-restrict"));
 
-    public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationOnly = editableMiniMsg(NodePath.path("login-failed-remote-authentication-only"));
     public final ConfigurationValue<EditableMiniMessage> loginFailedLocalAuthenticationInvalidSession = editableMiniMsg(NodePath.path("login-failed-local-authentication-invalid-session"));
     public final ConfigurationValue<EditableMiniMessage> loginFailedLocalAuthenticationUnavailable = editableMiniMsg(NodePath.path("login-failed-local-authentication-unavailable"));
 
-    public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationNotCarryCookie = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
-    public final ConfigurationValue<EditableMiniMessage> loginFailedRemoteAuthenticationCarryCookieHasExpired = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
-    public final ConfigurationValue<EditableMiniMessage> loginFailedReconnectSpecifiedProfileInvalidSignature = editableMiniMsg(NodePath.path("login-failed-remote-authentication-not-carry-cookie"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedDirectAuthenticationOnlyUseTransferLogin = editableMiniMsg(NodePath.path("login-failed-direct-authentication-only-use-transfer-login"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationNotCarryCookie = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-not-carry-cookie"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieHasExpired = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-has-expired"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieInvalidSignature = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-invalid-signature"));
 
     public final ConfigurationValue<EditableMiniMessage> commandGeneralRequiredPlayer = editableMiniMsg(NodePath.path("command-general-required-player"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralNotFoundOnlineDataMe = editableMiniMsg(NodePath.path("command-general-not-found-online-data-me"));

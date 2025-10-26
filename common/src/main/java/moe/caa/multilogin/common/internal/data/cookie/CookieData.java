@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public sealed abstract class CookieData permits ReconnectCookieData {
+public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSpecifiedProfileIDCookieData {
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
     private Instant expiresAt = Instant.MIN;
 
@@ -30,6 +30,8 @@ public sealed abstract class CookieData permits ReconnectCookieData {
             if (!sealedClass.isAnnotationPresent(CookieDataType.class)) {
                 throw new IllegalStateException(sealedClass.getCanonicalName() + " is not annotated with " + CookieDataType.class.getCanonicalName());
             }
+
+            cookieTypeMap.put(sealedClass.getAnnotation(CookieDataType.class).value(), lookup.unreflectConstructor(sealedClass.getConstructor()));
         }
 
         for (Class<?> permittedSubclass : sealedClass.getPermittedSubclasses()) {
@@ -57,13 +59,12 @@ public sealed abstract class CookieData permits ReconnectCookieData {
 
     public static CookieData deserialize(JsonObject data) throws Throwable {
         String type = data.getAsJsonPrimitive("type").getAsString();
-        Instant expiresAt = Instant.parse(data.getAsJsonPrimitive("expires_at").getAsString());
         MethodHandle handle = typeCookieMap.get(type);
         if (handle == null) {
             throw new IllegalArgumentException("Invalid data type: " + type);
         }
         CookieData cookieData = (CookieData) handle.invoke();
-        cookieData.expiresAt = expiresAt;
+        cookieData.expiresAt = Instant.parse(data.getAsJsonPrimitive("expires_at").getAsString());
         cookieData.deserializeData(data);
         return cookieData;
     }

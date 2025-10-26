@@ -142,7 +142,7 @@ public class LoginPhasePacketHandler extends SimpleChannelInboundHandler<Packet<
         Validate.validState(serverLoginPacketListener.state == ServerLoginPacketListenerImpl.State.HELLO, "Unexpected hello packet");
 
         attachActivityCheck();
-        paperMain.getCore().virtualPerTaskExecutor.execute(() -> paperMain.getCore().loginManager.handleLogging(this));
+        paperMain.getCore().virtualPerTaskExecutor.execute(this::startHandleLogging);
     }
 
     private void attachActivityCheck() {

@@ -8,7 +8,8 @@ import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticat
 import moe.caa.multilogin.common.internal.config.authentication.RemoteAuthenticationConfig;
 import moe.caa.multilogin.common.internal.data.cookie.CookieData;
 import moe.caa.multilogin.common.internal.database.DatabaseHandler;
-import moe.caa.multilogin.common.internal.manager.LoginManager;
+import moe.caa.multilogin.common.internal.handler.DirectlyLoginHandler;
+import moe.caa.multilogin.common.internal.handler.TransferLoginHandler;
 import moe.caa.multilogin.common.internal.manager.ProfileManager;
 import moe.caa.multilogin.common.internal.util.CookieKey;
 import moe.caa.multilogin.common.internal.util.IOUtil;
@@ -34,7 +35,8 @@ public class MultiCore {
     public final MessageConfig messageConfig = new MessageConfig();
     public final MainConfig mainConfig = new MainConfig();
     public final Platform platform;
-    public final LoginManager loginManager = new LoginManager(this);
+    public final DirectlyLoginHandler directlyLoginManager = new DirectlyLoginHandler(this);
+    public final TransferLoginHandler transferLoginManager = new TransferLoginHandler(this);
     public final DatabaseHandler databaseHandler = new DatabaseHandler(this);
     public final ProfileManager profileManager = new ProfileManager(this);
     public final ExecutorService virtualPerTaskExecutor = Executors.newThreadPerTaskExecutor(Thread.ofVirtual()

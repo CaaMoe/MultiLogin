@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import moe.caa.multilogin.common.internal.data.GameProfile;
 
 @CookieDataType("reconnect")
-public sealed class ReconnectCookieData extends CookieData permits ReconnectSpecifiedProfileIDCookieData {
+public final class ReconnectCookieData extends CookieData {
     public int userID;
     public GameProfile authenticatedGameProfile;
 

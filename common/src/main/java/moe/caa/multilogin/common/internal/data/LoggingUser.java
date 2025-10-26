@@ -1,5 +1,6 @@
 package moe.caa.multilogin.common.internal.data;
 
+import moe.caa.multilogin.common.internal.handler.LoginHandler;
 import moe.caa.multilogin.common.internal.util.CookieKey;
 import net.kyori.adventure.text.Component;
 
@@ -26,6 +27,10 @@ public interface LoggingUser {
     void closeConnection();
 
     void completeLogin(OnlineData data) throws Throwable;
+
+    default void startHandleLogging() {
+        LoginHandler.handleLogging(this);
+    }
 
 
     abstract sealed class SwitchToEncryptedResult {
