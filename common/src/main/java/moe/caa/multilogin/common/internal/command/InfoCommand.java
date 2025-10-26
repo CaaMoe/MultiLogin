@@ -1,6 +1,5 @@
 package moe.caa.multilogin.common.internal.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import moe.caa.multilogin.common.internal.data.OnlineData;
@@ -24,8 +23,7 @@ public class InfoCommand<S> extends SubCommand<S> {
         builder.then(literal("me")
                 .requires(predicateHasPermission(permissionMe))
                 .executes(context -> {
-                    manager.executeAsync(() -> me(context.getSource()));
-                    return Command.SINGLE_SUCCESS;
+                    return manager.executeAsync(context, () -> me(context.getSource()));
                 })
         );
 
@@ -34,8 +32,7 @@ public class InfoCommand<S> extends SubCommand<S> {
                         .requires(predicateHasPermission(permissionInfo))
                         .suggests(suggestWithOnlinePlayer())
                         .executes(context -> {
-                            manager.executeAsync(() -> infoOther(context.getSource(), StringArgumentType.getString(context, "target")));
-                            return Command.SINGLE_SUCCESS;
+                            return manager.executeAsync(context, () -> infoOther(context.getSource(), StringArgumentType.getString(context, "target")));
                         })
                 )
         );

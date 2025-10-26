@@ -1,6 +1,5 @@
 package moe.caa.multilogin.common.internal.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.manager.CommandManager;
@@ -20,8 +19,7 @@ public class HelpCommand<S> extends SubCommand<S> {
         builder.then(literal("help")
                 .requires(predicateHasPermission(permission))
                 .executes(context -> {
-                    manager.executeAsync(() -> showHelp(context.getSource()));
-                    return Command.SINGLE_SUCCESS;
+                    return manager.executeAsync(context, () -> showHelp(context.getSource()));
                 })
         );
     }

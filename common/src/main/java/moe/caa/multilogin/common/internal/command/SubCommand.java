@@ -66,7 +66,7 @@ public abstract class SubCommand<S> {
     }
 
     protected SuggestionProvider<S> suggestWithOnlinePlayer() {
-        suggestWith(() -> manager.core.platform.getOnlinePlayerManager().getOnlinePlayers().keySet());
+        return suggestWith(() -> manager.core.platform.getOnlinePlayerManager().getOnlinePlayers().keySet());
     }
 
     protected LiteralArgumentBuilder<S> literal(final String name) {

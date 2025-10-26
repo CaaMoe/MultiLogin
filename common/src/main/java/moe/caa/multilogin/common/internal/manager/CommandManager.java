@@ -2,8 +2,10 @@ package moe.caa.multilogin.common.internal.manager;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import moe.caa.multilogin.common.internal.command.*;
+import moe.caa.multilogin.common.internal.command.admin.ReloadCommand;
 import moe.caa.multilogin.common.internal.data.Sender;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
@@ -22,7 +24,8 @@ public abstract class CommandManager<S> {
                 helpCommand = new HelpCommand<>(this),
                 new InfoCommand<>(this),
                 new CreateCommand<>(this),
-                new ProfileCommand<>(this)
+                new ProfileCommand<>(this),
+                new ReloadCommand<>(this)
         );
     }
 
@@ -32,8 +35,7 @@ public abstract class CommandManager<S> {
             command.register(literal);
         }
         literal.executes(context -> {
-            executeAsync(() -> helpCommand.showHelp(context.getSource()));
-            return Command.SINGLE_SUCCESS;
+            return executeAsync(context, () -> helpCommand.showHelp(context.getSource()));
         });
         return literal;
     }
@@ -43,9 +45,22 @@ public abstract class CommandManager<S> {
         return literal.build();
     }
 
-    public void executeAsync(Runnable runnable) {
-        core.virtualPerTaskExecutor.execute(runnable);
+    public int executeAsync(CommandContext<S> context, ThrowRunnable runnable) {
+        core.virtualPerTaskExecutor.execute(() -> {
+            try {
+                runnable.run();
+            } catch (Throwable e) {
+                core.platform.getPlatformLogger().error("Failed to execute command:" + context.getInput(), e);
+                wrapSender(context.getSource()).sendMessage(core.messageConfig.commandGeneralError.get().build());
+            }
+        });
+        return Command.SINGLE_SUCCESS;
     }
 
     public abstract Sender wrapSender(S s);
+
+    @FunctionalInterface
+    public interface ThrowRunnable {
+        void run() throws Throwable;
+    }
 }

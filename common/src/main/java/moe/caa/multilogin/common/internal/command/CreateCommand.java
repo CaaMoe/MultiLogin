@@ -1,6 +1,5 @@
 package moe.caa.multilogin.common.internal.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -28,10 +27,9 @@ public class CreateCommand<S> extends SubCommand<S> {
         builder.then(literal("create")
                 .requires(predicateHasPermission(permissionCreate))
                 .then(argument("name", StringArgumentType.string())
-                        .executes(context -> {
-                            manager.executeAsync(() -> create(context));
-                            return Command.SINGLE_SUCCESS;
-                        })));
+                        .executes(context ->
+                                manager.executeAsync(context, () -> create(context))
+                        )));
     }
 
     protected static <S> int calcMaxSlotCount(CommandManager<S> manager, OnlinePlayer player) {

@@ -1,6 +1,5 @@
 package moe.caa.multilogin.common.internal.command;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -27,8 +26,8 @@ public class ProfileCommand<S> extends SubCommand<S> {
         builder.then(literal("profiles")
                 .requires(predicateHasPermission(permissionProfiles))
                 .executes(context -> {
-                    manager.executeAsync(() -> profiles(context.getSource()));
-                    return Command.SINGLE_SUCCESS;
+                    return manager.executeAsync(context, () -> profiles(context.getSource()));
+
                 })
         );
 
@@ -43,15 +42,15 @@ public class ProfileCommand<S> extends SubCommand<S> {
                 .then(literal("login")
                         .requires(predicateHasPermission(permissionProfileLogin))
                         .executes(context -> {
-                            manager.executeAsync(() -> profileLogin(context));
-                            return Command.SINGLE_SUCCESS;
+                            return manager.executeAsync(context, () -> profileLogin(context));
+
                         })
 
                 ).then(literal("setdefault")
                         .requires(predicateHasPermission(permissionProfileSetDefault))
                         .executes(context -> {
-                            manager.executeAsync(() -> profileSetDefault(context));
-                            return Command.SINGLE_SUCCESS;
+                            return manager.executeAsync(context, () -> profileSetDefault(context));
+
                         })
                 )));
     }

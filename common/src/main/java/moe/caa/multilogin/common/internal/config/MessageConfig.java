@@ -20,6 +20,7 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieHasExpired = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-has-expired"));
     public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieInvalidSignature = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-invalid-signature"));
 
+    public final ConfigurationValue<EditableMiniMessage> commandGeneralError = editableMiniMsg(NodePath.path("command-general-error"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralRequiredPlayer = editableMiniMsg(NodePath.path("command-general-required-player"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralNotFoundOnlineDataMe = editableMiniMsg(NodePath.path("command-general-not-found-online-data-me"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralNotFoundOnlineDataTarget = editableMiniMsg(NodePath.path("command-general-not-found-online-data-target"));
@@ -61,6 +62,9 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> commandDescriptionProfileSetDefault = editableMiniMsg(NodePath.path("command-description-profile-set-default"));
     public final ConfigurationValue<EditableMiniMessage> commandProfileSetDefaultFailedAlready = editableMiniMsg(NodePath.path("command-profile-set-default-failed-already"));
     public final ConfigurationValue<EditableMiniMessage> commandProfileSetDefaultSucceed = editableMiniMsg(NodePath.path("command-profile-set-default-succeed"));
+
+    public final ConfigurationValue<EditableMiniMessage> commandDescriptionAdminReload = editableMiniMsg(NodePath.path("command-description-admin-reload"));
+    public final ConfigurationValue<EditableMiniMessage> commandAdminReloadSucceed = editableMiniMsg(NodePath.path("command-admin-reload-succeed"));
 
 
 }
