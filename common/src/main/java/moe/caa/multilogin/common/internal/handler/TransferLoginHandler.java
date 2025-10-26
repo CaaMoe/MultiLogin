@@ -30,7 +30,7 @@ public final class TransferLoginHandler extends LoginHandler {
 
         // Cookie 过期了
         SignedCookieData<?> signedCookieData = SignedCookieData.readSignedCookieData(cookieDataBytes);
-        if (signedCookieData.cookieData().isExpired()) {
+        if (signedCookieData.cookieData().hasExpired()) {
             core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the cookie(" + signedCookieData.cookieData().getDescription() + ") carried has expired.");
             loggingUser.closeConnect(core.messageConfig.loginFailedTransferAuthenticationCarryCookieHasExpired.get().build());
             return;

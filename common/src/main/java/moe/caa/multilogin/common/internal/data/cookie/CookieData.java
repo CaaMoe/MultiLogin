@@ -70,8 +70,8 @@ public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSp
         expiresAt = Instant.now().plusSeconds(seconds);
     }
 
-    public boolean isExpired() {
-        return Instant.now().isBefore(expiresAt);
+    public boolean hasExpired() {
+        return expiresAt.isBefore(Instant.now());
     }
 
     public abstract String getDescription();
