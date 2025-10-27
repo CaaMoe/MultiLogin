@@ -9,10 +9,13 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSpecifiedProfileIDCookieData, RemoteAuthenticatedCookieData {
+    public static final int COOKIE_EXPIRE_SECONDS = 10;
     private static Map<String, MethodHandle> typeCookieMap = Collections.emptyMap();
-    private Instant expiresAt = Instant.MIN;
+    private UUID cookieId = UUID.randomUUID();
+    private Instant createAt = Instant.now();
 
     public static void init() throws IllegalAccessException, NoSuchMethodException {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -48,7 +51,8 @@ public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSp
     public static JsonObject serialize(CookieData cookieData) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("type", cookieData.getClass().getAnnotation(CookieDataType.class).value());
-        jsonObject.addProperty("expires_at", cookieData.expiresAt.toString());
+        jsonObject.addProperty("cookie_id", cookieData.cookieId.toString());
+        jsonObject.addProperty("create_at", cookieData.createAt.toString());
         cookieData.serializeData(jsonObject);
         return jsonObject;
     }
@@ -61,17 +65,22 @@ public sealed abstract class CookieData permits ReconnectCookieData, ReconnectSp
             throw new IllegalArgumentException("Invalid data type: " + type);
         }
         CookieData cookieData = (CookieData) handle.invoke();
-        cookieData.expiresAt = Instant.parse(data.getAsJsonPrimitive("expires_at").getAsString());
+        cookieData.cookieId = UUID.fromString(data.getAsJsonPrimitive("cookie_id").getAsString());
+        cookieData.createAt = Instant.parse(data.getAsJsonPrimitive("create_at").getAsString());
         cookieData.deserializeData(data);
         return cookieData;
     }
 
-    public void setRelativelyExpireSecond(long seconds) {
-        expiresAt = Instant.now().plusSeconds(seconds);
+    public UUID getCookieId() {
+        return cookieId;
+    }
+
+    public Instant getCreateAt() {
+        return createAt;
     }
 
     public boolean hasExpired() {
-        return expiresAt.isBefore(Instant.now());
+        return createAt.plusSeconds(COOKIE_EXPIRE_SECONDS).isBefore(Instant.now());
     }
 
     public abstract String getDescription();

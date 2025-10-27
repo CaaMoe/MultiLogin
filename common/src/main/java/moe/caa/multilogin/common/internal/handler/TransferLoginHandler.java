@@ -1,5 +1,7 @@
 package moe.caa.multilogin.common.internal.handler;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import moe.caa.multilogin.common.internal.config.authentication.AuthenticationConfig;
 import moe.caa.multilogin.common.internal.config.authentication.LocalAuthenticationConfig;
 import moe.caa.multilogin.common.internal.config.authentication.RemoteAuthenticationConfig;
@@ -7,15 +9,17 @@ import moe.caa.multilogin.common.internal.data.GameProfile;
 import moe.caa.multilogin.common.internal.data.LoggingUser;
 import moe.caa.multilogin.common.internal.data.Profile;
 import moe.caa.multilogin.common.internal.data.User;
-import moe.caa.multilogin.common.internal.data.cookie.ReconnectCookieData;
-import moe.caa.multilogin.common.internal.data.cookie.ReconnectSpecifiedProfileIDCookieData;
-import moe.caa.multilogin.common.internal.data.cookie.RemoteAuthenticatedCookieData;
-import moe.caa.multilogin.common.internal.data.cookie.SignedCookieData;
+import moe.caa.multilogin.common.internal.data.cookie.*;
 import moe.caa.multilogin.common.internal.main.MultiCore;
 
 import java.security.PublicKey;
+import java.util.UUID;
 
 public final class TransferLoginHandler extends LoginHandler {
+    private final Cache<UUID, Boolean> handledCookieCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(CookieData.COOKIE_EXPIRE_SECONDS, java.util.concurrent.TimeUnit.SECONDS)
+            .build();
+
     public TransferLoginHandler(MultiCore core) {
         super(core);
     }
@@ -89,6 +93,14 @@ public final class TransferLoginHandler extends LoginHandler {
             loggingUser.closeConnect(core.messageConfig.loginFailedTransferAuthenticationCarryCookieInvalidSignature.get().build());
             return false;
         }
+
+
+        if (handledCookieCache.getIfPresent(signedCookieData.cookieData().getCookieId()) != null) {
+            core.platform.getPlatformLogger().warn("Player " + loggingUser.getExpectUsername() + " tried to transfer login, but the cookie(" + signedCookieData.cookieData().getDescription() + ") carried has been used.");
+            loggingUser.closeConnect(core.messageConfig.loginFailedTransferAuthenticationCarryCookieHasBeenUsed.get().build());
+            return false;
+        }
+        handledCookieCache.put(signedCookieData.cookieData().getCookieId(), true);
         return true;
     }
 

@@ -33,6 +33,7 @@ dependencies {
     compileOnlyAndExtra(libs.configurate.hocon)
     compileOnlyAndExtra(libs.typesafe)
     compileOnlyAndExtra(libs.gson)
+    compileOnlyAndExtra(libs.guava)
 }
 
 fun DependencyHandler.compileOnlyAndExtra(dependencyNotation: Any) {

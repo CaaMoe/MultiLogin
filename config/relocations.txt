@@ -6,4 +6,4 @@ com.zaxxer.hikari moe.caa.multilogin.libraries.com.zaxxer.hikari
 org.spongepowered moe.caa.multilogin.libraries.org.spongepowered
 com.typesafe moe.caa.multilogin.libraries.com.typesafe
 com.github.benmanes.caffeine moe.caa.multilogin.libraries.com.github.benmanes.caffeine
-com.google.gson moe.caa.multilogin.libraries.com.google.gson
+com.google moe.caa.multilogin.libraries.com.google

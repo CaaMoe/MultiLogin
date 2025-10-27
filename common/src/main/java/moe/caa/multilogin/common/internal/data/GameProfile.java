@@ -29,13 +29,6 @@ public record GameProfile(
         return new GameProfile(uuid, username, properties);
     }
 
-    public record Property(
-            String name,
-            String value,
-            String signature
-    ) {
-    }
-
     public JsonObject serialize() {
         JsonObject object = new JsonObject();
         object.addProperty("uuid", uuid.toString());
@@ -51,5 +44,12 @@ public record GameProfile(
         }
         object.add("properties", array);
         return object;
+    }
+
+    public record Property(
+            String name,
+            String value,
+            String signature
+    ) {
     }
 }

@@ -19,6 +19,7 @@ public class MessageConfig extends Configuration {
     public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationNotCarryCookie = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-not-carry-cookie"));
     public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieHasExpired = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-has-expired"));
     public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieInvalidSignature = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-invalid-signature"));
+    public final ConfigurationValue<EditableMiniMessage> loginFailedTransferAuthenticationCarryCookieHasBeenUsed = editableMiniMsg(NodePath.path("login-failed-transfer-authentication-carry-cookie-has-been-used"));
 
     public final ConfigurationValue<EditableMiniMessage> commandGeneralError = editableMiniMsg(NodePath.path("command-general-error"));
     public final ConfigurationValue<EditableMiniMessage> commandGeneralRequiredPlayer = editableMiniMsg(NodePath.path("command-general-required-player"));

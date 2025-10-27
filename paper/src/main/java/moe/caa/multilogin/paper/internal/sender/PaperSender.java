@@ -14,6 +14,17 @@ public sealed class PaperSender<S extends CommandSender> implements Sender permi
         this.handle = handle;
     }
 
+    public static <S extends CommandSender> Sender wrapSender(S sender) {
+        return switch (sender) {
+            case Player p -> wrapSender(p);
+            default -> new PaperSender<>(sender);
+        };
+    }
+
+    public static PaperOnlinePlayer wrapSender(Player player) {
+        return new PaperOnlinePlayer(player);
+    }
+
     @Override
     public boolean hasPermission(String permission) {
         return handle.hasPermission(permission);
@@ -34,15 +45,5 @@ public sealed class PaperSender<S extends CommandSender> implements Sender permi
     @Override
     public int hashCode() {
         return Objects.hashCode(handle);
-    }
-
-    public static <S extends CommandSender> Sender wrapSender(S sender){
-        return switch (sender) {
-            case Player p -> wrapSender(p);
-            default -> new PaperSender<>(sender);
-        };
-    }
-    public static PaperOnlinePlayer wrapSender(Player player){
-        return new PaperOnlinePlayer(player);
     }
 }

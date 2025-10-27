@@ -19,6 +19,15 @@ public class CreateCommand<S> extends SubCommand<S> {
         super(manager);
     }
 
+    protected static <S> int calcMaxSlotCount(CommandManager<S> manager, OnlinePlayer player) {
+        for (Map.Entry<String, Integer> entry : manager.core.mainConfig.userProfileSlotCountLimit.get().permissionMaxSlotCounts.get().entrySet()) {
+            if (player.hasPermission(entry.getKey())) {
+                return Math.max(1, entry.getValue());
+            }
+        }
+        return manager.core.mainConfig.userProfileSlotCountLimit.get().defaultMaxSlotCount.get();
+    }
+
     @Override
     public void register(ArgumentBuilder<S, ?> builder) {
         String permissionCreate = "multilogin.command.create";
@@ -30,15 +39,6 @@ public class CreateCommand<S> extends SubCommand<S> {
                         .executes(context ->
                                 manager.executeAsync(context, () -> create(context))
                         )));
-    }
-
-    protected static <S> int calcMaxSlotCount(CommandManager<S> manager, OnlinePlayer player) {
-        for (Map.Entry<String, Integer> entry : manager.core.mainConfig.userProfileSlotCountLimit.get().permissionMaxSlotCounts.get().entrySet()) {
-            if (player.hasPermission(entry.getKey())) {
-                return Math.max(1, entry.getValue());
-            }
-        }
-        return manager.core.mainConfig.userProfileSlotCountLimit.get().defaultMaxSlotCount.get();
     }
 
     private void create(CommandContext<S> context) {

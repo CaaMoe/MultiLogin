@@ -23,6 +23,7 @@ dependencies {
     compileOnly(libs.configurate.hocon)
     compileOnly(libs.typesafe)
     compileOnly(libs.gson)
+    compileOnly(libs.guava)
 }
 
 tasks.jar { enabled = true }

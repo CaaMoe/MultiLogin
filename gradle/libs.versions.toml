@@ -15,6 +15,7 @@ hikaricp = "7.0.1"
 configurate = "4.1.2"
 typesafe = "1.4.3"
 gson = "2.11.0"
+guava = "33.5.0-jre"
 
 [libraries]
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j-api" }
@@ -36,3 +37,4 @@ configurate-core = { group = "org.spongepowered", name = "configurate-core", ver
 configurate-hocon = { group = "org.spongepowered", name = "configurate-hocon", version.ref = "configurate" }
 typesafe = { group = "com.typesafe", name = "config", version.ref = "typesafe" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
