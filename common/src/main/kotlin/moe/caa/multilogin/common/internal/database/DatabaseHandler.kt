@@ -64,7 +64,7 @@ class DatabaseHandler(
     fun updateOrCreateUser(authenticationConfig: AuthenticationConfig, authenticatedProfile: GameProfile) =
         useTransaction {
             getUsers0 {
-                (UserTable.loginMethod eq authenticationConfig.id.get()) and
+                (UserTable.authenticate eq authenticationConfig.id.get()) and
                         (UserTable.uuid eq authenticatedProfile.uuid)
             }.firstOrNull()?.apply {
                 updateUserLastKnownName(this.userID, authenticatedProfile.username)
@@ -74,7 +74,7 @@ class DatabaseHandler(
             return@useTransaction getUsers0 {
                 UserTable.id eq UserTable.insertAndGetId {
                     it[UserTable.uuid] = authenticatedProfile.uuid()
-                    it[UserTable.loginMethod] = authenticationConfig.id.get()
+                    it[UserTable.authenticate] = authenticationConfig.id.get()
                     it[UserTable.lastKnownName] = authenticatedProfile.username
                 }
             }.first()
@@ -135,7 +135,7 @@ class DatabaseHandler(
         UserTable.selectAll().where(predicate).limit(1).map {
             User(
                 it[UserTable.id].value,
-                it[UserTable.loginMethod],
+                it[UserTable.authenticate],
                 it[UserTable.uuid],
                 it[UserTable.lastKnownName]
             )

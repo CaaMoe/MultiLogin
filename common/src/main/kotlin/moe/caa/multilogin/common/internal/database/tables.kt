@@ -7,11 +7,11 @@ sealed interface MultiLoginTable
 
 object UserTable : MultiLoginTable, IntIdTable("multilogin_user_data", "user_id") {
     val uuid = uuid("user_uuid")
-    val loginMethod = varchar("login_method", 64)
+    val authenticate = varchar("authenticate", 64)
     val lastKnownName = varchar("last_known_name", 256).index()
 
     init {
-        uniqueIndex(uuid, loginMethod)
+        uniqueIndex(uuid, authenticate)
     }
 }
 
