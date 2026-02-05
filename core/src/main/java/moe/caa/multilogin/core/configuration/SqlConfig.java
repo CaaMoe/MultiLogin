@@ -22,6 +22,7 @@ public class SqlConfig {
     private final String database;
     private final String tablePrefix;
     private final String connectUrl;
+    private final SqlConnectionPoolConfig cpOption;
 
     public static SqlConfig read(CommentedConfigurationNode node) throws SerializationException {
         SqlBackend backend = node.node("backend").get(SqlBackend.class, SqlBackend.H2);
@@ -32,8 +33,9 @@ public class SqlConfig {
         String database = node.node("database").getString("multilogin");
         String tablePrefix = node.node("tablePrefix").getString("multilogin");
         String connectUrl = node.node("connectUrl").getString("");
+        SqlConnectionPoolConfig cpOption = SqlConnectionPoolConfig.read(node.node("sqlConnectionPoolOption"));
 
-        return new SqlConfig(backend, ip, port, username, password, database, tablePrefix, connectUrl);
+        return new SqlConfig(backend, ip, port, username, password, database, tablePrefix, connectUrl, cpOption);
     }
 
     public enum SqlBackend {
