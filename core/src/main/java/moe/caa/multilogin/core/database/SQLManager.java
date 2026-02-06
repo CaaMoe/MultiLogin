@@ -39,7 +39,8 @@ public class SQLManager {
         if (sqlConfig.getBackend() == SqlConfig.SqlBackend.MYSQL) {
             pool = new MysqlConnectionPool(sqlConfig.getIp(), sqlConfig.getPort(), sqlConfig.getDatabase(),
                     sqlConfig.getUsername(), sqlConfig.getPassword(),
-                    ValueUtil.isEmpty(sqlConfig.getConnectUrl()) ? MysqlConnectionPool.defaultUrl : sqlConfig.getConnectUrl()
+                    ValueUtil.isEmpty(sqlConfig.getConnectUrl()) ? MysqlConnectionPool.defaultUrl : sqlConfig.getConnectUrl(),
+                    sqlConfig.getCpOption()
             );
         } else if (sqlConfig.getBackend() == SqlConfig.SqlBackend.H2) {
             pool = new H2ConnectionPool(core.getPlugin().getDataFolder(), sqlConfig.getUsername(), sqlConfig.getPassword(),
